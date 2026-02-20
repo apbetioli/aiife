@@ -1,0 +1,22 @@
+{
+  "name": "zorky",
+  "version": "1.0.0",
+  "description": "Interactive fiction engine with LLM parser",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "dotenv -e .env -- tsx src/index.ts",
+    "start": "node --env-file=.env dist/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "dotenv-cli": "^7.4.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
