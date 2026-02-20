@@ -1,15 +1,15 @@
 import { GameEngine } from "./engine/GameEngine.js";
 import { createParser } from "./parser/LLMProvider.js";
-import { loadWorld } from "./world/WorldLoader.js";
-import { starterWorld } from "./world/starterWorld.js";
-import { Terminal } from "./ui/Terminal.js";
 import { Narrator } from "./ui/Narrator.js";
+import { Terminal } from "./ui/Terminal.js";
+import { loadWorldFromFile } from "./world/WorldLoader.js";
 
 async function main() {
   const terminal = new Terminal();
   const narrator = new Narrator();
 
-  const state = loadWorld(starterWorld);
+  const state = loadWorldFromFile();
+
   const parser = createParser();
   const engine = new GameEngine(state, parser);
 

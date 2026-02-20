@@ -113,6 +113,7 @@ export interface RoomDefinition {
 }
 
 export interface WorldDefinition {
+  title?: string;
   rooms: RoomDefinition[];
   items: Item[];
   npcs: NPC[];
