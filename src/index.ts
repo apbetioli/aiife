@@ -1,5 +1,5 @@
 import { GameEngine } from "./engine/GameEngine.js";
-import { createParser } from "./parser/LLMProvider.js";
+import { createParser } from "./parser/ParserFactory.js";
 import { Narrator } from "./ui/Narrator.js";
 import { Terminal } from "./ui/Terminal.js";
 import { loadWorldFromFile } from "./world/WorldLoader.js";

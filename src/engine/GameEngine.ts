@@ -12,6 +12,7 @@ import {
   getRoomNPCs,
 } from "./ActionValidator.js";
 import { validateAction, executeAction } from "./ActionRegistry.js";
+import { DEBUG } from "../debug.js";
 
 export class GameEngine {
   private state: GameState;
@@ -58,7 +59,7 @@ export class GameEngine {
     try {
       action = await this.parser.parseInput(trimmed, context);
     } catch (e) {
-      console.error("Error parsing input:", e);
+      DEBUG("Error parsing input:", e);
       return {
         message: "I didn't understand that. Try 'help' for a list of commands.",
         success: false,
@@ -82,8 +83,9 @@ export class GameEngine {
     const items = getVisibleItems(this.state);
     const npcs = getRoomNPCs(this.state);
 
-    let message = `**Welcome to Zorky!**\nAn interactive fiction adventure. Type 'help' for commands.\n`;
-    message += `\n**${room.name}**\n${room.description}`;
+    const intro = (this.state.welcomeMessage ?? "").trim();
+    let message = intro ? `${intro}\n\n` : "";
+    message += `**${room.name}**\n${room.description}`;
     if (items.length > 0) {
       message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
     }
