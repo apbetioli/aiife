@@ -6,6 +6,23 @@ import type {
 } from "../types.js";
 import { ACTION_TYPES, DIRECTIONS } from "../types.js";
 
+type ActionConfig = {
+  stripPrefix?: RegExp;
+  connectors?: string[];
+};
+
+const ACTION_CONFIGS: Partial<Record<ParsedAction["actionType"], ActionConfig>> = {
+  talk: { stripPrefix: /^(to|with)\s+/i },
+  take: { stripPrefix: /^up\s+/i },
+  drop: { stripPrefix: /^down\s+/i },
+  use:  { connectors: ["on", "with"] },
+};
+
+/** Per-verb overrides that adjust how connectors are interpreted. */
+const VERB_CONFIG: Partial<Record<string, { flipConnectors?: boolean }>> = {
+  unlock: { flipConnectors: true },
+};
+
 const DIRECTION_SHORTCUTS: Record<string, Direction> = {
   n: "north",
   s: "south",
@@ -39,6 +56,8 @@ const VERB_MAP: Record<string, ParsedAction["actionType"]> = {
   place: "use",
 
   examine: "examine",
+  x: "examine",
+  ex: "examine",
   inspect: "examine",
   study: "examine",
   read: "examine",
@@ -46,8 +65,10 @@ const VERB_MAP: Record<string, ParsedAction["actionType"]> = {
   check: "examine",
 
   look: "look",
+  l: "look",
 
   inventory: "inventory",
+  i: "inventory",
 
   talk: "talk",
   speak: "talk",
@@ -74,16 +95,6 @@ export class RuleBasedParser implements Parser {
     const raw = input.trim();
     const lower = raw.toLowerCase();
 
-    if (lower === "l") {
-      return { actionType: "look", rawInput: raw };
-    }
-    if (lower === "i") {
-      return { actionType: "inventory", rawInput: raw };
-    }
-    if (lower === "x" || lower === "ex") {
-      return { actionType: "examine", rawInput: raw };
-    }
-
     if (DIRECTION_SHORTCUTS[lower]) {
       return {
         actionType: "move",
@@ -102,14 +113,6 @@ export class RuleBasedParser implements Parser {
     const words = lower.split(/\s+/);
     const verb = words[0];
     const rest = words.slice(1).join(" ");
-
-    if (verb === "x") {
-      return {
-        actionType: "examine",
-        target: rest || undefined,
-        rawInput: raw,
-      };
-    }
 
     const actionType = VERB_MAP[verb];
     if (!actionType) {
@@ -162,78 +165,29 @@ export class RuleBasedParser implements Parser {
       return { actionType: "move", direction, rawInput: raw };
     }
 
-    if (actionType === "talk") {
-      const stripped = rest
-        .join(" ")
-        .replace(/^(to|with)\s+/i, "")
-        .trim();
-      return {
-        actionType: "talk",
-        target: stripped || undefined,
-        rawInput: raw,
-      };
-    }
+    const config = ACTION_CONFIGS[actionType];
+    const verbConfig = VERB_CONFIG[words[0]];
+    const joined = rest.join(" ");
 
-    if (actionType === "use") {
-      const joined = rest.join(" ");
-
-      if (words[0] === "unlock") {
-        const withMatch = joined.match(/^(.+?)\s+with\s+(.+)$/i);
-        if (withMatch) {
-          return {
-            actionType: "use",
-            target: withMatch[2].trim(),
-            secondaryTarget: withMatch[1].trim(),
-            rawInput: raw,
-          };
+    if (config?.connectors) {
+      for (const conn of config.connectors) {
+        const match = joined.match(
+          new RegExp(`^(.+?)\\s+${conn}\\s+(.+)$`, "i")
+        );
+        if (match) {
+          const [a, b] = verbConfig?.flipConnectors
+            ? [match[2].trim(), match[1].trim()]
+            : [match[1].trim(), match[2].trim()];
+          return { actionType, target: a, secondaryTarget: b, rawInput: raw };
         }
-        return {
-          actionType: "use",
-          target: joined || undefined,
-          rawInput: raw,
-        };
       }
-
-      const onMatch = joined.match(/^(.+?)\s+on\s+(.+)$/i);
-      if (onMatch) {
-        return {
-          actionType: "use",
-          target: onMatch[1].trim(),
-          secondaryTarget: onMatch[2].trim(),
-          rawInput: raw,
-        };
-      }
-
-      const withMatch = joined.match(/^(.+?)\s+with\s+(.+)$/i);
-      if (withMatch) {
-        return {
-          actionType: "use",
-          target: withMatch[1].trim(),
-          secondaryTarget: withMatch[2].trim(),
-          rawInput: raw,
-        };
-      }
-
-      return { actionType: "use", target: joined || undefined, rawInput: raw };
+      return { actionType, target: joined || undefined, rawInput: raw };
     }
 
-    if (actionType === "take") {
-      const joined = rest
-        .join(" ")
-        .replace(/^up\s+/i, "")
-        .trim();
-      return { actionType: "take", target: joined || undefined, rawInput: raw };
-    }
+    const stripped = config?.stripPrefix
+      ? joined.replace(config.stripPrefix, "").trim()
+      : joined.trim();
 
-    if (actionType === "drop") {
-      const joined = rest
-        .join(" ")
-        .replace(/^down\s+/i, "")
-        .trim();
-      return { actionType: "drop", target: joined || undefined, rawInput: raw };
-    }
-
-    const target = rest.join(" ").trim();
-    return { actionType, target: target || undefined, rawInput: raw };
+    return { actionType, target: stripped || undefined, rawInput: raw };
   }
 }

@@ -1,3 +1,4 @@
+import { DEBUG } from "./debug.js";
 import { GameEngine } from "./engine/GameEngine.js";
 import { createParser } from "./parser/ParserFactory.js";
 import { Narrator } from "./ui/Narrator.js";
@@ -24,4 +25,5 @@ async function main() {
   terminal.close();
 }
 
+DEBUG("Debug mode enabled");
 main();
