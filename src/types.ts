@@ -25,12 +25,11 @@ export const DIRECTIONS = [
 
 export type Direction = (typeof DIRECTIONS)[number];
 
-export interface ParsedAction {
+export interface GameAction {
   actionType: ActionType;
   target?: string;
   secondaryTarget?: string;
   direction?: Direction;
-  rawInput: string;
 }
 
 export interface Exit {
@@ -113,20 +112,7 @@ export interface WorldDefinition {
   flags: Record<string, boolean>;
 }
 
-export interface ParserContext {
-  roomName: string;
-  roomDescription: string;
-  exits: string[];
-  visibleItems: string[];
-  inventory: string[];
-  npcs: string[];
-}
-
-export interface Parser {
-  parseInput(input: string, context: ParserContext): Promise<ParsedAction>;
-}
-
 export interface ActionHandler {
-  validate(action: ParsedAction, state: GameState): ValidationResult;
-  execute(action: ParsedAction, state: GameState): ActionResult;
+  validate(action: GameAction, state: GameState): ValidationResult;
+  execute(action: GameAction, state: GameState): ActionResult;
 }

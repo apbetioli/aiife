@@ -2,8 +2,8 @@ import type {
   ActionHandler,
   ActionResult,
   ActionType,
+  GameAction,
   GameState,
-  ParsedAction,
   ValidationResult,
 } from "../types.js";
 import {
@@ -464,14 +464,14 @@ export function getActionHandler(actionType: ActionType): ActionHandler {
 }
 
 export function validateAction(
-  action: ParsedAction,
+  action: GameAction,
   state: GameState
 ): ValidationResult {
   return getActionHandler(action.actionType).validate(action, state);
 }
 
 export function executeAction(
-  action: ParsedAction,
+  action: GameAction,
   state: GameState
 ): ActionResult {
   return getActionHandler(action.actionType).execute(action, state);
