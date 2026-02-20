@@ -1,8 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
-import type { Parser, ParsedAction, ParserContext } from "../types.js";
-import { ACTION_TYPES, DIRECTIONS } from "../types.js";
 import { DEBUG } from "../debug.js";
+import type { ParsedAction, Parser, ParserContext } from "../types.js";
+import { ACTION_TYPES, DIRECTIONS } from "../types.js";
 
 const ParsedActionSchema = z.object({
   actionType: z.enum(ACTION_TYPES),
@@ -22,10 +22,12 @@ const ParsedActionSchema = z.object({
 
 export class AnthropicParser implements Parser {
   private client: Anthropic | null;
+  private model: string;
 
   constructor() {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     this.client = apiKey ? new Anthropic({ apiKey }) : null;
+    this.model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
   }
 
   get isAvailable(): boolean {
@@ -36,6 +38,10 @@ export class AnthropicParser implements Parser {
     input: string,
     context: ParserContext
   ): Promise<ParsedAction> {
+    if (!this.client) {
+      throw new Error("No ANTHROPIC_API_KEY configured.");
+    }
+
     const systemPrompt = `You are a parser for a text adventure game. Your job is to interpret the player's natural language input and map it to a structured game action.
 
 You must return a JSON object with these fields:
@@ -65,12 +71,8 @@ Player input: "${input}"
 
 Return the parsed action as JSON.`;
 
-    if (!this.client) {
-      throw new Error("No ANTHROPIC_API_KEY configured.");
-    }
-
     const response = await this.client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: this.model,
       max_tokens: 256,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
@@ -89,7 +91,7 @@ Return the parsed action as JSON.`;
 
     const parsed = JSON.parse(jsonStr);
     const validated = ParsedActionSchema.parse(parsed);
-    DEBUG("Validated:", validated);
+    DEBUG("LLM parsed action:", validated);
 
     return {
       ...validated,
