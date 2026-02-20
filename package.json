@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "debug": "DEBUG=true dotenv -e .env -- tsx src/index.ts",
     "dev": "dotenv -e .env -- tsx src/index.ts",
     "start": "node --env-file=.env dist/index.js"
   },

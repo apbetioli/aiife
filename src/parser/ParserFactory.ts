@@ -35,6 +35,6 @@ export function createParser(): Parser {
     return new HybridParser(ruleParser, anthropic);
   }
 
-  console.log("No ANTHROPIC_API_KEY found. Using rule-based parser only.");
+  DEBUG("No ANTHROPIC_API_KEY found. Using rule-based parser only.");
   return ruleParser;
 }
