@@ -1,6 +1,7 @@
-import type { Parser, ParsedAction, ParserContext } from "../types.js";
+import { DEBUG } from "../debug.js";
+import type { ParsedAction, Parser, ParserContext } from "../types.js";
+import { AnthropicParser } from "./AnthropicParser.js";
 import { RuleBasedParser } from "./RuleBasedParser.js";
-import { AnthropicProvider } from "./AnthropicProvider.js";
 
 /**
  * Tries the rule-based parser first; only calls the LLM when the rule-based
@@ -10,7 +11,7 @@ import { AnthropicProvider } from "./AnthropicProvider.js";
 class HybridParser implements Parser {
   constructor(
     private readonly ruleParser: RuleBasedParser,
-    private readonly llmProvider: Parser
+    private readonly llmParser: Parser
   ) {}
 
   async parseInput(
@@ -21,20 +22,17 @@ class HybridParser implements Parser {
     if (result !== null) {
       return result;
     }
-    console.debug(
-      `[parser] rules couldn't parse "${input}", delegating to LLM…`
-    );
-    return this.llmProvider.parseInput(input, context);
+    DEBUG(`[parser] rules couldn't parse "${input}", delegating to LLM…`);
+    return this.llmParser.parseInput(input, context);
   }
 }
 
 export function createParser(): Parser {
   const ruleParser = new RuleBasedParser();
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const anthropic = new AnthropicParser();
 
-  if (apiKey) {
-    console.log("Using hybrid parser (rules first, LLM fallback).");
-    return new HybridParser(ruleParser, new AnthropicProvider(apiKey));
+  if (anthropic.isAvailable) {
+    return new HybridParser(ruleParser, anthropic);
   }
 
   console.log("No ANTHROPIC_API_KEY found. Using rule-based parser only.");

@@ -1,6 +1,7 @@
 {
   "startRoomId": "great-hall",
   "title": "Zorky",
+  "welcomeMessage": "**Welcome to Zorky!**\nAn interactive fiction adventure. Type 'help' for commands.",
   "flags": {
     "cellar-unlocked": false,
     "key-revealed": false,

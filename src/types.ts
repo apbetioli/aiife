@@ -77,6 +77,8 @@ export interface GameState {
   turnCount: number;
   gameOver: boolean;
   flags: Map<string, boolean>;
+  /** Welcome message shown at game start; defined by the game/world. */
+  welcomeMessage?: string;
 }
 
 export interface ActionResult {
@@ -102,6 +104,8 @@ export interface RoomDefinition {
 
 export interface WorldDefinition {
   title?: string;
+  /** Welcome message shown at game start. */
+  welcomeMessage?: string;
   rooms: RoomDefinition[];
   items: Item[];
   npcs: NPC[];

@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import type { Parser, ParsedAction, ParserContext } from "../types.js";
 import { ACTION_TYPES, DIRECTIONS } from "../types.js";
+import { DEBUG } from "../debug.js";
 
 const ParsedActionSchema = z.object({
   actionType: z.enum(ACTION_TYPES),
@@ -19,11 +20,16 @@ const ParsedActionSchema = z.object({
     .transform((x) => x ?? undefined),
 });
 
-export class AnthropicProvider implements Parser {
-  private client: Anthropic;
+export class AnthropicParser implements Parser {
+  private client: Anthropic | null;
 
-  constructor(apiKey: string) {
-    this.client = new Anthropic({ apiKey });
+  constructor() {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    this.client = apiKey ? new Anthropic({ apiKey }) : null;
+  }
+
+  get isAvailable(): boolean {
+    return this.client !== null;
   }
 
   async parseInput(
@@ -59,6 +65,10 @@ Player input: "${input}"
 
 Return the parsed action as JSON.`;
 
+    if (!this.client) {
+      throw new Error("No ANTHROPIC_API_KEY configured.");
+    }
+
     const response = await this.client.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 256,
@@ -79,7 +89,7 @@ Return the parsed action as JSON.`;
 
     const parsed = JSON.parse(jsonStr);
     const validated = ParsedActionSchema.parse(parsed);
-    console.debug("Validated:", validated);
+    DEBUG("Validated:", validated);
 
     return {
       ...validated,

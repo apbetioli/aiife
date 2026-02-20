@@ -61,5 +61,6 @@ export function loadWorld(definition: WorldDefinition): GameState {
     turnCount: 0,
     gameOver: false,
     flags,
+    welcomeMessage: definition.welcomeMessage,
   };
 }
