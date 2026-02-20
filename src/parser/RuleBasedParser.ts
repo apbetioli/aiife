@@ -1,4 +1,9 @@
-import type { Direction, LLMProvider, ParsedAction, ParserContext } from "../types.js";
+import type {
+  Direction,
+  Parser,
+  ParsedAction,
+  ParserContext,
+} from "../types.js";
 import { ACTION_TYPES, DIRECTIONS } from "../types.js";
 
 const DIRECTION_SHORTCUTS: Record<string, Direction> = {
@@ -59,12 +64,16 @@ const VERB_MAP: Record<string, ParsedAction["actionType"]> = {
   q: "quit",
 };
 
-export class RuleBasedParser implements LLMProvider {
-  async parseInput(input: string, _context: ParserContext): Promise<ParsedAction> {
+export class RuleBasedParser implements Parser {
+  /**
+   * Attempts to parse the input using rules only.
+   * Returns null when the input cannot be confidently mapped to an action,
+   * signalling that a fallback parser should handle it.
+   */
+  tryParse(input: string): ParsedAction | null {
     const raw = input.trim();
     const lower = raw.toLowerCase();
 
-    // Single-letter shortcuts
     if (lower === "l") {
       return { actionType: "look", rawInput: raw };
     }
@@ -75,7 +84,6 @@ export class RuleBasedParser implements LLMProvider {
       return { actionType: "examine", rawInput: raw };
     }
 
-    // Direction shortcuts and bare directions
     if (DIRECTION_SHORTCUTS[lower]) {
       return {
         actionType: "move",
@@ -91,29 +99,48 @@ export class RuleBasedParser implements LLMProvider {
       };
     }
 
-    // Parse verb + rest
     const words = lower.split(/\s+/);
     const verb = words[0];
     const rest = words.slice(1).join(" ");
 
-    // Handle "x <thing>" as examine
     if (verb === "x") {
-      return { actionType: "examine", target: rest || undefined, rawInput: raw };
+      return {
+        actionType: "examine",
+        target: rest || undefined,
+        rawInput: raw,
+      };
     }
 
     const actionType = VERB_MAP[verb];
     if (!actionType) {
-      // Check if any word is an action type
       for (const word of words) {
         if (ACTION_TYPES.includes(word as ParsedAction["actionType"])) {
-          return this.parseWithAction(word as ParsedAction["actionType"], words, raw);
+          return this.parseWithAction(
+            word as ParsedAction["actionType"],
+            words,
+            raw
+          );
         }
       }
-      // Fallback: treat entire input as a target for "examine"
-      return { actionType: "examine", target: lower, rawInput: raw };
+      return null;
     }
 
     return this.parseWithAction(actionType, words, raw);
+  }
+
+  async parseInput(
+    input: string,
+    _context: ParserContext
+  ): Promise<ParsedAction> {
+    const raw = input.trim();
+    const lower = raw.toLowerCase();
+    return (
+      this.tryParse(input) ?? {
+        actionType: "examine",
+        target: lower,
+        rawInput: raw,
+      }
+    );
   }
 
   private parseWithAction(
@@ -123,7 +150,6 @@ export class RuleBasedParser implements LLMProvider {
   ): ParsedAction {
     const rest = words.slice(1);
 
-    // Move: "go north", "move south"
     if (actionType === "move") {
       const dirWord = rest.find(
         (w) =>
@@ -136,20 +162,21 @@ export class RuleBasedParser implements LLMProvider {
       return { actionType: "move", direction, rawInput: raw };
     }
 
-    // Talk: "talk to gardener", "speak with old man"
     if (actionType === "talk") {
       const stripped = rest
         .join(" ")
         .replace(/^(to|with)\s+/i, "")
         .trim();
-      return { actionType: "talk", target: stripped || undefined, rawInput: raw };
+      return {
+        actionType: "talk",
+        target: stripped || undefined,
+        rawInput: raw,
+      };
     }
 
-    // Use: "use key on door", "use amulet on pedestal", "unlock door with key"
     if (actionType === "use") {
       const joined = rest.join(" ");
 
-      // "unlock <target> with <item>" → use item on target
       if (words[0] === "unlock") {
         const withMatch = joined.match(/^(.+?)\s+with\s+(.+)$/i);
         if (withMatch) {
@@ -167,7 +194,6 @@ export class RuleBasedParser implements LLMProvider {
         };
       }
 
-      // "use <item> on <target>"
       const onMatch = joined.match(/^(.+?)\s+on\s+(.+)$/i);
       if (onMatch) {
         return {
@@ -178,7 +204,6 @@ export class RuleBasedParser implements LLMProvider {
         };
       }
 
-      // "use <item> with <target>"
       const withMatch = joined.match(/^(.+?)\s+with\s+(.+)$/i);
       if (withMatch) {
         return {
@@ -192,19 +217,22 @@ export class RuleBasedParser implements LLMProvider {
       return { actionType: "use", target: joined || undefined, rawInput: raw };
     }
 
-    // Take: "pick up <item>"
     if (actionType === "take") {
-      const joined = rest.join(" ").replace(/^up\s+/i, "").trim();
+      const joined = rest
+        .join(" ")
+        .replace(/^up\s+/i, "")
+        .trim();
       return { actionType: "take", target: joined || undefined, rawInput: raw };
     }
 
-    // Drop: "put down <item>"
     if (actionType === "drop") {
-      const joined = rest.join(" ").replace(/^down\s+/i, "").trim();
+      const joined = rest
+        .join(" ")
+        .replace(/^down\s+/i, "")
+        .trim();
       return { actionType: "drop", target: joined || undefined, rawInput: raw };
     }
 
-    // Default: verb + target
     const target = rest.join(" ").trim();
     return { actionType, target: target || undefined, rawInput: raw };
   }

@@ -1,5 +1,3 @@
-// ── Action Types ──
-
 export const ACTION_TYPES = [
   "move",
   "take",
@@ -27,8 +25,6 @@ export const DIRECTIONS = [
 
 export type Direction = (typeof DIRECTIONS)[number];
 
-// ── Parsed Action (the contract between parser and engine) ──
-
 export interface ParsedAction {
   actionType: ActionType;
   target?: string;
@@ -36,8 +32,6 @@ export interface ParsedAction {
   direction?: Direction;
   rawInput: string;
 }
-
-// ── World Entities ──
 
 export interface Exit {
   direction: Direction;
@@ -74,8 +68,6 @@ export interface Room {
   npcIds: string[];
 }
 
-// ── Game State ──
-
 export interface GameState {
   rooms: Map<string, Room>;
   items: Map<string, Item>;
@@ -86,8 +78,6 @@ export interface GameState {
   gameOver: boolean;
   flags: Map<string, boolean>;
 }
-
-// ── Action Results ──
 
 export interface ActionResult {
   message: string;
@@ -100,8 +90,6 @@ export interface ValidationResult {
   valid: boolean;
   error?: string;
 }
-
-// ── World Definition (raw data before loading into state) ──
 
 export interface RoomDefinition {
   id: string;
@@ -121,8 +109,6 @@ export interface WorldDefinition {
   flags: Record<string, boolean>;
 }
 
-// ── Parser Context (sent to LLM) ──
-
 export interface ParserContext {
   roomName: string;
   roomDescription: string;
@@ -132,13 +118,9 @@ export interface ParserContext {
   npcs: string[];
 }
 
-// ── LLM Provider Interface ──
-
-export interface LLMProvider {
+export interface Parser {
   parseInput(input: string, context: ParserContext): Promise<ParsedAction>;
 }
-
-// ── Action Handler ──
 
 export interface ActionHandler {
   validate(action: ParsedAction, state: GameState): ValidationResult;

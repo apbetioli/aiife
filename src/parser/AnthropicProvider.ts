@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
-import type { LLMProvider, ParsedAction, ParserContext } from "../types.js";
+import type { Parser, ParsedAction, ParserContext } from "../types.js";
 import { ACTION_TYPES, DIRECTIONS } from "../types.js";
 
 const ParsedActionSchema = z.object({
@@ -19,7 +19,7 @@ const ParsedActionSchema = z.object({
     .transform((x) => x ?? undefined),
 });
 
-export class AnthropicProvider implements LLMProvider {
+export class AnthropicProvider implements Parser {
   private client: Anthropic;
 
   constructor(apiKey: string) {
@@ -71,7 +71,6 @@ Return the parsed action as JSON.`;
       throw new Error("No text response from LLM");
     }
 
-    // Extract JSON from response (might be wrapped in markdown code block)
     let jsonStr = textBlock.text.trim();
     const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) {

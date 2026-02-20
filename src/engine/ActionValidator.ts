@@ -33,12 +33,10 @@ export function resolveEntity(
   if (!name) return undefined;
   const lower = name.toLowerCase().trim();
 
-  // Exact name match
   for (const entity of candidates) {
     if (entity.name.toLowerCase() === lower) return entity;
   }
 
-  // Exact alias match
   for (const entity of candidates) {
     if ("aliases" in entity) {
       for (const alias of entity.aliases) {
@@ -47,7 +45,6 @@ export function resolveEntity(
     }
   }
 
-  // Partial match (name contains search term or vice versa)
   for (const entity of candidates) {
     if (
       entity.name.toLowerCase().includes(lower) ||
@@ -57,7 +54,6 @@ export function resolveEntity(
     }
   }
 
-  // Partial alias match
   for (const entity of candidates) {
     if ("aliases" in entity) {
       for (const alias of entity.aliases) {

@@ -11,8 +11,6 @@ const CYAN = "\x1b[36m";
 export class Narrator {
   format(result: ActionResult): string {
     let text = result.message;
-
-    // Convert **bold** markers to ANSI bold
     text = text.replace(/\*\*(.+?)\*\*/g, `${BOLD}$1${RESET}`);
 
     if (result.isVictory) {
@@ -31,8 +29,7 @@ export class Narrator {
   }
 
   formatWelcome(text: string): string {
-    let formatted = text;
-    formatted = formatted.replace(/\*\*(.+?)\*\*/g, `${BOLD}$1${RESET}`);
+    let formatted = text.replace(/\*\*(.+?)\*\*/g, `${BOLD}$1${RESET}`);
     return `\n${CYAN}${"═".repeat(50)}${RESET}\n${formatted}\n${CYAN}${"═".repeat(50)}${RESET}\n`;
   }
 }
