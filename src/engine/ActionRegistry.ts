@@ -17,8 +17,6 @@ import {
   isItemInInventory,
 } from "./ActionValidator.js";
 
-// ── Move ──
-
 const moveHandler: ActionHandler = {
   validate(action, state) {
     if (!action.direction) {
@@ -56,8 +54,6 @@ const moveHandler: ActionHandler = {
   },
 };
 
-// ── Look ──
-
 const lookHandler: ActionHandler = {
   validate() {
     return { valid: true };
@@ -84,15 +80,12 @@ const lookHandler: ActionHandler = {
   },
 };
 
-// ── Examine ──
-
 const examineHandler: ActionHandler = {
   validate(action, state) {
     if (!action.target) {
       return { valid: false, error: "What do you want to examine?" };
     }
 
-    // Special case: examining the alcove in the library
     const lower = action.target.toLowerCase();
     if (
       (lower.includes("alcove") || lower.includes("wall")) &&
@@ -111,7 +104,6 @@ const examineHandler: ActionHandler = {
   execute(action, state) {
     const lower = (action.target ?? "").toLowerCase();
 
-    // Special: examine alcove in library reveals the key
     if (
       (lower.includes("alcove") || lower.includes("wall")) &&
       state.currentRoomId === "library"
@@ -146,8 +138,6 @@ const examineHandler: ActionHandler = {
   },
 };
 
-// ── Take ──
-
 const takeHandler: ActionHandler = {
   validate(action, state) {
     if (!action.target) {
@@ -177,8 +167,6 @@ const takeHandler: ActionHandler = {
   },
 };
 
-// ── Drop ──
-
 const dropHandler: ActionHandler = {
   validate(action, state) {
     if (!action.target) {
@@ -202,8 +190,6 @@ const dropHandler: ActionHandler = {
   },
 };
 
-// ── Inventory ──
-
 const inventoryHandler: ActionHandler = {
   validate() {
     return { valid: true };
@@ -217,8 +203,6 @@ const inventoryHandler: ActionHandler = {
     return { message: `You are carrying:\n${list}`, success: true };
   },
 };
-
-// ── Talk ──
 
 const talkHandler: ActionHandler = {
   validate(action, state) {
@@ -241,8 +225,6 @@ const talkHandler: ActionHandler = {
   },
 };
 
-// ── Open ──
-
 const openHandler: ActionHandler = {
   validate(action, state) {
     if (!action.target) {
@@ -250,7 +232,6 @@ const openHandler: ActionHandler = {
     }
     const lower = action.target.toLowerCase();
 
-    // Opening the cellar door
     if (lower.includes("door") || lower.includes("iron")) {
       const room = getCurrentRoom(state);
       const downExit = room.exits.find((e) => e.direction === "down");
@@ -263,7 +244,6 @@ const openHandler: ActionHandler = {
       return { valid: false, error: "The iron door is locked. You need a key." };
     }
 
-    // Opening the chest
     const item = resolveItem(action.target, state);
     if (!item) {
       return { valid: false, error: `You don't see any "${action.target}" to open.` };
@@ -299,8 +279,6 @@ const openHandler: ActionHandler = {
   },
 };
 
-// ── Use (puzzle logic) ──
-
 interface UseEffect {
   requires: { itemId: string; targetId?: string; roomId?: string };
   execute: (state: GameState) => ActionResult;
@@ -308,7 +286,6 @@ interface UseEffect {
 
 const useEffects: UseEffect[] = [
   {
-    // Use key on door → unlock cellar
     requires: { itemId: "rusty-key", targetId: "door" },
     execute(state) {
       const hall = state.rooms.get("great-hall");
@@ -329,7 +306,6 @@ const useEffects: UseEffect[] = [
     },
   },
   {
-    // Use key directly (when in great hall, implied target)
     requires: { itemId: "rusty-key", roomId: "great-hall" },
     execute(state) {
       const hall = state.rooms.get("great-hall");
@@ -349,7 +325,6 @@ const useEffects: UseEffect[] = [
     },
   },
   {
-    // Use amulet on pedestal → win
     requires: { itemId: "gold-amulet", targetId: "pedestal" },
     execute(state) {
       state.flags.set("game-won", true);
@@ -364,7 +339,6 @@ const useEffects: UseEffect[] = [
     },
   },
   {
-    // Use amulet directly in cellar (implied target)
     requires: { itemId: "gold-amulet", roomId: "cellar" },
     execute(state) {
       state.flags.set("game-won", true);
@@ -410,7 +384,6 @@ const useHandler: ActionHandler = {
   execute(action, state) {
     const item = resolveItem(action.target, state)!;
 
-    // Check puzzle effects with explicit target
     for (const effect of useEffects) {
       if (effect.requires.itemId !== item.id) continue;
 
@@ -435,8 +408,6 @@ const useHandler: ActionHandler = {
   },
 };
 
-// ── Help ──
-
 const helpHandler: ActionHandler = {
   validate() {
     return { valid: true };
@@ -460,8 +431,6 @@ const helpHandler: ActionHandler = {
   },
 };
 
-// ── Quit ──
-
 const quitHandler: ActionHandler = {
   validate() {
     return { valid: true };
@@ -475,8 +444,6 @@ const quitHandler: ActionHandler = {
     };
   },
 };
-
-// ── Registry ──
 
 const handlers: Record<ActionType, ActionHandler> = {
   move: moveHandler,

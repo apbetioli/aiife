@@ -1,7 +1,7 @@
 import type {
   ActionResult,
   GameState,
-  LLMProvider,
+  Parser,
   ParsedAction,
   ParserContext,
 } from "../types.js";
@@ -15,9 +15,9 @@ import { validateAction, executeAction } from "./ActionRegistry.js";
 
 export class GameEngine {
   private state: GameState;
-  private parser: LLMProvider;
+  private parser: Parser;
 
-  constructor(state: GameState, parser: LLMProvider) {
+  constructor(state: GameState, parser: Parser) {
     this.state = state;
     this.parser = parser;
   }
