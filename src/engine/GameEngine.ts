@@ -1,81 +1,22 @@
-import type {
-  ActionResult,
-  GameState,
-  Parser,
-  ParsedAction,
-  ParserContext,
-} from "../types.js";
-import {
-  getCurrentRoom,
-  getVisibleItems,
-  getInventoryItems,
-  getRoomNPCs,
-} from "./ActionValidator.js";
-import { validateAction, executeAction } from "./ActionRegistry.js";
-import { DEBUG } from "../debug.js";
+import type { ActionResult, GameState } from "../types.js";
+import { getCurrentRoom, getVisibleItems, getRoomNPCs } from "./ActionValidator.js";
+import { GameAgent } from "../agent/GameAgent.js";
 
 export class GameEngine {
-  private state: GameState;
-  private parser: Parser;
+  private agent: GameAgent;
 
-  constructor(state: GameState, parser: Parser) {
-    this.state = state;
-    this.parser = parser;
+  constructor(private state: GameState) {
+    this.agent = new GameAgent(state);
   }
 
   getState(): GameState {
     return this.state;
   }
 
-  buildContext(): ParserContext {
-    const room = getCurrentRoom(this.state);
-    const items = getVisibleItems(this.state);
-    const inv = getInventoryItems(this.state);
-    const npcs = getRoomNPCs(this.state);
-
-    return {
-      roomName: room.name,
-      roomDescription: room.description,
-      exits: room.exits.map((e) => {
-        let label = e.direction;
-        if (e.locked) label += " (locked)";
-        return label;
-      }),
-      visibleItems: items.map((i) => i.name),
-      inventory: inv.map((i) => i.name),
-      npcs: npcs.map((n) => n.name),
-    };
-  }
-
   async processInput(input: string): Promise<ActionResult> {
     const trimmed = input.trim();
-    if (!trimmed) {
-      return { message: "Say something!", success: false };
-    }
-
-    const context = this.buildContext();
-    let action: ParsedAction;
-
-    try {
-      action = await this.parser.parseInput(trimmed, context);
-    } catch (e) {
-      DEBUG("Error parsing input:", e);
-      return {
-        message: "I didn't understand that. Try 'help' for a list of commands.",
-        success: false,
-      };
-    }
-
-    const validation = validateAction(action, this.state);
-    if (!validation.valid) {
-      return {
-        message: validation.error ?? "You can't do that.",
-        success: false,
-      };
-    }
-
-    this.state.turnCount++;
-    return executeAction(action, this.state);
+    if (!trimmed) return { message: "Say something!", success: false };
+    return this.agent.processInput(trimmed);
   }
 
   getWelcome(): string {
@@ -90,9 +31,7 @@ export class GameEngine {
       message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
     }
     if (npcs.length > 0) {
-      message += `\n\n${npcs
-        .map((n) => `There is a ${n.name} here.`)
-        .join(" ")}`;
+      message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
     }
     return message;
   }
