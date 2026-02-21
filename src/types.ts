@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const ACTION_TYPES = [
   "move",
   "take",
@@ -33,31 +35,37 @@ export interface GameAction {
   direction?: Direction;
 }
 
-export interface Exit {
-  direction: Direction;
-  targetRoomId: string;
-  locked: boolean;
-  description?: string;
-}
+export const ExitSchema = z.object({
+  direction: z.enum(DIRECTIONS),
+  targetRoomId: z.string(),
+  locked: z.boolean(),
+  description: z.string().optional(),
+});
 
-export interface Item {
-  id: string;
-  name: string;
-  aliases: string[];
-  description: string;
-  portable: boolean;
-  visible: boolean;
-  containerId?: string;
-}
+export type Exit = z.infer<typeof ExitSchema>;
 
-export interface NPC {
-  id: string;
-  name: string;
-  aliases: string[];
-  description: string;
-  dialogue: string[];
-  dialogueIndex: number;
-}
+export const ItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  aliases: z.array(z.string()),
+  description: z.string(),
+  portable: z.boolean(),
+  visible: z.boolean(),
+  containerId: z.string().optional(),
+});
+
+export type Item = z.infer<typeof ItemSchema>;
+
+export const NPCSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  aliases: z.array(z.string()),
+  description: z.string(),
+  dialogue: z.array(z.string()),
+  dialogueIndex: z.number(),
+});
+
+export type NPC = z.infer<typeof NPCSchema>;
 
 export interface Room {
   id: string;
@@ -91,24 +99,28 @@ export interface ValidationResult {
   error?: string;
 }
 
-export interface RoomDefinition {
-  id: string;
-  name: string;
-  description: string;
-  exits: Exit[];
-  itemIds: string[];
-  npcIds: string[];
-}
+export const RoomDefinitionSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  exits: z.array(ExitSchema),
+  itemIds: z.array(z.string()),
+  npcIds: z.array(z.string()),
+});
 
-export interface WorldDefinition {
-  title: string;
-  welcomeMessage: string;
-  rooms: RoomDefinition[];
-  items: Item[];
-  npcs: NPC[];
-  startRoomId: string;
-  flags: Record<string, boolean>;
-}
+export type RoomDefinition = z.infer<typeof RoomDefinitionSchema>;
+
+export const WorldDefinitionSchema = z.object({
+  title: z.string(),
+  welcomeMessage: z.string(),
+  rooms: z.array(RoomDefinitionSchema),
+  items: z.array(ItemSchema),
+  npcs: z.array(NPCSchema),
+  startRoomId: z.string(),
+  flags: z.record(z.string(), z.boolean()),
+});
+
+export type WorldDefinition = z.infer<typeof WorldDefinitionSchema>;
 
 export interface ActionHandler {
   validate(action: GameAction, state: GameState): ValidationResult;

@@ -7,15 +7,9 @@ import type {
   Room,
   WorldDefinition,
 } from "../types.js";
-import {
-  getCurrentRoom,
-  getRoomNPCs,
-  getVisibleItems,
-} from "./ActionValidator.js";
 
 export class GameEngine {
   private state: GameState;
-  private welcomeMessage: string;
   private agent: GameAgent;
 
   constructor(definition: WorldDefinition) {
@@ -49,7 +43,6 @@ export class GameEngine {
       gameOver: false,
       flags,
     };
-    this.welcomeMessage = definition.welcomeMessage;
     this.agent = new GameAgent(this.state);
   }
 
@@ -61,24 +54,5 @@ export class GameEngine {
     const trimmed = input.trim();
     if (!trimmed) return { message: "Say something!", success: false };
     return this.agent.processInput(trimmed);
-  }
-
-  getWelcome(): string {
-    const room = getCurrentRoom(this.state);
-    const items = getVisibleItems(this.state);
-    const npcs = getRoomNPCs(this.state);
-
-    const intro = this.welcomeMessage.trim();
-    let message = intro ? `${intro}\n\n` : "";
-    message += `**${room.name}**\n${room.description}`;
-    if (items.length > 0) {
-      message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
-    }
-    if (npcs.length > 0) {
-      message += `\n\n${npcs
-        .map((n) => `There is a ${n.name} here.`)
-        .join(" ")}`;
-    }
-    return message;
   }
 }
