@@ -15,7 +15,7 @@ async function main() {
   terminal.print(narrator.formatWelcome(`${intro}\n\n`));
 
   while (!engine.getState().gameOver) {
-    const input = await terminal.prompt("\n> ");
+    const input = await terminal.prompt();
     const result = await engine.processInput(input);
     terminal.print(narrator.format(result));
   }

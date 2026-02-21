@@ -1,4 +1,5 @@
 import readline from "node:readline";
+import { CYAN, RESET } from "./ansi.js";
 
 export class Terminal {
   private rl: readline.Interface;
@@ -10,7 +11,7 @@ export class Terminal {
     });
   }
 
-  prompt(prefix = "> "): Promise<string> {
+  prompt(prefix = `\n${CYAN}> `): Promise<string> {
     return new Promise((resolve) => {
       this.rl.question(prefix, (answer) => {
         resolve(answer);
@@ -19,7 +20,7 @@ export class Terminal {
   }
 
   print(text: string): void {
-    console.log(text);
+    console.log(RESET + text);
   }
 
   close(): void {
