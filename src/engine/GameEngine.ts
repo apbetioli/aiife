@@ -1,4 +1,6 @@
 import { GameAgent } from "../agent/GameAgent.js";
+import { executeAction, validateAction } from "./ActionRegistry.js";
+import { parseCommand } from "./CommandParser.js";
 import type {
   ActionResult,
   GameState,
@@ -53,6 +55,22 @@ export class GameEngine {
   async processInput(input: string): Promise<ActionResult> {
     const trimmed = input.trim();
     if (!trimmed) return { message: "Say something!", success: false };
+
+    const action = parseCommand(trimmed);
+    if (action) {
+      //Exact command, no need to run the agent
+      this.state.turnCount++;
+      const validation = validateAction(action, this.state);
+      if (!validation.valid) {
+        return {
+          success: false,
+          message: validation.error ?? "You can't do that.",
+        };
+      }
+      const result = executeAction(action, this.state);
+      return this.agent.narrateResult(trimmed, action, result);
+    }
+
     return this.agent.processInput(trimmed);
   }
 }

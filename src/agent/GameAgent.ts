@@ -8,6 +8,7 @@ import {
   getRoomNPCs,
   getVisibleItems,
 } from "../engine/ActionValidator.js";
+import { actionToToolParams } from "../engine/CommandParser.js";
 
 const GAME_TOOLS: Anthropic.Tool[] = [
   {
@@ -306,5 +307,49 @@ export class GameAgent {
       gameOver: resultedInGameOver || undefined,
       isVictory: resultedInVictory || undefined,
     };
+  }
+
+  async narrateResult(
+    playerInput: string,
+    action: GameAction,
+    result: ActionResult
+  ): Promise<ActionResult> {
+    this.messages.push({ role: "user", content: playerInput });
+
+    const fakeId = `bypass_${Date.now()}`;
+    const { name, input } = actionToToolParams(action);
+    this.messages.push({
+      role: "assistant",
+      content: [{ type: "tool_use", id: fakeId, name, input }],
+    });
+
+    this.messages.push({
+      role: "user",
+      content: [
+        {
+          type: "tool_result",
+          tool_use_id: fakeId,
+          content: JSON.stringify(result),
+        },
+      ],
+    });
+
+    DEBUG("narrateResult: bypassed Phase 1 for action", action.actionType);
+
+    const narrateResponse = await this.client.messages.create({
+      model: this.model,
+      max_tokens: 1024,
+      system: buildSystemPrompt(this.state),
+      messages: this.messages,
+    });
+
+    DEBUG("narrateResult stop_reason:", narrateResponse.stop_reason);
+
+    const text =
+      narrateResponse.content.find((b) => b.type === "text")?.text ??
+      result.message;
+    this.messages.push({ role: "assistant", content: narrateResponse.content });
+
+    return { ...result, message: text };
   }
 }
