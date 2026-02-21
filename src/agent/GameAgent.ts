@@ -128,14 +128,16 @@ function buildSystemPrompt(state: GameState): string {
 
   return `You are the narrator and game master for a text adventure game.
 
-Use the provided tools to perform all game actions based on the player's input. After a tool succeeds, narrate the result in atmospheric, immersive prose (1–2 sentences). After a tool fails, narrate the failure naturally without mentioning error codes. Never invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
+Use the provided tools to perform all game actions based on the player's input. After a tool succeeds, narrate the result. After a tool fails, narrate the failure naturally without mentioning error codes. Never invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
 
 If the player's input is ambiguous or incomplete (e.g. "talk" with no target named), ask a short clarifying question instead of guessing — do not call any tool. For the help tool, reproduce its output exactly as returned. Respond in the same language the player uses.
 
 Current state:
 - Room: ${room.name} — ${room.description}
 - Exits: ${exits.length > 0 ? exits.join(", ") : "none"}
-- Visible items: ${items.length > 0 ? items.map((i) => i.name).join(", ") : "none"}
+- Visible items: ${
+    items.length > 0 ? items.map((i) => i.name).join(", ") : "none"
+  }
 - Inventory: ${inv.length > 0 ? inv.map((i) => i.name).join(", ") : "empty"}
 - NPCs here: ${npcs.length > 0 ? npcs.map((n) => n.name).join(", ") : "none"}`;
 }
