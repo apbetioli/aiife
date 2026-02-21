@@ -445,6 +445,15 @@ const quitHandler: ActionHandler = {
   },
 };
 
+const respondHandler: ActionHandler = {
+  validate() {
+    return { valid: true };
+  },
+  execute(action) {
+    return { success: true, message: action.target ?? "" };
+  },
+};
+
 const handlers: Record<ActionType, ActionHandler> = {
   move: moveHandler,
   look: lookHandler,
@@ -457,6 +466,7 @@ const handlers: Record<ActionType, ActionHandler> = {
   use: useHandler,
   help: helpHandler,
   quit: quitHandler,
+  respond: respondHandler,
 };
 
 export function getActionHandler(actionType: ActionType): ActionHandler {

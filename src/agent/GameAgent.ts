@@ -115,6 +115,21 @@ const GAME_TOOLS: Anthropic.Tool[] = [
     description: "End the game",
     input_schema: { type: "object", properties: {} },
   },
+  {
+    name: "respond",
+    description:
+      "Use this instead of a game-action tool when you need to reply without changing game state — for example to ask a clarifying question, respond to conversational input, or tell the player you don't understand.",
+    input_schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          description: "The message to show the player",
+        },
+      },
+      required: ["message"],
+    },
+  },
 ];
 
 function buildSystemPrompt(state: GameState): string {
@@ -128,9 +143,15 @@ function buildSystemPrompt(state: GameState): string {
 
   return `You are the narrator and game master for a text adventure game.
 
-Use the provided tools to perform all game actions based on the player's input. After a tool succeeds, narrate the result. After a tool fails, narrate the failure naturally without mentioning error codes. Never invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
+Use the provided tools to perform ALL game actions based on the player's input — always call a tool first, then narrate the result. 
+Never describe the outcome of a movement, interaction, or examination without first calling the appropriate tool. 
+After a tool succeeds, narrate the result. 
+After a tool fails, narrate the failure naturally without mentioning error codes. 
+Never invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
 
-If the player's input is ambiguous or incomplete (e.g. "talk" with no target named), ask a short clarifying question instead of guessing — do not call any tool. For the help tool, reproduce its output exactly as returned. Respond in the same language the player uses.
+If the player's input is ambiguous or incomplete (e.g. "talk" with no target named), ask a short clarifying question instead of guessing — do not call any tool. 
+For the help tool, reproduce its output exactly as returned. 
+Respond in the same language the player uses.
 
 Current state:
 - Room: ${room.name} — ${room.description}
@@ -156,6 +177,9 @@ function executeTool(
     case "take":
     case "drop":
       action.target = input.item;
+      break;
+    case "respond":
+      action.target = input.message;
       break;
     case "use":
       action.target = input.item;
@@ -196,6 +220,7 @@ export class GameAgent {
     // Flags to propagate from tool results to the final return value
     let resultedInGameOver = false;
     let resultedInVictory = false;
+    let toolHasBeenCalled = false;
 
     while (true) {
       const response = await this.client.messages.create({
@@ -203,6 +228,9 @@ export class GameAgent {
         max_tokens: 1024,
         system: buildSystemPrompt(this.state),
         tools: GAME_TOOLS,
+        // Force a tool call on the first turn so the model can't hallucinate
+        // action results. After tool results are in, allow free-form narration.
+        tool_choice: toolHasBeenCalled ? { type: "auto" } : { type: "any" },
         messages: this.messages,
       });
 
@@ -221,12 +249,32 @@ export class GameAgent {
       }
 
       if (response.stop_reason === "tool_use") {
+        toolHasBeenCalled = true;
         this.messages.push({ role: "assistant", content: response.content });
 
         const toolResults: Anthropic.ToolResultBlockParam[] = [];
 
         for (const block of response.content) {
           if (block.type !== "tool_use") continue;
+
+          // `respond` is a pure-text escape hatch — return the model's
+          // message directly without another round-trip to the LLM.
+          if (block.name === "respond") {
+            const msg =
+              (block.input as Record<string, string>).message ?? "";
+            DEBUG("Tool: respond", msg);
+            this.messages.push({
+              role: "user",
+              content: [
+                {
+                  type: "tool_result",
+                  tool_use_id: block.id,
+                  content: JSON.stringify({ success: true, message: msg }),
+                },
+              ],
+            });
+            return { success: true, message: msg };
+          }
 
           DEBUG(`Tool: ${block.name}`, block.input);
           const result = executeTool(

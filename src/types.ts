@@ -10,6 +10,7 @@ export const ACTION_TYPES = [
   "open",
   "help",
   "quit",
+  "respond",
 ] as const;
 
 export type ActionType = (typeof ACTION_TYPES)[number];
