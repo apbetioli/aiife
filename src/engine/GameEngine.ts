@@ -68,7 +68,7 @@ export class GameEngine {
     const items = getVisibleItems(this.state);
     const npcs = getRoomNPCs(this.state);
 
-    const intro = (this.welcomeMessage ?? "").trim();
+    const intro = this.welcomeMessage.trim();
     let message = intro ? `${intro}\n\n` : "";
     message += `**${room.name}**\n${room.description}`;
     if (items.length > 0) {
