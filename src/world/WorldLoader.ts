@@ -1,13 +1,12 @@
 import { readFileSync } from "fs";
 import { WorldDefinitionSchema } from "../types.js";
 
+const DEMO_WORLD_PATH = "games/demo.json";
+
 export function loadWorld() {
-  const worldArg = process.argv.find((a) => a.startsWith("--world="));
-  const worldPath = worldArg
-    ? worldArg.slice("--world=".length)
-    : "games/demo.json";
+  const worldPath = process.argv.length > 2 ? process.argv[2] : DEMO_WORLD_PATH;
 
   return WorldDefinitionSchema.parse(
-    JSON.parse(readFileSync(worldPath, "utf-8")),
+    JSON.parse(readFileSync(worldPath, "utf-8"))
   );
 }
