@@ -6,7 +6,7 @@ export function loadWorldFromFile(): WorldDefinition {
   const worldArg = process.argv.find((a) => a.startsWith("--world="));
   const worldPath = worldArg
     ? worldArg.slice("--world=".length)
-    : "games/zorky.json";
+    : "games/demo.json";
 
   try {
     const absPath = resolve(worldPath);

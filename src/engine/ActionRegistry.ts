@@ -438,7 +438,7 @@ const quitHandler: ActionHandler = {
   execute(_action, state) {
     state.gameOver = true;
     return {
-      message: "Thanks for playing Zorky! Goodbye.",
+      message: "Thanks for playing! Goodbye.",
       success: true,
       gameOver: true,
     };
