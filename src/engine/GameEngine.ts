@@ -1,6 +1,17 @@
-import type { ActionResult, GameState, Item, NPC, Room, WorldDefinition } from "../types.js";
-import { getCurrentRoom, getVisibleItems, getRoomNPCs } from "./ActionValidator.js";
 import { GameAgent } from "../agent/GameAgent.js";
+import type {
+  ActionResult,
+  GameState,
+  Item,
+  NPC,
+  Room,
+  WorldDefinition,
+} from "../types.js";
+import {
+  getCurrentRoom,
+  getRoomNPCs,
+  getVisibleItems,
+} from "./ActionValidator.js";
 
 export class GameEngine {
   private state: GameState;
@@ -37,7 +48,6 @@ export class GameEngine {
       turnCount: 0,
       gameOver: false,
       flags,
-      roomVisitCounter: new Map(),
     };
     this.welcomeMessage = definition.welcomeMessage;
     this.agent = new GameAgent(this.state);
@@ -65,7 +75,9 @@ export class GameEngine {
       message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
     }
     if (npcs.length > 0) {
-      message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
+      message += `\n\n${npcs
+        .map((n) => `There is a ${n.name} here.`)
+        .join(" ")}`;
     }
     return message;
   }

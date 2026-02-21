@@ -1,7 +1,7 @@
 {
   "startRoomId": "great-hall",
-  "title": "Zorky",
-  "welcomeMessage": "**Welcome to Zorky!**\nAn interactive fiction adventure. Type 'help' for commands.",
+  "title": "The Great Hall",
+  "welcomeMessage": "**Welcome to The Great Hall!**\nAn interactive fiction adventure. Type 'help' for commands.",
   "flags": {
     "cellar-unlocked": false,
     "key-revealed": false,
@@ -14,9 +14,21 @@
       "name": "The Great Hall",
       "description": "You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.",
       "exits": [
-        { "direction": "north", "targetRoomId": "library", "locked": false },
-        { "direction": "west", "targetRoomId": "garden", "locked": false },
-        { "direction": "up", "targetRoomId": "tower-room", "locked": false },
+        {
+          "direction": "north",
+          "targetRoomId": "library",
+          "locked": false
+        },
+        {
+          "direction": "west",
+          "targetRoomId": "garden",
+          "locked": false
+        },
+        {
+          "direction": "up",
+          "targetRoomId": "tower-room",
+          "locked": false
+        },
         {
           "direction": "down",
           "targetRoomId": "cellar",
@@ -24,25 +36,42 @@
           "description": "A heavy iron door is set into the floor. It is locked."
         }
       ],
-      "itemIds": ["brass-lantern"],
+      "itemIds": [
+        "brass-lantern"
+      ],
       "npcIds": []
     },
     {
       "id": "garden",
       "name": "The Garden",
       "description": "A walled garden, overgrown but still beautiful. Wildflowers push through cracked flagstones, and ivy climbs the ancient walls. The Great Hall lies to the east.",
-      "exits": [{ "direction": "east", "targetRoomId": "great-hall", "locked": false }],
+      "exits": [
+        {
+          "direction": "east",
+          "targetRoomId": "great-hall",
+          "locked": false
+        }
+      ],
       "itemIds": [],
-      "npcIds": ["gardener"]
+      "npcIds": [
+        "gardener"
+      ]
     },
     {
       "id": "library",
       "name": "The Library",
       "description": "Floor-to-ceiling bookshelves crowd this dusty room. Most of the books have crumbled to dust, but a few leather-bound volumes remain. A curious alcove is set into the far wall. The Great Hall is to the south.",
       "exits": [
-        { "direction": "south", "targetRoomId": "great-hall", "locked": false }
+        {
+          "direction": "south",
+          "targetRoomId": "great-hall",
+          "locked": false
+        }
       ],
-      "itemIds": ["old-book", "rusty-key"],
+      "itemIds": [
+        "old-book",
+        "rusty-key"
+      ],
       "npcIds": []
     },
     {
@@ -50,17 +79,32 @@
       "name": "The Tower Room",
       "description": "A circular room at the top of the spiral staircase. Wind whistles through narrow arrow slits. An ornate wooden chest sits against the wall. Stairs lead back down.",
       "exits": [
-        { "direction": "down", "targetRoomId": "great-hall", "locked": false }
+        {
+          "direction": "down",
+          "targetRoomId": "great-hall",
+          "locked": false
+        }
       ],
-      "itemIds": ["wooden-chest", "gold-amulet"],
+      "itemIds": [
+        "wooden-chest",
+        "gold-amulet"
+      ],
       "npcIds": []
     },
     {
       "id": "cellar",
       "name": "The Cellar",
       "description": "A cold, damp cellar beneath the Great Hall. Water drips from the low ceiling. In the center of the room, a stone pedestal rises from the floor, covered in strange runes. Stairs lead back up.",
-      "exits": [{ "direction": "up", "targetRoomId": "great-hall", "locked": false }],
-      "itemIds": ["stone-pedestal"],
+      "exits": [
+        {
+          "direction": "up",
+          "targetRoomId": "great-hall",
+          "locked": false
+        }
+      ],
+      "itemIds": [
+        "stone-pedestal"
+      ],
       "npcIds": []
     }
   ],
@@ -68,7 +112,11 @@
     {
       "id": "brass-lantern",
       "name": "brass lantern",
-      "aliases": ["lantern", "lamp", "light"],
+      "aliases": [
+        "lantern",
+        "lamp",
+        "light"
+      ],
       "description": "A sturdy brass lantern. It casts a warm, steady glow.",
       "portable": true,
       "visible": true
@@ -76,7 +124,11 @@
     {
       "id": "old-book",
       "name": "old book",
-      "aliases": ["book", "leather book", "volume"],
+      "aliases": [
+        "book",
+        "leather book",
+        "volume"
+      ],
       "description": "A crumbling leather-bound book. The only legible passage reads: \"...and the amulet shall rest upon the pedestal, and the way shall be opened...\"",
       "portable": true,
       "visible": true
@@ -84,7 +136,11 @@
     {
       "id": "rusty-key",
       "name": "rusty key",
-      "aliases": ["key", "iron key", "old key"],
+      "aliases": [
+        "key",
+        "iron key",
+        "old key"
+      ],
       "description": "A rusty iron key, cold to the touch. It looks like it might fit a heavy lock.",
       "portable": true,
       "visible": false
@@ -92,7 +148,11 @@
     {
       "id": "wooden-chest",
       "name": "wooden chest",
-      "aliases": ["chest", "ornate chest", "box"],
+      "aliases": [
+        "chest",
+        "ornate chest",
+        "box"
+      ],
       "description": "An ornate wooden chest with iron bindings. It is closed.",
       "portable": false,
       "visible": true
@@ -100,7 +160,11 @@
     {
       "id": "gold-amulet",
       "name": "gold amulet",
-      "aliases": ["amulet", "golden amulet", "necklace"],
+      "aliases": [
+        "amulet",
+        "golden amulet",
+        "necklace"
+      ],
       "description": "A gleaming gold amulet on a fine chain. Strange runes are etched into its surface, matching those on a pedestal somewhere below.",
       "portable": true,
       "visible": false,
@@ -109,7 +173,11 @@
     {
       "id": "stone-pedestal",
       "name": "stone pedestal",
-      "aliases": ["pedestal", "altar", "runes"],
+      "aliases": [
+        "pedestal",
+        "altar",
+        "runes"
+      ],
       "description": "A waist-high stone pedestal covered in ancient runes. There is a shallow, circular depression on its top surface — just the right size for an amulet.",
       "portable": false,
       "visible": true
@@ -119,7 +187,11 @@
     {
       "id": "gardener",
       "name": "old gardener",
-      "aliases": ["gardener", "old man", "man"],
+      "aliases": [
+        "gardener",
+        "old man",
+        "man"
+      ],
       "description": "A weathered old man in dirt-stained clothes, tending to the wildflowers with surprising care.",
       "dialogue": [
         "\"Ah, a visitor! Haven't seen one in ages,\" the gardener says, looking up from his work. \"If you're looking for secrets, the library might reward a careful eye. Check the alcove — things aren't always as they seem.\"",
