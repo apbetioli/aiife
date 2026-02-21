@@ -294,7 +294,7 @@ export class GameAgent {
       messages: this.messages,
     });
 
-    DEBUG("Narrate stop_reason:", narrateResponse.stop_reason);
+    DEBUG("Narrate stop_reason:" + narrateResponse.stop_reason);
 
     const text =
       narrateResponse.content.find((b) => b.type === "text")?.text ?? "";
