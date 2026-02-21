@@ -1,17 +1,17 @@
 import { Narrator } from "./ui/Narrator.js";
 
-export function DEBUG(message: string, ...args: any[]) {
+export function DEBUG(...args: any[]) {
   const narrator = new Narrator();
 
   const format = (text: string) => {
     return narrator.format({
-      message: `[${text}]`,
+      message: text,
       success: false,
       gameOver: true,
     });
   };
 
   if (process.env.DEBUG) {
-    console.debug(format(message), ...(args ?? []).map(format));
+    console.debug(format(`[DEBUG] ` + (args ?? []).join(" ")));
   }
 }
