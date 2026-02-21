@@ -8,12 +8,12 @@ async function main() {
   const terminal = new Terminal();
   const narrator = new Narrator();
 
-  const state = loadWorldFromFile();
-  const engine = new GameEngine(state);
+  const definition = loadWorldFromFile();
+  const engine = new GameEngine(definition);
 
   terminal.print(narrator.formatWelcome(engine.getWelcome()));
 
-  while (!state.gameOver) {
+  while (!engine.getState().gameOver) {
     const input = await terminal.prompt("\n> ");
     const result = await engine.processInput(input);
     terminal.print(narrator.format(result));

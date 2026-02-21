@@ -1,12 +1,46 @@
-import type { ActionResult, GameState } from "../types.js";
+import type { ActionResult, GameState, Item, NPC, Room, WorldDefinition } from "../types.js";
 import { getCurrentRoom, getVisibleItems, getRoomNPCs } from "./ActionValidator.js";
 import { GameAgent } from "../agent/GameAgent.js";
 
 export class GameEngine {
+  private state: GameState;
+  private welcomeMessage: string;
   private agent: GameAgent;
 
-  constructor(private state: GameState) {
-    this.agent = new GameAgent(state);
+  constructor(definition: WorldDefinition) {
+    const rooms = new Map<string, Room>();
+    for (const roomDef of definition.rooms) {
+      rooms.set(roomDef.id, { ...roomDef });
+    }
+
+    const items = new Map<string, Item>();
+    for (const item of definition.items) {
+      items.set(item.id, { ...item });
+    }
+
+    const npcs = new Map<string, NPC>();
+    for (const npc of definition.npcs) {
+      npcs.set(npc.id, { ...npc });
+    }
+
+    const flags = new Map<string, boolean>();
+    for (const [key, value] of Object.entries(definition.flags)) {
+      flags.set(key, value);
+    }
+
+    this.state = {
+      rooms,
+      items,
+      npcs,
+      currentRoomId: definition.startRoomId,
+      inventory: [],
+      turnCount: 0,
+      gameOver: false,
+      flags,
+      roomVisitCounter: new Map(),
+    };
+    this.welcomeMessage = definition.welcomeMessage;
+    this.agent = new GameAgent(this.state);
   }
 
   getState(): GameState {
@@ -24,7 +58,7 @@ export class GameEngine {
     const items = getVisibleItems(this.state);
     const npcs = getRoomNPCs(this.state);
 
-    const intro = (this.state.welcomeMessage ?? "").trim();
+    const intro = (this.welcomeMessage ?? "").trim();
     let message = intro ? `${intro}\n\n` : "";
     message += `**${room.name}**\n${room.description}`;
     if (items.length > 0) {
