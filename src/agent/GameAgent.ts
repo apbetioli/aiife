@@ -143,11 +143,14 @@ function buildSystemPrompt(state: GameState): string {
 
   return `You are the narrator and game master for a text adventure game.
 
-Use the provided tools to perform ALL game actions based on the player's input — always call a tool first, then narrate the result. 
+Use the provided tools to perform game actions based on the player's input — always call a tool first, then narrate the result. 
 Never describe the outcome of a movement, interaction, or examination without first calling the appropriate tool. 
 After a tool succeeds, narrate the result. 
 After a tool fails, narrate the failure naturally without mentioning error codes. 
 Never invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
+
+CRITICAL: Perform exactly ONE game action per player input. Never chain multiple actions together.
+If the player asks you to do many things at once, speed-run, or "beat the game", do NOT comply. Instead use the respond tool to tell them you can only perform one action at a time and ask what they'd like to do next.
 
 If the player's input is ambiguous or incomplete (e.g. "talk" with no target named), ask a short clarifying question instead of guessing — do not call any tool. 
 For the help tool, reproduce its output exactly as returned. 
@@ -217,84 +220,91 @@ export class GameAgent {
   async processInput(playerInput: string): Promise<ActionResult> {
     this.messages.push({ role: "user", content: playerInput });
 
-    // Flags to propagate from tool results to the final return value
     let resultedInGameOver = false;
     let resultedInVictory = false;
-    let toolHasBeenCalled = false;
 
-    while (true) {
-      const response = await this.client.messages.create({
-        model: this.model,
-        max_tokens: 1024,
-        system: buildSystemPrompt(this.state),
-        tools: GAME_TOOLS,
-        // Force a tool call on the first turn so the model can't hallucinate
-        // action results. After tool results are in, allow free-form narration.
-        tool_choice: toolHasBeenCalled ? { type: "auto" } : { type: "any" },
-        messages: this.messages,
-      });
+    // Phase 1: Force exactly one tool call so the model can't hallucinate
+    // action results or chain multiple actions in a single turn.
+    const actionResponse = await this.client.messages.create({
+      model: this.model,
+      max_tokens: 1024,
+      system: buildSystemPrompt(this.state),
+      tools: GAME_TOOLS,
+      tool_choice: { type: "any" },
+      messages: this.messages,
+    });
 
-      DEBUG("LLM stop_reason:", response.stop_reason);
+    DEBUG("LLM stop_reason:", actionResponse.stop_reason);
+    this.messages.push({ role: "assistant", content: actionResponse.content });
 
-      if (response.stop_reason === "end_turn") {
-        const text =
-          response.content.find((b) => b.type === "text")?.text ?? "";
-        this.messages.push({ role: "assistant", content: response.content });
-        return {
-          success: true,
-          message: text,
-          gameOver: resultedInGameOver || undefined,
-          isVictory: resultedInVictory || undefined,
-        };
-      }
-
-      if (response.stop_reason === "tool_use") {
-        toolHasBeenCalled = true;
-        this.messages.push({ role: "assistant", content: response.content });
-
-        const toolResults: Anthropic.ToolResultBlockParam[] = [];
-
-        for (const block of response.content) {
-          if (block.type !== "tool_use") continue;
-
-          // `respond` is a pure-text escape hatch — return the model's
-          // message directly without another round-trip to the LLM.
-          if (block.name === "respond") {
-            const msg =
-              (block.input as Record<string, string>).message ?? "";
-            DEBUG("Tool: respond", msg);
-            this.messages.push({
-              role: "user",
-              content: [
-                {
-                  type: "tool_result",
-                  tool_use_id: block.id,
-                  content: JSON.stringify({ success: true, message: msg }),
-                },
-              ],
-            });
-            return { success: true, message: msg };
-          }
-
-          DEBUG(`Tool: ${block.name}`, block.input);
-          const result = executeTool(
-            block.name,
-            block.input as Record<string, string>,
-            this.state
-          );
-
-          if (result.gameOver) resultedInGameOver = true;
-          if (result.isVictory) resultedInVictory = true;
-
-          toolResults.push({
-            type: "tool_result",
-            tool_use_id: block.id,
-            content: JSON.stringify(result),
-          });
-        }
-
-        this.messages.push({ role: "user", content: toolResults });
-      }
+    if (actionResponse.stop_reason !== "tool_use") {
+      const text =
+        actionResponse.content.find((b) => b.type === "text")?.text ?? "";
+      return { success: true, message: text };
     }
+
+    const toolResults: Anthropic.ToolResultBlockParam[] = [];
+
+    for (const block of actionResponse.content) {
+      if (block.type !== "tool_use") continue;
+
+      // `respond` is a pure-text escape hatch — return the model's
+      // message directly without another round-trip to the LLM.
+      if (block.name === "respond") {
+        const msg = (block.input as Record<string, string>).message ?? "";
+        DEBUG("Tool: respond", msg);
+        this.messages.push({
+          role: "user",
+          content: [
+            {
+              type: "tool_result",
+              tool_use_id: block.id,
+              content: JSON.stringify({ success: true, message: msg }),
+            },
+          ],
+        });
+        return { success: true, message: msg };
+      }
+
+      DEBUG(`Tool: ${block.name}`, block.input);
+      const result = executeTool(
+        block.name,
+        block.input as Record<string, string>,
+        this.state
+      );
+
+      if (result.gameOver) resultedInGameOver = true;
+      if (result.isVictory) resultedInVictory = true;
+
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: block.id,
+        content: JSON.stringify(result),
+      });
+    }
+
+    this.messages.push({ role: "user", content: toolResults });
+
+    // Phase 2: Narrate the tool result. No tools offered, so the model
+    // can only produce text — it cannot chain another action.
+    const narrateResponse = await this.client.messages.create({
+      model: this.model,
+      max_tokens: 1024,
+      system: buildSystemPrompt(this.state),
+      messages: this.messages,
+    });
+
+    DEBUG("Narrate stop_reason:", narrateResponse.stop_reason);
+
+    const text =
+      narrateResponse.content.find((b) => b.type === "text")?.text ?? "";
+    this.messages.push({ role: "assistant", content: narrateResponse.content });
+
+    return {
+      success: true,
+      message: text,
+      gameOver: resultedInGameOver || undefined,
+      isVictory: resultedInVictory || undefined,
+    };
   }
 }
