@@ -118,7 +118,7 @@
         "light"
       ],
       "description": "A sturdy brass lantern. It casts a warm, steady glow.",
-      "portable": true,
+      "traits": ["portable"],
       "visible": true
     },
     {
@@ -130,7 +130,7 @@
         "volume"
       ],
       "description": "A crumbling leather-bound book. The only legible passage reads: \"...and the amulet shall rest upon the pedestal, and the way shall be opened...\"",
-      "portable": true,
+      "traits": ["portable"],
       "visible": true
     },
     {
@@ -142,7 +142,7 @@
         "old key"
       ],
       "description": "A rusty iron key, cold to the touch. It looks like it might fit a heavy lock.",
-      "portable": true,
+      "traits": ["portable"],
       "visible": false
     },
     {
@@ -154,7 +154,7 @@
         "box"
       ],
       "description": "An ornate wooden chest with iron bindings. It is closed.",
-      "portable": false,
+      "traits": ["openable"],
       "visible": true
     },
     {
@@ -166,7 +166,7 @@
         "necklace"
       ],
       "description": "A gleaming gold amulet on a fine chain. Strange runes are etched into its surface, matching those on a pedestal somewhere below.",
-      "portable": true,
+      "traits": ["portable"],
       "visible": false,
       "containerId": "wooden-chest"
     },
@@ -179,7 +179,7 @@
         "runes"
       ],
       "description": "A waist-high stone pedestal covered in ancient runes. There is a shallow, circular depression on its top surface — just the right size for an amulet.",
-      "portable": false,
+      "traits": [],
       "visible": true
     }
   ],
@@ -199,6 +199,106 @@
         "The gardener hums quietly and returns to his flowers."
       ],
       "dialogueIndex": 0
+    }
+  ],
+  "interactions": [
+    {
+      "id": "reveal-key",
+      "action": "examine",
+      "trigger": { "targetKeywords": ["alcove", "wall"], "roomId": "library" },
+      "conditions": [{ "type": "flagEquals", "flag": "key-revealed", "value": false }],
+      "effects": [
+        { "type": "setFlag", "flag": "key-revealed", "value": true },
+        { "type": "setItemVisible", "itemId": "rusty-key", "visible": true }
+      ],
+      "message": "You peer into the shadowy alcove and run your fingers along the dusty stone. Your hand closes around something cold and metallic — a rusty key, hidden in a crack in the wall!"
+    },
+    {
+      "id": "alcove-empty",
+      "action": "examine",
+      "trigger": { "targetKeywords": ["alcove", "wall"], "roomId": "library" },
+      "conditions": [{ "type": "flagEquals", "flag": "key-revealed", "value": true }],
+      "message": "The alcove is empty now. You already found the key that was hidden here."
+    },
+    {
+      "id": "open-chest",
+      "action": "open",
+      "trigger": { "targetKeywords": ["chest", "wooden chest", "box"] },
+      "conditions": [{ "type": "flagEquals", "flag": "chest-opened", "value": false }],
+      "effects": [
+        { "type": "setFlag", "flag": "chest-opened", "value": true },
+        { "type": "setItemVisible", "itemId": "gold-amulet", "visible": true },
+        { "type": "clearItemContainer", "itemId": "gold-amulet" },
+        { "type": "setItemDescription", "itemId": "wooden-chest", "description": "An ornate wooden chest with iron bindings. It is open and empty." }
+      ],
+      "message": "You heave open the heavy lid of the chest. Inside, nestled in faded velvet, is a gleaming gold amulet!"
+    },
+    {
+      "id": "chest-already-open",
+      "action": "open",
+      "trigger": { "targetKeywords": ["chest", "wooden chest", "box"] },
+      "conditions": [{ "type": "flagEquals", "flag": "chest-opened", "value": true }],
+      "message": "The chest is already open. It's empty now."
+    },
+    {
+      "id": "use-key-on-door",
+      "action": "use",
+      "trigger": { "itemId": "rusty-key", "secondaryTargetKeywords": ["door", "iron"] },
+      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": false }],
+      "effects": [
+        { "type": "unlockExit", "roomId": "great-hall", "direction": "down" },
+        { "type": "setExitDescription", "roomId": "great-hall", "direction": "down", "description": "The heavy iron door in the floor stands open." },
+        { "type": "setFlag", "flag": "cellar-unlocked", "value": true }
+      ],
+      "message": "You fit the rusty key into the lock. With a grinding screech, the mechanism turns. The heavy iron door swings open, revealing stone steps descending into darkness."
+    },
+    {
+      "id": "use-key-in-hall",
+      "action": "use",
+      "trigger": { "itemId": "rusty-key", "roomId": "great-hall" },
+      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": false }],
+      "effects": [
+        { "type": "unlockExit", "roomId": "great-hall", "direction": "down" },
+        { "type": "setExitDescription", "roomId": "great-hall", "direction": "down", "description": "The heavy iron door in the floor stands open." },
+        { "type": "setFlag", "flag": "cellar-unlocked", "value": true }
+      ],
+      "message": "You fit the rusty key into the lock of the iron door. With a grinding screech, the mechanism turns. The heavy iron door swings open, revealing stone steps descending into darkness."
+    },
+    {
+      "id": "use-key-already-unlocked",
+      "action": "use",
+      "trigger": { "itemId": "rusty-key", "secondaryTargetKeywords": ["door", "iron"] },
+      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": true }],
+      "message": "The door is already unlocked."
+    },
+    {
+      "id": "use-key-in-hall-already-unlocked",
+      "action": "use",
+      "trigger": { "itemId": "rusty-key", "roomId": "great-hall" },
+      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": true }],
+      "message": "The door is already unlocked."
+    },
+    {
+      "id": "use-amulet-on-pedestal",
+      "action": "use",
+      "trigger": { "itemId": "gold-amulet", "secondaryTargetKeywords": ["pedestal", "altar"] },
+      "message": "You place the gold amulet into the depression on the pedestal. The runes flare with brilliant light, and the entire cellar trembles. The walls dissolve into radiance, and you feel yourself lifted beyond the ancient stones.\n\n**You have unlocked the secret of the castle. You win!**",
+      "effects": [
+        { "type": "setFlag", "flag": "game-won", "value": true }
+      ],
+      "gameOver": true,
+      "isVictory": true
+    },
+    {
+      "id": "use-amulet-in-cellar",
+      "action": "use",
+      "trigger": { "itemId": "gold-amulet", "roomId": "cellar" },
+      "message": "You place the gold amulet into the depression on the stone pedestal. The runes flare with brilliant light, and the entire cellar trembles. The walls dissolve into radiance, and you feel yourself lifted beyond the ancient stones.\n\n**You have unlocked the secret of the castle. You win!**",
+      "effects": [
+        { "type": "setFlag", "flag": "game-won", "value": true }
+      ],
+      "gameOver": true,
+      "isVictory": true
     }
   ]
 }
