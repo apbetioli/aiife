@@ -1,4 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { generateText, tool, type LanguageModel, type ModelMessage } from "ai";
+import { z } from "zod";
 import { DEBUG } from "../debug.js";
 import type { ActionResult, GameAction, GameState } from "../types.js";
 import { runAction } from "../engine/ActionRegistry.js";
@@ -10,128 +11,65 @@ import {
 } from "../engine/ActionValidator.js";
 import { actionToToolParams } from "../engine/CommandParser.js";
 
-const GAME_TOOLS: Anthropic.Tool[] = [
-  {
-    name: "move",
+const gameTools = {
+  move: tool({
     description: "Move the player in a direction",
-    input_schema: {
-      type: "object",
-      properties: {
-        direction: {
-          type: "string",
-          enum: ["north", "south", "east", "west", "up", "down"],
-          description: "The direction to move",
-        },
-      },
-      required: ["direction"],
-    },
-  },
-  {
-    name: "take",
+    inputSchema: z.object({
+      direction: z.enum(["north", "south", "east", "west", "up", "down"]),
+    }),
+  }),
+  take: tool({
     description: "Pick up an item from the current room",
-    input_schema: {
-      type: "object",
-      properties: {
-        item: { type: "string", description: "Name of the item to take" },
-      },
-      required: ["item"],
-    },
-  },
-  {
-    name: "drop",
+    inputSchema: z.object({ item: z.string().describe("Name of the item to take") }),
+  }),
+  drop: tool({
     description: "Drop an item from inventory into the current room",
-    input_schema: {
-      type: "object",
-      properties: {
-        item: { type: "string", description: "Name of the item to drop" },
-      },
-      required: ["item"],
-    },
-  },
-  {
-    name: "use",
+    inputSchema: z.object({ item: z.string().describe("Name of the item to drop") }),
+  }),
+  use: tool({
     description: "Use an item from inventory, optionally on a target",
-    input_schema: {
-      type: "object",
-      properties: {
-        item: { type: "string", description: "Name of the item to use" },
-        target: {
-          type: "string",
-          description: "Optional target to use the item on",
-        },
-      },
-      required: ["item"],
-    },
-  },
-  {
-    name: "examine",
-    description: "Look closely at an item, NPC, or feature in the current room",
-    input_schema: {
-      type: "object",
-      properties: {
-        target: { type: "string", description: "What to examine" },
-      },
-      required: ["target"],
-    },
-  },
-  {
-    name: "look",
+    inputSchema: z.object({
+      item: z.string().describe("Name of the item to use"),
+      target: z.string().optional().describe("Optional target to use the item on"),
+    }),
+  }),
+  examine: tool({
+    description:
+      "Look closely at an item, NPC, or feature in the current room",
+    inputSchema: z.object({ target: z.string().describe("What to examine") }),
+  }),
+  look: tool({
     description: "Look around the current room",
-    input_schema: { type: "object", properties: {} },
-  },
-  {
-    name: "talk",
+    inputSchema: z.object({}),
+  }),
+  talk: tool({
     description: "Talk to an NPC in the current room",
-    input_schema: {
-      type: "object",
-      properties: {
-        npc: { type: "string", description: "Name of the NPC to talk to" },
-      },
-      required: ["npc"],
-    },
-  },
-  {
-    name: "open",
+    inputSchema: z.object({ npc: z.string().describe("Name of the NPC to talk to") }),
+  }),
+  open: tool({
     description: "Open a container or door",
-    input_schema: {
-      type: "object",
-      properties: {
-        target: { type: "string", description: "What to open" },
-      },
-      required: ["target"],
-    },
-  },
-  {
-    name: "inventory",
+    inputSchema: z.object({ target: z.string().describe("What to open") }),
+  }),
+  inventory: tool({
     description: "Check what the player is carrying",
-    input_schema: { type: "object", properties: {} },
-  },
-  {
-    name: "help",
+    inputSchema: z.object({}),
+  }),
+  help: tool({
     description: "Show the list of available commands",
-    input_schema: { type: "object", properties: {} },
-  },
-  {
-    name: "quit",
+    inputSchema: z.object({}),
+  }),
+  quit: tool({
     description: "End the game",
-    input_schema: { type: "object", properties: {} },
-  },
-  {
-    name: "respond",
+    inputSchema: z.object({}),
+  }),
+  respond: tool({
     description:
       "Use this instead of a game-action tool when you need to reply without changing game state — for example to ask a clarifying question, respond to conversational input, or tell the player you don't understand.",
-    input_schema: {
-      type: "object",
-      properties: {
-        message: {
-          type: "string",
-          description: "The message to show the player",
-        },
-      },
-      required: ["message"],
-    },
-  },
-];
+    inputSchema: z.object({
+      message: z.string().describe("The message to show the player"),
+    }),
+  }),
+};
 
 const NARRATION_SYSTEM_PROMPT = `You are the narrator and game master for a text adventure game.
 The tool result below is authoritative — narrate its outcome naturally. Do not change too much from the tool result.
@@ -207,16 +145,12 @@ function executeTool(
 }
 
 export class GameAgent {
-  private client: Anthropic;
-  private model: string;
-  private messages: Anthropic.MessageParam[] = [];
+  private messages: ModelMessage[] = [];
 
-  constructor(private state: GameState) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is required.");
-    this.client = new Anthropic({ apiKey });
-    this.model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  }
+  constructor(
+    private state: GameState,
+    private model: LanguageModel
+  ) {}
 
   async processInput(playerInput: string): Promise<ActionResult> {
     this.messages.push({ role: "user", content: playerInput });
@@ -226,84 +160,85 @@ export class GameAgent {
 
     // Phase 1: Force exactly one tool call so the model can't hallucinate
     // action results or chain multiple actions in a single turn.
-    const actionResponse = await this.client.messages.create({
+    const actionResponse = await generateText({
       model: this.model,
-      max_tokens: 1024,
+      maxOutputTokens: 1024,
       system: buildSystemPrompt(this.state),
-      tools: GAME_TOOLS,
-      tool_choice: { type: "any" },
+      tools: gameTools,
+      toolChoice: "required",
       messages: this.messages,
     });
 
-    DEBUG("LLM stop_reason:", actionResponse.stop_reason);
-    this.messages.push({ role: "assistant", content: actionResponse.content });
+    DEBUG("LLM finishReason:", actionResponse.finishReason);
 
-    if (actionResponse.stop_reason !== "tool_use") {
-      const text =
-        actionResponse.content.find((b) => b.type === "text")?.text ?? "";
-      return { success: true, message: text };
+    this.messages.push(
+      ...(actionResponse.response.messages as ModelMessage[])
+    );
+
+    if (actionResponse.toolCalls.length === 0) {
+      return { success: true, message: actionResponse.text };
     }
 
-    const toolResults: Anthropic.ToolResultBlockParam[] = [];
-
-    for (const block of actionResponse.content) {
-      if (block.type !== "tool_use") continue;
-
-      // `respond` is a pure-text escape hatch — return the model's
-      // message directly without another round-trip to the LLM.
-      if (block.name === "respond") {
-        const msg = (block.input as Record<string, string>).message ?? "";
+    for (const tc of actionResponse.toolCalls) {
+      if (tc.toolName === "respond") {
+        const msg = (tc.input as { message: string }).message ?? "";
         DEBUG("Tool: respond", msg);
         this.messages.push({
-          role: "user",
+          role: "tool",
           content: [
             {
-              type: "tool_result",
-              tool_use_id: block.id,
-              content: JSON.stringify({ success: true, message: msg }),
+              type: "tool-result",
+              toolCallId: tc.toolCallId,
+              toolName: tc.toolName,
+              output: {
+                type: "text",
+                value: JSON.stringify({ success: true, message: msg }),
+              },
             },
           ],
         });
         return { success: true, message: msg };
       }
 
-      DEBUG(`Tool: ${block.name}`, block.input);
+      DEBUG(`Tool: ${tc.toolName}`, tc.input);
       const result = executeTool(
-        block.name,
-        block.input as Record<string, string>,
+        tc.toolName,
+        tc.input as Record<string, string>,
         this.state
       );
 
       if (result.gameOver) resultedInGameOver = true;
       if (result.isVictory) resultedInVictory = true;
 
-      toolResults.push({
-        type: "tool_result",
-        tool_use_id: block.id,
-        content: JSON.stringify(result),
+      this.messages.push({
+        role: "tool",
+        content: [
+          {
+            type: "tool-result",
+            toolCallId: tc.toolCallId,
+            toolName: tc.toolName,
+            output: { type: "text", value: JSON.stringify(result) },
+          },
+        ],
       });
     }
 
-    this.messages.push({ role: "user", content: toolResults });
-
     // Phase 2: Narrate the tool result. No tools offered, so the model
     // can only produce text — it cannot chain another action.
-    const narrateResponse = await this.client.messages.create({
+    const narrateResponse = await generateText({
       model: this.model,
-      max_tokens: 1024,
+      maxOutputTokens: 1024,
       system: buildSystemPrompt(this.state),
       messages: this.messages,
     });
 
-    DEBUG("Narrate stop_reason:" + narrateResponse.stop_reason);
+    DEBUG("Narrate finishReason:", narrateResponse.finishReason);
 
-    const text =
-      narrateResponse.content.find((b) => b.type === "text")?.text ?? "";
-    this.messages.push({ role: "assistant", content: narrateResponse.content });
+    this.messages.push({ role: "assistant", content: narrateResponse.text });
 
     return {
       success: true,
-      message: text,
+      message: narrateResponse.text,
       gameOver: resultedInGameOver || undefined,
       isVictory: resultedInVictory || undefined,
     };
@@ -314,41 +249,48 @@ export class GameAgent {
     action: GameAction,
     result: ActionResult
   ): Promise<ActionResult> {
-    this.messages.push({ role: "user", content: playerInput });
-
-    const fakeId = `bypass_${Date.now()}`;
+    const toolCallId = `bypass_${Date.now()}`;
     const { name, input } = actionToToolParams(action);
-    this.messages.push({
-      role: "assistant",
-      content: [{ type: "tool_use", id: fakeId, name, input }],
-    });
 
-    this.messages.push({
-      role: "user",
-      content: [
-        {
-          type: "tool_result",
-          tool_use_id: fakeId,
-          content: JSON.stringify(result),
-        },
-      ],
-    });
+    this.messages.push(
+      { role: "user", content: playerInput },
+      {
+        role: "assistant",
+        content: [
+          {
+            type: "tool-call",
+            toolCallId,
+            toolName: name,
+            input,
+          },
+        ],
+      },
+      {
+        role: "tool",
+        content: [
+          {
+            type: "tool-result",
+            toolCallId,
+            toolName: name,
+            output: { type: "text", value: JSON.stringify(result) },
+          },
+        ],
+      }
+    );
 
     DEBUG("narrateResult: bypassed Phase 1 for action", action.actionType);
 
-    const narrateResponse = await this.client.messages.create({
+    const narrateResponse = await generateText({
       model: this.model,
-      max_tokens: 1024,
+      maxOutputTokens: 1024,
       system: NARRATION_SYSTEM_PROMPT,
       messages: this.messages,
     });
 
-    DEBUG("narrateResult stop_reason:", narrateResponse.stop_reason);
+    DEBUG("narrateResult finishReason:", narrateResponse.finishReason);
 
-    const text =
-      narrateResponse.content.find((b) => b.type === "text")?.text ??
-      result.message;
-    this.messages.push({ role: "assistant", content: narrateResponse.content });
+    const text = narrateResponse.text || result.message;
+    this.messages.push({ role: "assistant", content: text });
 
     return { ...result, message: text };
   }

@@ -1,3 +1,4 @@
+import type { LanguageModel } from "ai";
 import { GameAgent } from "../agent/GameAgent.js";
 import { runAction } from "./ActionRegistry.js";
 import { parseCommand } from "./CommandParser.js";
@@ -14,7 +15,7 @@ export class GameEngine {
   private state: GameState;
   private agent: GameAgent;
 
-  constructor(definition: WorldDefinition) {
+  constructor(definition: WorldDefinition, model: LanguageModel) {
     const rooms = new Map<string, Room>();
     for (const roomDef of definition.rooms) {
       rooms.set(roomDef.id, { ...roomDef });
@@ -46,7 +47,7 @@ export class GameEngine {
       gameOver: false,
       flags,
     };
-    this.agent = new GameAgent(this.state);
+    this.agent = new GameAgent(this.state, model);
   }
 
   start() {
