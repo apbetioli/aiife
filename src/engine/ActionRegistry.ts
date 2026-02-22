@@ -16,6 +16,10 @@ import {
   isItemInRoom,
   isItemInInventory,
 } from "./ActionValidator.js";
+import {
+  findInteraction,
+  executeInteraction,
+} from "./InteractionEngine.js";
 
 const moveHandler: ActionHandler = {
   validate(action, state) {
@@ -86,53 +90,24 @@ const examineHandler: ActionHandler = {
       return { valid: false, error: "What do you want to examine?" };
     }
 
-    const lower = action.target.toLowerCase();
-    if (
-      (lower.includes("alcove") || lower.includes("wall")) &&
-      state.currentRoomId === "library"
-    ) {
-      return { valid: true };
-    }
-
     const item = resolveItem(action.target, state);
     const npc = resolveNPC(action.target, state);
-    if (!item && !npc) {
-      return { valid: false, error: `You don't see any "${action.target}" here.` };
-    }
-    return { valid: true };
+    if (item || npc) return { valid: true };
+
+    const interaction = findInteraction("examine", action, state);
+    if (interaction) return { valid: true };
+
+    return { valid: false, error: `You don't see any "${action.target}" here.` };
   },
   execute(action, state) {
-    const lower = (action.target ?? "").toLowerCase();
-
-    if (
-      (lower.includes("alcove") || lower.includes("wall")) &&
-      state.currentRoomId === "library"
-    ) {
-      if (!state.flags.get("key-revealed")) {
-        state.flags.set("key-revealed", true);
-        const key = state.items.get("rusty-key");
-        if (key) key.visible = true;
-        return {
-          message:
-            "You peer into the shadowy alcove and run your fingers along the dusty stone. Your hand closes around something cold and metallic — a rusty key, hidden in a crack in the wall!",
-          success: true,
-        };
-      }
-      return {
-        message: "The alcove is empty now. You already found the key that was hidden here.",
-        success: true,
-      };
-    }
+    const interaction = findInteraction("examine", action, state);
+    if (interaction) return executeInteraction(interaction, state);
 
     const item = resolveItem(action.target, state);
-    if (item) {
-      return { message: item.description, success: true };
-    }
+    if (item) return { message: item.description, success: true };
 
     const npc = resolveNPC(action.target, state);
-    if (npc) {
-      return { message: npc.description, success: true };
-    }
+    if (npc) return { message: npc.description, success: true };
 
     return { message: `You don't see any "${action.target}" here.`, success: false };
   },
@@ -147,7 +122,7 @@ const takeHandler: ActionHandler = {
     if (!item) {
       return { valid: false, error: `You don't see any "${action.target}" here.` };
     }
-    if (!item.portable) {
+    if (!item.traits.includes("portable")) {
       return { valid: false, error: `You can't pick up the ${item.name}.` };
     }
     if (isItemInInventory(item.id, state)) {
@@ -230,142 +205,40 @@ const openHandler: ActionHandler = {
     if (!action.target) {
       return { valid: false, error: "What do you want to open?" };
     }
-    const lower = action.target.toLowerCase();
 
-    if (lower.includes("door") || lower.includes("iron")) {
-      const room = getCurrentRoom(state);
-      const downExit = room.exits.find((e) => e.direction === "down");
-      if (!downExit) {
-        return { valid: false, error: "There's no door like that here." };
+    const room = getCurrentRoom(state);
+    const lockedExit = room.exits.find(
+      (e) => e.description?.toLowerCase().includes(action.target!.toLowerCase())
+    );
+    if (lockedExit) {
+      if (!lockedExit.locked) {
+        return { valid: false, error: "It's already open." };
       }
-      if (!downExit.locked) {
-        return { valid: false, error: "The door is already open." };
-      }
-      return { valid: false, error: "The iron door is locked. You need a key." };
+      return { valid: false, error: lockedExit.description ?? "That way is locked." };
     }
 
     const item = resolveItem(action.target, state);
     if (!item) {
       return { valid: false, error: `You don't see any "${action.target}" to open.` };
     }
-    if (item.id === "wooden-chest") {
-      return { valid: true };
+    if (!item.traits.includes("openable")) {
+      return { valid: false, error: `You can't open the ${item.name}.` };
     }
-    return { valid: false, error: `You can't open the ${item.name}.` };
+
+    const interaction = findInteraction("open", action, state);
+    if (!interaction) {
+      return { valid: false, error: `You can't open the ${item.name}.` };
+    }
+
+    return { valid: true };
   },
   execute(action, state) {
-    const item = resolveItem(action.target, state);
-    if (item?.id === "wooden-chest") {
-      if (state.flags.get("chest-opened")) {
-        return { message: "The chest is already open. It's empty now.", success: true };
-      }
-      state.flags.set("chest-opened", true);
-      const amulet = state.items.get("gold-amulet");
-      if (amulet) {
-        amulet.visible = true;
-        amulet.containerId = undefined;
-      }
-      const chest = state.items.get("wooden-chest");
-      if (chest) {
-        chest.description = "An ornate wooden chest with iron bindings. It is open and empty.";
-      }
-      return {
-        message:
-          "You heave open the heavy lid of the chest. Inside, nestled in faded velvet, is a gleaming gold amulet!",
-        success: true,
-      };
-    }
+    const interaction = findInteraction("open", action, state);
+    if (interaction) return executeInteraction(interaction, state);
+
     return { message: "You can't open that.", success: false };
   },
 };
-
-interface UseEffect {
-  requires: { itemId: string; targetId?: string; roomId?: string };
-  execute: (state: GameState) => ActionResult;
-}
-
-const useEffects: UseEffect[] = [
-  {
-    requires: { itemId: "rusty-key", targetId: "door" },
-    execute(state) {
-      const hall = state.rooms.get("great-hall");
-      if (!hall) return { message: "Something went wrong.", success: false };
-      const downExit = hall.exits.find((e) => e.direction === "down");
-      if (!downExit) return { message: "Something went wrong.", success: false };
-      if (!downExit.locked) {
-        return { message: "The door is already unlocked.", success: true };
-      }
-      downExit.locked = false;
-      downExit.description = "The heavy iron door in the floor stands open.";
-      state.flags.set("cellar-unlocked", true);
-      return {
-        message:
-          "You fit the rusty key into the lock. With a grinding screech, the mechanism turns. The heavy iron door swings open, revealing stone steps descending into darkness.",
-        success: true,
-      };
-    },
-  },
-  {
-    requires: { itemId: "rusty-key", roomId: "great-hall" },
-    execute(state) {
-      const hall = state.rooms.get("great-hall");
-      if (!hall) return { message: "Something went wrong.", success: false };
-      const downExit = hall.exits.find((e) => e.direction === "down");
-      if (!downExit || !downExit.locked) {
-        return { message: "The door is already unlocked.", success: true };
-      }
-      downExit.locked = false;
-      downExit.description = "The heavy iron door in the floor stands open.";
-      state.flags.set("cellar-unlocked", true);
-      return {
-        message:
-          "You fit the rusty key into the lock of the iron door. With a grinding screech, the mechanism turns. The heavy iron door swings open, revealing stone steps descending into darkness.",
-        success: true,
-      };
-    },
-  },
-  {
-    requires: { itemId: "gold-amulet", targetId: "pedestal" },
-    execute(state) {
-      state.flags.set("game-won", true);
-      state.gameOver = true;
-      return {
-        message:
-          "You place the gold amulet into the depression on the pedestal. The runes flare with brilliant light, and the entire cellar trembles. The walls dissolve into radiance, and you feel yourself lifted beyond the ancient stones.\n\n**You have unlocked the secret of the castle. You win!**",
-        success: true,
-        gameOver: true,
-        isVictory: true,
-      };
-    },
-  },
-  {
-    requires: { itemId: "gold-amulet", roomId: "cellar" },
-    execute(state) {
-      state.flags.set("game-won", true);
-      state.gameOver = true;
-      return {
-        message:
-          "You place the gold amulet into the depression on the stone pedestal. The runes flare with brilliant light, and the entire cellar trembles. The walls dissolve into radiance, and you feel yourself lifted beyond the ancient stones.\n\n**You have unlocked the secret of the castle. You win!**",
-        success: true,
-        gameOver: true,
-        isVictory: true,
-      };
-    },
-  },
-];
-
-function matchUseTarget(
-  targetName: string | undefined,
-  requiredId: string
-): boolean {
-  if (!targetName) return false;
-  const lower = targetName.toLowerCase();
-  return (
-    lower.includes(requiredId.replace(/-/g, " ")) ||
-    requiredId.includes(lower.replace(/\s+/g, "-")) ||
-    lower.includes(requiredId.split("-").pop() ?? "")
-  );
-}
 
 const useHandler: ActionHandler = {
   validate(action, state) {
@@ -384,22 +257,8 @@ const useHandler: ActionHandler = {
   execute(action, state) {
     const item = resolveItem(action.target, state)!;
 
-    for (const effect of useEffects) {
-      if (effect.requires.itemId !== item.id) continue;
-
-      if (effect.requires.targetId) {
-        if (matchUseTarget(action.secondaryTarget, effect.requires.targetId)) {
-          return effect.execute(state);
-        }
-      } else if (effect.requires.roomId) {
-        if (
-          state.currentRoomId === effect.requires.roomId &&
-          !action.secondaryTarget
-        ) {
-          return effect.execute(state);
-        }
-      }
-    }
+    const interaction = findInteraction("use", action, state);
+    if (interaction) return executeInteraction(interaction, state);
 
     return {
       message: `You're not sure how to use the ${item.name}${action.secondaryTarget ? ` on the ${action.secondaryTarget}` : ""} here.`,
@@ -408,24 +267,31 @@ const useHandler: ActionHandler = {
   },
 };
 
+const COMMAND_HELP: [string, string][] = [
+  ["look", "**look** (l) — Describe your surroundings"],
+  ["move", "**go <direction>** (n/s/e/w/u/d) — Move in a direction"],
+  ["examine", "**examine <thing>** (x) — Look closely at something"],
+  ["take", "**take <item>** — Pick up an item"],
+  ["drop", "**drop <item>** — Put down an item"],
+  ["use", "**use <item>** / **use <item> on <target>** — Use an item"],
+  ["open", "**open <thing>** — Open something"],
+  ["talk", "**talk to <person>** — Speak with someone"],
+  ["inventory", "**inventory** (i) — Check what you're carrying"],
+  ["help", "**help** — Show this message"],
+  ["quit", "**quit** — End the game"],
+];
+
 const helpHandler: ActionHandler = {
   validate() {
     return { valid: true };
   },
   execute() {
+    const registered = new Set(Object.keys(handlers));
+    const lines = COMMAND_HELP
+      .filter(([key]) => registered.has(key))
+      .map(([, desc]) => `  - ${desc}`);
     return {
-      message: `**Available commands:**
-  - **look** (l) — Describe your surroundings
-  - **go <direction>** (n/s/e/w/u/d) — Move in a direction
-  - **examine <thing>** (x) — Look closely at something
-  - **take <item>** — Pick up an item
-  - **drop <item>** — Put down an item
-  - **use <item>** / **use <item> on <target>** — Use an item
-  - **open <thing>** — Open something
-  - **talk to <person>** — Speak with someone
-  - **inventory** (i) — Check what you're carrying
-  - **help** — Show this message
-  - **quit** — End the game`,
+      message: `**Available commands:**\n${lines.join("\n")}`,
       success: true,
     };
   },

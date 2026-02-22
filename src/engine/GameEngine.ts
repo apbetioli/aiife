@@ -39,6 +39,7 @@ export class GameEngine {
       rooms,
       items,
       npcs,
+      interactions: definition.interactions ?? [],
       currentRoomId: definition.startRoomId,
       inventory: [],
       turnCount: 0,
