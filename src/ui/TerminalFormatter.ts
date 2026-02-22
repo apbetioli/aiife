@@ -1,7 +1,7 @@
 import type { ActionResult } from "../types.js";
 import { BOLD, CYAN, DIM, GREEN, RESET, YELLOW } from "./ansi.js";
 
-export class Narrator {
+export class TerminalFormatter {
   format(result: ActionResult): string {
     let text = result.message;
     text = text.replace(/\*\*(.+?)\*\*/g, `${BOLD}$1${RESET}`);
