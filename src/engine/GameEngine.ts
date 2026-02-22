@@ -48,6 +48,10 @@ export class GameEngine {
     this.agent = new GameAgent(this.state);
   }
 
+  start() {
+    return executeAction({ actionType: "look" }, this.state);
+  }
+
   getState(): GameState {
     return this.state;
   }

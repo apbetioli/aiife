@@ -1,7 +1,7 @@
-import { Narrator } from "./ui/Narrator.js";
+import { TerminalFormatter } from "./ui/TerminalFormatter.js";
 
 export function DEBUG(...args: any[]) {
-  const narrator = new Narrator();
+  const narrator = new TerminalFormatter();
 
   const format = (text: string) => {
     return narrator.format({
