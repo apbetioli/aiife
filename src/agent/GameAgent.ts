@@ -133,6 +133,11 @@ const GAME_TOOLS: Anthropic.Tool[] = [
   },
 ];
 
+const NARRATION_SYSTEM_PROMPT = `You are the narrator and game master for a text adventure game.
+The tool result below is authoritative — narrate its outcome naturally. Do not change too much from the tool result.
+Never invent items, rooms, NPCs, or outcomes beyond what the tool result tells you.
+Respond in the same language the player uses.`;
+
 function buildSystemPrompt(state: GameState): string {
   const room = getCurrentRoom(state);
   const items = getVisibleItems(state);
@@ -200,7 +205,10 @@ function executeTool(
 
   const validation = validateAction(action, state);
   if (!validation.valid) {
-    return { success: false, message: validation.error ?? "You can't do that." };
+    return {
+      success: false,
+      message: validation.error ?? "You can't do that.",
+    };
   }
 
   return executeAction(action, state);
@@ -339,7 +347,7 @@ export class GameAgent {
     const narrateResponse = await this.client.messages.create({
       model: this.model,
       max_tokens: 1024,
-      system: buildSystemPrompt(this.state),
+      system: NARRATION_SYSTEM_PROMPT,
       messages: this.messages,
     });
 
