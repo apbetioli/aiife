@@ -1,5 +1,5 @@
 import { GameAgent } from "../agent/GameAgent.js";
-import { executeAction, validateAction } from "./ActionRegistry.js";
+import { runAction } from "./ActionRegistry.js";
 import { parseCommand } from "./CommandParser.js";
 import type {
   ActionResult,
@@ -50,7 +50,7 @@ export class GameEngine {
   }
 
   start() {
-    return executeAction({ actionType: "look" }, this.state);
+    return runAction({ actionType: "look" }, this.state);
   }
 
   getState(): GameState {
@@ -61,21 +61,16 @@ export class GameEngine {
     const trimmed = input.trim();
     if (!trimmed) return { message: "Say something!", success: false };
 
-    const action = parseCommand(trimmed);
-    if (action) {
-      //Exact command, no need to run the agent
-      this.state.turnCount++;
-      const validation = validateAction(action, this.state);
-      if (!validation.valid) {
-        return {
-          success: false,
-          message: validation.error ?? "You can't do that.",
-        };
-      }
-      const result = executeAction(action, this.state);
-      return this.agent.narrateResult(trimmed, action, result);
+    const actionMatch = parseCommand(trimmed);
+
+    if (!actionMatch) {
+      // There is no exact match, run the agent to identify intent and run the action
+      return this.agent.processInput(trimmed);
     }
 
-    return this.agent.processInput(trimmed);
+    this.state.turnCount++;
+
+    const result = runAction(actionMatch, this.state);
+    return this.agent.narrateResult(trimmed, actionMatch, result);
   }
 }

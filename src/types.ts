@@ -95,11 +95,6 @@ export interface ActionResult {
   isVictory?: boolean;
 }
 
-export interface ValidationResult {
-  valid: boolean;
-  error?: string;
-}
-
 export const RoomDefinitionSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -167,6 +162,5 @@ export const WorldDefinitionSchema = z.object({
 export type WorldDefinition = z.infer<typeof WorldDefinitionSchema>;
 
 export interface ActionHandler {
-  validate(action: GameAction, state: GameState): ValidationResult;
-  execute(action: GameAction, state: GameState): ActionResult;
+  run(action: GameAction, state: GameState): ActionResult;
 }
