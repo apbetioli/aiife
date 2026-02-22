@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { DEBUG } from "../debug.js";
 import type { ActionResult, GameAction, GameState } from "../types.js";
-import { executeAction, validateAction } from "../engine/ActionRegistry.js";
+import { runAction } from "../engine/ActionRegistry.js";
 import {
   getCurrentRoom,
   getInventoryItems,
@@ -203,15 +203,7 @@ function executeTool(
       break;
   }
 
-  const validation = validateAction(action, state);
-  if (!validation.valid) {
-    return {
-      success: false,
-      message: validation.error ?? "You can't do that.",
-    };
-  }
-
-  return executeAction(action, state);
+  return runAction(action, state);
 }
 
 export class GameAgent {
