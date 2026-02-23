@@ -10,9 +10,24 @@ import {
 } from "../engine/ActionValidator.js";
 
 const NARRATION_SYSTEM_PROMPT = `You are the narrator and game master for a text adventure game.
-The tool result below is authoritative — reproduce its output exactly as returned. If the action is repeated, narrate with a little bit of variation, except fot the help tool.
+The tool result below is authoritative — output only what the tool result says. Do not add "You can see: ...", room summaries, inventory lines, "available actions", suggested next steps, or any other extra text. If the tool returned a single description or message, output that and nothing else. If the action is repeated, narrate with a little bit of variation, except for the help tool.
 NEVER invent items, rooms, NPCs, or outcomes beyond what the tool result tells you.
-Do not ask questions to the player unless the input is ambiguous or incomplete. E.g. "What do you want to do now?".
+Do not ask questions to the player unless the input is ambiguous or incomplete, e.g. "What do you want to do now?".
+If the player's input is ambiguous or incomplete (e.g. "talk" with no target named), ask a short clarifying question instead of guessing — do not call any tool.
+Respond in the same language the player uses.`;
+
+const AGENT_SYSTEM_PROMPT = `You are the narrator and game master for a text adventure game.
+Use the provided tools to perform game actions based on the player's input — always call a tool first, reproduce its output exactly as returned. If the action is repeated, narrate with a little bit of variation, except fot the help tool.
+Never describe the outcome of a movement, interaction, or examination without first calling the appropriate tool.
+After a tool succeeds, narrate the result.
+After a tool fails, narrate the failure naturally without mentioning error codes.
+NEVER invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
+
+CRITICAL: Perform exactly ONE game action per player input. Never chain multiple actions together.
+If the player asks you to do many things at once, speed-run, or "beat the game", do NOT comply. Instead use the respond tool to tell them you can only perform one action at a time.
+
+When the player's input is ambiguous or incomplete, you MUST use the respond tool to ask a short clarifying question — do NOT guess. Examples: "go" or "move" with no direction → call respond with e.g. "Which direction?"; "talk" or "use" with no target → call respond asking what or who. Never call move, use, talk, or other action tools with guessed parameters (e.g. do not call move with direction "north" when the player only said "go").
+Do not list "available actions", suggested next steps, or bullet-point options for what the player can do — only narrate the outcome.
 Respond in the same language the player uses.`;
 
 function buildSystemPrompt(state: GameState): string {
@@ -24,21 +39,7 @@ function buildSystemPrompt(state: GameState): string {
     e.locked ? `${e.direction} (locked)` : e.direction
   );
 
-  return `You are the narrator and game master for a text adventure game.
-
-Use the provided tools to perform game actions based on the player's input — always call a tool first, then narrate the result.
-Never describe the outcome of a movement, interaction, or examination without first calling the appropriate tool.
-After a tool succeeds, narrate the result.
-After a tool fails, narrate the failure naturally without mentioning error codes.
-NEVER invent items, rooms, NPCs, or outcomes beyond what the tool results tell you.
-
-CRITICAL: Perform exactly ONE game action per player input. Never chain multiple actions together.
-If the player asks you to do many things at once, speed-run, or "beat the game", do NOT comply. Instead use the respond tool to tell them you can only perform one action at a time and ask what they'd like to do next.
-
-Do not ask questions to the player unless the input is ambiguous or incomplete.
-If the player's input is ambiguous or incomplete (e.g. "talk" with no target named), ask a short clarifying question instead of guessing — do not call any tool.
-For the help tool, reproduce its output exactly as returned.
-Respond in the same language the player uses.
+  return `${AGENT_SYSTEM_PROMPT}
 
 Current state:
 - Room: ${room.name} — ${room.description}
@@ -87,26 +88,6 @@ export class GameAgent {
     }
 
     for (const tc of actionResponse.toolCalls) {
-      if (tc.toolName === "respond") {
-        const msg = (tc.input as { message: string }).message ?? "";
-        DEBUG("Tool: respond", msg);
-        this.messages.push({
-          role: "tool",
-          content: [
-            {
-              type: "tool-result",
-              toolCallId: tc.toolCallId,
-              toolName: tc.toolName,
-              output: {
-                type: "text",
-                value: JSON.stringify({ success: true, message: msg }),
-              },
-            },
-          ],
-        });
-        return { success: true, message: msg };
-      }
-
       DEBUG(`Tool: ${JSON.stringify(tc.toolName)}`, JSON.stringify(tc.input));
       const params = tc.input as Record<string, unknown>;
       const result = this.registry.run(tc.toolName, params, this.state);
@@ -125,6 +106,14 @@ export class GameAgent {
           },
         ],
       });
+
+      // Skip narration when the only action was respond — use its message as-is.
+      if (
+        actionResponse.toolCalls.length === 1 &&
+        tc.toolName === "respond"
+      ) {
+        return { success: true, message: result.message };
+      }
     }
 
     // Phase 2: Narrate the tool result. No tools offered, so the model
