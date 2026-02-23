@@ -244,7 +244,10 @@
       "id": "use-key-on-door",
       "action": "use",
       "trigger": { "itemId": "rusty-key", "secondaryTargetKeywords": ["door", "iron"] },
-      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": false }],
+      "conditions": [
+        { "type": "hasItem", "itemId": "rusty-key" },
+        { "type": "flagEquals", "flag": "cellar-unlocked", "value": false }
+      ],
       "effects": [
         { "type": "unlockExit", "roomId": "great-hall", "direction": "down" },
         { "type": "setExitDescription", "roomId": "great-hall", "direction": "down", "description": "The heavy iron door in the floor stands open." },
@@ -256,7 +259,10 @@
       "id": "use-key-in-hall",
       "action": "use",
       "trigger": { "itemId": "rusty-key", "roomId": "great-hall" },
-      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": false }],
+      "conditions": [
+        { "type": "hasItem", "itemId": "rusty-key" },
+        { "type": "flagEquals", "flag": "cellar-unlocked", "value": false }
+      ],
       "effects": [
         { "type": "unlockExit", "roomId": "great-hall", "direction": "down" },
         { "type": "setExitDescription", "roomId": "great-hall", "direction": "down", "description": "The heavy iron door in the floor stands open." },
@@ -268,20 +274,29 @@
       "id": "use-key-already-unlocked",
       "action": "use",
       "trigger": { "itemId": "rusty-key", "secondaryTargetKeywords": ["door", "iron"] },
-      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": true }],
+      "conditions": [
+        { "type": "hasItem", "itemId": "rusty-key" },
+        { "type": "flagEquals", "flag": "cellar-unlocked", "value": true }
+      ],
       "message": "The door is already unlocked."
     },
     {
       "id": "use-key-in-hall-already-unlocked",
       "action": "use",
       "trigger": { "itemId": "rusty-key", "roomId": "great-hall" },
-      "conditions": [{ "type": "flagEquals", "flag": "cellar-unlocked", "value": true }],
+      "conditions": [
+        { "type": "hasItem", "itemId": "rusty-key" },
+        { "type": "flagEquals", "flag": "cellar-unlocked", "value": true }
+      ],
       "message": "The door is already unlocked."
     },
     {
       "id": "use-amulet-on-pedestal",
       "action": "use",
       "trigger": { "itemId": "gold-amulet", "secondaryTargetKeywords": ["pedestal", "altar"] },
+      "conditions": [
+        { "type": "hasItem", "itemId": "gold-amulet" }
+      ],
       "message": "You place the gold amulet into the depression on the pedestal. The runes flare with brilliant light, and the entire cellar trembles. The walls dissolve into radiance, and you feel yourself lifted beyond the ancient stones.\n\n**You have unlocked the secret of the castle. You win!**",
       "effects": [
         { "type": "setFlag", "flag": "game-won", "value": true }
@@ -293,6 +308,9 @@
       "id": "use-amulet-in-cellar",
       "action": "use",
       "trigger": { "itemId": "gold-amulet", "roomId": "cellar" },
+      "conditions": [
+        { "type": "hasItem", "itemId": "gold-amulet" }
+      ],
       "message": "You place the gold amulet into the depression on the stone pedestal. The runes flare with brilliant light, and the entire cellar trembles. The walls dissolve into radiance, and you feel yourself lifted beyond the ancient stones.\n\n**You have unlocked the secret of the castle. You win!**",
       "effects": [
         { "type": "setFlag", "flag": "game-won", "value": true }
