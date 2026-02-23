@@ -1,10 +1,12 @@
+import { z } from "zod";
+import { tool } from "ai";
 import type {
-  ActionHandler,
   ActionResult,
-  ActionType,
-  GameAction,
   GameState,
+  Interaction,
+  CustomAction,
 } from "../types.js";
+import { DIRECTIONS, type Direction } from "../types.js";
 import {
   getCurrentRoom,
   getInventoryItems,
@@ -15,312 +17,948 @@ import {
   isItemInRoom,
   isItemInInventory,
 } from "./ActionValidator.js";
-import {
-  findInteraction,
-  executeInteraction,
-} from "./InteractionEngine.js";
 
-const moveHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.direction) {
-      return { success: false, message: "Which direction do you want to go?" };
-    }
-    const room = getCurrentRoom(state);
-    const exit = room.exits.find((e) => e.direction === action.direction);
-    if (!exit) {
-      return {
-        success: false,
-        message: `You can't go ${action.direction} from here.`,
-      };
-    }
-    if (exit.locked) {
-      return {
-        success: false,
-        message: exit.description ?? "That way is locked.",
-      };
-    }
+// ---------------------------------------------------------------------------
+// Public types
+// ---------------------------------------------------------------------------
 
-    state.currentRoomId = exit.targetRoomId;
-    const newRoom = getCurrentRoom(state);
-    const items = getVisibleItems(state);
-    const npcs = getRoomNPCs(state);
-
-    let message = `\n**${newRoom.name}**\n${newRoom.description}`;
-    if (items.length > 0) {
-      message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
-    }
-    if (npcs.length > 0) {
-      message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
-    }
-    return { message, success: true };
-  },
-};
-
-const lookHandler: ActionHandler = {
-  run(_action, state) {
-    const room = getCurrentRoom(state);
-    const items = getVisibleItems(state);
-    const npcs = getRoomNPCs(state);
-    const exits = room.exits.map((e) => {
-      let label = e.direction;
-      if (e.locked) label += " (locked)";
-      return label;
-    });
-
-    let message = `\n**${room.name}**\n${room.description}`;
-    if (items.length > 0) {
-      message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
-    }
-    if (npcs.length > 0) {
-      message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
-    }
-    message += `\n\nExits: ${exits.join(", ")}.`;
-    return { message, success: true };
-  },
-};
-
-const examineHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.target) {
-      return { success: false, message: "What do you want to examine?" };
-    }
-
-    const item = resolveItem(action.target, state);
-    const npc = resolveNPC(action.target, state);
-
-    const interaction = findInteraction("examine", action, state);
-    if (interaction) return executeInteraction(interaction, state);
-
-    if (item) return { message: item.description, success: true };
-
-    if (npc) return { message: npc.description, success: true };
-
-    return { message: `You don't see any "${action.target}" here.`, success: false };
-  },
-};
-
-const takeHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.target) {
-      return { success: false, message: "What do you want to take?" };
-    }
-
-    const item = resolveItem(action.target, state);
-    if (!item) {
-      return {
-        success: false,
-        message: `You don't see any "${action.target}" here.`,
-      };
-    }
-    if (!item.traits.includes("portable")) {
-      return { success: false, message: `You can't pick up the ${item.name}.` };
-    }
-    if (isItemInInventory(item.id, state)) {
-      return { success: false, message: `You already have the ${item.name}.` };
-    }
-    if (!isItemInRoom(item.id, state)) {
-      return { success: false, message: `The ${item.name} isn't here.` };
-    }
-
-    const room = getCurrentRoom(state);
-    room.itemIds = room.itemIds.filter((id) => id !== item.id);
-    state.inventory.push(item.id);
-    return { message: `You pick up the ${item.name}.`, success: true };
-  },
-};
-
-const dropHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.target) {
-      return { success: false, message: "What do you want to drop?" };
-    }
-
-    const item = resolveItem(action.target, state);
-    if (!item) {
-      return {
-        success: false,
-        message: `You don't have any "${action.target}".`,
-      };
-    }
-    if (!isItemInInventory(item.id, state)) {
-      return { success: false, message: `You don't have the ${item.name}.` };
-    }
-
-    state.inventory = state.inventory.filter((id) => id !== item.id);
-    const room = getCurrentRoom(state);
-    room.itemIds.push(item.id);
-    return { message: `You drop the ${item.name}.`, success: true };
-  },
-};
-
-const inventoryHandler: ActionHandler = {
-  run(_action, state) {
-    const items = getInventoryItems(state);
-    if (items.length === 0) {
-      return { message: "You are empty-handed.", success: true };
-    }
-    const list = items.map((i) => `  - ${i.name}`).join("\n");
-    return { message: `You are carrying:\n${list}`, success: true };
-  },
-};
-
-const talkHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.target) {
-      return { success: false, message: "Who do you want to talk to?" };
-    }
-
-    const npc = resolveNPC(action.target, state);
-    if (!npc) {
-      return {
-        success: false,
-        message: `You don't see anyone called "${action.target}" here.`,
-      };
-    }
-
-    const line = npc.dialogue[npc.dialogueIndex];
-    if (npc.dialogueIndex < npc.dialogue.length - 1) {
-      npc.dialogueIndex++;
-    }
-    return { message: line, success: true };
-  },
-};
-
-const openHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.target) {
-      return { success: false, message: "What do you want to open?" };
-    }
-
-    const room = getCurrentRoom(state);
-    const lockedExit = room.exits.find(
-      (e) => e.description?.toLowerCase().includes(action.target!.toLowerCase())
-    );
-    if (lockedExit) {
-      if (!lockedExit.locked) {
-        return { success: false, message: "It's already open." };
-      }
-      return {
-        success: false,
-        message: lockedExit.description ?? "That way is locked.",
-      };
-    }
-
-    const item = resolveItem(action.target, state);
-    if (!item) {
-      return {
-        success: false,
-        message: `You don't see any "${action.target}" to open.`,
-      };
-    }
-    if (!item.traits.includes("openable")) {
-      return { success: false, message: `You can't open the ${item.name}.` };
-    }
-
-    const interaction = findInteraction("open", action, state);
-    if (!interaction) {
-      return { success: false, message: `You can't open the ${item.name}.` };
-    }
-    return executeInteraction(interaction, state);
-  },
-};
-
-const useHandler: ActionHandler = {
-  run(action, state) {
-    if (!action.target) {
-      return { success: false, message: "What do you want to use?" };
-    }
-
-    const item = resolveItem(action.target, state);
-    if (!item) {
-      return {
-        success: false,
-        message: `You don't have any "${action.target}".`,
-      };
-    }
-    if (!isItemInInventory(item.id, state)) {
-      return {
-        success: false,
-        message: `You need to pick up the ${item.name} first.`,
-      };
-    }
-
-    const interaction = findInteraction("use", action, state);
-    if (interaction) return executeInteraction(interaction, state);
-
-    return {
-      message: `You're not sure how to use the ${item.name}${action.secondaryTarget ? ` on the ${action.secondaryTarget}` : ""} here.`,
-      success: false,
-    };
-  },
-};
-
-const COMMAND_HELP: [string, string][] = [
-  ["look", "**look** (l) — Describe your surroundings"],
-  ["move", "**go <direction>** (n/s/e/w/u/d) — Move in a direction"],
-  ["examine", "**examine <thing>** (x) — Look closely at something"],
-  ["take", "**take <item>** — Pick up an item"],
-  ["drop", "**drop <item>** — Put down an item"],
-  ["use", "**use <item>** / **use <item> on <target>** — Use an item"],
-  ["open", "**open <thing>** — Open something"],
-  ["talk", "**talk to <person>** — Speak with someone"],
-  ["inventory", "**inventory** (i) — Check what you're carrying"],
-  ["help", "**help** — Show this message"],
-  ["quit", "**quit** — End the game"],
-];
-
-const helpHandler: ActionHandler = {
-  run() {
-    const registered = new Set(Object.keys(handlers));
-    const lines = COMMAND_HELP
-      .filter(([key]) => registered.has(key))
-      .map(([, desc]) => `  - ${desc}`);
-    return {
-      message: `**Available commands:**\n${lines.join("\n")}`,
-      success: true,
-    };
-  },
-};
-
-const quitHandler: ActionHandler = {
-  run(_action, state) {
-    state.gameOver = true;
-    return {
-      message: "Thanks for playing! Goodbye.",
-      success: true,
-      gameOver: true,
-    };
-  },
-};
-
-const respondHandler: ActionHandler = {
-  run(action) {
-    return { success: true, message: action.target ?? "" };
-  },
-};
-
-const handlers: Record<ActionType, ActionHandler> = {
-  move: moveHandler,
-  look: lookHandler,
-  examine: examineHandler,
-  take: takeHandler,
-  drop: dropHandler,
-  inventory: inventoryHandler,
-  talk: talkHandler,
-  open: openHandler,
-  use: useHandler,
-  help: helpHandler,
-  quit: quitHandler,
-  respond: respondHandler,
-};
-
-export function getActionHandler(actionType: ActionType): ActionHandler {
-  return handlers[actionType];
+export interface ParsePattern {
+  pattern: RegExp;
+  extract: (match: RegExpMatchArray) => Record<string, unknown>;
 }
 
-export function runAction(
-  action: GameAction,
+export type ActionHandlerFn = (
+  params: Record<string, unknown>,
+  state: GameState,
+  registry: ActionRegistry
+) => ActionResult;
+
+export type WrapperFn = (
+  params: Record<string, unknown>,
+  state: GameState,
+  next: (params: Record<string, unknown>, state: GameState) => ActionResult
+) => ActionResult;
+
+export interface ActionDefinition {
+  name: string;
+  description: string;
+  helpText: string;
+  inputSchema: z.ZodObject<any>;
+  parsePatterns: ParsePattern[];
+  handler: ActionHandlerFn;
+}
+
+export type ConditionChecker = (
+  condition: Record<string, unknown>,
+  state: GameState,
+  params: Record<string, unknown>
+) => boolean;
+
+export type EffectApplier = (
+  effect: Record<string, unknown>,
   state: GameState
-): ActionResult {
-  return getActionHandler(action.actionType).run(action, state);
+) => void;
+
+// ---------------------------------------------------------------------------
+// Interaction trigger helpers
+// ---------------------------------------------------------------------------
+
+function keywordMatches(text: string | undefined, keywords: string[]): boolean {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return keywords.some((kw) => lower.includes(kw.toLowerCase()));
+}
+
+/** Primary target: item > target > npc (matches old action.target semantics). */
+function getPrimaryTarget(
+  params: Record<string, unknown>
+): string | undefined {
+  return (params.item ?? params.target ?? params.npc) as string | undefined;
+}
+
+/** Secondary target: params.target when params.item is the primary (e.g. "use key on door"). */
+function getSecondaryTarget(
+  params: Record<string, unknown>
+): string | undefined {
+  if (params.item && params.target) return params.target as string;
+  return undefined;
+}
+
+// ---------------------------------------------------------------------------
+// ActionRegistry
+// ---------------------------------------------------------------------------
+
+export class ActionRegistry {
+  private definitions = new Map<string, ActionDefinition>();
+  private wrappers = new Map<string, WrapperFn[]>();
+  private conditionCheckers = new Map<string, ConditionChecker>();
+  private effectAppliers = new Map<string, EffectApplier>();
+  private gameStartHooks: ((state: GameState) => void)[] = [];
+
+  // -- Registration --------------------------------------------------------
+
+  register(definition: ActionDefinition): void {
+    this.definitions.set(definition.name, definition);
+  }
+
+  wrap(name: string, wrapper: WrapperFn): void {
+    const list = this.wrappers.get(name) ?? [];
+    list.push(wrapper);
+    this.wrappers.set(name, list);
+  }
+
+  registerCondition(type: string, checker: ConditionChecker): void {
+    this.conditionCheckers.set(type, checker);
+  }
+
+  registerEffect(type: string, applier: EffectApplier): void {
+    this.effectAppliers.set(type, applier);
+  }
+
+  onGameStart(hook: (state: GameState) => void): void {
+    this.gameStartHooks.push(hook);
+  }
+
+  runGameStartHooks(state: GameState): void {
+    for (const hook of this.gameStartHooks) hook(state);
+  }
+
+  // -- Execution pipeline --------------------------------------------------
+
+  run(
+    action: string,
+    params: Record<string, unknown>,
+    state: GameState
+  ): ActionResult {
+    const definition = this.definitions.get(action);
+    if (!definition) {
+      return { success: false, message: `Unknown action: ${action}` };
+    }
+
+    // Step 1: Check interactions (declarative overrides from JSON)
+    const interactionResult = this.runInteractions(action, params, state);
+    if (interactionResult) return interactionResult;
+
+    // Step 2+3: Build wrapper chain around base handler, then run
+    const wrapperList = this.wrappers.get(action) ?? [];
+    let handler = (p: Record<string, unknown>, s: GameState) =>
+      definition.handler(p, s, this);
+
+    for (let i = wrapperList.length - 1; i >= 0; i--) {
+      const wrapper = wrapperList[i];
+      const next = handler;
+      handler = (p, s) => wrapper(p, s, next);
+    }
+
+    return handler(params, state);
+  }
+
+  // -- Interactions --------------------------------------------------------
+
+  runInteractions(
+    action: string,
+    params: Record<string, unknown>,
+    state: GameState
+  ): ActionResult | null {
+    const interaction = this.findInteraction(action, params, state);
+    if (!interaction) return null;
+    return this.executeInteraction(interaction, state);
+  }
+
+  private findInteraction(
+    action: string,
+    params: Record<string, unknown>,
+    state: GameState
+  ): Interaction | undefined {
+    return state.interactions.find(
+      (i) =>
+        i.action === action &&
+        this.triggerMatches(i, params, state) &&
+        this.conditionsMet(i, state, params)
+    );
+  }
+
+  private triggerMatches(
+    interaction: Interaction,
+    params: Record<string, unknown>,
+    state: GameState
+  ): boolean {
+    const { trigger } = interaction;
+    const primary = getPrimaryTarget(params);
+    const secondary = getSecondaryTarget(params);
+
+    if (trigger.roomId && state.currentRoomId !== trigger.roomId) return false;
+
+    if (trigger.itemId) {
+      const item = resolveItem(primary, state);
+      if (!item || item.id !== trigger.itemId) return false;
+    }
+
+    if (trigger.targetKeywords) {
+      if (!keywordMatches(primary, trigger.targetKeywords)) return false;
+    }
+
+    if (trigger.secondaryTargetKeywords) {
+      if (!keywordMatches(secondary, trigger.secondaryTargetKeywords))
+        return false;
+    } else if (secondary) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private conditionsMet(
+    interaction: Interaction,
+    state: GameState,
+    params: Record<string, unknown>
+  ): boolean {
+    if (!interaction.conditions) return true;
+
+    return interaction.conditions.every((cond) => {
+      const checker = this.conditionCheckers.get(cond.type);
+      if (!checker) return true; // unknown condition type → pass
+      return checker(cond as Record<string, unknown>, state, params);
+    });
+  }
+
+  private executeInteraction(
+    interaction: Interaction,
+    state: GameState
+  ): ActionResult {
+    this.applyEffects(interaction, state);
+
+    if (interaction.gameOver) {
+      state.gameOver = true;
+    }
+
+    return {
+      message: interaction.message,
+      success: true,
+      gameOver: interaction.gameOver || undefined,
+      isVictory: interaction.isVictory || undefined,
+    };
+  }
+
+  private applyEffects(interaction: Interaction, state: GameState): void {
+    if (!interaction.effects) return;
+
+    for (const effect of interaction.effects) {
+      const applier = this.effectAppliers.get(effect.type);
+      if (applier) applier(effect as Record<string, unknown>, state);
+    }
+  }
+
+  // -- Parsing -------------------------------------------------------------
+
+  parseCommand(input: string): { action: string; params: Record<string, unknown> } | null {
+    const raw = input.trim();
+    const lower = raw.toLowerCase();
+
+    for (const [, definition] of this.definitions) {
+      for (const pp of definition.parsePatterns) {
+        const match = lower.match(pp.pattern);
+        if (match) {
+          return { action: definition.name, params: pp.extract(match) };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // -- Tool generation -----------------------------------------------------
+
+  getTools(): Record<string, any> {
+    const tools: Record<string, any> = {};
+    for (const [name, def] of this.definitions) {
+      tools[name] = tool({
+        description: def.description,
+        inputSchema: def.inputSchema,
+      });
+    }
+    return tools;
+  }
+
+  getHelpLines(): string[] {
+    return [...this.definitions.values()]
+      .filter((d) => d.helpText)
+      .map((d) => `  - ${d.helpText}`);
+  }
+
+  // -- Custom action registration from JSON --------------------------------
+
+  registerCustomAction(custom: CustomAction): void {
+    const shape: Record<string, z.ZodTypeAny> = {};
+    for (const [key, prop] of Object.entries(custom.toolSchema.properties)) {
+      let zodType: z.ZodTypeAny;
+      switch (prop.type) {
+        case "number":
+          zodType = z.number();
+          break;
+        case "boolean":
+          zodType = z.boolean();
+          break;
+        default:
+          zodType = z.string();
+          break;
+      }
+      if (!custom.toolSchema.required?.includes(key)) {
+        zodType = zodType.optional();
+      }
+      shape[key] = zodType;
+    }
+
+    const inputSchema = z.object(shape);
+    const paramKeys = Object.keys(custom.toolSchema.properties);
+    const firstParam = paramKeys[0] ?? "target";
+
+    this.register({
+      name: custom.name,
+      description: custom.description,
+      helpText: custom.helpText,
+      inputSchema,
+      parsePatterns: [
+        {
+          pattern: new RegExp(`^${custom.name}\\s+(.+)$`),
+          extract: (m) => ({ [firstParam]: m[1].trim() }),
+        },
+      ],
+      handler: (params, state) => {
+        const targetName = params[firstParam] as string | undefined;
+
+        const entity =
+          custom.behavior.resolveTarget === "item"
+            ? resolveItem(targetName, state)
+            : resolveNPC(targetName, state);
+
+        if (!entity) {
+          return {
+            success: false,
+            message: `You don't see any "${targetName}" here.`,
+          };
+        }
+
+        if (
+          custom.behavior.requiredTrait &&
+          "traits" in entity &&
+          !entity.traits.includes(custom.behavior.requiredTrait)
+        ) {
+          return {
+            success: false,
+            message: custom.behavior.failMessage.replace(
+              "{target}",
+              entity.name
+            ),
+          };
+        }
+
+        const value =
+          "properties" in entity
+            ? (entity.properties as Record<string, unknown>)[
+                custom.behavior.propertyField
+              ]
+            : undefined;
+
+        if (!value) {
+          return {
+            success: false,
+            message: custom.behavior.failMessage.replace(
+              "{target}",
+              entity.name
+            ),
+          };
+        }
+
+        return { success: true, message: String(value) };
+      },
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Built-in conditions
+// ---------------------------------------------------------------------------
+
+export function registerBuiltinConditions(registry: ActionRegistry): void {
+  registry.registerCondition("flagEquals", (cond, state) => {
+    return (state.flags.get(cond.flag as string) ?? false) === cond.value;
+  });
+
+  registry.registerCondition("inRoom", (cond, state) => {
+    return state.currentRoomId === (cond.roomId as string);
+  });
+
+  registry.registerCondition("hasItem", (cond, state) => {
+    return state.inventory.includes(cond.itemId as string);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Built-in effects
+// ---------------------------------------------------------------------------
+
+export function registerBuiltinEffects(registry: ActionRegistry): void {
+  registry.registerEffect("setFlag", (effect, state) => {
+    state.flags.set(effect.flag as string, effect.value);
+  });
+
+  registry.registerEffect("setItemVisible", (effect, state) => {
+    const item = state.items.get(effect.itemId as string);
+    if (item) item.visible = effect.visible as boolean;
+  });
+
+  registry.registerEffect("setItemDescription", (effect, state) => {
+    const item = state.items.get(effect.itemId as string);
+    if (item) item.description = effect.description as string;
+  });
+
+  registry.registerEffect("clearItemContainer", (effect, state) => {
+    const item = state.items.get(effect.itemId as string);
+    if (item) item.containerId = undefined;
+  });
+
+  registry.registerEffect("unlockExit", (effect, state) => {
+    const room = state.rooms.get(effect.roomId as string);
+    const exit = room?.exits.find((e) => e.direction === effect.direction);
+    if (exit) exit.locked = false;
+  });
+
+  registry.registerEffect("lockExit", (effect, state) => {
+    const room = state.rooms.get(effect.roomId as string);
+    const exit = room?.exits.find((e) => e.direction === effect.direction);
+    if (exit) exit.locked = true;
+  });
+
+  registry.registerEffect("setExitDescription", (effect, state) => {
+    const room = state.rooms.get(effect.roomId as string);
+    const exit = room?.exits.find((e) => e.direction === effect.direction);
+    if (exit) exit.description = effect.description as string;
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Built-in actions
+// ---------------------------------------------------------------------------
+
+const DIRECTION_ALIASES: Record<string, Direction> = {
+  n: "north",
+  s: "south",
+  e: "east",
+  w: "west",
+  u: "up",
+  d: "down",
+  north: "north",
+  south: "south",
+  east: "east",
+  west: "west",
+  up: "up",
+  down: "down",
+};
+
+export function registerBuiltinActions(registry: ActionRegistry): void {
+  // -- move ----------------------------------------------------------------
+
+  registry.register({
+    name: "move",
+    description: "Move the player in a direction",
+    helpText: "**go <direction>** (n/s/e/w/u/d) -- Move in a direction",
+    inputSchema: z.object({
+      direction: z.enum(DIRECTIONS),
+    }),
+    parsePatterns: [
+      // bare direction: n / north / ...
+      {
+        pattern:
+          /^(n|s|e|w|u|d|north|south|east|west|up|down)$/,
+        extract: (m) => ({ direction: DIRECTION_ALIASES[m[1]] }),
+      },
+      // go <direction>
+      {
+        pattern: /^go\s+(\S+)$/,
+        extract: (m) => {
+          const dir = DIRECTION_ALIASES[m[1]];
+          return dir ? { direction: dir } : {};
+        },
+      },
+      // move <direction>
+      {
+        pattern: /^move\s+(\S+)$/,
+        extract: (m) => {
+          const dir = DIRECTION_ALIASES[m[1]];
+          return dir ? { direction: dir } : {};
+        },
+      },
+    ],
+    handler(params, state, reg) {
+      const direction = params.direction as Direction | undefined;
+      if (!direction) {
+        return { success: false, message: "Which direction do you want to go?" };
+      }
+
+      const room = getCurrentRoom(state);
+      const exit = room.exits.find((e) => e.direction === direction);
+      if (!exit) {
+        return {
+          success: false,
+          message: `You can't go ${direction} from here.`,
+        };
+      }
+      if (exit.locked) {
+        return {
+          success: false,
+          message: exit.description ?? "That way is locked.",
+        };
+      }
+
+      const previousRoomId = state.currentRoomId;
+
+      // Fire exit pseudo-action for the room we're leaving
+      const exitResult = reg.runInteractions(
+        "exit",
+        { roomId: previousRoomId },
+        state
+      );
+
+      state.currentRoomId = exit.targetRoomId;
+      const newRoom = getCurrentRoom(state);
+      const items = getVisibleItems(state);
+      const npcs = getRoomNPCs(state);
+
+      let message = `\n**${newRoom.name}**\n${newRoom.description}`;
+      if (items.length > 0) {
+        message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
+      }
+      if (npcs.length > 0) {
+        message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
+      }
+
+      // Append exit interaction message if any
+      if (exitResult) {
+        message = exitResult.message + "\n\n" + message;
+        if (exitResult.gameOver) {
+          return { ...exitResult, message };
+        }
+      }
+
+      // Fire enter pseudo-action for the new room
+      const enterResult = reg.runInteractions(
+        "enter",
+        { roomId: exit.targetRoomId },
+        state
+      );
+
+      if (enterResult) {
+        message += "\n\n" + enterResult.message;
+        if (enterResult.gameOver) {
+          return {
+            message,
+            success: true,
+            gameOver: true,
+            isVictory: enterResult.isVictory,
+          };
+        }
+      }
+
+      return { message, success: true };
+    },
+  });
+
+  // -- look ----------------------------------------------------------------
+
+  registry.register({
+    name: "look",
+    description: "Look around the current room",
+    helpText: "**look** (l) -- Describe your surroundings",
+    inputSchema: z.object({}),
+    parsePatterns: [
+      { pattern: /^(look|l)$/, extract: () => ({}) },
+    ],
+    handler(_params, state) {
+      const room = getCurrentRoom(state);
+      const items = getVisibleItems(state);
+      const npcs = getRoomNPCs(state);
+      const exits = room.exits.map((e) => {
+        let label = e.direction;
+        if (e.locked) label += " (locked)";
+        return label;
+      });
+
+      let message = `\n**${room.name}**\n${room.description}`;
+      if (items.length > 0) {
+        message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
+      }
+      if (npcs.length > 0) {
+        message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
+      }
+      message += `\n\nExits: ${exits.join(", ")}.`;
+      return { message, success: true };
+    },
+  });
+
+  // -- examine -------------------------------------------------------------
+
+  registry.register({
+    name: "examine",
+    description:
+      "Look closely at an item, NPC, or feature in the current room",
+    helpText: "**examine <thing>** (x) -- Look closely at something",
+    inputSchema: z.object({
+      target: z.string().describe("What to examine"),
+    }),
+    parsePatterns: [
+      {
+        pattern: /^(?:examine|ex|x)\s+(.+)$/,
+        extract: (m) => ({ target: m[1].trim() }),
+      },
+      {
+        pattern: /^look\s+at\s+(.+)$/,
+        extract: (m) => ({ target: m[1].trim() }),
+      },
+    ],
+    handler(params, state) {
+      const target = params.target as string | undefined;
+      if (!target) {
+        return { success: false, message: "What do you want to examine?" };
+      }
+
+      // Interaction check already ran in the pipeline — if we're here, none matched.
+      const item = resolveItem(target, state);
+      if (item) return { message: item.description, success: true };
+
+      const npc = resolveNPC(target, state);
+      if (npc) return { message: npc.description, success: true };
+
+      return {
+        message: `You don't see any "${target}" here.`,
+        success: false,
+      };
+    },
+  });
+
+  // -- take ----------------------------------------------------------------
+
+  registry.register({
+    name: "take",
+    description: "Pick up an item from the current room",
+    helpText: "**take <item>** -- Pick up an item",
+    inputSchema: z.object({
+      item: z.string().describe("Name of the item to take"),
+    }),
+    parsePatterns: [
+      {
+        pattern: /^(?:take|get)\s+(.+)$/,
+        extract: (m) => ({ item: m[1].trim() }),
+      },
+      {
+        pattern: /^pick\s+up\s+(.+)$/,
+        extract: (m) => ({ item: m[1].trim() }),
+      },
+    ],
+    handler(params, state) {
+      const itemName = params.item as string | undefined;
+      if (!itemName) {
+        return { success: false, message: "What do you want to take?" };
+      }
+
+      const item = resolveItem(itemName, state);
+      if (!item) {
+        return {
+          success: false,
+          message: `You don't see any "${itemName}" here.`,
+        };
+      }
+      if (!item.traits.includes("portable")) {
+        return {
+          success: false,
+          message: `You can't pick up the ${item.name}.`,
+        };
+      }
+      if (isItemInInventory(item.id, state)) {
+        return {
+          success: false,
+          message: `You already have the ${item.name}.`,
+        };
+      }
+      if (!isItemInRoom(item.id, state)) {
+        return { success: false, message: `The ${item.name} isn't here.` };
+      }
+
+      const room = getCurrentRoom(state);
+      room.itemIds = room.itemIds.filter((id) => id !== item.id);
+      state.inventory.push(item.id);
+      return { message: `You pick up the ${item.name}.`, success: true };
+    },
+  });
+
+  // -- drop ----------------------------------------------------------------
+
+  registry.register({
+    name: "drop",
+    description: "Drop an item from inventory into the current room",
+    helpText: "**drop <item>** -- Put down an item",
+    inputSchema: z.object({
+      item: z.string().describe("Name of the item to drop"),
+    }),
+    parsePatterns: [
+      {
+        pattern: /^drop\s+(.+)$/,
+        extract: (m) => ({ item: m[1].trim() }),
+      },
+      {
+        pattern: /^put\s+down\s+(.+)$/,
+        extract: (m) => ({ item: m[1].trim() }),
+      },
+    ],
+    handler(params, state) {
+      const itemName = params.item as string | undefined;
+      if (!itemName) {
+        return { success: false, message: "What do you want to drop?" };
+      }
+
+      const item = resolveItem(itemName, state);
+      if (!item) {
+        return {
+          success: false,
+          message: `You don't have any "${itemName}".`,
+        };
+      }
+      if (!isItemInInventory(item.id, state)) {
+        return {
+          success: false,
+          message: `You don't have the ${item.name}.`,
+        };
+      }
+
+      state.inventory = state.inventory.filter((id) => id !== item.id);
+      const room = getCurrentRoom(state);
+      room.itemIds.push(item.id);
+      return { message: `You drop the ${item.name}.`, success: true };
+    },
+  });
+
+  // -- use -----------------------------------------------------------------
+
+  registry.register({
+    name: "use",
+    description: "Use an item from inventory, optionally on a target",
+    helpText: "**use <item>** / **use <item> on <target>** -- Use an item",
+    inputSchema: z.object({
+      item: z.string().describe("Name of the item to use"),
+      target: z
+        .string()
+        .optional()
+        .describe("Optional target to use the item on"),
+    }),
+    parsePatterns: [
+      {
+        pattern: /^use\s+(.+?)\s+on\s+(.+)$/,
+        extract: (m) => ({ item: m[1].trim(), target: m[2].trim() }),
+      },
+      {
+        pattern: /^use\s+(.+)$/,
+        extract: (m) => ({ item: m[1].trim() }),
+      },
+    ],
+    handler(params, state) {
+      const itemName = params.item as string | undefined;
+      if (!itemName) {
+        return { success: false, message: "What do you want to use?" };
+      }
+
+      const item = resolveItem(itemName, state);
+      if (!item) {
+        return {
+          success: false,
+          message: `You don't have any "${itemName}".`,
+        };
+      }
+      if (!isItemInInventory(item.id, state)) {
+        return {
+          success: false,
+          message: `You need to pick up the ${item.name} first.`,
+        };
+      }
+
+      // Interaction check already ran in the pipeline — if we're here, none matched.
+      const targetName = params.target as string | undefined;
+      return {
+        message: `You're not sure how to use the ${item.name}${targetName ? ` on the ${targetName}` : ""} here.`,
+        success: false,
+      };
+    },
+  });
+
+  // -- open ----------------------------------------------------------------
+
+  registry.register({
+    name: "open",
+    description: "Open a container or door",
+    helpText: "**open <thing>** -- Open something",
+    inputSchema: z.object({
+      target: z.string().describe("What to open"),
+    }),
+    parsePatterns: [
+      {
+        pattern: /^open\s+(.+)$/,
+        extract: (m) => ({ target: m[1].trim() }),
+      },
+    ],
+    handler(params, state) {
+      const target = params.target as string | undefined;
+      if (!target) {
+        return { success: false, message: "What do you want to open?" };
+      }
+
+      const room = getCurrentRoom(state);
+      const lockedExit = room.exits.find((e) =>
+        e.description?.toLowerCase().includes(target.toLowerCase())
+      );
+      if (lockedExit) {
+        if (!lockedExit.locked) {
+          return { success: false, message: "It's already open." };
+        }
+        return {
+          success: false,
+          message: lockedExit.description ?? "That way is locked.",
+        };
+      }
+
+      const item = resolveItem(target, state);
+      if (!item) {
+        return {
+          success: false,
+          message: `You don't see any "${target}" to open.`,
+        };
+      }
+      if (!item.traits.includes("openable")) {
+        return {
+          success: false,
+          message: `You can't open the ${item.name}.`,
+        };
+      }
+
+      // Interaction check already ran in the pipeline — if we're here, none matched.
+      return {
+        success: false,
+        message: `You can't open the ${item.name}.`,
+      };
+    },
+  });
+
+  // -- talk ----------------------------------------------------------------
+
+  registry.register({
+    name: "talk",
+    description: "Talk to an NPC in the current room",
+    helpText: "**talk to <person>** -- Speak with someone",
+    inputSchema: z.object({
+      npc: z.string().describe("Name of the NPC to talk to"),
+    }),
+    parsePatterns: [
+      {
+        pattern: /^talk\s+(?:to\s+)?(.+)$/,
+        extract: (m) => ({ npc: m[1].trim() }),
+      },
+      {
+        pattern: /^speak\s+(?:to|with)\s+(.+)$/,
+        extract: (m) => ({ npc: m[1].trim() }),
+      },
+    ],
+    handler(params, state) {
+      const npcName = params.npc as string | undefined;
+      if (!npcName) {
+        return { success: false, message: "Who do you want to talk to?" };
+      }
+
+      const npc = resolveNPC(npcName, state);
+      if (!npc) {
+        return {
+          success: false,
+          message: `You don't see anyone called "${npcName}" here.`,
+        };
+      }
+
+      const line = npc.dialogue[npc.dialogueIndex];
+      if (npc.dialogueIndex < npc.dialogue.length - 1) {
+        npc.dialogueIndex++;
+      }
+      return { message: line, success: true };
+    },
+  });
+
+  // -- inventory -----------------------------------------------------------
+
+  registry.register({
+    name: "inventory",
+    description: "Check what the player is carrying",
+    helpText: "**inventory** (i) -- Check what you're carrying",
+    inputSchema: z.object({}),
+    parsePatterns: [
+      { pattern: /^(inventory|i|inv)$/, extract: () => ({}) },
+    ],
+    handler(_params, state) {
+      const items = getInventoryItems(state);
+      if (items.length === 0) {
+        return { message: "You are empty-handed.", success: true };
+      }
+      const list = items.map((i) => `  - ${i.name}`).join("\n");
+      return { message: `You are carrying:\n${list}`, success: true };
+    },
+  });
+
+  // -- help ----------------------------------------------------------------
+
+  registry.register({
+    name: "help",
+    description: "Show the list of available commands",
+    helpText: "**help** -- Show this message",
+    inputSchema: z.object({}),
+    parsePatterns: [
+      { pattern: /^(help|\?)$/, extract: () => ({}) },
+    ],
+    handler(_params, _state, reg) {
+      const lines = reg.getHelpLines();
+      return {
+        message: `**Available commands:**\n${lines.join("\n")}`,
+        success: true,
+      };
+    },
+  });
+
+  // -- quit ----------------------------------------------------------------
+
+  registry.register({
+    name: "quit",
+    description: "End the game",
+    helpText: "**quit** -- End the game",
+    inputSchema: z.object({}),
+    parsePatterns: [
+      { pattern: /^(quit|q|exit)$/, extract: () => ({}) },
+    ],
+    handler(_params, state) {
+      state.gameOver = true;
+      return {
+        message: "Thanks for playing! Goodbye.",
+        success: true,
+        gameOver: true,
+      };
+    },
+  });
+
+  // -- respond (agent-only, no parse patterns) -----------------------------
+
+  registry.register({
+    name: "respond",
+    description:
+      "Use this instead of a game-action tool when you need to reply without changing game state -- for example to ask a clarifying question, respond to conversational input, or tell the player you don't understand.",
+    helpText: "",
+    inputSchema: z.object({
+      message: z.string().describe("The message to show the player"),
+    }),
+    parsePatterns: [],
+    handler(params) {
+      return { success: true, message: (params.message as string) ?? "" };
+    },
+  });
 }

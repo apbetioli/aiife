@@ -16,7 +16,7 @@ export function createModel() {
       return createOpenAI({
         baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1",
         apiKey: "ollama",
-      })(process.env.OLLAMA_MODEL ?? "llama3.1");
+      }).chat(process.env.OLLAMA_MODEL ?? "llama3.1");
     default:
       throw new Error(`Unknown LLM_PROVIDER: ${provider}`);
   }

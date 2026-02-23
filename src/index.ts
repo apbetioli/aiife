@@ -8,13 +8,13 @@ async function main() {
   const terminal = new Terminal();
   const formatter = new TerminalFormatter();
 
-  const world = loadWorld();
-  const intro = world.welcomeMessage.trim();
+  const { definition, filePath } = loadWorld();
+  const intro = definition.welcomeMessage.trim();
   terminal.print(formatter.formatWelcome(intro));
 
-  const engine = new GameEngine(world, createModel());
+  const engine = new GameEngine(definition, createModel(), filePath);
 
-  const result = engine.start();
+  const result = await engine.start();
   terminal.print(formatter.format(result));
 
   while (!engine.getState().gameOver) {

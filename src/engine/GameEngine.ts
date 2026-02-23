@@ -1,7 +1,12 @@
+import { resolve, dirname } from "path";
 import type { LanguageModel } from "ai";
 import { GameAgent } from "../agent/GameAgent.js";
-import { runAction } from "./ActionRegistry.js";
-import { parseCommand } from "./CommandParser.js";
+import {
+  ActionRegistry,
+  registerBuiltinActions,
+  registerBuiltinConditions,
+  registerBuiltinEffects,
+} from "./ActionRegistry.js";
 import type {
   ActionResult,
   GameState,
@@ -14,8 +19,13 @@ import type {
 export class GameEngine {
   private state: GameState;
   private agent: GameAgent;
+  private registry: ActionRegistry;
 
-  constructor(definition: WorldDefinition, model: LanguageModel) {
+  constructor(
+    private definition: WorldDefinition,
+    model: LanguageModel,
+    private worldFilePath?: string
+  ) {
     const rooms = new Map<string, Room>();
     for (const roomDef of definition.rooms) {
       rooms.set(roomDef.id, { ...roomDef });
@@ -31,7 +41,7 @@ export class GameEngine {
       npcs.set(npc.id, { ...npc });
     }
 
-    const flags = new Map<string, boolean>();
+    const flags = new Map<string, unknown>();
     for (const [key, value] of Object.entries(definition.flags)) {
       flags.set(key, value);
     }
@@ -46,12 +56,38 @@ export class GameEngine {
       turnCount: 0,
       gameOver: false,
       flags,
+      custom: {},
     };
-    this.agent = new GameAgent(this.state, model);
+
+    // Build registry
+    this.registry = new ActionRegistry();
+    registerBuiltinConditions(this.registry);
+    registerBuiltinEffects(this.registry);
+    registerBuiltinActions(this.registry);
+
+    // Register declarative custom actions from world JSON
+    for (const custom of definition.customActions ?? []) {
+      this.registry.registerCustomAction(custom);
+    }
+
+    this.agent = new GameAgent(this.state, model, this.registry);
   }
 
-  start() {
-    return runAction({ actionType: "look" }, this.state);
+  async start(): Promise<ActionResult> {
+    // Load programmatic actions module if specified
+    if (this.definition.actionsModule) {
+      const basePath = this.worldFilePath
+        ? dirname(resolve(this.worldFilePath))
+        : process.cwd();
+      const modulePath = resolve(basePath, this.definition.actionsModule);
+      const mod = await import(modulePath);
+      const setup = mod.default ?? mod;
+      if (typeof setup === "function") setup(this.registry);
+    }
+
+    this.registry.runGameStartHooks(this.state);
+
+    return this.registry.run("look", {}, this.state);
   }
 
   getState(): GameState {
@@ -62,16 +98,20 @@ export class GameEngine {
     const trimmed = input.trim();
     if (!trimmed) return { message: "Say something!", success: false };
 
-    const actionMatch = parseCommand(trimmed);
+    const actionMatch = this.registry.parseCommand(trimmed);
 
     if (!actionMatch) {
-      // There is no exact match, run the agent to identify intent and run the action
+      // No exact match — let the agent identify intent and run the action
       return this.agent.processInput(trimmed);
     }
 
     this.state.turnCount++;
 
-    const result = runAction(actionMatch, this.state);
+    const result = this.registry.run(
+      actionMatch.action,
+      actionMatch.params,
+      this.state
+    );
     return this.agent.narrateResult(trimmed, actionMatch, result);
   }
 }
