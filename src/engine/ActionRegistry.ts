@@ -1,21 +1,21 @@
+import { Tool, tool } from "ai";
 import { z } from "zod";
-import { tool } from "ai";
 import type {
   ActionResult,
+  CustomAction,
   GameState,
   Interaction,
-  CustomAction,
 } from "../types.js";
 import { DIRECTIONS, type Direction } from "../types.js";
 import {
   getCurrentRoom,
   getInventoryItems,
-  getVisibleItems,
   getRoomNPCs,
+  getVisibleItems,
+  isItemInInventory,
+  isItemInRoom,
   resolveItem,
   resolveNPC,
-  isItemInRoom,
-  isItemInInventory,
 } from "./ActionValidator.js";
 
 // ---------------------------------------------------------------------------
@@ -70,9 +70,7 @@ function keywordMatches(text: string | undefined, keywords: string[]): boolean {
 }
 
 /** Primary target: item > target > npc (matches old action.target semantics). */
-function getPrimaryTarget(
-  params: Record<string, unknown>
-): string | undefined {
+function getPrimaryTarget(params: Record<string, unknown>): string | undefined {
   return (params.item ?? params.target ?? params.npc) as string | undefined;
 }
 
@@ -251,7 +249,9 @@ export class ActionRegistry {
 
   // -- Parsing -------------------------------------------------------------
 
-  parseCommand(input: string): { action: string; params: Record<string, unknown> } | null {
+  parseCommand(
+    input: string
+  ): { action: string; params: Record<string, unknown> } | null {
     const raw = input.trim();
     const lower = raw.toLowerCase();
 
@@ -269,8 +269,8 @@ export class ActionRegistry {
 
   // -- Tool generation -----------------------------------------------------
 
-  getTools(): Record<string, any> {
-    const tools: Record<string, any> = {};
+  getTools(): Record<string, Tool> {
+    const tools: Record<string, Tool> = {};
     for (const [name, def] of this.definitions) {
       tools[name] = tool({
         description: def.description,
@@ -469,8 +469,7 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     parsePatterns: [
       // bare direction: n / north / ...
       {
-        pattern:
-          /^(n|s|e|w|u|d|north|south|east|west|up|down)$/,
+        pattern: /^(n|s|e|w|u|d|north|south|east|west|up|down)$/,
         extract: (m) => ({ direction: DIRECTION_ALIASES[m[1]] }),
       },
       // go <direction>
@@ -493,7 +492,10 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     handler(params, state, reg) {
       const direction = params.direction as Direction | undefined;
       if (!direction) {
-        return { success: false, message: "Which direction do you want to go?" };
+        return {
+          success: false,
+          message: "Which direction do you want to go?",
+        };
       }
 
       const room = getCurrentRoom(state);
@@ -530,7 +532,9 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
         message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
       }
       if (npcs.length > 0) {
-        message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
+        message += `\n\n${npcs
+          .map((n) => `There is a ${n.name} here.`)
+          .join(" ")}`;
       }
 
       // Append exit interaction message if any
@@ -571,9 +575,7 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     description: "Look around the current room",
     helpText: "**look** (l) -- Describe your surroundings",
     inputSchema: z.object({}),
-    parsePatterns: [
-      { pattern: /^(look|l)$/, extract: () => ({}) },
-    ],
+    parsePatterns: [{ pattern: /^(look|l)$/, extract: () => ({}) }],
     handler(_params, state) {
       const room = getCurrentRoom(state);
       const items = getVisibleItems(state);
@@ -589,7 +591,9 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
         message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
       }
       if (npcs.length > 0) {
-        message += `\n\n${npcs.map((n) => `There is a ${n.name} here.`).join(" ")}`;
+        message += `\n\n${npcs
+          .map((n) => `There is a ${n.name} here.`)
+          .join(" ")}`;
       }
       message += `\n\nExits: ${exits.join(", ")}.`;
       return { message, success: true };
@@ -600,8 +604,7 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
 
   registry.register({
     name: "examine",
-    description:
-      "Look closely at an item, NPC, or feature in the current room",
+    description: "Look closely at an item, NPC, or feature in the current room",
     helpText: "**examine <thing>** (x) -- Look closely at something",
     inputSchema: z.object({
       target: z.string().describe("What to examine"),
@@ -783,7 +786,9 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
       // Interaction check already ran in the pipeline — if we're here, none matched.
       const targetName = params.target as string | undefined;
       return {
-        message: `You're not sure how to use the ${item.name}${targetName ? ` on the ${targetName}` : ""} here.`,
+        message: `You're not sure how to use the ${item.name}${
+          targetName ? ` on the ${targetName}` : ""
+        } here.`,
         success: false,
       };
     },
@@ -894,9 +899,7 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     description: "Check what the player is carrying",
     helpText: "**inventory** (i) -- Check what you're carrying",
     inputSchema: z.object({}),
-    parsePatterns: [
-      { pattern: /^(inventory|i|inv)$/, extract: () => ({}) },
-    ],
+    parsePatterns: [{ pattern: /^(inventory|i|inv)$/, extract: () => ({}) }],
     handler(_params, state) {
       const items = getInventoryItems(state);
       if (items.length === 0) {
@@ -914,9 +917,7 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     description: "Show the list of available commands",
     helpText: "**help** -- Show this message",
     inputSchema: z.object({}),
-    parsePatterns: [
-      { pattern: /^(help|\?)$/, extract: () => ({}) },
-    ],
+    parsePatterns: [{ pattern: /^(help|\?)$/, extract: () => ({}) }],
     handler(_params, _state, reg) {
       const lines = reg.getHelpLines();
       return {
@@ -933,9 +934,7 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     description: "End the game",
     helpText: "**quit** -- End the game",
     inputSchema: z.object({}),
-    parsePatterns: [
-      { pattern: /^(quit|q|exit)$/, extract: () => ({}) },
-    ],
+    parsePatterns: [{ pattern: /^(quit|q|exit)$/, extract: () => ({}) }],
     handler(_params, state) {
       state.gameOver = true;
       return {
