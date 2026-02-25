@@ -1,7 +1,7 @@
 import { evaluate } from "@lmnr-ai/lmnr";
 import dataset from "./data/move-tool.json" with { type: "json" };
-import { toolSelectionScore } from "./evaluators";
-import { singleTurnExecutorWithMocks } from "./executors";
+import { toolSelectionScore } from "./tool-agent-evaluators";
+import { singleTurnExecutorWithMocks } from "./tool-agent-executor";
 import type { EvalData, EvalTarget, SingleTurnDatasetEntry, SingleTurnResult } from "./types";
 
 const executor = async (data: EvalData) => {

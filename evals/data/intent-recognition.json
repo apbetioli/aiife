@@ -1,0 +1,469 @@
+[
+  {
+    "data": {
+      "prompt": "go north",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "north" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Explicit move command with direction" }
+  },
+  {
+    "data": {
+      "prompt": "n",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "north" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Single-letter direction abbreviation" }
+  },
+  {
+    "data": {
+      "prompt": "climb the stairs",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. A grand staircase spirals upward.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "up" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language movement — climb stairs implies up" }
+  },
+  {
+    "data": {
+      "prompt": "look around",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "look",
+      "expectedParams": {},
+      "category": "golden"
+    },
+    "metadata": { "description": "Look around the room — no target" }
+  },
+  {
+    "data": {
+      "prompt": "examine the old book",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "examine",
+      "expectedParams": { "target": "old book" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Examine a visible item by name" }
+  },
+  {
+    "data": {
+      "prompt": "look at alcove",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room. A curious alcove is set into the far wall.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "examine",
+      "expectedParams": { "target": "alcove" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Look at something specific — should use examine, not look" }
+  },
+  {
+    "data": {
+      "prompt": "x pedestal",
+      "gameState": {
+        "roomName": "The Cellar",
+        "roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+        "exits": [
+          { "direction": "up", "locked": false }
+        ],
+        "visibleItems": ["stone pedestal"],
+        "inventory": ["gold amulet"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "examine",
+      "expectedParams": { "target": "pedestal" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Shorthand examine command (x)" }
+  },
+  {
+    "data": {
+      "prompt": "take the lantern",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "brass lantern" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Take an item by name" }
+  },
+  {
+    "data": {
+      "prompt": "pick up the book",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "old book" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language take — pick up" }
+  },
+  {
+    "data": {
+      "prompt": "drop the lantern",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": ["brass lantern"],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "drop",
+      "expectedParams": { "item": "brass lantern" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Drop an inventory item" }
+  },
+  {
+    "data": {
+      "prompt": "use key on door",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. A heavy iron door is set into the floor.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": ["rusty key"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "use",
+      "expectedParams": { "item": "rusty key", "target": "door" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Use item on target" }
+  },
+  {
+    "data": {
+      "prompt": "use the amulet on the pedestal",
+      "gameState": {
+        "roomName": "The Cellar",
+        "roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+        "exits": [
+          { "direction": "up", "locked": false }
+        ],
+        "visibleItems": ["stone pedestal"],
+        "inventory": ["gold amulet"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "use",
+      "expectedParams": { "item": "gold amulet", "target": "stone pedestal" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Use item on target — full names" }
+  },
+  {
+    "data": {
+      "prompt": "open the chest",
+      "gameState": {
+        "roomName": "The Tower Room",
+        "roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+        "exits": [
+          { "direction": "down", "locked": false }
+        ],
+        "visibleItems": ["wooden chest"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "open",
+      "expectedParams": { "target": "wooden chest" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Open a container" }
+  },
+  {
+    "data": {
+      "prompt": "talk to the gardener",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": [],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "talk",
+      "expectedParams": { "npc": "old gardener" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Talk to NPC by role name" }
+  },
+  {
+    "data": {
+      "prompt": "speak with the old man",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": [],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "talk",
+      "expectedParams": { "npc": "old gardener" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language talk — speak with, referring to NPC by alias" }
+  },
+  {
+    "data": {
+      "prompt": "what am I carrying?",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": ["old book", "rusty key"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "inventory",
+      "expectedParams": {},
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language inventory check" }
+  },
+  {
+    "data": {
+      "prompt": "help",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "help",
+      "expectedParams": {},
+      "category": "golden"
+    },
+    "metadata": { "description": "Help command" }
+  },
+  {
+    "data": {
+      "prompt": "go",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "respond",
+      "expectedParams": {},
+      "category": "secondary"
+    },
+    "metadata": { "description": "Ambiguous input — go with no direction should trigger respond" }
+  },
+  {
+    "data": {
+      "prompt": "hello there",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "respond",
+      "expectedParams": {},
+      "category": "secondary"
+    },
+    "metadata": { "description": "Conversational input — not a game command" }
+  },
+  {
+    "data": {
+      "prompt": "get the rusty key",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book", "rusty key"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "rusty key" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Take using 'get' synonym" }
+  }
+]

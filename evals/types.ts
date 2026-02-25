@@ -70,3 +70,39 @@ export interface MockToolConfig {
   /** Fixed return value when tool is called */
   mockReturn: string;
 }
+
+// --- Structured Output Intent Recognition ---
+
+export interface GameStateSnapshot {
+  roomName: string;
+  roomDescription: string;
+  exits: Array<{ direction: string; locked: boolean }>;
+  visibleItems: string[];
+  inventory: string[];
+  npcsHere: string[];
+}
+
+export interface StructuredOutputEvalData {
+  prompt: string;
+  gameState: GameStateSnapshot;
+  availableActions: string[];
+  config?: { model?: string; temperature?: number };
+}
+
+export interface StructuredOutputEvalTarget {
+  expectedAction: string;
+  expectedParams: Record<string, unknown>;
+  category: "golden" | "secondary" | "negative";
+}
+
+export interface StructuredOutputResult {
+  action: string;
+  params: Record<string, unknown>;
+  produced: boolean;
+}
+
+export interface StructuredOutputDatasetEntry {
+  data: StructuredOutputEvalData;
+  target: StructuredOutputEvalTarget;
+  metadata?: { description?: string };
+}
