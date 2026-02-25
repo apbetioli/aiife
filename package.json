@@ -5,20 +5,22 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "debug": "DEBUG=true dotenv -e .env -- tsx src/index.ts",
-    "dev": "dotenv -e .env -- tsx src/index.ts",
-    "start": "node --env-file=.env dist/index.js"
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx --env-file=.env src/index.ts",
+    "watch": "tsx watch --env-file=.env src/index.ts",
+    "start": "tsx --env-file=.env src/index.ts",
+    "debug": "DEBUG=true tsx --env-file=.env src/index.ts",
+    "eval": "npx lmnr eval"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.46",
     "@ai-sdk/openai": "^3.0.30",
+    "@lmnr-ai/lmnr": "^0.8.11",
     "ai": "^6.0.97",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "dotenv-cli": "^7.4.2",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
