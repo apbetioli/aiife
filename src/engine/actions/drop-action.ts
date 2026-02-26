@@ -10,7 +10,7 @@ import { splitItemList } from "./parse-utils";
 
 export const dropAction: ActionDefinition = {
 	name: "drop",
-	description: "Drop items from inventory into the current room",
+	description: "drop(items): Drop items from inventory. items is an array of item names. For \"drop all\", list every inventory item.",
 	helpText:
 		"**drop <items>** -- Put down items (supports 'drop all', 'drop all but X')",
 	inputSchema: z.object({

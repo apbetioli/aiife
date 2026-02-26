@@ -24,7 +24,7 @@ const DIRECTION_ALIASES: Record<string, Direction> = {
 
 export const goAction: ActionDefinition = {
 	name: "go",
-	description: `go(direction): Go in a direction. direction can be one of: ${Object.values(DIRECTION_ALIASES).join(",")}.`,
+	description: `go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.`,
 	helpText: `**go <direction>** -- Go in a direction`,
 	inputSchema: z.object({
 		direction: DirectionSchema.describe("The direction to go"),

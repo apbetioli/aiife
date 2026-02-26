@@ -446,17 +446,23 @@ export function registerBuiltinEffects(registry: ActionRegistry): void {
 // Built-in actions
 // ---------------------------------------------------------------------------
 
+export const BUILT_IN_ACTIONS = [
+	goAction,
+	lookAction,
+	examineAction,
+	takeAction,
+	dropAction,
+	useAction,
+	openAction,
+	talkAction,
+	inventoryAction,
+	helpAction,
+	quitAction,
+	respondAction,
+];
+
 export function registerBuiltinActions(registry: ActionRegistry): void {
-	registry.register(goAction);
-	registry.register(lookAction);
-	registry.register(examineAction);
-	registry.register(takeAction);
-	registry.register(dropAction);
-	registry.register(useAction);
-	registry.register(openAction);
-	registry.register(talkAction);
-	registry.register(inventoryAction);
-	registry.register(helpAction);
-	registry.register(quitAction);
-	registry.register(respondAction);
+	for (const action of BUILT_IN_ACTIONS) {
+		registry.register(action);
+	}
 }

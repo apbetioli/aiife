@@ -4,7 +4,7 @@ import { getCurrentRoom, resolveItem } from "../ActionValidator";
 
 export const openAction: ActionDefinition = {
 	name: "open",
-	description: "Open a container or door",
+	description: "open(target): Open a container or door. target is the name of what to open.",
 	helpText: "**open <thing>** -- Open something",
 	inputSchema: z.object({
 		target: z.string().describe("What to open"),

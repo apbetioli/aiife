@@ -4,7 +4,7 @@ import type { ActionDefinition } from "../ActionRegistry";
 export const respondAction: ActionDefinition = {
 	name: "respond",
 	description:
-		"Use this instead of a game-action tool when you need to reply without changing game state -- for example to ask a clarifying question, respond to conversational input, or tell the player you don't understand.",
+		"respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational. message is the text to show.",
 	helpText: "",
 	inputSchema: z.object({
 		message: z.string().describe("The message to show the player"),
