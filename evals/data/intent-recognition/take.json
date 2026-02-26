@@ -1,0 +1,93 @@
+[
+  {
+    "data": {
+      "prompt": "take the lantern",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "brass lantern" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Take an item by name" }
+  },
+  {
+    "data": {
+      "prompt": "pick up the book",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "old book" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language take — pick up" }
+  },
+  {
+    "data": {
+      "prompt": "get the rusty key",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book", "rusty key"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "rusty key" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Take using 'get' synonym" }
+  },
+  {
+    "data": {
+      "prompt": "grab the amulet",
+      "gameState": {
+        "roomName": "The Tower Room",
+        "roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall, open and empty.",
+        "exits": [
+          { "direction": "down", "locked": false }
+        ],
+        "visibleItems": ["wooden chest", "gold amulet"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "item": "gold amulet" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Grab synonym for take — resolves alias to full item name" }
+  }
+]

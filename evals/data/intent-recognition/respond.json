@@ -1,0 +1,77 @@
+[
+  {
+    "data": {
+      "prompt": "go",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "respond",
+      "expectedParams": {},
+      "category": "secondary"
+    },
+    "metadata": { "description": "Ambiguous input — go with no direction should trigger respond" }
+  },
+  {
+    "data": {
+      "prompt": "hello there",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "respond",
+      "expectedParams": {},
+      "category": "secondary"
+    },
+    "metadata": { "description": "Conversational input — not a game command" }
+  },
+  {
+    "data": {
+      "prompt": "asdfgh",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "respond",
+      "expectedParams": {},
+      "category": "secondary"
+    },
+    "metadata": { "description": "Gibberish input — should fall through to respond" }
+  }
+]

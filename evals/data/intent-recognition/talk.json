@@ -1,0 +1,68 @@
+[
+  {
+    "data": {
+      "prompt": "talk to the gardener",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": [],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "talk",
+      "expectedParams": { "npc": "old gardener" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Talk to NPC by role name" }
+  },
+  {
+    "data": {
+      "prompt": "speak with the old man",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": [],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "talk",
+      "expectedParams": { "npc": "old gardener" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language talk — speak with, referring to NPC by alias" }
+  },
+  {
+    "data": {
+      "prompt": "ask the gardener",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": ["brass lantern"],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "talk",
+      "expectedParams": { "npc": "old gardener" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Ask as synonym for talk" }
+  }
+]
