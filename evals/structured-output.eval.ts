@@ -33,7 +33,9 @@ evaluate<
   StructuredOutputEvalTarget,
   StructuredOutputResult
 >({
-  name: "structured-output-intent",
+  name: process.env.EVAL_MODEL
+    ? `structured-output-intent-${process.env.EVAL_MODEL}`
+    : "structured-output-intent",
   data: dataset,
   executor: structuredOutputExecutor,
   evaluators: {

@@ -10,7 +10,9 @@ const executor = async (data: EvalData) => {
 
 // This is an experiment
 evaluate<EvalData, EvalTarget, SingleTurnResult>({
-    name: "move-tool-selection",
+    name: process.env.EVAL_MODEL
+        ? `move-tool-selection-${process.env.EVAL_MODEL}`
+        : "move-tool-selection",
     data: dataset as SingleTurnDatasetEntry[],
     executor,
     evaluators: {

@@ -25,7 +25,7 @@ export async function structuredOutputExecutor(
   );
 
   const result = await generateText({
-    model: openai(data.config?.model ?? "gpt-4o-mini"),
+    model: openai(process.env.EVAL_MODEL ?? data.config?.model ?? "gpt-4o-mini"),
     output: Output.object({ schema: GameActionSchema }),
     system: systemPrompt,
     prompt: data.prompt,
