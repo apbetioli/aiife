@@ -28,7 +28,7 @@ export const singleTurnExecutorWithMocks = async (
   );
 
   const result = await generateText({
-    model: openai(data.config?.model ?? "gpt-5-mini"),
+    model: openai(process.env.EVAL_MODEL ?? data.config?.model ?? "gpt-4o-mini"),
     messages: buildMessages(data),
     tools: tools,
     stopWhen: stepCountIs(1),
