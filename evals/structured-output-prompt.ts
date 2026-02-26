@@ -3,6 +3,7 @@ import type { GameStateSnapshot } from "./types";
 
 /**
  * Plain-text descriptions of each game action from the built-in action registry.
+ * TODO add the input schema?
  */
 const ACTION_DESCRIPTIONS: Record<string, string> = BUILT_IN_ACTIONS.reduce(
 	(acc, action) => {

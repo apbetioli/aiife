@@ -1,6 +1,9 @@
 import { z } from "zod";
 import type { ActionDefinition } from "../ActionRegistry";
 
+// TODO confirm with user. Show:
+// Current score (of total) in X moves
+// Rank
 export const quitAction: ActionDefinition = {
 	name: "quit",
 	description: "End the game",
