@@ -1,27 +1,30 @@
 {
-  "name": "zorky",
-  "version": "1.0.0",
-  "description": "Interactive fiction engine with LLM parser",
-  "type": "module",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "dev": "tsx --env-file=.env src/index.ts",
-    "watch": "tsx watch --env-file=.env src/index.ts",
-    "start": "tsx --env-file=.env src/index.ts",
-    "debug": "DEBUG=true tsx --env-file=.env src/index.ts",
-    "eval": "npx lmnr eval"
-  },
-  "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.46",
-    "@ai-sdk/openai": "^3.0.30",
-    "@lmnr-ai/lmnr": "^0.8.11",
-    "ai": "^6.0.97",
-    "zod": "^3.24.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
-  }
+	"name": "zorky",
+	"version": "1.0.0",
+	"description": "Interactive fiction engine with LLM parser",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsx --env-file=.env src/index.ts",
+		"watch": "tsx watch --env-file=.env src/index.ts",
+		"start": "tsx --env-file=.env src/index.ts",
+		"debug": "DEBUG=true tsx --env-file=.env src/index.ts",
+		"lint": "biome check --unsafe --write .",
+		"format": "biome format --write .",
+		"eval": "npx lmnr eval"
+	},
+	"dependencies": {
+		"@ai-sdk/anthropic": "^3.0.46",
+		"@ai-sdk/openai": "^3.0.30",
+		"@lmnr-ai/lmnr": "^0.8.11",
+		"ai": "^6.0.97",
+		"zod": "^3.24.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.4",
+		"@types/node": "^22.0.0",
+		"tsx": "^4.19.0",
+		"typescript": "^5.7.0"
+	}
 }

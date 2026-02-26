@@ -5,33 +5,33 @@ import type { GameStateSnapshot } from "./types";
  * Each entry describes the action's purpose and parameter schema.
  */
 const ACTION_DESCRIPTIONS: Record<string, string> = {
-  move: `move(direction): Move the player in a direction. direction must be one of: north, south, east, west, up, down.`,
-  look: `look(): Look around the current room. No parameters.`,
-  examine: `examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.`,
-  take: `take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.`,
-  drop: `drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.`,
-  use: `use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.`,
-  open: `open(target): Open a container or door. target is the name of what to open.`,
-  talk: `talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.`,
-  inventory: `inventory(): Check what the player is carrying. No parameters.`,
-  help: `help(): Show the list of available commands. No parameters.`,
-  respond: `respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational. message is the text to show.`,
+	move: `move(direction): Move the player in a direction. direction must be one of: north, south, east, west, up, down.`,
+	look: `look(): Look around the current room. No parameters.`,
+	examine: `examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.`,
+	take: `take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.`,
+	drop: `drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.`,
+	use: `use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.`,
+	open: `open(target): Open a container or door. target is the name of what to open.`,
+	talk: `talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.`,
+	inventory: `inventory(): Check what the player is carrying. No parameters.`,
+	help: `help(): Show the list of available commands. No parameters.`,
+	respond: `respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational. message is the text to show.`,
 };
 
 export function buildAvailableActionsPrompt(actionNames: string[]): string {
-  const descriptions = actionNames
-    .filter((name) => name in ACTION_DESCRIPTIONS)
-    .map((name) => `- ${ACTION_DESCRIPTIONS[name]}`);
+	const descriptions = actionNames
+		.filter((name) => name in ACTION_DESCRIPTIONS)
+		.map((name) => `- ${ACTION_DESCRIPTIONS[name]}`);
 
-  return `Available actions:\n${descriptions.join("\n")}`;
+	return `Available actions:\n${descriptions.join("\n")}`;
 }
 
 export function buildGameStateSnapshotPrompt(state: GameStateSnapshot): string {
-  const exits = state.exits.map((e) =>
-    e.locked ? `${e.direction} (locked)` : e.direction
-  );
+	const exits = state.exits.map((e) =>
+		e.locked ? `${e.direction} (locked)` : e.direction,
+	);
 
-  return `Current state:
+	return `Current state:
   - Room: ${state.roomName} — ${state.roomDescription}
   - Exits: ${exits.length > 0 ? exits.join(", ") : "none"}
   - Visible items: ${state.visibleItems.length > 0 ? state.visibleItems.join(", ") : "none"}
@@ -54,14 +54,14 @@ Rules:
 - For "take X and Y", list each item name in the items array.`;
 
 export function buildStructuredOutputSystemPrompt(
-  gameState: GameStateSnapshot,
-  actions: string[]
+	gameState: GameStateSnapshot,
+	actions: string[],
 ): string {
-  return [
-    STRUCTURED_OUTPUT_SYSTEM_PROMPT,
-    "",
-    buildGameStateSnapshotPrompt(gameState),
-    "",
-    buildAvailableActionsPrompt(actions),
-  ].join("\n");
+	return [
+		STRUCTURED_OUTPUT_SYSTEM_PROMPT,
+		"",
+		buildGameStateSnapshotPrompt(gameState),
+		"",
+		buildAvailableActionsPrompt(actions),
+	].join("\n");
 }

@@ -1,10 +1,10 @@
 import {
-  getCurrentRoom,
-  getInventoryItems,
-  getRoomNPCs,
-  getVisibleItems,
+	getCurrentRoom,
+	getInventoryItems,
+	getRoomNPCs,
+	getVisibleItems,
 } from "../../engine/ActionValidator.js";
-import { GameState } from "../../types.js";
+import type { GameState } from "../../types.js";
 
 export const NARRATION_SYSTEM_PROMPT = `You are the narrator and game master for a text adventure game.
 The tool result below is authoritative — output only what the tool result says. Do not add "You can see: ...", room summaries, inventory lines, "available actions", suggested next steps, or any other extra text. If the tool returned a single description or message, output that and nothing else. If the action is repeated, narrate with a little bit of variation, except for the help tool.
@@ -28,22 +28,22 @@ Do not list "available actions", suggested next steps, or bullet-point options f
 Respond in the same language the player uses.`;
 
 export function buildGameStatePrompt(state: GameState): string {
-  const room = getCurrentRoom(state);
-  const items = getVisibleItems(state);
-  const inv = getInventoryItems(state);
-  const npcs = getRoomNPCs(state);
-  const exits = room.exits.map((e) =>
-    e.locked ? `${e.direction} (locked)` : e.direction
-  );
+	const room = getCurrentRoom(state);
+	const items = getVisibleItems(state);
+	const inv = getInventoryItems(state);
+	const npcs = getRoomNPCs(state);
+	const exits = room.exits.map((e) =>
+		e.locked ? `${e.direction} (locked)` : e.direction,
+	);
 
-  return `Current state:
+	return `Current state:
   - Room: ${room.name} — ${room.description}
   - Exits: ${exits.length > 0 ? exits.join(", ") : "none"}
   - Visible items: ${
-    items.length > 0 ? items.map((i) => i.name).join(", ") : "none"
-  }
+		items.length > 0 ? items.map((i) => i.name).join(", ") : "none"
+	}
   - Inventory: ${inv.length > 0 ? inv.map((i) => i.name).join(", ") : "empty"}
   - NPCs here: ${
-    npcs.length > 0 ? npcs.map((n) => n.name).join(", ") : "none"
-  }`;
+		npcs.length > 0 ? npcs.map((n) => n.name).join(", ") : "none"
+	}`;
 }
