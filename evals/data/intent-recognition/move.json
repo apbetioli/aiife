@@ -1,0 +1,124 @@
+[
+  {
+    "data": {
+      "prompt": "go north",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "north" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Explicit move command with direction" }
+  },
+  {
+    "data": {
+      "prompt": "n",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "north" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Single-letter direction abbreviation" }
+  },
+  {
+    "data": {
+      "prompt": "climb the stairs",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. A grand staircase spirals upward.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "up" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Natural language movement — climb stairs implies up" }
+  },
+  {
+    "data": {
+      "prompt": "walk west",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls. Passages lead north and west.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "west" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Walk synonym for move with direction" }
+  },
+  {
+    "data": {
+      "prompt": "east",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": [],
+        "npcsHere": ["old gardener"]
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "move",
+      "expectedParams": { "direction": "east" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Bare direction word as move command" }
+  }
+]

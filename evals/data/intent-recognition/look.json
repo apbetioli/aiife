@@ -1,0 +1,46 @@
+[
+  {
+    "data": {
+      "prompt": "look around",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "look",
+      "expectedParams": {},
+      "category": "golden"
+    },
+    "metadata": { "description": "Look around the room — no target" }
+  },
+  {
+    "data": {
+      "prompt": "look",
+      "gameState": {
+        "roomName": "The Cellar",
+        "roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+        "exits": [
+          { "direction": "up", "locked": false }
+        ],
+        "visibleItems": ["stone pedestal"],
+        "inventory": ["gold amulet"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "look",
+      "expectedParams": {},
+      "category": "golden"
+    },
+    "metadata": { "description": "Bare look command — survey the room" }
+  }
+]

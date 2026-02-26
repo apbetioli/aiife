@@ -1,0 +1,46 @@
+[
+  {
+    "data": {
+      "prompt": "open the chest",
+      "gameState": {
+        "roomName": "The Tower Room",
+        "roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+        "exits": [
+          { "direction": "down", "locked": false }
+        ],
+        "visibleItems": ["wooden chest"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "open",
+      "expectedParams": { "target": "wooden chest" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Open a container" }
+  },
+  {
+    "data": {
+      "prompt": "open it",
+      "gameState": {
+        "roomName": "The Tower Room",
+        "roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+        "exits": [
+          { "direction": "down", "locked": false }
+        ],
+        "visibleItems": ["wooden chest"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "open",
+      "expectedParams": { "target": "wooden chest" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Pronoun reference — only openable item in room is the chest" }
+  }
+]

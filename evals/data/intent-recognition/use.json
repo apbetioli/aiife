@@ -1,0 +1,71 @@
+[
+  {
+    "data": {
+      "prompt": "use key on door",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall. A heavy iron door is set into the floor.",
+        "exits": [
+          { "direction": "north", "locked": false },
+          { "direction": "west", "locked": false },
+          { "direction": "up", "locked": false },
+          { "direction": "down", "locked": true }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": ["rusty key"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "use",
+      "expectedParams": { "item": "rusty key", "target": "door" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Use item on target" }
+  },
+  {
+    "data": {
+      "prompt": "use the amulet on the pedestal",
+      "gameState": {
+        "roomName": "The Cellar",
+        "roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+        "exits": [
+          { "direction": "up", "locked": false }
+        ],
+        "visibleItems": ["stone pedestal"],
+        "inventory": ["gold amulet"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "use",
+      "expectedParams": { "item": "gold amulet", "target": "stone pedestal" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Use item on target — full names" }
+  },
+  {
+    "data": {
+      "prompt": "use lantern",
+      "gameState": {
+        "roomName": "The Cellar",
+        "roomDescription": "A cold, damp cellar. Water drips from the low ceiling. It is very dark.",
+        "exits": [
+          { "direction": "up", "locked": false }
+        ],
+        "visibleItems": ["stone pedestal"],
+        "inventory": ["brass lantern"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "use",
+      "expectedParams": { "item": "brass lantern" },
+      "category": "golden"
+    },
+    "metadata": { "description": "Use item with no explicit target" }
+  }
+]
