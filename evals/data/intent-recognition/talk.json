@@ -5,7 +5,7 @@
 			"gameState": {
 				"roomName": "The Garden",
 				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east", "locked": false }],
+				"exits": [{ "direction": "east" }],
 				"visibleItems": [],
 				"inventory": [],
 				"npcsHere": ["old gardener"]
@@ -37,7 +37,7 @@
 			"gameState": {
 				"roomName": "The Garden",
 				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east", "locked": false }],
+				"exits": [{ "direction": "east" }],
 				"visibleItems": [],
 				"inventory": [],
 				"npcsHere": ["old gardener"]
@@ -71,7 +71,7 @@
 			"gameState": {
 				"roomName": "The Garden",
 				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east", "locked": false }],
+				"exits": [{ "direction": "east" }],
 				"visibleItems": [],
 				"inventory": ["brass lantern"],
 				"npcsHere": ["old gardener"]

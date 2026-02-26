@@ -34,7 +34,7 @@ export async function structuredOutputExecutor(
 		temperature: data.config?.temperature,
 	});
 
-	const parsed = result.output!;
+	const parsed = result.output;
 
 	// Strip null values so evaluators only see actual params
 	const params: Record<string, unknown> = {};

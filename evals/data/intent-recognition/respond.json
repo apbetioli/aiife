@@ -6,9 +6,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -45,9 +45,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -82,9 +82,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],

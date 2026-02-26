@@ -6,9 +6,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -42,7 +42,7 @@
 			"gameState": {
 				"roomName": "The Library",
 				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south", "locked": false }],
+				"exits": [{ "direction": "south" }],
 				"visibleItems": ["old book"],
 				"inventory": [],
 				"npcsHere": []
@@ -74,7 +74,7 @@
 			"gameState": {
 				"roomName": "The Library",
 				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south", "locked": false }],
+				"exits": [{ "direction": "south" }],
 				"visibleItems": ["old book", "rusty key"],
 				"inventory": [],
 				"npcsHere": []
@@ -106,7 +106,7 @@
 			"gameState": {
 				"roomName": "The Tower Room",
 				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall, open and empty.",
-				"exits": [{ "direction": "down", "locked": false }],
+				"exits": [{ "direction": "down" }],
 				"visibleItems": ["wooden chest", "gold amulet"],
 				"inventory": [],
 				"npcsHere": []
@@ -140,7 +140,7 @@
 			"gameState": {
 				"roomName": "The Library",
 				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south", "locked": false }],
+				"exits": [{ "direction": "south" }],
 				"visibleItems": ["brass lantern", "old book"],
 				"inventory": [],
 				"npcsHere": []
@@ -172,7 +172,7 @@
 			"gameState": {
 				"roomName": "The Library",
 				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south", "locked": false }],
+				"exits": [{ "direction": "south" }],
 				"visibleItems": ["old book", "rusty key"],
 				"inventory": [],
 				"npcsHere": []
@@ -204,7 +204,7 @@
 			"gameState": {
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall.",
-				"exits": [{ "direction": "north", "locked": false }],
+				"exits": [{ "direction": "north" }],
 				"visibleItems": ["brass lantern"],
 				"inventory": [],
 				"npcsHere": []

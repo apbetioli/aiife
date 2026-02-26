@@ -5,7 +5,7 @@
 			"gameState": {
 				"roomName": "The Library",
 				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south", "locked": false }],
+				"exits": [{ "direction": "south" }],
 				"visibleItems": ["old book"],
 				"inventory": [],
 				"npcsHere": []
@@ -37,7 +37,7 @@
 			"gameState": {
 				"roomName": "The Cellar",
 				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"exits": [{ "direction": "up", "locked": false }],
+				"exits": [{ "direction": "up" }],
 				"visibleItems": ["stone pedestal"],
 				"inventory": ["gold amulet"],
 				"npcsHere": []
@@ -69,7 +69,7 @@
 			"gameState": {
 				"roomName": "The Cellar",
 				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"exits": [{ "direction": "up", "locked": false }],
+				"exits": [{ "direction": "up" }],
 				"visibleItems": ["stone pedestal"],
 				"inventory": ["gold amulet"],
 				"npcsHere": []
