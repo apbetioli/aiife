@@ -12,6 +12,7 @@
 		"debug": "DEBUG=true tsx --env-file=.env src/index.ts",
 		"lint": "biome check --unsafe --write .",
 		"format": "biome format --write .",
+		"biome": "npm run format && npm run lint",
 		"eval": "npx lmnr eval"
 	},
 	"dependencies": {
