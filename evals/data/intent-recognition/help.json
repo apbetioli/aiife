@@ -1,27 +1,39 @@
 [
-  {
-    "data": {
-      "prompt": "help",
-      "gameState": {
-        "roomName": "The Great Hall",
-        "roomDescription": "You stand in a vast stone hall.",
-        "exits": [
-          { "direction": "north", "locked": false },
-          { "direction": "west", "locked": false },
-          { "direction": "up", "locked": false },
-          { "direction": "down", "locked": true }
-        ],
-        "visibleItems": ["brass lantern"],
-        "inventory": [],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "help",
-      "expectedParams": {},
-      "category": "golden"
-    },
-    "metadata": { "description": "Help command" }
-  }
+	{
+		"data": {
+			"prompt": "help",
+			"gameState": {
+				"roomName": "The Great Hall",
+				"roomDescription": "You stand in a vast stone hall.",
+				"exits": [
+					{ "direction": "north", "locked": false },
+					{ "direction": "west", "locked": false },
+					{ "direction": "up", "locked": false },
+					{ "direction": "down", "locked": true }
+				],
+				"visibleItems": ["brass lantern"],
+				"inventory": [],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "help",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": { "description": "Help command" }
+	}
 ]

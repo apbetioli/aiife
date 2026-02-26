@@ -1,112 +1,168 @@
 [
-  {
-    "data": {
-      "prompt": "examine the old book",
-      "gameState": {
-        "roomName": "The Library",
-        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-        "exits": [
-          { "direction": "south", "locked": false }
-        ],
-        "visibleItems": ["old book"],
-        "inventory": [],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "examine",
-      "expectedParams": { "target": "old book" },
-      "category": "golden"
-    },
-    "metadata": { "description": "Examine a visible item by name" }
-  },
-  {
-    "data": {
-      "prompt": "look at alcove",
-      "gameState": {
-        "roomName": "The Library",
-        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room. A curious alcove is set into the far wall.",
-        "exits": [
-          { "direction": "south", "locked": false }
-        ],
-        "visibleItems": ["old book"],
-        "inventory": [],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "examine",
-      "expectedParams": { "target": "alcove" },
-      "category": "golden"
-    },
-    "metadata": { "description": "Look at something specific — should use examine, not look" }
-  },
-  {
-    "data": {
-      "prompt": "x pedestal",
-      "gameState": {
-        "roomName": "The Cellar",
-        "roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-        "exits": [
-          { "direction": "up", "locked": false }
-        ],
-        "visibleItems": ["stone pedestal"],
-        "inventory": ["gold amulet"],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "examine",
-      "expectedParams": { "target": "pedestal" },
-      "category": "golden"
-    },
-    "metadata": { "description": "Shorthand examine command (x)" }
-  },
-  {
-    "data": {
-      "prompt": "read the book",
-      "gameState": {
-        "roomName": "The Library",
-        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-        "exits": [
-          { "direction": "south", "locked": false }
-        ],
-        "visibleItems": ["old book"],
-        "inventory": [],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "examine",
-      "expectedParams": { "target": "old book" },
-      "category": "golden"
-    },
-    "metadata": { "description": "Read as synonym for examine on a readable item" }
-  },
-  {
-    "data": {
-      "prompt": "look inside the box",
-      "gameState": {
-        "roomName": "The Tower Room",
-        "roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-        "exits": [
-          { "direction": "down", "locked": false }
-        ],
-        "visibleItems": ["wooden chest"],
-        "inventory": [],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "examine",
-      "expectedParams": { "target": "wooden chest" },
-      "category": "golden"
-    },
-    "metadata": { "description": "Look inside container — should map to examine using item alias" }
-  }
+	{
+		"data": {
+			"prompt": "examine the old book",
+			"gameState": {
+				"roomName": "The Library",
+				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"exits": [{ "direction": "south", "locked": false }],
+				"visibleItems": ["old book"],
+				"inventory": [],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": { "target": "old book" },
+			"category": "golden"
+		},
+		"metadata": { "description": "Examine a visible item by name" }
+	},
+	{
+		"data": {
+			"prompt": "look at alcove",
+			"gameState": {
+				"roomName": "The Library",
+				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room. A curious alcove is set into the far wall.",
+				"exits": [{ "direction": "south", "locked": false }],
+				"visibleItems": ["old book"],
+				"inventory": [],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": { "target": "alcove" },
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Look at something specific — should use examine, not look"
+		}
+	},
+	{
+		"data": {
+			"prompt": "x pedestal",
+			"gameState": {
+				"roomName": "The Cellar",
+				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+				"exits": [{ "direction": "up", "locked": false }],
+				"visibleItems": ["stone pedestal"],
+				"inventory": ["gold amulet"],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": { "target": "pedestal" },
+			"category": "golden"
+		},
+		"metadata": { "description": "Shorthand examine command (x)" }
+	},
+	{
+		"data": {
+			"prompt": "read the book",
+			"gameState": {
+				"roomName": "The Library",
+				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"exits": [{ "direction": "south", "locked": false }],
+				"visibleItems": ["old book"],
+				"inventory": [],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": { "target": "old book" },
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Read as synonym for examine on a readable item"
+		}
+	},
+	{
+		"data": {
+			"prompt": "look inside the box",
+			"gameState": {
+				"roomName": "The Tower Room",
+				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+				"exits": [{ "direction": "down", "locked": false }],
+				"visibleItems": ["wooden chest"],
+				"inventory": [],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": { "target": "wooden chest" },
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Look inside container — should map to examine using item alias"
+		}
+	}
 ]

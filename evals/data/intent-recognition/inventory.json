@@ -1,71 +1,105 @@
 [
-  {
-    "data": {
-      "prompt": "what am I carrying?",
-      "gameState": {
-        "roomName": "The Great Hall",
-        "roomDescription": "You stand in a vast stone hall.",
-        "exits": [
-          { "direction": "north", "locked": false },
-          { "direction": "west", "locked": false },
-          { "direction": "up", "locked": false },
-          { "direction": "down", "locked": true }
-        ],
-        "visibleItems": ["brass lantern"],
-        "inventory": ["old book", "rusty key"],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "inventory",
-      "expectedParams": {},
-      "category": "golden"
-    },
-    "metadata": { "description": "Natural language inventory check" }
-  },
-  {
-    "data": {
-      "prompt": "i",
-      "gameState": {
-        "roomName": "The Library",
-        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-        "exits": [
-          { "direction": "south", "locked": false }
-        ],
-        "visibleItems": ["old book"],
-        "inventory": ["brass lantern"],
-        "npcsHere": []
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "inventory",
-      "expectedParams": {},
-      "category": "golden"
-    },
-    "metadata": { "description": "Classic IF single-letter inventory shorthand" }
-  },
-  {
-    "data": {
-      "prompt": "inventory",
-      "gameState": {
-        "roomName": "The Garden",
-        "roomDescription": "A walled garden, overgrown but still beautiful.",
-        "exits": [
-          { "direction": "east", "locked": false }
-        ],
-        "visibleItems": [],
-        "inventory": ["brass lantern", "old book", "rusty key"],
-        "npcsHere": ["old gardener"]
-      },
-      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
-    },
-    "target": {
-      "expectedAction": "inventory",
-      "expectedParams": {},
-      "category": "golden"
-    },
-    "metadata": { "description": "Explicit inventory command" }
-  }
+	{
+		"data": {
+			"prompt": "what am I carrying?",
+			"gameState": {
+				"roomName": "The Great Hall",
+				"roomDescription": "You stand in a vast stone hall.",
+				"exits": [
+					{ "direction": "north", "locked": false },
+					{ "direction": "west", "locked": false },
+					{ "direction": "up", "locked": false },
+					{ "direction": "down", "locked": true }
+				],
+				"visibleItems": ["brass lantern"],
+				"inventory": ["old book", "rusty key"],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "inventory",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": { "description": "Natural language inventory check" }
+	},
+	{
+		"data": {
+			"prompt": "i",
+			"gameState": {
+				"roomName": "The Library",
+				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"exits": [{ "direction": "south", "locked": false }],
+				"visibleItems": ["old book"],
+				"inventory": ["brass lantern"],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "inventory",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Classic IF single-letter inventory shorthand"
+		}
+	},
+	{
+		"data": {
+			"prompt": "inventory",
+			"gameState": {
+				"roomName": "The Garden",
+				"roomDescription": "A walled garden, overgrown but still beautiful.",
+				"exits": [{ "direction": "east", "locked": false }],
+				"visibleItems": [],
+				"inventory": ["brass lantern", "old book", "rusty key"],
+				"npcsHere": ["old gardener"]
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "inventory",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": { "description": "Explicit inventory command" }
+	}
 ]

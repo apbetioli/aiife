@@ -1,56 +1,71 @@
 import { evaluate } from "@lmnr-ai/lmnr";
-import move from "./data/intent-recognition/move.json" with { type: "json" };
-import look from "./data/intent-recognition/look.json" with { type: "json" };
-import examine from "./data/intent-recognition/examine.json" with { type: "json" };
-import take from "./data/intent-recognition/take.json" with { type: "json" };
 import drop from "./data/intent-recognition/drop.json" with { type: "json" };
-import use from "./data/intent-recognition/use.json" with { type: "json" };
-import open from "./data/intent-recognition/open.json" with { type: "json" };
-import talk from "./data/intent-recognition/talk.json" with { type: "json" };
-import inventory from "./data/intent-recognition/inventory.json" with { type: "json" };
+import examine from "./data/intent-recognition/examine.json" with {
+	type: "json",
+};
 import help from "./data/intent-recognition/help.json" with { type: "json" };
-import respond from "./data/intent-recognition/respond.json" with { type: "json" };
+import inventory from "./data/intent-recognition/inventory.json" with {
+	type: "json",
+};
+import look from "./data/intent-recognition/look.json" with { type: "json" };
+import move from "./data/intent-recognition/move.json" with { type: "json" };
+import open from "./data/intent-recognition/open.json" with { type: "json" };
+import respond from "./data/intent-recognition/respond.json" with {
+	type: "json",
+};
+import take from "./data/intent-recognition/take.json" with { type: "json" };
+import talk from "./data/intent-recognition/talk.json" with { type: "json" };
+import use from "./data/intent-recognition/use.json" with { type: "json" };
 import {
-  actionSelectionScore,
-  parameterAccuracyScore,
-  combinedIntentScore,
+	actionSelectionScore,
+	combinedIntentScore,
+	parameterAccuracyScore,
 } from "./structured-output-evaluators";
 import { structuredOutputExecutor } from "./structured-output-executor";
 import type {
-  StructuredOutputEvalData,
-  StructuredOutputEvalTarget,
-  StructuredOutputResult,
-  StructuredOutputDatasetEntry,
+	StructuredOutputDatasetEntry,
+	StructuredOutputEvalData,
+	StructuredOutputEvalTarget,
+	StructuredOutputResult,
 } from "./types";
 
 const dataset = [
-  ...move, ...look, ...examine, ...take, ...drop,
-  ...use, ...open, ...talk, ...inventory, ...help, ...respond,
+	...move,
+	...look,
+	...examine,
+	...take,
+	...drop,
+	...use,
+	...open,
+	...talk,
+	...inventory,
+	...help,
+	...respond,
 ] as StructuredOutputDatasetEntry[];
 
 evaluate<
-  StructuredOutputEvalData,
-  StructuredOutputEvalTarget,
-  StructuredOutputResult
+	StructuredOutputEvalData,
+	StructuredOutputEvalTarget,
+	StructuredOutputResult
 >({
-  name: process.env.EVAL_MODEL
-    ? `structured-output-intent-${process.env.EVAL_MODEL}`
-    : "structured-output-intent",
-  data: dataset,
-  executor: structuredOutputExecutor,
-  evaluators: {
-    actionSelection: (output, target) => {
-      if (target?.category === "secondary") return 1;
-      return actionSelectionScore(output, target);
-    },
-    parameterAccuracy: (output, target) => {
-      if (target?.category === "secondary") return 1;
-      return parameterAccuracyScore(output, target);
-    },
-    combined: (output, target) => {
-      if (target?.category === "secondary") return 1;
-      return combinedIntentScore(output, target);
-    },
-  },
-  groupName: "intent-recognition",
+	name: process.env.EVAL_MODEL
+		? `structured-output-intent-${process.env.EVAL_MODEL}`
+		: "structured-output-intent",
+	data: dataset,
+	executor: structuredOutputExecutor,
+	evaluators: {
+		actionSelection: (output, target) => {
+			if (target?.category === "secondary") return 1;
+			return actionSelectionScore(output, target);
+		},
+		parameterAccuracy: (output, target) => {
+			if (target?.category === "secondary") return 1;
+			return parameterAccuracyScore(output, target);
+		},
+		combined: (output, target) => {
+			if (target?.category === "secondary") return 1;
+			return combinedIntentScore(output, target);
+		},
+	},
+	groupName: "intent-recognition",
 });

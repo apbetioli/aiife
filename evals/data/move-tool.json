@@ -1,65 +1,59 @@
 [
-    {
-        "data": {
-            "prompt": "go north",
-            "tools": [
-                "move",
-                "look",
-                "examine",
-                "use",
-                "take",
-                "drop",
-                "inventory",
-                "help"
-            ]
-        },
-        "target": {
-            "expectedTools": [
-                "move"
-            ],
-            "category": "golden"
-        }
-    },
-    {
-        "data": {
-            "prompt": "north",
-            "tools": [
-                "move",
-                "look",
-                "examine",
-                "use",
-                "take",
-                "drop",
-                "inventory",
-                "help"
-            ]
-        },
-        "target": {
-            "expectedTools": [
-                "move"
-            ],
-            "category": "golden"
-        }
-    },
-    {
-        "data": {
-            "prompt": "n",
-            "tools": [
-                "move",
-                "look",
-                "examine",
-                "use",
-                "take",
-                "drop",
-                "inventory",
-                "help"
-            ]
-        },
-        "target": {
-            "expectedTools": [
-                "move"
-            ],
-            "category": "golden"
-        }
-    }
+	{
+		"data": {
+			"prompt": "go north",
+			"tools": [
+				"move",
+				"look",
+				"examine",
+				"use",
+				"take",
+				"drop",
+				"inventory",
+				"help"
+			]
+		},
+		"target": {
+			"expectedTools": ["move"],
+			"category": "golden"
+		}
+	},
+	{
+		"data": {
+			"prompt": "north",
+			"tools": [
+				"move",
+				"look",
+				"examine",
+				"use",
+				"take",
+				"drop",
+				"inventory",
+				"help"
+			]
+		},
+		"target": {
+			"expectedTools": ["move"],
+			"category": "golden"
+		}
+	},
+	{
+		"data": {
+			"prompt": "n",
+			"tools": [
+				"move",
+				"look",
+				"examine",
+				"use",
+				"take",
+				"drop",
+				"inventory",
+				"help"
+			]
+		},
+		"target": {
+			"expectedTools": ["move"],
+			"category": "golden"
+		}
+	}
 ]
