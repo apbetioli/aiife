@@ -19,7 +19,7 @@
     },
     "target": {
       "expectedAction": "take",
-      "expectedParams": { "item": "brass lantern" },
+      "expectedParams": { "items": ["brass lantern"] },
       "category": "golden"
     },
     "metadata": { "description": "Take an item by name" }
@@ -41,7 +41,7 @@
     },
     "target": {
       "expectedAction": "take",
-      "expectedParams": { "item": "old book" },
+      "expectedParams": { "items": ["old book"] },
       "category": "golden"
     },
     "metadata": { "description": "Natural language take — pick up" }
@@ -63,7 +63,7 @@
     },
     "target": {
       "expectedAction": "take",
-      "expectedParams": { "item": "rusty key" },
+      "expectedParams": { "items": ["rusty key"] },
       "category": "golden"
     },
     "metadata": { "description": "Take using 'get' synonym" }
@@ -85,9 +85,75 @@
     },
     "target": {
       "expectedAction": "take",
-      "expectedParams": { "item": "gold amulet" },
+      "expectedParams": { "items": ["gold amulet"] },
       "category": "golden"
     },
     "metadata": { "description": "Grab synonym for take — resolves alias to full item name" }
+  },
+  {
+    "data": {
+      "prompt": "take the lantern and the book",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["brass lantern", "old book"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "items": ["brass lantern", "old book"] },
+      "category": "golden"
+    },
+    "metadata": { "description": "Take multiple items with 'and'" }
+  },
+  {
+    "data": {
+      "prompt": "take everything",
+      "gameState": {
+        "roomName": "The Library",
+        "roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
+        "exits": [
+          { "direction": "south", "locked": false }
+        ],
+        "visibleItems": ["old book", "rusty key"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "items": ["old book", "rusty key"] },
+      "category": "golden"
+    },
+    "metadata": { "description": "Take everything — lists all visible items" }
+  },
+  {
+    "data": {
+      "prompt": "get all",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false }
+        ],
+        "visibleItems": ["brass lantern"],
+        "inventory": [],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "take",
+      "expectedParams": { "items": ["brass lantern"] },
+      "category": "golden"
+    },
+    "metadata": { "description": "Get all — single visible item" }
   }
 ]

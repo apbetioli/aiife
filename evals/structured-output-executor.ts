@@ -10,7 +10,7 @@ const GameActionSchema = z.object({
   params: z.object({
     direction: z.string().nullable(),
     target: z.string().nullable(),
-    item: z.string().nullable(),
+    items: z.array(z.string()).nullable(),
     npc: z.string().nullable(),
     message: z.string().nullable(),
   }),

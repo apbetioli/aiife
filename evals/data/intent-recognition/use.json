@@ -19,7 +19,7 @@
     },
     "target": {
       "expectedAction": "use",
-      "expectedParams": { "item": "rusty key", "target": "door" },
+      "expectedParams": { "items": ["rusty key"], "target": "door" },
       "category": "golden"
     },
     "metadata": { "description": "Use item on target" }
@@ -41,7 +41,7 @@
     },
     "target": {
       "expectedAction": "use",
-      "expectedParams": { "item": "gold amulet", "target": "stone pedestal" },
+      "expectedParams": { "items": ["gold amulet"], "target": "stone pedestal" },
       "category": "golden"
     },
     "metadata": { "description": "Use item on target — full names" }
@@ -63,7 +63,7 @@
     },
     "target": {
       "expectedAction": "use",
-      "expectedParams": { "item": "brass lantern" },
+      "expectedParams": { "items": ["brass lantern"] },
       "category": "golden"
     },
     "metadata": { "description": "Use item with no explicit target" }

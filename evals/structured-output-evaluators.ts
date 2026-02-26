@@ -36,10 +36,32 @@ export function parameterAccuracyScore(
 
     if (expected === undefined || produced === undefined) continue;
 
-    const expStr = String(expected).trim().toLowerCase();
-    const prodStr = String(produced).trim().toLowerCase();
+    // Both arrays — normalize (lowercase, sort) and compare element-wise
+    if (Array.isArray(expected) && Array.isArray(produced)) {
+      const expArr = expected.map((e: unknown) =>
+        String(e).trim().toLowerCase()
+      );
+      const prodArr = produced.map((p: unknown) =>
+        String(p).trim().toLowerCase()
+      );
+      expArr.sort();
+      prodArr.sort();
+      if (
+        expArr.length === prodArr.length &&
+        expArr.every((v: string, i: number) => v === prodArr[i])
+      ) {
+        matches++;
+      }
+      continue;
+    }
 
-    if (expStr === prodStr) matches++;
+    // Both scalars — existing string comparison
+    if (!Array.isArray(expected) && !Array.isArray(produced)) {
+      const expStr = String(expected).trim().toLowerCase();
+      const prodStr = String(produced).trim().toLowerCase();
+      if (expStr === prodStr) matches++;
+    }
+    // Mismatched types (one array, one scalar) — no match
   }
 
   return matches / allKeys.length;

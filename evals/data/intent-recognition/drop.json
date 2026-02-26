@@ -16,7 +16,7 @@
     },
     "target": {
       "expectedAction": "drop",
-      "expectedParams": { "item": "brass lantern" },
+      "expectedParams": { "items": ["brass lantern"] },
       "category": "golden"
     },
     "metadata": { "description": "Drop an inventory item" }
@@ -41,9 +41,53 @@
     },
     "target": {
       "expectedAction": "drop",
-      "expectedParams": { "item": "old book" },
+      "expectedParams": { "items": ["old book"] },
       "category": "golden"
     },
     "metadata": { "description": "Put down as synonym for drop" }
+  },
+  {
+    "data": {
+      "prompt": "drop all but the lamp",
+      "gameState": {
+        "roomName": "The Great Hall",
+        "roomDescription": "You stand in a vast stone hall.",
+        "exits": [
+          { "direction": "north", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": ["brass lantern", "old book", "rusty key"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "drop",
+      "expectedParams": { "items": ["old book", "rusty key"] },
+      "category": "golden"
+    },
+    "metadata": { "description": "Drop all but one item — excludes the lamp" }
+  },
+  {
+    "data": {
+      "prompt": "drop everything",
+      "gameState": {
+        "roomName": "The Garden",
+        "roomDescription": "A walled garden, overgrown but still beautiful.",
+        "exits": [
+          { "direction": "east", "locked": false }
+        ],
+        "visibleItems": [],
+        "inventory": ["brass lantern", "old book"],
+        "npcsHere": []
+      },
+      "availableActions": ["move", "look", "examine", "take", "drop", "use", "open", "talk", "inventory", "help", "respond"]
+    },
+    "target": {
+      "expectedAction": "drop",
+      "expectedParams": { "items": ["brass lantern", "old book"] },
+      "category": "golden"
+    },
+    "metadata": { "description": "Drop everything — lists all inventory items" }
   }
 ]
