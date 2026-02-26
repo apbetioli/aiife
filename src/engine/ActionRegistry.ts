@@ -63,15 +63,26 @@ export type EffectApplier = (
 // Interaction trigger helpers
 // ---------------------------------------------------------------------------
 
+/** Split "the X, the Y and the Z" into ["X", "Y", "Z"], stripping articles. */
+function splitItemList(raw: string): string[] {
+  return raw
+    .split(/\s*(?:,\s*(?:and\s+)?|(?:^|,?\s+)and\s+)\s*/i)
+    .map((s) => s.replace(/^(?:the|a|an)\s+/i, "").trim())
+    .filter(Boolean);
+}
+
 function keywordMatches(text: string | undefined, keywords: string[]): boolean {
   if (!text) return false;
   const lower = text.toLowerCase();
   return keywords.some((kw) => lower.includes(kw.toLowerCase()));
 }
 
-/** Primary target: item > target > npc (matches old action.target semantics). */
+/** Primary target: items[0] > item > target > npc (matches old action.target semantics). */
 function getPrimaryTarget(params: Record<string, unknown>): string | undefined {
-  return (params.item ?? params.target ?? params.npc) as string | undefined;
+  const items = params.items as string[] | undefined;
+  return (items?.[0] ?? params.item ?? params.target ?? params.npc) as
+    | string
+    | undefined;
 }
 
 /** Secondary target: params.target when params.item is the primary (e.g. "use key on door"). */
@@ -643,54 +654,108 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
 
   registry.register({
     name: "take",
-    description: "Pick up an item from the current room",
-    helpText: "**take <item>** -- Pick up an item",
+    description: "Pick up items from the current room",
+    helpText:
+      "**take <items>** -- Pick up items (supports 'take all', 'take all but X')",
     inputSchema: z.object({
-      item: z.string().describe("Name of the item to take"),
+      items: z.array(z.string()).min(1).describe("Names of items to take"),
     }),
     parsePatterns: [
+      // "take all/everything but/except X, Y"
+      {
+        pattern:
+          /^(?:take|get|pick\s+up)\s+(?:all|everything)\s+(?:but|except)\s+(.+)$/,
+        extract: (m) => ({
+          items: [],
+          all: true,
+          except: splitItemList(m[1]),
+        }),
+      },
+      // "take all/everything"
+      {
+        pattern: /^(?:take|get|pick\s+up)\s+(?:all|everything)$/,
+        extract: () => ({ items: [], all: true }),
+      },
+      // "take X, Y and Z" / "get X"
       {
         pattern: /^(?:take|get)\s+(.+)$/,
-        extract: (m) => ({ item: m[1].trim() }),
+        extract: (m) => ({ items: splitItemList(m[1]) }),
       },
+      // "pick up X, Y and Z"
       {
         pattern: /^pick\s+up\s+(.+)$/,
-        extract: (m) => ({ item: m[1].trim() }),
+        extract: (m) => ({ items: splitItemList(m[1]) }),
       },
     ],
-    handler(params, state) {
-      const itemName = params.item as string | undefined;
-      if (!itemName) {
+    handler(params, state, reg) {
+      // Expand "all" / "all except" from parser
+      let names: string[];
+      if (params.all) {
+        const visible = getVisibleItems(state).filter(
+          (i) =>
+            i.traits.includes("portable") && !isItemInInventory(i.id, state)
+        );
+        const exceptList = (params.except as string[] | undefined) ?? [];
+        const exceptLower = exceptList.map((e) => e.toLowerCase());
+        names = visible
+          .filter((i) => !exceptLower.includes(i.name.toLowerCase()))
+          .map((i) => i.name);
+        if (names.length === 0) {
+          return {
+            success: false,
+            message: "There's nothing here to take.",
+          };
+        }
+      } else {
+        names = params.items as string[];
+      }
+
+      if (!names || names.length === 0) {
         return { success: false, message: "What do you want to take?" };
       }
 
-      const item = resolveItem(itemName, state);
-      if (!item) {
-        return {
-          success: false,
-          message: `You don't see any "${itemName}" here.`,
-        };
-      }
-      if (!item.traits.includes("portable")) {
-        return {
-          success: false,
-          message: `You can't pick up the ${item.name}.`,
-        };
-      }
-      if (isItemInInventory(item.id, state)) {
-        return {
-          success: false,
-          message: `You already have the ${item.name}.`,
-        };
-      }
-      if (!isItemInRoom(item.id, state)) {
-        return { success: false, message: `The ${item.name} isn't here.` };
+      const messages: string[] = [];
+      let anySuccess = false;
+
+      for (const itemName of names) {
+        // Per-item interaction check
+        const interactionResult = reg.runInteractions(
+          "take",
+          { item: itemName, items: [itemName] },
+          state
+        );
+        if (interactionResult) {
+          messages.push(interactionResult.message);
+          if (interactionResult.success) anySuccess = true;
+          continue;
+        }
+
+        const item = resolveItem(itemName, state);
+        if (!item) {
+          messages.push(`You don't see any "${itemName}" here.`);
+          continue;
+        }
+        if (!item.traits.includes("portable")) {
+          messages.push(`You can't pick up the ${item.name}.`);
+          continue;
+        }
+        if (isItemInInventory(item.id, state)) {
+          messages.push(`You already have the ${item.name}.`);
+          continue;
+        }
+        if (!isItemInRoom(item.id, state)) {
+          messages.push(`The ${item.name} isn't here.`);
+          continue;
+        }
+
+        const room = getCurrentRoom(state);
+        room.itemIds = room.itemIds.filter((id) => id !== item.id);
+        state.inventory.push(item.id);
+        messages.push(`You pick up the ${item.name}.`);
+        anySuccess = true;
       }
 
-      const room = getCurrentRoom(state);
-      room.itemIds = room.itemIds.filter((id) => id !== item.id);
-      state.inventory.push(item.id);
-      return { message: `You pick up the ${item.name}.`, success: true };
+      return { message: messages.join("\n"), success: anySuccess };
     },
   });
 
@@ -698,45 +763,97 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
 
   registry.register({
     name: "drop",
-    description: "Drop an item from inventory into the current room",
-    helpText: "**drop <item>** -- Put down an item",
+    description: "Drop items from inventory into the current room",
+    helpText:
+      "**drop <items>** -- Put down items (supports 'drop all', 'drop all but X')",
     inputSchema: z.object({
-      item: z.string().describe("Name of the item to drop"),
+      items: z.array(z.string()).min(1).describe("Names of items to drop"),
     }),
     parsePatterns: [
+      // "drop all/everything but/except X, Y"
+      {
+        pattern:
+          /^(?:drop|put\s+down)\s+(?:all|everything)\s+(?:but|except)\s+(.+)$/,
+        extract: (m) => ({
+          items: [],
+          all: true,
+          except: splitItemList(m[1]),
+        }),
+      },
+      // "drop all/everything"
+      {
+        pattern: /^(?:drop|put\s+down)\s+(?:all|everything)$/,
+        extract: () => ({ items: [], all: true }),
+      },
+      // "drop X, Y and Z"
       {
         pattern: /^drop\s+(.+)$/,
-        extract: (m) => ({ item: m[1].trim() }),
+        extract: (m) => ({ items: splitItemList(m[1]) }),
       },
+      // "put down X, Y and Z"
       {
         pattern: /^put\s+down\s+(.+)$/,
-        extract: (m) => ({ item: m[1].trim() }),
+        extract: (m) => ({ items: splitItemList(m[1]) }),
       },
     ],
-    handler(params, state) {
-      const itemName = params.item as string | undefined;
-      if (!itemName) {
+    handler(params, state, reg) {
+      // Expand "all" / "all except" from parser
+      let names: string[];
+      if (params.all) {
+        const inv = getInventoryItems(state);
+        const exceptList = (params.except as string[] | undefined) ?? [];
+        const exceptLower = exceptList.map((e) => e.toLowerCase());
+        names = inv
+          .filter((i) => !exceptLower.includes(i.name.toLowerCase()))
+          .map((i) => i.name);
+        if (names.length === 0) {
+          return {
+            success: false,
+            message: "You're not carrying anything to drop.",
+          };
+        }
+      } else {
+        names = params.items as string[];
+      }
+
+      if (!names || names.length === 0) {
         return { success: false, message: "What do you want to drop?" };
       }
 
-      const item = resolveItem(itemName, state);
-      if (!item) {
-        return {
-          success: false,
-          message: `You don't have any "${itemName}".`,
-        };
-      }
-      if (!isItemInInventory(item.id, state)) {
-        return {
-          success: false,
-          message: `You don't have the ${item.name}.`,
-        };
+      const messages: string[] = [];
+      let anySuccess = false;
+
+      for (const itemName of names) {
+        // Per-item interaction check
+        const interactionResult = reg.runInteractions(
+          "drop",
+          { item: itemName, items: [itemName] },
+          state
+        );
+        if (interactionResult) {
+          messages.push(interactionResult.message);
+          if (interactionResult.success) anySuccess = true;
+          continue;
+        }
+
+        const item = resolveItem(itemName, state);
+        if (!item) {
+          messages.push(`You don't have any "${itemName}".`);
+          continue;
+        }
+        if (!isItemInInventory(item.id, state)) {
+          messages.push(`You don't have the ${item.name}.`);
+          continue;
+        }
+
+        state.inventory = state.inventory.filter((id) => id !== item.id);
+        const room = getCurrentRoom(state);
+        room.itemIds.push(item.id);
+        messages.push(`You drop the ${item.name}.`);
+        anySuccess = true;
       }
 
-      state.inventory = state.inventory.filter((id) => id !== item.id);
-      const room = getCurrentRoom(state);
-      room.itemIds.push(item.id);
-      return { message: `You drop the ${item.name}.`, success: true };
+      return { message: messages.join("\n"), success: anySuccess };
     },
   });
 
@@ -747,24 +864,25 @@ export function registerBuiltinActions(registry: ActionRegistry): void {
     description: "Use an item from inventory, optionally on a target",
     helpText: "**use <item>** / **use <item> on <target>** -- Use an item",
     inputSchema: z.object({
-      item: z.string().describe("Name of the item to use"),
+      items: z.array(z.string()).min(1).describe("Names of items to use"),
       target: z
         .string()
         .optional()
-        .describe("Optional target to use the item on"),
+        .describe("Optional target to use the items on"),
     }),
     parsePatterns: [
       {
         pattern: /^use\s+(.+?)\s+on\s+(.+)$/,
-        extract: (m) => ({ item: m[1].trim(), target: m[2].trim() }),
+        extract: (m) => ({ items: [m[1].trim()], target: m[2].trim() }),
       },
       {
         pattern: /^use\s+(.+)$/,
-        extract: (m) => ({ item: m[1].trim() }),
+        extract: (m) => ({ items: [m[1].trim()] }),
       },
     ],
     handler(params, state) {
-      const itemName = params.item as string | undefined;
+      const items = params.items as string[] | undefined;
+      const itemName = items?.[0];
       if (!itemName) {
         return { success: false, message: "What do you want to use?" };
       }

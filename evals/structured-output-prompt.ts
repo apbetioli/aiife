@@ -8,9 +8,9 @@ const ACTION_DESCRIPTIONS: Record<string, string> = {
   move: `move(direction): Move the player in a direction. direction must be one of: north, south, east, west, up, down.`,
   look: `look(): Look around the current room. No parameters.`,
   examine: `examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.`,
-  take: `take(item): Pick up an item from the current room. item is the name of the item.`,
-  drop: `drop(item): Drop an item from inventory into the current room. item is the name of the item.`,
-  use: `use(item, target?): Use an item from inventory, optionally on a target. item is the name of the item to use. target is the optional name of what to use it on.`,
+  take: `take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.`,
+  drop: `drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.`,
+  use: `use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.`,
   open: `open(target): Open a container or door. target is the name of what to open.`,
   talk: `talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.`,
   inventory: `inventory(): Check what the player is carrying. No parameters.`,
@@ -48,7 +48,10 @@ Rules:
 - Match parameter values to names visible in the game state (items, NPCs, exits).
 - If the player input is ambiguous, incomplete, or conversational (not a clear game command), use the "respond" action with an appropriate clarifying message.
 - For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action.
-- For inventory queries like "what am I carrying?", use the "inventory" action.`;
+- For inventory queries like "what am I carrying?", use the "inventory" action.
+- For "take all" or "take everything", list ALL visible items in the items array.
+- For "drop all but X", list ALL inventory items EXCEPT X in the items array.
+- For "take X and Y", list each item name in the items array.`;
 
 export function buildStructuredOutputSystemPrompt(
   gameState: GameStateSnapshot,
