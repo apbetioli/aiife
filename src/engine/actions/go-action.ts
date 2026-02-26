@@ -1,6 +1,6 @@
 import z from "zod";
-import { Direction, DirectionSchema, GameState } from "../../types";
-import { ActionDefinition, ActionRegistry } from "../ActionRegistry";
+import { type Direction, DirectionSchema, type GameState } from "../../types";
+import type { ActionDefinition, ActionRegistry } from "../ActionRegistry";
 import {
 	getCurrentRoom,
 	getRoomNPCs,
