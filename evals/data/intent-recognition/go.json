@@ -16,7 +16,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -30,11 +30,11 @@
 			]
 		},
 		"target": {
-			"expectedAction": "move",
+			"expectedAction": "go",
 			"expectedParams": { "direction": "north" },
 			"category": "golden"
 		},
-		"metadata": { "description": "Explicit move command with direction" }
+		"metadata": { "description": "Explicit go command with direction" }
 	},
 	{
 		"data": {
@@ -53,7 +53,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -67,7 +67,7 @@
 			]
 		},
 		"target": {
-			"expectedAction": "move",
+			"expectedAction": "go",
 			"expectedParams": { "direction": "north" },
 			"category": "golden"
 		},
@@ -90,7 +90,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -104,12 +104,12 @@
 			]
 		},
 		"target": {
-			"expectedAction": "move",
+			"expectedAction": "go",
 			"expectedParams": { "direction": "up" },
 			"category": "golden"
 		},
 		"metadata": {
-			"description": "Natural language movement — climb stairs implies up"
+			"description": "Natural language goment — climb stairs implies up"
 		}
 	},
 	{
@@ -129,7 +129,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -143,11 +143,11 @@
 			]
 		},
 		"target": {
-			"expectedAction": "move",
+			"expectedAction": "go",
 			"expectedParams": { "direction": "west" },
 			"category": "golden"
 		},
-		"metadata": { "description": "Walk synonym for move with direction" }
+		"metadata": { "description": "Walk synonym for go with direction" }
 	},
 	{
 		"data": {
@@ -161,7 +161,7 @@
 				"npcsHere": ["old gardener"]
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -175,11 +175,11 @@
 			]
 		},
 		"target": {
-			"expectedAction": "move",
+			"expectedAction": "go",
 			"expectedParams": { "direction": "east" },
 			"category": "golden"
 		},
-		"metadata": { "description": "Bare direction word as move command" }
+		"metadata": { "description": "Bare direction word as go command" }
 	},
 	{
 		"data": {
@@ -193,7 +193,7 @@
 				"npcsHere": ["old gardener"]
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -207,12 +207,12 @@
 			]
 		},
 		"target": {
-			"expectedAction": "move",
+			"expectedAction": "go",
 			"expectedParams": { "direction": "northwest" },
 			"category": "golden"
 		},
 		"metadata": {
-			"description": "Bare direction word as move command with multiple exits"
+			"description": "Bare direction word as go command with multiple exits"
 		}
 	}
 ]

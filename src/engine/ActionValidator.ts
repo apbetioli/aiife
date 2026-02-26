@@ -10,7 +10,7 @@ export function getVisibleItems(state: GameState): Item[] {
 	const room = getCurrentRoom(state);
 	return room.itemIds
 		.map((id) => state.items.get(id))
-		.filter((item): item is Item => item?.visible);
+		.filter((item): item is Item => item?.visible ?? false);
 }
 
 export function getInventoryItems(state: GameState): Item[] {

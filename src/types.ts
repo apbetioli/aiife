@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const DIRECTIONS = [
+export const DirectionSchema = z.enum([
 	"north",
 	"south",
 	"east",
@@ -13,9 +13,9 @@ export const DIRECTIONS = [
 	"northeast",
 	"in",
 	"out",
-] as const;
+]);
 
-export type Direction = (typeof DIRECTIONS)[number];
+export type Direction = z.infer<typeof DirectionSchema>;
 
 export interface GameAction {
 	action: string;
@@ -23,7 +23,7 @@ export interface GameAction {
 }
 
 export const ExitSchema = z.object({
-	direction: z.enum(DIRECTIONS),
+	direction: DirectionSchema,
 	targetRoomId: z.string(),
 	locked: z.boolean().optional(),
 	description: z.string().optional(),

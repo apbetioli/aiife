@@ -15,7 +15,7 @@
    ```
 
 2. **Compare in Laminar**  
-   Both runs use the same `groupName` (`intent-recognition` or `move-tool-selection`), so they appear **side-by-side** in the Laminar dashboard. Use that view to compare:
+   Both runs use the same `groupName` (`intent-recognition` or `go-tool-selection`), so they appear **side-by-side** in the Laminar dashboard. Use that view to compare:
    - **Scores** (actionSelection, parameterAccuracy, combined, or selectionScore) to see which model is more accurate.
    - **Traces** for each datapoint include model invocations and timing, so you can compare **latency** and token usage per run.
 
