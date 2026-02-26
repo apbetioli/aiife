@@ -1,6 +1,6 @@
 import { TerminalFormatter } from "./ui/TerminalFormatter.js";
 
-export function DEBUG(...args: any[]) {
+export function DEBUG(...args: unknown[]) {
 	const narrator = new TerminalFormatter();
 
 	const format = (text: string) => {

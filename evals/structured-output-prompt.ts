@@ -5,7 +5,7 @@ import type { GameStateSnapshot } from "./types";
  * Each entry describes the action's purpose and parameter schema.
  */
 const ACTION_DESCRIPTIONS: Record<string, string> = {
-	move: `move(direction): Move the player in a direction. direction must be one of: north, south, east, west, up, down.`,
+	go: `go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.`,
 	look: `look(): Look around the current room. No parameters.`,
 	examine: `examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.`,
 	take: `take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.`,

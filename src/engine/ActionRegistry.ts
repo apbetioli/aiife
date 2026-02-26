@@ -6,7 +6,6 @@ import type {
 	GameState,
 	Interaction,
 } from "../types.js";
-import { DIRECTIONS, type Direction } from "../types.js";
 import {
 	getCurrentRoom,
 	getInventoryItems,
@@ -17,6 +16,7 @@ import {
 	resolveItem,
 	resolveNPC,
 } from "./ActionValidator.js";
+import { goAction } from "./actions/go-action.js";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -43,7 +43,7 @@ export interface ActionDefinition {
 	name: string;
 	description: string;
 	helpText: string;
-	inputSchema: z.ZodObject<any>;
+	inputSchema: z.ZodObject<Record<string, z.ZodTypeAny>>;
 	parsePatterns: ParsePattern[];
 	handler: ActionHandlerFn;
 }
@@ -452,132 +452,10 @@ export function registerBuiltinEffects(registry: ActionRegistry): void {
 // Built-in actions
 // ---------------------------------------------------------------------------
 
-const DIRECTION_ALIASES: Record<string, Direction> = {
-	n: "north",
-	s: "south",
-	e: "east",
-	w: "west",
-	u: "up",
-	d: "down",
-	north: "north",
-	south: "south",
-	east: "east",
-	west: "west",
-	up: "up",
-	down: "down",
-};
-
 export function registerBuiltinActions(registry: ActionRegistry): void {
-	// -- move ----------------------------------------------------------------
+	// -- go ----------------------------------------------------------------
 
-	registry.register({
-		name: "move",
-		description: "Move the player in a direction",
-		helpText: "**go <direction>** (n/s/e/w/u/d) -- Move in a direction",
-		inputSchema: z.object({
-			direction: z.enum(DIRECTIONS),
-		}),
-		parsePatterns: [
-			// bare direction: n / north / ...
-			{
-				pattern: /^(n|s|e|w|u|d|north|south|east|west|up|down)$/,
-				extract: (m) => ({ direction: DIRECTION_ALIASES[m[1]] }),
-			},
-			// go <direction>
-			{
-				pattern: /^go\s+(\S+)$/,
-				extract: (m) => {
-					const dir = DIRECTION_ALIASES[m[1]];
-					return dir ? { direction: dir } : {};
-				},
-			},
-			// move <direction>
-			{
-				pattern: /^move\s+(\S+)$/,
-				extract: (m) => {
-					const dir = DIRECTION_ALIASES[m[1]];
-					return dir ? { direction: dir } : {};
-				},
-			},
-		],
-		handler(params, state, reg) {
-			const direction = params.direction as Direction | undefined;
-			if (!direction) {
-				return {
-					success: false,
-					message: "Which direction do you want to go?",
-				};
-			}
-
-			const room = getCurrentRoom(state);
-			const exit = room.exits.find((e) => e.direction === direction);
-			if (!exit) {
-				return {
-					success: false,
-					message: `You can't go ${direction} from here.`,
-				};
-			}
-			if (exit.locked) {
-				return {
-					success: false,
-					message: exit.description ?? "That way is locked.",
-				};
-			}
-
-			const previousRoomId = state.currentRoomId;
-
-			// Fire exit pseudo-action for the room we're leaving
-			const exitResult = reg.runInteractions(
-				"exit",
-				{ roomId: previousRoomId },
-				state,
-			);
-
-			state.currentRoomId = exit.targetRoomId;
-			const newRoom = getCurrentRoom(state);
-			const items = getVisibleItems(state);
-			const npcs = getRoomNPCs(state);
-
-			let message = `\n**${newRoom.name}**\n${newRoom.description}`;
-			if (items.length > 0) {
-				message += `\n\nYou can see: ${items.map((i) => i.name).join(", ")}.`;
-			}
-			if (npcs.length > 0) {
-				message += `\n\n${npcs
-					.map((n) => `There is a ${n.name} here.`)
-					.join(" ")}`;
-			}
-
-			// Append exit interaction message if any
-			if (exitResult) {
-				message = `${exitResult.message}\n\n${message}`;
-				if (exitResult.gameOver) {
-					return { ...exitResult, message };
-				}
-			}
-
-			// Fire enter pseudo-action for the new room
-			const enterResult = reg.runInteractions(
-				"enter",
-				{ roomId: exit.targetRoomId },
-				state,
-			);
-
-			if (enterResult) {
-				message += `\n\n${enterResult.message}`;
-				if (enterResult.gameOver) {
-					return {
-						message,
-						success: true,
-						gameOver: true,
-						isVictory: enterResult.isVictory,
-					};
-				}
-			}
-
-			return { message, success: true };
-		},
-	});
+	registry.register(goAction);
 
 	// -- look ----------------------------------------------------------------
 

@@ -3,12 +3,12 @@ import drop from "./data/intent-recognition/drop.json" with { type: "json" };
 import examine from "./data/intent-recognition/examine.json" with {
 	type: "json",
 };
+import go from "./data/intent-recognition/go.json" with { type: "json" };
 import help from "./data/intent-recognition/help.json" with { type: "json" };
 import inventory from "./data/intent-recognition/inventory.json" with {
 	type: "json",
 };
 import look from "./data/intent-recognition/look.json" with { type: "json" };
-import move from "./data/intent-recognition/move.json" with { type: "json" };
 import open from "./data/intent-recognition/open.json" with { type: "json" };
 import respond from "./data/intent-recognition/respond.json" with {
 	type: "json",
@@ -30,7 +30,7 @@ import type {
 } from "./types";
 
 const dataset = [
-	...move,
+	...go,
 	...look,
 	...examine,
 	...take,

@@ -16,7 +16,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",

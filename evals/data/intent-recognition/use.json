@@ -16,7 +16,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -48,7 +48,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
@@ -83,7 +83,7 @@
 				"npcsHere": []
 			},
 			"availableActions": [
-				"move",
+				"go",
 				"look",
 				"examine",
 				"take",
