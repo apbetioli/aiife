@@ -8,11 +8,11 @@ import type { StructuredOutputEvalData, StructuredOutputResult } from "./types";
 const GameActionSchema = z.object({
 	action: z.string(),
 	params: z.object({
-		direction: z.string().nullish(),
-		target: z.string().nullish(),
-		items: z.array(z.string()).nullish(),
-		npc: z.string().nullish(),
-		message: z.string().nullish(),
+		direction: z.string().nullable(),
+		target: z.string().nullable(),
+		items: z.array(z.string()).nullable(),
+		npc: z.string().nullable(),
+		message: z.string().nullable(),
 	}),
 });
 
