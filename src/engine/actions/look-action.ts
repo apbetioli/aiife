@@ -8,7 +8,7 @@ import {
 
 export const lookAction: ActionDefinition = {
 	name: "look",
-	description: "Look around the current room",
+	description: "look(): Look around the current room. No parameters.",
 	helpText: "**look** (l) -- Describe your surroundings",
 	inputSchema: z.object({}),
 	parsePatterns: [{ pattern: /^(look|l)$/, extract: () => ({}) }],

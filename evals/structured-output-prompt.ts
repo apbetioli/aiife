@@ -1,22 +1,16 @@
+import { BUILT_IN_ACTIONS } from "../src/engine/ActionRegistry";
 import type { GameStateSnapshot } from "./types";
 
 /**
- * Plain-text descriptions of each game action, mirroring what tool definitions provide.
- * Each entry describes the action's purpose and parameter schema.
+ * Plain-text descriptions of each game action from the built-in action registry.
  */
-const ACTION_DESCRIPTIONS: Record<string, string> = {
-	go: `go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.`,
-	look: `look(): Look around the current room. No parameters.`,
-	examine: `examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.`,
-	take: `take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.`,
-	drop: `drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.`,
-	use: `use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.`,
-	open: `open(target): Open a container or door. target is the name of what to open.`,
-	talk: `talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.`,
-	inventory: `inventory(): Check what the player is carrying. No parameters.`,
-	help: `help(): Show the list of available commands. No parameters.`,
-	respond: `respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational. message is the text to show.`,
-};
+const ACTION_DESCRIPTIONS: Record<string, string> = BUILT_IN_ACTIONS.reduce(
+	(acc, action) => {
+		acc[action.name] = action.description;
+		return acc;
+	},
+	{} as Record<string, string>,
+);
 
 export function buildAvailableActionsPrompt(actionNames: string[]): string {
 	const descriptions = actionNames

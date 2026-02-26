@@ -4,7 +4,7 @@ import { resolveItem, resolveNPC } from "../ActionValidator";
 
 export const examineAction: ActionDefinition = {
 	name: "examine",
-	description: "Look closely at an item, NPC, or feature in the current room",
+	description: "examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.",
 	helpText: "**examine <thing>** (x) -- Look closely at something",
 	inputSchema: z.object({
 		target: z.string().describe("What to examine"),

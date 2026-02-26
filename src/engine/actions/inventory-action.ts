@@ -4,7 +4,7 @@ import { getInventoryItems } from "../ActionValidator";
 
 export const inventoryAction: ActionDefinition = {
 	name: "inventory",
-	description: "Check what the player is carrying",
+	description: "inventory(): Check what the player is carrying. No parameters.",
 	helpText: "**inventory** (i) -- Check what you're carrying",
 	inputSchema: z.object({}),
 	parsePatterns: [{ pattern: /^(inventory|i|inv)$/, extract: () => ({}) }],
