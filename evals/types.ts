@@ -74,7 +74,7 @@ export interface MockToolConfig {
 export interface GameStateSnapshot {
 	roomName: string;
 	roomDescription: string;
-	exits: Array<{ direction: string; locked: boolean }>;
+	exits: Array<{ direction: string; locked?: boolean }>;
 	visibleItems: string[];
 	inventory: string[];
 	npcsHere: string[];

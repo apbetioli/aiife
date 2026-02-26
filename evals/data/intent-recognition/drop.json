@@ -5,7 +5,7 @@
 			"gameState": {
 				"roomName": "The Garden",
 				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east", "locked": false }],
+				"exits": [{ "direction": "east" }],
 				"visibleItems": [],
 				"inventory": ["brass lantern"],
 				"npcsHere": ["old gardener"]
@@ -38,9 +38,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -74,7 +74,7 @@
 			"gameState": {
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall.",
-				"exits": [{ "direction": "north", "locked": false }],
+				"exits": [{ "direction": "north" }],
 				"visibleItems": [],
 				"inventory": ["brass lantern", "old book", "rusty key"],
 				"npcsHere": []
@@ -106,7 +106,7 @@
 			"gameState": {
 				"roomName": "The Garden",
 				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east", "locked": false }],
+				"exits": [{ "direction": "east" }],
 				"visibleItems": [],
 				"inventory": ["brass lantern", "old book"],
 				"npcsHere": []

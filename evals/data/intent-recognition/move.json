@@ -6,9 +6,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -43,9 +43,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -80,9 +80,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall. A grand staircase spirals upward.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -119,9 +119,9 @@
 				"roomName": "The Great Hall",
 				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls. Passages lead north and west.",
 				"exits": [
-					{ "direction": "north", "locked": false },
-					{ "direction": "west", "locked": false },
-					{ "direction": "up", "locked": false },
+					{ "direction": "north" },
+					{ "direction": "west" },
+					{ "direction": "up" },
 					{ "direction": "down", "locked": true }
 				],
 				"visibleItems": ["brass lantern"],
@@ -155,7 +155,7 @@
 			"gameState": {
 				"roomName": "The Garden",
 				"roomDescription": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
-				"exits": [{ "direction": "east", "locked": false }],
+				"exits": [{ "direction": "east" }],
 				"visibleItems": [],
 				"inventory": [],
 				"npcsHere": ["old gardener"]
@@ -180,5 +180,39 @@
 			"category": "golden"
 		},
 		"metadata": { "description": "Bare direction word as move command" }
+	},
+	{
+		"data": {
+			"prompt": "nw",
+			"gameState": {
+				"roomName": "The Garden",
+				"roomDescription": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
+				"exits": [{ "direction": "northwest" }, { "direction": "north" }],
+				"visibleItems": [],
+				"inventory": [],
+				"npcsHere": ["old gardener"]
+			},
+			"availableActions": [
+				"move",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "move",
+			"expectedParams": { "direction": "northwest" },
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Bare direction word as move command with multiple exits"
+		}
 	}
 ]

@@ -7,6 +7,12 @@ export const DIRECTIONS = [
 	"west",
 	"up",
 	"down",
+	"northwest",
+	"southeast",
+	"southwest",
+	"northeast",
+	"in",
+	"out",
 ] as const;
 
 export type Direction = (typeof DIRECTIONS)[number];
@@ -19,7 +25,7 @@ export interface GameAction {
 export const ExitSchema = z.object({
 	direction: z.enum(DIRECTIONS),
 	targetRoomId: z.string(),
-	locked: z.boolean(),
+	locked: z.boolean().optional(),
 	description: z.string().optional(),
 });
 
