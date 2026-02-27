@@ -12,7 +12,8 @@
 						"id": "wooden_chest",
 						"name": "wooden chest",
 						"type": "container",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -54,7 +55,8 @@
 						"id": "wooden_chest",
 						"name": "wooden chest",
 						"type": "container",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -96,7 +98,8 @@
 						"id": "wooden_chest",
 						"name": "wooden chest",
 						"type": "container",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},

@@ -17,13 +17,15 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "rusty_key",
 						"name": "rusty key",
 						"type": "key",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -66,13 +68,15 @@
 						"id": "stone_pedestal",
 						"name": "stone pedestal",
 						"type": "fixture",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "gold_amulet",
 						"name": "gold amulet",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -115,13 +119,15 @@
 						"id": "stone_pedestal",
 						"name": "stone pedestal",
 						"type": "fixture",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},

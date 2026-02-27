@@ -155,14 +155,9 @@ export function buildParserContext(
 	// ── Resolve in-scope objects ───────────────────────────────────────────
 	// Scope = room contents + player inventory
 	// Objects inside *closed* containers are out of scope
-	const scopeIds = new Set<string>([
-		...roomState.contains,
-		...state.player.inventory,
-	]);
-
 	const in_scope_objects: ScopedObject[] = [];
 
-	for (const objId of scopeIds) {
+	for (const objId of roomState.contains) {
 		const worldObj = world.objects[objId];
 		const objState = state.objects[objId];
 
@@ -187,6 +182,35 @@ export function buildParserContext(
 			name: worldObj.name,
 			type: worldObj.type,
 			state: stateFlags,
+			source: "room",
+		});
+	}
+
+	for (const objId of state.player.inventory) {
+		const worldObj = world.objects[objId];
+		const objState = state.objects[objId];
+
+		if (!worldObj) {
+			console.warn(
+				`[buildParserContext] Scoped object "${objId}" not found in world definition`,
+			);
+			continue;
+		}
+		if (!objState) {
+			console.warn(
+				`[buildParserContext] Scoped object "${objId}" has no state entry`,
+			);
+			continue;
+		}
+
+		const { location, contains, ...stateFlags } = objState;
+
+		in_scope_objects.push({
+			id: objId,
+			name: worldObj.name,
+			type: worldObj.type,
+			state: stateFlags,
+			source: "inventory",
 		});
 	}
 

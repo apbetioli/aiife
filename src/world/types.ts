@@ -109,6 +109,8 @@ const ScopedObjectSchema = z.object({
 	name: z.string(),
 	type: ObjectTypeSchema,
 	state: StateSchema,
+	/** "room" = in current room, "inventory" = in player's inventory */
+	source: z.enum(["room", "inventory"]),
 });
 
 const BlockedExitSchema = z.object({

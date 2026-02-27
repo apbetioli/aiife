@@ -12,7 +12,8 @@
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -52,13 +53,15 @@
 						"id": "stone_pedestal",
 						"name": "stone pedestal",
 						"type": "fixture",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "gold_amulet",
 						"name": "gold amulet",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -98,13 +101,15 @@
 						"id": "stone_pedestal",
 						"name": "stone pedestal",
 						"type": "fixture",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "gold_amulet",
 						"name": "gold amulet",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},

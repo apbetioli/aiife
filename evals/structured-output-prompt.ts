@@ -1,4 +1,4 @@
-import type { ParserContext } from "../src/world/types";
+import type { ParserContext, ScopedObject } from "../src/world/types";
 
 export const ACTION_DESCRIPTIONS: Record<string, string> = {
 	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.",
@@ -25,6 +25,16 @@ export function buildAvailableActionsPrompt(actionNames: string[]): string {
 	return `Available actions:\n${descriptions.join("\n")}`;
 }
 
+function formatScopedObject(o: ScopedObject): string {
+	const stateParts = o.state
+		? Object.entries(o.state)
+				.map(([k, v]) => (v === true ? k : v === false ? null : `${k}: ${v}`))
+				.filter((x): x is string => x != null)
+		: [];
+	const tag = [o.type, ...stateParts].join(", ");
+	return `${o.name} (${tag})`;
+}
+
 export function buildGameStateSnapshotPrompt(context: ParserContext): string {
 	const exits =
 		context.available_exits.length > 0
@@ -34,16 +44,27 @@ export function buildGameStateSnapshotPrompt(context: ParserContext): string {
 		context.blocked_exits.length > 0
 			? context.blocked_exits.map((e) => e.direction).join(", ")
 			: "none";
-	const objects =
+	const roomObjects =
 		context.in_scope_objects.length > 0
-			? context.in_scope_objects.map((o) => o.name).join(", ")
+			? context.in_scope_objects
+					.filter((o) => o.source === "room")
+					.map((o) => formatScopedObject(o))
+					.join(", ")
+			: "none";
+	const inventory =
+		context.in_scope_objects.length > 0
+			? context.in_scope_objects
+					.filter((o) => o.source === "inventory")
+					.map((o) => formatScopedObject(o))
+					.join(", ")
 			: "none";
 
 	return `Current state:
   - Room: ${context.room} — ${context.description}
   - Exits: ${exits}
   - Blocked exits: ${blockedExits}
-  - In-scope objects: ${objects}`;
+  - Objects in room: ${roomObjects}
+  - Carrying: ${inventory}`;
 }
 
 const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the player's input and the current game state, determine which single game action the player intends to perform.
