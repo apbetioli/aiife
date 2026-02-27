@@ -7,13 +7,25 @@ import type { StructuredOutputEvalData, StructuredOutputResult } from "./types";
 
 const GameActionSchema = z.object({
 	action: z.string(),
-	params: z.object({
-		direction: z.string().nullable(),
-		target: z.string().nullable(),
-		items: z.array(z.string()).nullable(),
-		npc: z.string().nullable(),
-		message: z.string().nullable(),
-	}),
+	direction: z
+		.string()
+		.nullable()
+		.describe("For go: direction (e.g. north, south); null otherwise"),
+	items: z
+		.array(z.string())
+		.nullable()
+		.describe("Item names for take/drop/use; null otherwise"),
+	target: z
+		.string()
+		.nullable()
+		.describe(
+			"Object, NPC or person names for examine/open/talk; null otherwise",
+		),
+	npc: z.string().nullable().describe("For talk: NPC name; null otherwise"),
+	message: z
+		.string()
+		.nullable()
+		.describe("For respond: clarifying message; null otherwise"),
 });
 
 export async function structuredOutputExecutor(
@@ -38,7 +50,8 @@ export async function structuredOutputExecutor(
 
 	// Strip null values so evaluators only see actual params
 	const params: Record<string, unknown> = {};
-	for (const [key, value] of Object.entries(parsed.params)) {
+	for (const [key, value] of Object.entries(parsed)) {
+		if (key === "action") continue;
 		if (value !== null) params[key] = value;
 	}
 
