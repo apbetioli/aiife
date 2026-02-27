@@ -7,25 +7,11 @@ import type { StructuredOutputEvalData, StructuredOutputResult } from "./types";
 
 const GameActionSchema = z.object({
 	action: z.string(),
-	direction: z
-		.string()
-		.nullable()
-		.describe("For go: direction (e.g. north, south); null otherwise"),
-	items: z
-		.array(z.string())
-		.nullable()
-		.describe("Item names for take/drop/use; null otherwise"),
-	target: z
-		.string()
-		.nullable()
-		.describe(
-			"Object, NPC or person names for examine/open/talk; null otherwise",
-		),
-	npc: z.string().nullable().describe("For talk: NPC name; null otherwise"),
-	message: z
-		.string()
-		.nullable()
-		.describe("For respond: clarifying message; null otherwise"),
+	direction: z.string().nullable(),
+	items: z.array(z.string()).nullable(),
+	target: z.string().nullable(),
+	npc: z.string().nullable(),
+	message: z.string().nullable(),
 });
 
 export async function structuredOutputExecutor(
