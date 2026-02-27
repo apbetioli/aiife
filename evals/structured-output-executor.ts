@@ -1,18 +1,13 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
-import { z } from "zod";
 
 import { buildStructuredOutputSystemPrompt } from "./structured-output-prompt";
-import type { StructuredOutputEvalData, StructuredOutputResult } from "./types";
-
-const GameActionSchema = z.object({
-	action: z.string(),
-	direction: z.string().nullable(),
-	items: z.array(z.string()).nullable(),
-	target: z.string().nullable(),
-	npc: z.string().nullable(),
-	message: z.string().nullable(),
-});
+import {
+	type StructuredOutput,
+	type StructuredOutputEvalData,
+	type StructuredOutputResult,
+	StructuredOutputSchema,
+} from "./types";
 
 export async function structuredOutputExecutor(
 	data: StructuredOutputEvalData,
@@ -26,13 +21,13 @@ export async function structuredOutputExecutor(
 		model: openai(
 			process.env.EVAL_MODEL ?? data.config?.model ?? "gpt-4o-mini",
 		),
-		output: Output.object({ schema: GameActionSchema }),
+		output: Output.object({ schema: StructuredOutputSchema }),
 		system: systemPrompt,
 		prompt: data.prompt,
 		temperature: data.config?.temperature,
 	});
 
-	const parsed = result.output;
+	const parsed: StructuredOutput = result.output;
 
 	// Strip null values so evaluators only see actual params
 	const params: Record<string, unknown> = {};
