@@ -11,7 +11,8 @@ import { splitItemList } from "./parse-utils";
 
 export const takeAction: ActionDefinition = {
 	name: "take",
-	description: "take(items): Pick up items from the current room. items is an array of item names. For \"take all\", list every visible item.",
+	description:
+		'take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.',
 	helpText:
 		"**take <items>** -- Pick up items (supports 'take all', 'take all but X')",
 	inputSchema: z.object({

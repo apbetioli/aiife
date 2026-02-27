@@ -4,7 +4,8 @@ import { isItemInInventory, resolveItem } from "../ActionValidator";
 
 export const useAction: ActionDefinition = {
 	name: "use",
-	description: "use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.",
+	description:
+		"use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.",
 	helpText: "**use <item>** / **use <item> on <target>** -- Use an item",
 	inputSchema: z.object({
 		items: z.array(z.string()).min(1).describe("Names of items to use"),
