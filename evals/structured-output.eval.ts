@@ -54,18 +54,9 @@ evaluate<
 	data: dataset,
 	executor: structuredOutputExecutor,
 	evaluators: {
-		actionSelection: (output, target) => {
-			if (target?.category === "secondary") return 1;
-			return actionSelectionScore(output, target);
-		},
-		parameterAccuracy: (output, target) => {
-			if (target?.category === "secondary") return 1;
-			return parameterAccuracyScore(output, target);
-		},
-		combined: (output, target) => {
-			if (target?.category === "secondary") return 1;
-			return combinedIntentScore(output, target);
-		},
+		actionSelection: actionSelectionScore,
+		parameterAccuracy: parameterAccuracyScore,
+		combined: combinedIntentScore,
 	},
 	groupName: "intent-recognition",
 });

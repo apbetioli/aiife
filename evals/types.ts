@@ -91,6 +91,10 @@ export interface StructuredOutputEvalTarget {
 	expectedAction: string;
 	expectedParams: Record<string, unknown>;
 	category: "golden" | "secondary" | "negative";
+	/** For secondary: actions that count as correct (defaults to [expectedAction]) */
+	acceptableActions?: string[];
+	/** For negative: actions that must NOT be selected */
+	forbiddenActions?: string[];
 }
 
 export interface StructuredOutputResult {
