@@ -42,7 +42,7 @@ Rules:
 - Normalize direction abbreviations: n=north, s=south, e=east, w=west, u=up, d=down.
 - Match parameter values to names visible in the game state (items, NPCs, exits).
 - If the player input is ambiguous, incomplete, or conversational (not a clear game command), use the "respond" action with an appropriate clarifying message.
-- For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action.
+- For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action. For "look inside <something>", use the "open" action.
 - For inventory queries like "what am I carrying?", use the "inventory" action.
 - For "take all" or "take everything", list ALL visible items in the items array.
 - For "drop all but X", list ALL inventory items EXCEPT X in the items array.
