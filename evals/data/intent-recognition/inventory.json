@@ -17,19 +17,22 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					},
 					{
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					},
 					{
 						"id": "rusty_key",
 						"name": "rusty key",
 						"type": "key",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					}
 				]
 			},
@@ -69,13 +72,15 @@
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					},
 					{
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					}
 				]
 			},
@@ -115,25 +120,29 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					},
 					{
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					},
 					{
 						"id": "rusty_key",
 						"name": "rusty key",
 						"type": "key",
-						"state": {}
+						"state": {},
+						"source": "inventory"
 					},
 					{
 						"id": "old_gardener",
 						"name": "old gardener",
 						"type": "npc",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},

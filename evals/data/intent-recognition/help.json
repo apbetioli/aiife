@@ -17,7 +17,8 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},

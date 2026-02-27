@@ -17,7 +17,8 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -59,7 +60,8 @@
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -101,13 +103,15 @@
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "rusty_key",
 						"name": "rusty key",
 						"type": "key",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -149,13 +153,15 @@
 						"id": "wooden_chest",
 						"name": "wooden chest",
 						"type": "container",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "gold_amulet",
 						"name": "gold amulet",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -197,13 +203,15 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -245,13 +253,15 @@
 						"id": "old_book",
 						"name": "old book",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "rusty_key",
 						"name": "rusty key",
 						"type": "key",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -293,7 +303,8 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},

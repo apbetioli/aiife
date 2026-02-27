@@ -12,7 +12,8 @@
 						"id": "old_gardener",
 						"name": "old gardener",
 						"type": "npc",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -54,7 +55,8 @@
 						"id": "old_gardener",
 						"name": "old gardener",
 						"type": "npc",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -96,13 +98,15 @@
 						"id": "brass_lantern",
 						"name": "brass lantern",
 						"type": "item",
-						"state": {}
+						"state": {},
+						"source": "room"
 					},
 					{
 						"id": "old_gardener",
 						"name": "old gardener",
 						"type": "npc",
-						"state": {}
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
