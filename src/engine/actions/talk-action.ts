@@ -4,7 +4,8 @@ import { resolveNPC } from "../ActionValidator";
 
 export const talkAction: ActionDefinition = {
 	name: "talk",
-	description: "talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.",
+	description:
+		"talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.",
 	helpText: "**talk to <person>** -- Speak with someone",
 	inputSchema: z.object({
 		npc: z.string().describe("Name of the NPC to talk to"),
