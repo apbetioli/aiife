@@ -1,4 +1,4 @@
-import { TerminalFormatter } from "./ui/TerminalFormatter.js";
+import { TerminalFormatter } from "./ui/term-formatter";
 
 export function DEBUG(...args: unknown[]) {
 	const narrator = new TerminalFormatter();

@@ -1,23 +1,19 @@
-import { createModel } from "./agent/model.js";
-import { GameEngine } from "./engine/GameEngine.js";
-import { Terminal } from "./ui/Terminal.js";
-import { TerminalFormatter } from "./ui/TerminalFormatter.js";
-import { loadWorld } from "./world/WorldLoader.js";
+import theGreatHall from "../games/the-great-hall";
+import { GameEngine } from "./engine/game-engine";
+import { Terminal } from "./ui/term";
+import { TerminalFormatter } from "./ui/term-formatter";
+import type { World } from "./world/types";
 
-async function main() {
+async function run(world: World) {
 	const terminal = new Terminal();
 	const formatter = new TerminalFormatter();
 
-	const { definition, filePath } = loadWorld();
-	const intro = definition.welcomeMessage.trim();
-	terminal.print(formatter.formatWelcome(intro));
+	// const intro = world.welcomeMessage.trim();
+	// terminal.print(formatter.formatWelcome(intro));
 
-	const engine = new GameEngine(definition, createModel(), filePath);
+	const engine = new GameEngine(world);
 
-	const result = await engine.start();
-	terminal.print(formatter.format(result));
-
-	while (!engine.getState().gameOver) {
+	while (!engine.isGameOver()) {
 		const input = await terminal.prompt();
 		const result = await engine.processInput(input);
 		terminal.print(formatter.format(result));
@@ -26,4 +22,5 @@ async function main() {
 	terminal.close();
 }
 
-main();
+run(theGreatHall);
+// run(theForgottenManor);

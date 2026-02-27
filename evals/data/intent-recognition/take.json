@@ -2,18 +2,24 @@
 	{
 		"data": {
 			"prompt": "take the lantern",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": [],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -31,21 +37,31 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["brass lantern"] },
+			"expectedParams": {
+				"items": ["brass lantern"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Take an item by name" }
+		"metadata": {
+			"description": "Take an item by name"
+		}
 	},
 	{
 		"data": {
 			"prompt": "pick up the book",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -63,21 +79,37 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["old book"] },
+			"expectedParams": {
+				"items": ["old book"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Natural language take — pick up" }
+		"metadata": {
+			"description": "Natural language take — pick up"
+		}
 	},
 	{
 		"data": {
 			"prompt": "get the rusty key",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book", "rusty key"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -95,21 +127,37 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["rusty key"] },
+			"expectedParams": {
+				"items": ["rusty key"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Take using 'get' synonym" }
+		"metadata": {
+			"description": "Take using 'get' synonym"
+		}
 	},
 	{
 		"data": {
 			"prompt": "grab the amulet",
-			"gameState": {
-				"roomName": "The Tower Room",
-				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall, open and empty.",
-				"exits": [{ "direction": "down" }],
-				"visibleItems": ["wooden chest", "gold amulet"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Tower Room",
+				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall, open and empty.",
+				"available_exits": ["down"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "wooden_chest",
+						"name": "wooden chest",
+						"type": "container",
+						"state": {}
+					},
+					{
+						"id": "gold_amulet",
+						"name": "gold amulet",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -127,7 +175,9 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["gold amulet"] },
+			"expectedParams": {
+				"items": ["gold amulet"]
+			},
 			"category": "golden"
 		},
 		"metadata": {
@@ -137,13 +187,25 @@
 	{
 		"data": {
 			"prompt": "take the lantern and the book",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["brass lantern", "old book"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -161,21 +223,37 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["brass lantern", "old book"] },
+			"expectedParams": {
+				"items": ["brass lantern", "old book"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Take multiple items with 'and'" }
+		"metadata": {
+			"description": "Take multiple items with 'and'"
+		}
 	},
 	{
 		"data": {
 			"prompt": "take everything",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book", "rusty key"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -193,21 +271,31 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["old book", "rusty key"] },
+			"expectedParams": {
+				"items": ["old book", "rusty key"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Take everything — lists all visible items" }
+		"metadata": {
+			"description": "Take everything — lists all visible items"
+		}
 	},
 	{
 		"data": {
 			"prompt": "get all",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall.",
-				"exits": [{ "direction": "north" }],
-				"visibleItems": ["brass lantern"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall.",
+				"available_exits": ["north"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -225,9 +313,13 @@
 		},
 		"target": {
 			"expectedAction": "take",
-			"expectedParams": { "items": ["brass lantern"] },
+			"expectedParams": {
+				"items": ["brass lantern"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Get all — single visible item" }
+		"metadata": {
+			"description": "Get all — single visible item"
+		}
 	}
 ]

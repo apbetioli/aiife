@@ -2,18 +2,24 @@
 	{
 		"data": {
 			"prompt": "go north",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": [],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -31,26 +37,36 @@
 		},
 		"target": {
 			"expectedAction": "go",
-			"expectedParams": { "direction": "north" },
+			"expectedParams": {
+				"direction": "north"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Explicit go command with direction" }
+		"metadata": {
+			"description": "Explicit go command with direction"
+		}
 	},
 	{
 		"data": {
 			"prompt": "n",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": [],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -68,26 +84,36 @@
 		},
 		"target": {
 			"expectedAction": "go",
-			"expectedParams": { "direction": "north" },
+			"expectedParams": {
+				"direction": "north"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Single-letter direction abbreviation" }
+		"metadata": {
+			"description": "Single-letter direction abbreviation"
+		}
 	},
 	{
 		"data": {
 			"prompt": "climb the stairs",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall. A grand staircase spirals upward.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. A grand staircase spirals upward.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": [],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -105,7 +131,9 @@
 		},
 		"target": {
 			"expectedAction": "go",
-			"expectedParams": { "direction": "up" },
+			"expectedParams": {
+				"direction": "up"
+			},
 			"category": "golden"
 		},
 		"metadata": {
@@ -115,18 +143,24 @@
 	{
 		"data": {
 			"prompt": "walk west",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls. Passages lead north and west.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. Faded tapestries line the walls. Passages lead north and west.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": [],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -144,21 +178,31 @@
 		},
 		"target": {
 			"expectedAction": "go",
-			"expectedParams": { "direction": "west" },
+			"expectedParams": {
+				"direction": "west"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Walk synonym for go with direction" }
+		"metadata": {
+			"description": "Walk synonym for go with direction"
+		}
 	},
 	{
 		"data": {
 			"prompt": "east",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": [],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -176,21 +220,31 @@
 		},
 		"target": {
 			"expectedAction": "go",
-			"expectedParams": { "direction": "east" },
+			"expectedParams": {
+				"direction": "east"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Bare direction word as go command" }
+		"metadata": {
+			"description": "Bare direction word as go command"
+		}
 	},
 	{
 		"data": {
 			"prompt": "nw",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
-				"exits": [{ "direction": "northwest" }, { "direction": "north" }],
-				"visibleItems": [],
-				"inventory": [],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
+				"available_exits": ["northwest", "north"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -208,7 +262,9 @@
 		},
 		"target": {
 			"expectedAction": "go",
-			"expectedParams": { "direction": "northwest" },
+			"expectedParams": {
+				"direction": "northwest"
+			},
 			"category": "golden"
 		},
 		"metadata": {

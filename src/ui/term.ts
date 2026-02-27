@@ -1,5 +1,5 @@
 import readline from "node:readline";
-import { CYAN, RESET } from "./ansi.js";
+import { CYAN, RESET } from "./ansi";
 
 export class Terminal {
 	private rl: readline.Interface;

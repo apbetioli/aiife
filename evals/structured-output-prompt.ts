@@ -1,17 +1,21 @@
-import { BUILT_IN_ACTIONS } from "../src/engine/ActionRegistry";
-import type { GameStateSnapshot } from "./types";
+import type { ParserContext } from "../src/world/types";
 
-/**
- * Plain-text descriptions of each game action from the built-in action registry.
- * TODO add the input schema?
- */
-const ACTION_DESCRIPTIONS: Record<string, string> = BUILT_IN_ACTIONS.reduce(
-	(acc, action) => {
-		acc[action.name] = action.description;
-		return acc;
-	},
-	{} as Record<string, string>,
-);
+export const ACTION_DESCRIPTIONS: Record<string, string> = {
+	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.",
+	look: "look(): Look around the current room. No parameters.",
+	examine:
+		"examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.",
+	take: 'take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.',
+	drop: 'drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.',
+	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.",
+	open: "open(target): Open a container or door. target is the name of what to open.",
+	talk: "talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.",
+	inventory: "inventory(): Check what the player is carrying. No parameters.",
+	help: "help(): Show the list of available commands. No parameters.",
+	quit: "quit(): End the game",
+	respond:
+		"respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational. message is the text to show.",
+};
 
 export function buildAvailableActionsPrompt(actionNames: string[]): string {
 	const descriptions = actionNames
@@ -21,17 +25,25 @@ export function buildAvailableActionsPrompt(actionNames: string[]): string {
 	return `Available actions:\n${descriptions.join("\n")}`;
 }
 
-export function buildGameStateSnapshotPrompt(state: GameStateSnapshot): string {
-	const exits = state.exits.map((e) =>
-		e.locked ? `${e.direction} (locked)` : e.direction,
-	);
+export function buildGameStateSnapshotPrompt(context: ParserContext): string {
+	const exits =
+		context.available_exits.length > 0
+			? context.available_exits.join(", ")
+			: "none";
+	const blockedExits =
+		context.blocked_exits.length > 0
+			? context.blocked_exits.map((e) => e.direction).join(", ")
+			: "none";
+	const objects =
+		context.in_scope_objects.length > 0
+			? context.in_scope_objects.map((o) => o.name).join(", ")
+			: "none";
 
 	return `Current state:
-  - Room: ${state.roomName} — ${state.roomDescription}
-  - Exits: ${exits.length > 0 ? exits.join(", ") : "none"}
-  - Visible items: ${state.visibleItems.length > 0 ? state.visibleItems.join(", ") : "none"}
-  - Inventory: ${state.inventory.length > 0 ? state.inventory.join(", ") : "empty"}
-  - NPCs here: ${state.npcsHere.length > 0 ? state.npcsHere.join(", ") : "none"}`;
+  - Room: ${context.room} — ${context.description}
+  - Exits: ${exits}
+  - Blocked exits: ${blockedExits}
+  - In-scope objects: ${objects}`;
 }
 
 const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the player's input and the current game state, determine which single game action the player intends to perform.
@@ -49,13 +61,13 @@ Rules:
 - For "take X and Y", list each item name in the items array.`;
 
 export function buildStructuredOutputSystemPrompt(
-	gameState: GameStateSnapshot,
+	context: ParserContext,
 	actions: string[],
 ): string {
 	return [
 		STRUCTURED_OUTPUT_SYSTEM_PROMPT,
 		"",
-		buildGameStateSnapshotPrompt(gameState),
+		buildGameStateSnapshotPrompt(context),
 		"",
 		buildAvailableActionsPrompt(actions),
 	].join("\n");

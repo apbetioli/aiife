@@ -1,19 +1,19 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
 
+import type {
+	StructuredOutput,
+	StructuredOutputResult,
+} from "../src/agent/types";
+import { StructuredOutputSchema } from "../src/agent/types";
 import { buildStructuredOutputSystemPrompt } from "./structured-output-prompt";
-import {
-	type StructuredOutput,
-	type StructuredOutputEvalData,
-	type StructuredOutputResult,
-	StructuredOutputSchema,
-} from "./types";
+import type { StructuredOutputEvalData } from "./types";
 
 export async function structuredOutputExecutor(
 	data: StructuredOutputEvalData,
 ): Promise<StructuredOutputResult> {
 	const systemPrompt = buildStructuredOutputSystemPrompt(
-		data.gameState,
+		data.context,
 		data.availableActions,
 	);
 
@@ -27,18 +27,20 @@ export async function structuredOutputExecutor(
 		temperature: data.config?.temperature,
 	});
 
-	const parsed: StructuredOutput = result.output;
-
-	// Strip null values so evaluators only see actual params
-	const params: Record<string, unknown> = {};
-	for (const [key, value] of Object.entries(parsed)) {
-		if (key === "action") continue;
-		if (value !== null) params[key] = value;
-	}
+	const { action, ...output }: StructuredOutput = result.output;
 
 	return {
-		action: parsed.action,
-		params,
-		produced: true,
+		action,
+		params: stripNullValues(output),
 	};
+}
+
+function stripNullValues(
+	output: Omit<StructuredOutput, "action">,
+): Record<string, unknown> {
+	const params: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(output)) {
+		if (value !== null) params[key] = value;
+	}
+	return params;
 }

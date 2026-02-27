@@ -2,18 +2,30 @@
 	{
 		"data": {
 			"prompt": "use key on door",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall. A heavy iron door is set into the floor.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. A heavy iron door is set into the floor.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": ["rusty key"],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -31,21 +43,38 @@
 		},
 		"target": {
 			"expectedAction": "use",
-			"expectedParams": { "items": ["rusty key"], "target": "door" },
+			"expectedParams": {
+				"items": ["rusty key"],
+				"target": "door"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Use item on target" }
+		"metadata": {
+			"description": "Use item on target"
+		}
 	},
 	{
 		"data": {
 			"prompt": "use the amulet on the pedestal",
-			"gameState": {
-				"roomName": "The Cellar",
-				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"exits": [{ "direction": "up" }],
-				"visibleItems": ["stone pedestal"],
-				"inventory": ["gold amulet"],
-				"npcsHere": []
+			"context": {
+				"room": "The Cellar",
+				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+				"available_exits": ["up"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "stone_pedestal",
+						"name": "stone pedestal",
+						"type": "fixture",
+						"state": {}
+					},
+					{
+						"id": "gold_amulet",
+						"name": "gold amulet",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -69,18 +98,32 @@
 			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Use item on target — full names" }
+		"metadata": {
+			"description": "Use item on target — full names"
+		}
 	},
 	{
 		"data": {
 			"prompt": "use lantern",
-			"gameState": {
-				"roomName": "The Cellar",
-				"roomDescription": "A cold, damp cellar. Water drips from the low ceiling. It is very dark.",
-				"exits": [{ "direction": "up" }],
-				"visibleItems": ["stone pedestal"],
-				"inventory": ["brass lantern"],
-				"npcsHere": []
+			"context": {
+				"room": "The Cellar",
+				"description": "A cold, damp cellar. Water drips from the low ceiling. It is very dark.",
+				"available_exits": ["up"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "stone_pedestal",
+						"name": "stone pedestal",
+						"type": "fixture",
+						"state": {}
+					},
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -98,9 +141,13 @@
 		},
 		"target": {
 			"expectedAction": "use",
-			"expectedParams": { "items": ["brass lantern"] },
+			"expectedParams": {
+				"items": ["brass lantern"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Use item with no explicit target" }
+		"metadata": {
+			"description": "Use item with no explicit target"
+		}
 	}
 ]
