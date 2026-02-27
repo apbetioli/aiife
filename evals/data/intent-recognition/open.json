@@ -64,5 +64,39 @@
 		"metadata": {
 			"description": "Pronoun reference — only openable item in room is the chest"
 		}
+	},
+	{
+		"data": {
+			"prompt": "look inside the box",
+			"gameState": {
+				"roomName": "The Tower Room",
+				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+				"exits": [{ "direction": "down" }],
+				"visibleItems": ["wooden chest"],
+				"inventory": [],
+				"npcsHere": []
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "open",
+			"expectedParams": { "target": "wooden chest" },
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Look inside container — should map to examine using item alias"
+		}
 	}
 ]
