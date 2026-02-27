@@ -7,8 +7,7 @@ function isActionAcceptable(
 	action: string,
 	target: StructuredOutputEvalTarget,
 ): boolean {
-	const acceptable =
-		target.acceptableActions ?? [target.expectedAction];
+	const acceptable = target.acceptableActions ?? [target.expectedAction];
 	return acceptable.includes(action);
 }
 
@@ -51,7 +50,10 @@ export function parameterAccuracyScore(
 ): number {
 	if (!target) return 0;
 	if (target.category === "negative") return 1;
-	if (target.category === "secondary" && !isActionAcceptable(output.action, target))
+	if (
+		target.category === "secondary" &&
+		!isActionAcceptable(output.action, target)
+	)
 		return 0;
 
 	const expectedKeys = Object.keys(target.expectedParams);

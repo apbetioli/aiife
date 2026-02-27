@@ -1,3 +1,5 @@
+import z from "zod";
+
 /**
  * Input data for single-turn tool selection evaluations.
  * Tests whether the LLM selects the correct tools without executing them.
@@ -97,7 +99,18 @@ export interface StructuredOutputEvalTarget {
 	forbiddenActions?: string[];
 }
 
-export interface StructuredOutputResult {
+export const StructuredOutputSchema = z.object({
+	action: z.string(),
+	direction: z.string().nullable(),
+	items: z.array(z.string()).nullable(),
+	target: z.string().nullable(),
+	npc: z.string().nullable(),
+	message: z.string().nullable(),
+});
+
+export type StructuredOutput = z.infer<typeof StructuredOutputSchema>;
+
+export type StructuredOutputResult = {
 	action: string;
 	params: Record<string, unknown>;
 	/** Whether the output was produced by the model and matches the target */
