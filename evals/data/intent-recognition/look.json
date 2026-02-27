@@ -2,13 +2,19 @@
 	{
 		"data": {
 			"prompt": "look around",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -29,18 +35,32 @@
 			"expectedParams": {},
 			"category": "golden"
 		},
-		"metadata": { "description": "Look around the room — no target" }
+		"metadata": {
+			"description": "Look around the room — no target"
+		}
 	},
 	{
 		"data": {
 			"prompt": "look",
-			"gameState": {
-				"roomName": "The Cellar",
-				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"exits": [{ "direction": "up" }],
-				"visibleItems": ["stone pedestal"],
-				"inventory": ["gold amulet"],
-				"npcsHere": []
+			"context": {
+				"room": "The Cellar",
+				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+				"available_exits": ["up"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "stone_pedestal",
+						"name": "stone pedestal",
+						"type": "fixture",
+						"state": {}
+					},
+					{
+						"id": "gold_amulet",
+						"name": "gold amulet",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -61,18 +81,32 @@
 			"expectedParams": {},
 			"category": "golden"
 		},
-		"metadata": { "description": "Bare look command — survey the room" }
+		"metadata": {
+			"description": "Bare look command — survey the room"
+		}
 	},
 	{
 		"data": {
 			"prompt": "l",
-			"gameState": {
-				"roomName": "The Cellar",
-				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"exits": [{ "direction": "up" }],
-				"visibleItems": ["stone pedestal"],
-				"inventory": ["gold amulet"],
-				"npcsHere": []
+			"context": {
+				"room": "The Cellar",
+				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+				"available_exits": ["up"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "stone_pedestal",
+						"name": "stone pedestal",
+						"type": "fixture",
+						"state": {}
+					},
+					{
+						"id": "gold_amulet",
+						"name": "gold amulet",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -93,6 +127,8 @@
 			"expectedParams": {},
 			"category": "golden"
 		},
-		"metadata": { "description": "Shorthand look command (l)" }
+		"metadata": {
+			"description": "Shorthand look command (l)"
+		}
 	}
 ]

@@ -2,13 +2,19 @@
 	{
 		"data": {
 			"prompt": "examine the old book",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -26,21 +32,31 @@
 		},
 		"target": {
 			"expectedAction": "examine",
-			"expectedParams": { "target": "old book" },
+			"expectedParams": {
+				"target": "old book"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Examine a visible item by name" }
+		"metadata": {
+			"description": "Examine a visible item by name"
+		}
 	},
 	{
 		"data": {
 			"prompt": "look at alcove",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room. A curious alcove is set into the far wall.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room. A curious alcove is set into the far wall.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -58,7 +74,9 @@
 		},
 		"target": {
 			"expectedAction": "examine",
-			"expectedParams": { "target": "alcove" },
+			"expectedParams": {
+				"target": "alcove"
+			},
 			"category": "golden"
 		},
 		"metadata": {
@@ -68,13 +86,25 @@
 	{
 		"data": {
 			"prompt": "x pedestal",
-			"gameState": {
-				"roomName": "The Cellar",
-				"roomDescription": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"exits": [{ "direction": "up" }],
-				"visibleItems": ["stone pedestal"],
-				"inventory": ["gold amulet"],
-				"npcsHere": []
+			"context": {
+				"room": "The Cellar",
+				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
+				"available_exits": ["up"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "stone_pedestal",
+						"name": "stone pedestal",
+						"type": "fixture",
+						"state": {}
+					},
+					{
+						"id": "gold_amulet",
+						"name": "gold amulet",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -92,21 +122,31 @@
 		},
 		"target": {
 			"expectedAction": "examine",
-			"expectedParams": { "target": "pedestal" },
+			"expectedParams": {
+				"target": "pedestal"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Shorthand examine command (x)" }
+		"metadata": {
+			"description": "Shorthand examine command (x)"
+		}
 	},
 	{
 		"data": {
 			"prompt": "read the book",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -124,7 +164,9 @@
 		},
 		"target": {
 			"expectedAction": "examine",
-			"expectedParams": { "target": "old book" },
+			"expectedParams": {
+				"target": "old book"
+			},
 			"category": "golden"
 		},
 		"metadata": {

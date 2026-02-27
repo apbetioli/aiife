@@ -1,4 +1,5 @@
 import { evaluate } from "@lmnr-ai/lmnr";
+import type { StructuredOutputResult } from "../src/agent/types";
 import drop from "./data/intent-recognition/drop.json" with { type: "json" };
 import examine from "./data/intent-recognition/examine.json" with {
 	type: "json",
@@ -26,7 +27,6 @@ import type {
 	StructuredOutputDatasetEntry,
 	StructuredOutputEvalData,
 	StructuredOutputEvalTarget,
-	StructuredOutputResult,
 } from "./types";
 
 const dataset = [

@@ -2,13 +2,19 @@
 	{
 		"data": {
 			"prompt": "open the chest",
-			"gameState": {
-				"roomName": "The Tower Room",
-				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-				"exits": [{ "direction": "down" }],
-				"visibleItems": ["wooden chest"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Tower Room",
+				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+				"available_exits": ["down"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "wooden_chest",
+						"name": "wooden chest",
+						"type": "container",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -26,21 +32,31 @@
 		},
 		"target": {
 			"expectedAction": "open",
-			"expectedParams": { "target": "wooden chest" },
+			"expectedParams": {
+				"target": "wooden chest"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Open a container" }
+		"metadata": {
+			"description": "Open a container"
+		}
 	},
 	{
 		"data": {
 			"prompt": "open it",
-			"gameState": {
-				"roomName": "The Tower Room",
-				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-				"exits": [{ "direction": "down" }],
-				"visibleItems": ["wooden chest"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Tower Room",
+				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+				"available_exits": ["down"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "wooden_chest",
+						"name": "wooden chest",
+						"type": "container",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -58,7 +74,9 @@
 		},
 		"target": {
 			"expectedAction": "open",
-			"expectedParams": { "target": "wooden chest" },
+			"expectedParams": {
+				"target": "wooden chest"
+			},
 			"category": "golden"
 		},
 		"metadata": {
@@ -68,13 +86,19 @@
 	{
 		"data": {
 			"prompt": "look inside the box",
-			"gameState": {
-				"roomName": "The Tower Room",
-				"roomDescription": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-				"exits": [{ "direction": "down" }],
-				"visibleItems": ["wooden chest"],
-				"inventory": [],
-				"npcsHere": []
+			"context": {
+				"room": "The Tower Room",
+				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+				"available_exits": ["down"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "wooden_chest",
+						"name": "wooden chest",
+						"type": "container",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -92,7 +116,9 @@
 		},
 		"target": {
 			"expectedAction": "open",
-			"expectedParams": { "target": "wooden chest" },
+			"expectedParams": {
+				"target": "wooden chest"
+			},
 			"category": "golden"
 		},
 		"metadata": {

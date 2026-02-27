@@ -1,4 +1,4 @@
-import z from "zod";
+import type { ParserContext } from "../src/world/types";
 
 /**
  * Input data for single-turn tool selection evaluations.
@@ -73,18 +73,9 @@ export interface MockToolConfig {
 
 // --- Structured Output Intent Recognition ---
 
-export interface GameStateSnapshot {
-	roomName: string;
-	roomDescription: string;
-	exits: Array<{ direction: string; locked?: boolean }>;
-	visibleItems: string[];
-	inventory: string[];
-	npcsHere: string[];
-}
-
 export interface StructuredOutputEvalData {
 	prompt: string;
-	gameState: GameStateSnapshot;
+	context: ParserContext;
 	availableActions: string[];
 	config?: { model?: string; temperature?: number };
 }
@@ -98,25 +89,6 @@ export interface StructuredOutputEvalTarget {
 	/** For negative: actions that must NOT be selected */
 	forbiddenActions?: string[];
 }
-
-export const StructuredOutputSchema = z.object({
-	action: z.string(),
-	direction: z.string().nullable(),
-	items: z.array(z.string()).nullable(),
-	target: z.string().nullable(),
-	npc: z.string().nullable(),
-	message: z.string().nullable(),
-});
-
-export type StructuredOutput = z.infer<typeof StructuredOutputSchema>;
-
-export type StructuredOutputResult = {
-	action: string;
-	params: Record<string, unknown>;
-	/** Whether the output was produced by the model and matches the target */
-	produced: boolean;
-}
-
 export interface StructuredOutputDatasetEntry {
 	data: StructuredOutputEvalData;
 	target: StructuredOutputEvalTarget;

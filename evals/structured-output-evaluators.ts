@@ -1,7 +1,5 @@
-import type {
-	StructuredOutputEvalTarget,
-	StructuredOutputResult,
-} from "./types";
+import type { StructuredOutputResult } from "../src/agent/types";
+import type { StructuredOutputEvalTarget } from "./types";
 
 function isActionAcceptable(
 	action: string,

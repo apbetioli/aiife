@@ -1,5 +1,5 @@
-import type { ActionResult } from "../types.js";
-import { BOLD, CYAN, DIM, GREEN, RESET, YELLOW } from "./ansi.js";
+import type { ActionResult } from "../agent/types";
+import { BOLD, CYAN, DIM, GREEN, RESET, YELLOW } from "./ansi";
 
 export class TerminalFormatter {
 	format(result: ActionResult): string {

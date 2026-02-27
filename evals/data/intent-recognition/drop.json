@@ -2,13 +2,25 @@
 	{
 		"data": {
 			"prompt": "drop the lantern",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": ["brass lantern"],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -26,26 +38,42 @@
 		},
 		"target": {
 			"expectedAction": "drop",
-			"expectedParams": { "items": ["brass lantern"] },
+			"expectedParams": {
+				"items": ["brass lantern"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Drop an inventory item" }
+		"metadata": {
+			"description": "Drop an inventory item"
+		}
 	},
 	{
 		"data": {
 			"prompt": "put down the book",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": ["old book"],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -63,21 +91,43 @@
 		},
 		"target": {
 			"expectedAction": "drop",
-			"expectedParams": { "items": ["old book"] },
+			"expectedParams": {
+				"items": ["old book"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Put down as synonym for drop" }
+		"metadata": {
+			"description": "Put down as synonym for drop"
+		}
 	},
 	{
 		"data": {
 			"prompt": "drop all but the lamp",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall.",
-				"exits": [{ "direction": "north" }],
-				"visibleItems": [],
-				"inventory": ["brass lantern", "old book", "rusty key"],
-				"npcsHere": []
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall.",
+				"available_exits": ["north"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -95,21 +145,37 @@
 		},
 		"target": {
 			"expectedAction": "drop",
-			"expectedParams": { "items": ["old book", "rusty key"] },
+			"expectedParams": {
+				"items": ["old book", "rusty key"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Drop all but one item — excludes the lamp" }
+		"metadata": {
+			"description": "Drop all but one item — excludes the lamp"
+		}
 	},
 	{
 		"data": {
 			"prompt": "drop everything",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": ["brass lantern", "old book"],
-				"npcsHere": []
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -127,9 +193,13 @@
 		},
 		"target": {
 			"expectedAction": "drop",
-			"expectedParams": { "items": ["brass lantern", "old book"] },
+			"expectedParams": {
+				"items": ["brass lantern", "old book"]
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Drop everything — lists all inventory items" }
+		"metadata": {
+			"description": "Drop everything — lists all inventory items"
+		}
 	}
 ]

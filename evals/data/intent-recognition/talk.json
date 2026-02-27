@@ -2,13 +2,19 @@
 	{
 		"data": {
 			"prompt": "talk to the gardener",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": [],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -26,21 +32,31 @@
 		},
 		"target": {
 			"expectedAction": "talk",
-			"expectedParams": { "npc": "old gardener" },
+			"expectedParams": {
+				"npc": "old gardener"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Talk to NPC by role name" }
+		"metadata": {
+			"description": "Talk to NPC by role name"
+		}
 	},
 	{
 		"data": {
 			"prompt": "speak with the old man",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": [],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -58,7 +74,9 @@
 		},
 		"target": {
 			"expectedAction": "talk",
-			"expectedParams": { "npc": "old gardener" },
+			"expectedParams": {
+				"npc": "old gardener"
+			},
 			"category": "golden"
 		},
 		"metadata": {
@@ -68,13 +86,25 @@
 	{
 		"data": {
 			"prompt": "ask the gardener",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": ["brass lantern"],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -92,9 +122,13 @@
 		},
 		"target": {
 			"expectedAction": "talk",
-			"expectedParams": { "npc": "old gardener" },
+			"expectedParams": {
+				"npc": "old gardener"
+			},
 			"category": "golden"
 		},
-		"metadata": { "description": "Ask as synonym for talk" }
+		"metadata": {
+			"description": "Ask as synonym for talk"
+		}
 	}
 ]

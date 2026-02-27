@@ -2,18 +2,36 @@
 	{
 		"data": {
 			"prompt": "what am I carrying?",
-			"gameState": {
-				"roomName": "The Great Hall",
-				"roomDescription": "You stand in a vast stone hall.",
-				"exits": [
-					{ "direction": "north" },
-					{ "direction": "west" },
-					{ "direction": "up" },
-					{ "direction": "down", "locked": true }
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
 				],
-				"visibleItems": ["brass lantern"],
-				"inventory": ["old book", "rusty key"],
-				"npcsHere": []
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -34,18 +52,32 @@
 			"expectedParams": {},
 			"category": "golden"
 		},
-		"metadata": { "description": "Natural language inventory check" }
+		"metadata": {
+			"description": "Natural language inventory check"
+		}
 	},
 	{
 		"data": {
 			"prompt": "i",
-			"gameState": {
-				"roomName": "The Library",
-				"roomDescription": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"exits": [{ "direction": "south" }],
-				"visibleItems": ["old book"],
-				"inventory": ["brass lantern"],
-				"npcsHere": []
+			"context": {
+				"room": "The Library",
+				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -73,13 +105,37 @@
 	{
 		"data": {
 			"prompt": "inventory",
-			"gameState": {
-				"roomName": "The Garden",
-				"roomDescription": "A walled garden, overgrown but still beautiful.",
-				"exits": [{ "direction": "east" }],
-				"visibleItems": [],
-				"inventory": ["brass lantern", "old book", "rusty key"],
-				"npcsHere": ["old gardener"]
+			"context": {
+				"room": "The Garden",
+				"description": "A walled garden, overgrown but still beautiful.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {}
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {}
+					},
+					{
+						"id": "old_gardener",
+						"name": "old gardener",
+						"type": "npc",
+						"state": {}
+					}
+				]
 			},
 			"availableActions": [
 				"go",
@@ -100,6 +156,8 @@
 			"expectedParams": {},
 			"category": "golden"
 		},
-		"metadata": { "description": "Explicit inventory command" }
+		"metadata": {
+			"description": "Explicit inventory command"
+		}
 	}
 ]
