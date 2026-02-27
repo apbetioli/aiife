@@ -6,7 +6,7 @@ import type { ActionDefinition } from "../ActionRegistry";
 // Rank
 export const quitAction: ActionDefinition = {
 	name: "quit",
-	description: "End the game",
+	description: "quit(): End the game",
 	helpText: "**quit** -- End the game",
 	inputSchema: z.object({}),
 	parsePatterns: [{ pattern: /^(quit|q|exit)$/, extract: () => ({}) }],
