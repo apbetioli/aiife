@@ -34,7 +34,6 @@ const GameObjectSchema = z.object({
 	name: z.string(),
 	synonyms: z.array(z.string()).default([]),
 	type: ObjectTypeSchema,
-	location: z.string(), // room id, "player_inventory", or container object id
 	state: StateSchema.default({}),
 	descriptions: z.record(z.string(), z.string()).refine((d) => "default" in d, {
 		message: "descriptions must include a 'default' entry",

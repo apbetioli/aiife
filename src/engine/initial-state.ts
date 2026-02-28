@@ -4,20 +4,52 @@ import { type GameState, GameStateSchema, type ObjectState } from "./types";
 // ─── Validation Helpers ───────────────────────────────────────────────────────
 
 /**
- * Validates that all object locations reference valid room ids,
- * container object ids, or "player_inventory".
+ * Validates that every object is in exactly one place: either in some room.contains,
+ * in some container's contains, or in player.inventory.
  */
-function validateObjectLocations(world: World): string[] {
+function validateObjectPlacement(world: World): string[] {
 	const errors: string[] = [];
-	const validLocations = new Set([
-		...Object.keys(world.rooms),
-		...Object.keys(world.objects),
-		"player_inventory",
-	]);
+	const placement = new Map<string, string>(); // objId -> "room:roomId" | "container:objId" | "inventory"
 
-	for (const [id, obj] of Object.entries(world.objects)) {
-		if (!validLocations.has(obj.location)) {
-			errors.push(`Object "${id}" has invalid location "${obj.location}"`);
+	for (const [roomId, room] of Object.entries(world.rooms)) {
+		for (const objId of room.contains) {
+			if (placement.has(objId)) {
+				errors.push(
+					`Object "${objId}" is in room "${roomId}" but also in "${placement.get(objId)}"`,
+				);
+			} else {
+				placement.set(objId, `room:${roomId}`);
+			}
+		}
+	}
+
+	for (const [objId, obj] of Object.entries(world.objects)) {
+		if (obj.contains) {
+			for (const childId of obj.contains) {
+				if (placement.has(childId)) {
+					errors.push(
+						`Object "${childId}" is in container "${objId}" but also in "${placement.get(childId)}"`,
+					);
+				} else {
+					placement.set(childId, `container:${objId}`);
+				}
+			}
+		}
+	}
+
+	for (const objId of world.player.inventory) {
+		if (placement.has(objId)) {
+			errors.push(
+				`Object "${objId}" is in player inventory but also in "${placement.get(objId)}"`,
+			);
+		} else {
+			placement.set(objId, "inventory");
+		}
+	}
+
+	for (const objId of Object.keys(world.objects)) {
+		if (!placement.has(objId)) {
+			errors.push(`Object "${objId}" is not in any room, container, or player inventory`);
 		}
 	}
 
@@ -25,36 +57,24 @@ function validateObjectLocations(world: World): string[] {
 }
 
 /**
- * Validates that room.contains entries reference valid object ids,
- * and that each object's declared location is consistent with its
- * parent container's contains list.
+ * Validates that room.contains and container contains entries reference valid object ids.
  */
 function validateContainment(world: World): string[] {
 	const errors: string[] = [];
 
-	// Check room contains lists
 	for (const [roomId, room] of Object.entries(world.rooms)) {
 		for (const objId of room.contains) {
 			if (!world.objects[objId]) {
 				errors.push(`Room "${roomId}" contains unknown object "${objId}"`);
-			} else if (world.objects[objId].location !== roomId) {
-				errors.push(
-					`Room "${roomId}" lists "${objId}" in contains, but object.location is "${world.objects[objId].location}"`,
-				);
 			}
 		}
 	}
 
-	// Check container object contains lists
 	for (const [objId, obj] of Object.entries(world.objects)) {
 		if (obj.contains) {
 			for (const childId of obj.contains) {
 				if (!world.objects[childId]) {
 					errors.push(`Object "${objId}" contains unknown object "${childId}"`);
-				} else if (world.objects[childId].location !== objId) {
-					errors.push(
-						`Object "${objId}" lists "${childId}" in contains, but object.location is "${world.objects[childId].location}"`,
-					);
 				}
 			}
 		}
@@ -72,10 +92,6 @@ function validatePlayerInventory(world: World): string[] {
 	for (const objId of world.player.inventory) {
 		if (!world.objects[objId]) {
 			errors.push(`Player inventory references unknown object "${objId}"`);
-		} else if (world.objects[objId].location !== "player_inventory") {
-			errors.push(
-				`Player inventory lists "${objId}", but object.location is "${world.objects[objId].location}"`,
-			);
 		}
 	}
 
@@ -139,7 +155,7 @@ export function buildInitialState(world: World): GameState {
 		throw new Error(`World schema validation failed:\n${issues}`);
 	}
 
-	const locationErrors = validateObjectLocations(world);
+	const locationErrors = validateObjectPlacement(world);
 	const containmentErrors = validateContainment(world);
 	const inventoryErrors = validatePlayerInventory(world);
 	const exitErrors = validateExitConditions(world);
@@ -174,8 +190,6 @@ export function buildInitialState(world: World): GameState {
 		objects[objId] = {
 			// spread authored state flags (locked, open, examined, etc.)
 			...obj.state,
-			// always track location in game state (not in world definition)
-			location: obj.location,
 			// copy contains list if present (containers)
 			...(obj.contains ? { contains: [...obj.contains] } : {}),
 		} as ObjectState;

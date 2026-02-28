@@ -175,7 +175,7 @@ export function buildParserContext(
 		}
 
 		// Extract only state flags (exclude internal runtime fields)
-		const { location, contains, ...stateFlags } = objState;
+		const { contains, ...stateFlags } = objState;
 
 		in_scope_objects.push({
 			id: objId,
@@ -203,7 +203,7 @@ export function buildParserContext(
 			continue;
 		}
 
-		const { location, contains, ...stateFlags } = objState;
+		const { contains, ...stateFlags } = objState;
 
 		in_scope_objects.push({
 			id: objId,

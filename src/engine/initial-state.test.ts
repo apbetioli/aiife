@@ -30,17 +30,15 @@ describe("buildInitialState", () => {
 		});
 	});
 
-	it("initialises object states with location and state flags", () => {
+	it("initialises object states with state flags", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 
 		expect(state.objects.door).toEqual({
-			location: "room_a",
 			locked: true,
 			open: false,
 		});
 		expect(state.objects.lamp).toEqual({
-			location: "room_a",
 			lit: false,
 		});
 	});
@@ -79,9 +77,9 @@ describe("buildInitialState", () => {
 		expect(world.player.inventory).not.toContain("new_weapon");
 	});
 
-	// ─── Validation: object locations ────────────────────────────────────────
+	// ─── Validation: object placement ────────────────────────────────────────
 
-	it("rejects objects with invalid locations", () => {
+	it("rejects object not in any room, container, or inventory", () => {
 		const world = makeTestWorld({
 			objects: {
 				...makeTestWorld().objects,
@@ -90,20 +88,38 @@ describe("buildInitialState", () => {
 					name: "ghost",
 					synonyms: [],
 					type: "npc",
-					location: "nonexistent_room",
 					carriable: false,
 					state: {},
 					descriptions: { default: "A ghost." },
 				},
 			},
 		});
-
+		// ghost is not in any room.contains, any object.contains, or player.inventory
 		expect(() => buildInitialState(world)).toThrow(
-			'Object "ghost" has invalid location "nonexistent_room"',
+			'Object "ghost" is not in any room, container, or player inventory',
 		);
 	});
 
 	// ─── Validation: containment consistency ─────────────────────────────────
+
+	it("rejects room listing object that is already in another room", () => {
+		const world = makeTestWorld();
+		// table is in room_b; also add to room_a
+		world.rooms.room_a.contains = [...world.rooms.room_a.contains, "table"];
+
+		expect(() => buildInitialState(world)).toThrow(
+			/Object "table" is in room.*but also in/,
+		);
+	});
+
+	it("rejects containers listing unknown objects", () => {
+		const world = makeTestWorld();
+		world.objects.chest.contains = ["nonexistent"];
+
+		expect(() => buildInitialState(world)).toThrow(
+			'Object "chest" contains unknown object "nonexistent"',
+		);
+	});
 
 	it("rejects rooms listing unknown objects in contains", () => {
 		const world = makeTestWorld();
@@ -114,25 +130,6 @@ describe("buildInitialState", () => {
 
 		expect(() => buildInitialState(world)).toThrow(
 			'Room "room_a" contains unknown object "nonexistent"',
-		);
-	});
-
-	it("rejects rooms where contains and object.location disagree", () => {
-		const world = makeTestWorld();
-		// room_a claims it contains "table" but table.location is "room_b"
-		world.rooms.room_a.contains = [...world.rooms.room_a.contains, "table"];
-
-		expect(() => buildInitialState(world)).toThrow(
-			'Room "room_a" lists "table" in contains, but object.location is "room_b"',
-		);
-	});
-
-	it("rejects containers listing unknown objects", () => {
-		const world = makeTestWorld();
-		world.objects.chest.contains = ["nonexistent"];
-
-		expect(() => buildInitialState(world)).toThrow(
-			'Object "chest" contains unknown object "nonexistent"',
 		);
 	});
 
@@ -147,13 +144,13 @@ describe("buildInitialState", () => {
 		);
 	});
 
-	it("rejects inventory where object.location is not player_inventory", () => {
+	it("rejects inventory when object is also in a room", () => {
 		const world = makeTestWorld();
-		// lamp is in room_a, not player_inventory
+		// lamp is in room_a; add to inventory too
 		world.player.inventory = ["sword", "lamp"];
 
 		expect(() => buildInitialState(world)).toThrow(
-			'Player inventory lists "lamp", but object.location is "room_a"',
+			/Object "lamp" is in player inventory but also in/,
 		);
 	});
 
@@ -226,20 +223,17 @@ describe("buildInitialState", () => {
 			expect(state.rooms.cellar.contains).toEqual(["stone_pedestal"]);
 		});
 
-		it("initialises objects with location and state", () => {
+		it("initialises objects with state", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.objects.cellar_door).toEqual({
-				location: "great_hall",
 				open: false,
 			});
 			expect(state.objects.wooden_chest).toEqual({
-				location: "tower_room",
 				open: false,
 				contains: ["gold_amulet"],
 			});
 			expect(state.objects.alcove).toEqual({
-				location: "library",
 				revealed: false,
 				contains: ["rusty_key"],
 			});
@@ -283,35 +277,31 @@ describe("buildInitialState", () => {
 			expect(state.rooms.study.contains).toEqual(["oak_desk", "candle"]);
 		});
 
-		it("initialises objects with location and state", () => {
+		it("initialises objects with state", () => {
 			const state = buildInitialState(theForgottenManor);
 
 			expect(state.objects.library_door).toEqual({
-				location: "entrance_hall",
 				locked: true,
 				open: false,
 			});
 			expect(state.objects.compartment).toEqual({
-				location: "entrance_hall",
 				open: false,
 				discovered: false,
 				contains: ["brass_key"],
 			});
 			expect(state.objects.journal).toEqual({
-				location: "library",
 				read: false,
+				contains: ["study_key"],
 			});
 			expect(state.objects.oak_desk).toEqual({
-				location: "study",
 				examined: false,
 			});
 		});
 
-		it("study_key has location journal (nested in item)", () => {
+		it("study_key is in journal contains", () => {
 			const state = buildInitialState(theForgottenManor);
 
-			expect(state.objects.study_key.location).toBe("journal");
-			expect(state.objects.journal.contains).toBeUndefined();
+			expect(state.objects.journal.contains).toEqual(["study_key"]);
 		});
 	});
 });

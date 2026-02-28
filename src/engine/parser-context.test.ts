@@ -20,7 +20,7 @@ describe("evaluateCondition", () => {
 	): GameState {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.objects[objectId] = { location: "room_a", ...flags };
+		state.objects[objectId] = { ...flags };
 		return state;
 	}
 
@@ -208,7 +208,7 @@ describe("buildParserContext", () => {
 		expect(ids).not.toContain("gem");
 	});
 
-	it("strips location and contains from scoped object state", () => {
+	it("strips contains from scoped object state", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 		const ctx = buildParserContext(world, state);
@@ -216,9 +216,6 @@ describe("buildParserContext", () => {
 		const doorObj = ctx.in_scope_objects.find((o) => o.id === "door");
 		expect(doorObj).toBeDefined();
 		expect(doorObj?.state).toEqual({ locked: true, open: false });
-		expect(
-			(doorObj?.state as Record<string, unknown>).location,
-		).toBeUndefined();
 	});
 
 	it("throws for unknown current room", () => {

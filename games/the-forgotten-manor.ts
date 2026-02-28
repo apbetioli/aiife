@@ -118,7 +118,6 @@ const world: World = {
 			name: "faded painting",
 			synonyms: ["painting", "portrait", "picture", "stern man"],
 			type: "fixture",
-			location: "entrance_hall",
 			carriable: false,
 			state: { examined: false },
 			descriptions: {
@@ -134,7 +133,6 @@ const world: World = {
 			name: "hidden compartment",
 			synonyms: ["compartment", "hidden compartment", "niche", "hole"],
 			type: "container",
-			location: "entrance_hall",
 			carriable: false,
 			state: { open: false, discovered: false },
 			contains: ["brass_key"],
@@ -150,7 +148,6 @@ const world: World = {
 			name: "brass key",
 			synonyms: ["key", "brass key", "small key"],
 			type: "key",
-			location: "compartment",
 			carriable: true,
 			state: {},
 			descriptions: {
@@ -164,7 +161,6 @@ const world: World = {
 			name: "oak door",
 			synonyms: ["door", "oak door", "north door", "library door"],
 			type: "door",
-			location: "entrance_hall",
 			carriable: false,
 			state: { locked: true, open: false },
 			requires_instrument: { unlock: "brass_key" },
@@ -182,9 +178,9 @@ const world: World = {
 			name: "leather journal",
 			synonyms: ["journal", "book", "diary", "leather journal"],
 			type: "item",
-			location: "library",
 			carriable: true,
 			state: { read: false },
+			contains: ["study_key"],
 			descriptions: {
 				default:
 					"A leather-bound journal, surprisingly well-preserved. The cover reads 'Private — Lord Ashford'. It looks readable.",
@@ -197,7 +193,6 @@ const world: World = {
 			name: "iron key",
 			synonyms: ["key", "iron key", "study key"],
 			type: "key",
-			location: "journal",
 			carriable: true,
 			state: {},
 			descriptions: {
@@ -211,7 +206,6 @@ const world: World = {
 			name: "narrow door",
 			synonyms: ["door", "narrow door", "east door", "study door"],
 			type: "door",
-			location: "library",
 			carriable: false,
 			state: { locked: true, open: false },
 			requires_instrument: { unlock: "study_key" },
@@ -228,7 +222,6 @@ const world: World = {
 			name: "bookshelf",
 			synonyms: ["bookshelf", "shelves", "bookcase", "books"],
 			type: "fixture",
-			location: "library",
 			carriable: false,
 			state: {},
 			descriptions: {
@@ -258,7 +251,6 @@ const world: World = {
 			name: "stone fountain",
 			synonyms: ["fountain", "stone fountain", "basin"],
 			type: "fixture",
-			location: "garden",
 			carriable: false,
 			state: {},
 			descriptions: {
@@ -274,7 +266,6 @@ const world: World = {
 			name: "oak desk",
 			synonyms: ["desk", "oak desk", "table"],
 			type: "fixture",
-			location: "study",
 			carriable: false,
 			state: { examined: false },
 			descriptions: {
@@ -290,7 +281,6 @@ const world: World = {
 			name: "unlit candle",
 			synonyms: ["candle", "unlit candle", "taper"],
 			type: "item",
-			location: "study",
 			carriable: true,
 			state: { lit: false },
 			descriptions: {
