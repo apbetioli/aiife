@@ -1,4 +1,5 @@
 import { evaluate } from "@lmnr-ai/lmnr";
+import { getEvalModelId } from "../src/agent/model";
 import type { StructuredOutputResult } from "../src/agent/types";
 import drop from "./data/intent-recognition/drop.json" with { type: "json" };
 import examine from "./data/intent-recognition/examine.json" with {
@@ -43,6 +44,8 @@ const dataset = [
 	...respond,
 ] as StructuredOutputDatasetEntry[];
 
+console.log("Eval model:", getEvalModelId());
+
 evaluate<
 	StructuredOutputEvalData,
 	StructuredOutputEvalTarget,
@@ -59,4 +62,5 @@ evaluate<
 		combined: combinedIntentScore,
 	},
 	groupName: "intent-recognition",
+	metadata: { model: getEvalModelId() },
 });
