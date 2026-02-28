@@ -47,6 +47,61 @@
 	},
 	{
 		"data": {
+			"prompt": "drop",
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall.",
+				"available_exits": ["north"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {},
+						"source": "inventory"
+					},
+					{
+						"id": "old_book",
+						"name": "old book",
+						"type": "item",
+						"state": {},
+						"source": "inventory"
+					},
+					{
+						"id": "rusty_key",
+						"name": "rusty key",
+						"type": "key",
+						"state": {},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "respond",
+			"expectedParams": {},
+			"category": "secondary"
+		},
+		"metadata": {
+			"description": "Drop without specifying items — should respond to ambiguous input"
+		}
+	},
+	{
+		"data": {
 			"prompt": "hello there",
 			"context": {
 				"room": "The Great Hall",
