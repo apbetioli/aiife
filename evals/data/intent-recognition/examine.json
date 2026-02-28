@@ -57,6 +57,13 @@
 						"type": "item",
 						"state": {},
 						"source": "room"
+					},
+					{
+						"id": "alcove",
+						"name": "alcove",
+						"type": "fixture",
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -127,7 +134,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "pedestal"
+				"target": "stone pedestal"
 			},
 			"category": "golden"
 		},
@@ -176,6 +183,182 @@
 		},
 		"metadata": {
 			"description": "Read as synonym for examine on a readable item"
+		}
+	},
+	{
+		"data": {
+			"prompt": "look under the rug",
+			"context": {
+				"room": "Living Room",
+				"description": "A comfortable living room. A large oriental rug lies in the center of the floor.",
+				"available_exits": ["east", "west"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "oriental_rug",
+						"name": "oriental rug",
+						"type": "fixture",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": {
+				"target": "oriental rug",
+				"preposition": "under"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Prepositional look — look under"
+		}
+	},
+	{
+		"data": {
+			"prompt": "look behind the painting",
+			"context": {
+				"room": "The Gallery",
+				"description": "A narrow gallery. A dusty painting hangs on the wall.",
+				"available_exits": ["north", "south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "dusty_painting",
+						"name": "dusty painting",
+						"type": "fixture",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": {
+				"target": "dusty painting",
+				"preposition": "behind"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Prepositional look — look behind"
+		}
+	},
+	{
+		"data": {
+			"prompt": "look in the mirror",
+			"context": {
+				"room": "The Bedchamber",
+				"description": "A bedchamber with a tall mirror against the wall.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "tall_mirror",
+						"name": "tall mirror",
+						"type": "fixture",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": {
+				"target": "tall mirror",
+				"preposition": "in"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Prepositional look — look in (examine, not open)"
+		}
+	},
+	{
+		"data": {
+			"prompt": "look inside the box",
+			"context": {
+				"room": "The Tower Room",
+				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
+				"available_exits": ["down"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "wooden_chest",
+						"name": "wooden chest",
+						"type": "container",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": {
+				"target": "wooden chest",
+				"preposition": "in"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Look inside container — examine with preposition in (alias 'box' → wooden chest)"
 		}
 	}
 ]
