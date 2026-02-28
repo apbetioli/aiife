@@ -4,12 +4,12 @@ export const ACTION_DESCRIPTIONS: Record<string, string> = {
 	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.",
 	look: "look(): Look around the current room. No parameters.",
 	examine:
-		"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the name of what to examine. For 'look under X', 'look behind X', 'look in X', add preposition: under, behind, in. Omit preposition for plain 'look at' or 'examine'.",
-	take: 'take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.',
-	drop: 'drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.',
-	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.",
-	open: "open(target): Open a container or door. target is the name of what to open.",
-	talk: "talk(npc): Talk to an NPC in the current room. npc is the name of the person to talk to.",
+		"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the id of what to examine (from the object list). For 'look under X', 'look behind X', 'look in X', add preposition: under, behind, in. Omit preposition for plain 'look at' or 'examine'.",
+	take: 'take(items): Pick up items from the current room. items is an array of item ids. For "take all", list every visible item id.',
+	drop: 'drop(items): Drop items from inventory. items is an array of item ids. For "drop all", list every inventory item id.',
+	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item id. target is the optional id of what to use it on.",
+	open: "open(target): Open a container or door. target is the id of what to open.",
+	talk: "talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
 	inventory: "inventory(): Check what the player is carrying. No parameters.",
 	help: "help(): Show the list of available commands. No parameters.",
 	quit: "quit(): End the game",
@@ -32,7 +32,7 @@ function formatScopedObject(o: ScopedObject): string {
 				.filter((x): x is string => x != null)
 		: [];
 	const tag = [o.type, ...stateParts].join(", ");
-	return `${o.name} (${tag})`;
+	return `${o.name} (${tag}) [${o.id}]`;
 }
 
 export function buildGameStateSnapshotPrompt(context: ParserContext): string {
@@ -73,14 +73,14 @@ Rules:
 - Choose exactly ONE action from the available actions list.
 - Return the action name and its parameters as structured JSON.
 - Normalize direction abbreviations: n=north, s=south, e=east, w=west, u=up, d=down.
-- Match parameter values to names visible in the game state (items, NPCs, exits).
+- For object references (target, items, npc): use the object's id (the identifier in square brackets in the game state), not the display name.
 - If the player input is ambiguous, incomplete, or conversational (not a clear game command), use the "respond" action with an appropriate clarifying message.
 - For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action. For "look inside <something>", use "examine" with target and preposition "in" or "inside". Use "open" only when the player explicitly asks to open (e.g. "open the box", "open it").
 - For "look under <target>", "look behind <target>", or "look in <target>" (examining a specific aspect), use "examine" with target and preposition (e.g. under, behind, in). Omit preposition for plain "look at" or "examine".
 - For inventory queries like "what am I carrying?", use the "inventory" action.
-- For "take all" or "take everything", list ALL visible items in the items array.
-- For "drop all but X", list ALL inventory items EXCEPT X in the items array.
-- For "take X and Y", list each item name in the items array.`;
+- For "take all" or "take everything", list ALL visible item ids in the items array.
+- For "drop all but X", list ALL inventory item ids EXCEPT X in the items array.
+- For "take X and Y", list each item id in the items array.`;
 
 export function buildStructuredOutputSystemPrompt(
 	context: ParserContext,

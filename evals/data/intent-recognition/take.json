@@ -39,7 +39,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["brass lantern"]
+				"items": ["brass_lantern"]
 			},
 			"category": "golden"
 		},
@@ -82,7 +82,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["old book"]
+				"items": ["old_book"]
 			},
 			"category": "golden"
 		},
@@ -132,7 +132,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["rusty key"]
+				"items": ["rusty_key"]
 			},
 			"category": "golden"
 		},
@@ -182,7 +182,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["gold amulet"]
+				"items": ["gold_amulet"]
 			},
 			"category": "golden"
 		},
@@ -232,7 +232,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["brass lantern", "old book"]
+				"items": ["brass_lantern", "old_book"]
 			},
 			"category": "golden"
 		},
@@ -282,7 +282,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["old book", "rusty key"]
+				"items": ["old_book", "rusty_key"]
 			},
 			"category": "golden"
 		},
@@ -325,7 +325,7 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"items": ["brass lantern"]
+				"items": ["brass_lantern"]
 			},
 			"category": "golden"
 		},

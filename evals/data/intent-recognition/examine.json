@@ -34,7 +34,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "old book"
+				"target": "old_book"
 			},
 			"category": "golden"
 		},
@@ -134,7 +134,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "stone pedestal"
+				"target": "stone_pedestal"
 			},
 			"category": "golden"
 		},
@@ -177,7 +177,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "old book"
+				"target": "old_book"
 			},
 			"category": "golden"
 		},
@@ -220,7 +220,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "oriental rug",
+				"target": "oriental_rug",
 				"preposition": "under"
 			},
 			"category": "golden"
@@ -264,7 +264,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "dusty painting",
+				"target": "dusty_painting",
 				"preposition": "behind"
 			},
 			"category": "golden"
@@ -308,7 +308,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "tall mirror",
+				"target": "tall_mirror",
 				"preposition": "in"
 			},
 			"category": "golden"
@@ -352,7 +352,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "wooden chest",
+				"target": "wooden_chest",
 				"preposition": "in"
 			},
 			"category": "golden"
