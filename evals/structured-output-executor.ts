@@ -1,5 +1,6 @@
 import { generateText, Output } from "ai";
 
+import { getTracer } from "@lmnr-ai/lmnr";
 import { createEvalModel } from "../src/agent/model";
 import type {
 	StructuredOutput,
@@ -23,6 +24,10 @@ export async function structuredOutputExecutor(
 		system: systemPrompt,
 		prompt: data.prompt,
 		temperature: data.config?.temperature,
+		experimental_telemetry: {
+			isEnabled: true,
+			tracer: getTracer(),
+		},
 	});
 
 	const { action, ...output }: StructuredOutput = result.output;
