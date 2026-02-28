@@ -85,7 +85,6 @@ const world: World = {
 			name: "brass lantern",
 			synonyms: ["lantern", "lamp", "light"],
 			type: "item",
-			location: "great_hall",
 			state: {},
 			descriptions: {
 				default: "A sturdy brass lantern. It casts a warm, steady glow.",
@@ -97,7 +96,6 @@ const world: World = {
 			name: "old book",
 			synonyms: ["book", "leather book", "volume"],
 			type: "item",
-			location: "library",
 			state: {},
 			descriptions: {
 				default:
@@ -110,7 +108,6 @@ const world: World = {
 			name: "alcove",
 			synonyms: ["shadowy alcove", "wall alcove", "recess"],
 			type: "container",
-			location: "library",
 			state: { revealed: false },
 			descriptions: {
 				default:
@@ -124,7 +121,6 @@ const world: World = {
 			name: "rusty key",
 			synonyms: ["key", "iron key", "old key"],
 			type: "key",
-			location: "alcove",
 			state: {},
 			descriptions: {
 				default:
@@ -137,7 +133,6 @@ const world: World = {
 			name: "wooden chest",
 			synonyms: ["chest", "ornate chest", "box"],
 			type: "container",
-			location: "tower_room",
 			state: { open: false },
 			descriptions: {
 				default: "An ornate wooden chest with iron bindings. It is closed.",
@@ -151,7 +146,6 @@ const world: World = {
 			name: "gold amulet",
 			synonyms: ["amulet", "golden amulet", "necklace"],
 			type: "item",
-			location: "wooden_chest",
 			state: {},
 			descriptions: {
 				default:
@@ -164,7 +158,6 @@ const world: World = {
 			name: "stone pedestal",
 			synonyms: ["pedestal", "altar", "runes"],
 			type: "fixture",
-			location: "cellar",
 			state: {},
 			descriptions: {
 				default:
@@ -177,7 +170,6 @@ const world: World = {
 			name: "heavy iron door",
 			synonyms: ["iron door", "door", "floor door", "trapdoor"],
 			type: "door",
-			location: "great_hall",
 			state: { open: false },
 			descriptions: {
 				default: "A heavy iron door set into the floor. It is locked.",
@@ -191,7 +183,6 @@ const world: World = {
 			name: "old gardener",
 			synonyms: ["gardener", "old man", "man"],
 			type: "npc",
-			location: "garden",
 			state: {},
 			descriptions: {
 				default:

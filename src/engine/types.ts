@@ -10,7 +10,6 @@ const RoomStateSchema = z.object({
 
 const ObjectStateSchema = z
 	.object({
-		location: z.string(),
 		contains: z.array(z.string()).optional(),
 	})
 	.catchall(z.union([z.boolean(), z.string(), z.number()]));
