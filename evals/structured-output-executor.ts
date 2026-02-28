@@ -1,6 +1,6 @@
-import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
 
+import { createEvalModel } from "../src/agent/model";
 import type {
 	StructuredOutput,
 	StructuredOutputResult,
@@ -18,9 +18,7 @@ export async function structuredOutputExecutor(
 	);
 
 	const result = await generateText({
-		model: openai(
-			process.env.EVAL_MODEL ?? data.config?.model ?? "gpt-4o-mini",
-		),
+		model: createEvalModel(),
 		output: Output.object({ schema: StructuredOutputSchema }),
 		system: systemPrompt,
 		prompt: data.prompt,
