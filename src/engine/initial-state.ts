@@ -49,7 +49,9 @@ function validateObjectPlacement(world: World): string[] {
 
 	for (const objId of Object.keys(world.objects)) {
 		if (!placement.has(objId)) {
-			errors.push(`Object "${objId}" is not in any room, container, or player inventory`);
+			errors.push(
+				`Object "${objId}" is not in any room, container, or player inventory`,
+			);
 		}
 	}
 

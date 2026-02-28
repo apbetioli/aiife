@@ -23,19 +23,26 @@ export class GameEngine {
 		const context = buildParserContext(this.world, this.state);
 		DEBUG(`Context: ${JSON.stringify(context)}`);
 
-		const actionIntent = await this.agent.processIntent(trimmed, context);
-
-		const result = this.run(actionIntent);
-
+		const intent = await this.agent.processIntent(trimmed, context);
+		const result = this.runAction(intent);
 		return this.agent.narrateResult(result);
 	}
 
-	private run(_actionIntent: StructuredOutput): ActionResult {
-		// TODO implement game logic
-		DEBUG(`Action intent: ${JSON.stringify(_actionIntent)}`);
+	private runAction(intent: StructuredOutput): ActionResult {
+		// TODO implement real game logic (move, take, drop, use, etc.)
+		DEBUG(`Action: ${intent.action} ${JSON.stringify(intent)}`);
+
+		if (intent.action === "respond" && intent.message != null) {
+			return {
+				message: intent.message,
+				success: true,
+				gameOver: false,
+				isVictory: false,
+			};
+		}
 
 		return {
-			message: _actionIntent.message || "Success!",
+			message: intent.message ?? "Success!",
 			success: true,
 			gameOver: false,
 			isVictory: false,
