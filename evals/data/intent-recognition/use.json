@@ -26,6 +26,13 @@
 						"type": "key",
 						"state": {},
 						"source": "room"
+					},
+					{
+						"id": "cellar_door",
+						"name": "heavy iron door",
+						"type": "door",
+						"state": {},
+						"source": "room"
 					}
 				]
 			},
@@ -47,7 +54,7 @@
 			"expectedAction": "use",
 			"expectedParams": {
 				"items": ["rusty key"],
-				"target": "door"
+				"target": "heavy iron door"
 			},
 			"category": "golden"
 		},

@@ -4,7 +4,7 @@ export const ACTION_DESCRIPTIONS: Record<string, string> = {
 	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.",
 	look: "look(): Look around the current room. No parameters.",
 	examine:
-		"examine(target): Look closely at an item, NPC, or feature. target is the name of what to examine.",
+		"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the name of what to examine. For 'look under X', 'look behind X', 'look in X', or 'look inside X', add preposition: under, behind, in, inside. Omit preposition for plain 'look at' or 'examine'.",
 	take: 'take(items): Pick up items from the current room. items is an array of item names. For "take all", list every visible item.',
 	drop: 'drop(items): Drop items from inventory. items is an array of item names. For "drop all", list every inventory item.',
 	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item name. target is the optional name of what to use it on.",
@@ -75,7 +75,8 @@ Rules:
 - Normalize direction abbreviations: n=north, s=south, e=east, w=west, u=up, d=down.
 - Match parameter values to names visible in the game state (items, NPCs, exits).
 - If the player input is ambiguous, incomplete, or conversational (not a clear game command), use the "respond" action with an appropriate clarifying message.
-- For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action. For "look inside <something>", use the "open" action.
+- For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action. For "look inside <something>", use "examine" with target and preposition "in" or "inside". Use "open" only when the player explicitly asks to open (e.g. "open the box", "open it").
+- For "look under <target>", "look behind <target>", or "look in <target>" (examining a specific aspect), use "examine" with target and preposition (e.g. under, behind, in). Omit preposition for plain "look at" or "examine".
 - For inventory queries like "what am I carrying?", use the "inventory" action.
 - For "take all" or "take everything", list ALL visible items in the items array.
 - For "drop all but X", list ALL inventory items EXCEPT X in the items array.
