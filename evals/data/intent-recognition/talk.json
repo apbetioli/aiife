@@ -34,7 +34,7 @@
 		"target": {
 			"expectedAction": "talk",
 			"expectedParams": {
-				"npc": "old gardener"
+				"npc": "old_gardener"
 			},
 			"category": "golden"
 		},
@@ -77,7 +77,7 @@
 		"target": {
 			"expectedAction": "talk",
 			"expectedParams": {
-				"npc": "old gardener"
+				"npc": "old_gardener"
 			},
 			"category": "golden"
 		},
@@ -127,7 +127,7 @@
 		"target": {
 			"expectedAction": "talk",
 			"expectedParams": {
-				"npc": "old gardener"
+				"npc": "old_gardener"
 			},
 			"category": "golden"
 		},

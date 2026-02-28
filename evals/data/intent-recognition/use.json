@@ -53,8 +53,8 @@
 		"target": {
 			"expectedAction": "use",
 			"expectedParams": {
-				"items": ["rusty key"],
-				"target": "heavy iron door"
+				"items": ["rusty_key"],
+				"target": "cellar_door"
 			},
 			"category": "golden"
 		},
@@ -104,8 +104,8 @@
 		"target": {
 			"expectedAction": "use",
 			"expectedParams": {
-				"items": ["gold amulet"],
-				"target": "stone pedestal"
+				"items": ["gold_amulet"],
+				"target": "stone_pedestal"
 			},
 			"category": "golden"
 		},
@@ -155,7 +155,7 @@
 		"target": {
 			"expectedAction": "use",
 			"expectedParams": {
-				"items": ["brass lantern"]
+				"items": ["brass_lantern"]
 			},
 			"category": "golden"
 		},
