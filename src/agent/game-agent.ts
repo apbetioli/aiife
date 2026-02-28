@@ -15,7 +15,6 @@ import type { ActionResult } from "./types";
 import { StructuredOutputSchema } from "./types";
 
 export class GameAgent {
-	// TODO limit the number of messages
 	private messages: ModelMessage[] = [];
 
 	constructor(private model: LanguageModel) {}
@@ -27,28 +26,24 @@ export class GameAgent {
 			context,
 			Object.keys(ACTION_DESCRIPTIONS),
 		);
-
 		DEBUG(`System: ${system}`);
 
 		const result = await generateText({
 			model: this.model,
 			output: Output.object({ schema: StructuredOutputSchema }),
 			system,
-			prompt,
+			messages: this.messages.slice(-20),
 		});
-
-		this.messages.push(...(result.response.messages as ModelMessage[]));
 
 		return result.output;
 	}
 
 	async narrateResult(result: ActionResult): Promise<ActionResult> {
-		this.messages.push({ role: "system", content: result.message });
+		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nCurrent game output to narrate:\n${result.message}`;
 
 		const narrateResponse = await generateText({
 			model: this.model,
-			system: NARRATION_SYSTEM_PROMPT,
-			messages: this.messages,
+			prompt,
 		});
 
 		const text = narrateResponse.text || result.message;

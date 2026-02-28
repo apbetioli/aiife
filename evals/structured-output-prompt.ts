@@ -10,11 +10,12 @@ export const ACTION_DESCRIPTIONS: Record<string, string> = {
 	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item id. target is the optional id of what to use it on.",
 	open: "open(target): Open a container or door. target is the id of what to open. Use only when the player explicitly asks to open (e.g. 'open the box'); for 'look inside' use examine.",
 	talk: "talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
-	inventory: "inventory(): Check what the player is carrying. No parameters. Shorthand: i. Use for queries like 'what am I carrying?'.",
+	inventory:
+		"inventory(): Check what the player is carrying. No parameters. Shorthand: i. Use for queries like 'what am I carrying?'.",
 	help: "help(): Show the list of available commands. No parameters. Shorthand: h.",
 	quit: "quit(): End the game. Shorthand: q.",
 	respond:
-		"respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational (not a clear game command). message is the text to show.",
+		"respond(message): Reply without changing game state. Use when input is ambiguous or incomplete (e.g. 'take' or 'drop' with no object and multiple options — ask e.g. 'What do you want to take?').",
 };
 
 export function buildAvailableActionsPrompt(actionNames: string[]): string {
@@ -67,13 +68,13 @@ export function buildGameStateSnapshotPrompt(context: ParserContext): string {
   - Carrying: ${inventory}`;
 }
 
-const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the player's input and the current game state, determine which single game action the player intends to perform.
+const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the conversation history and the player's latest input, determine which single game action the player intends.
 
 Rules:
 - Choose exactly ONE action from the available actions list.
 - Return the action name and its parameters as structured JSON.
-- For object references (target, items, npc): use the object's id (the identifier in square brackets in the game state), not the display name.
-- Follow the guidance in each action description for when to use it and how to fill parameters.`;
+- For object references (target, items, npc): use the object's id (in square brackets in the game state), not the display name.
+- If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.`;
 
 export function buildStructuredOutputSystemPrompt(
 	context: ParserContext,
