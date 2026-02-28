@@ -1,20 +1,20 @@
 import type { ParserContext, ScopedObject } from "../src/world/types";
 
 export const ACTION_DESCRIPTIONS: Record<string, string> = {
-	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down.",
-	look: "look(): Look around the current room. No parameters.",
+	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, up, down. Normalize abbreviations: n=north, s=south, e=east, w=west, u=up, d=down.",
+	look: "look(): Look around the current room. No parameters. Use for 'look' with no target; for 'look at <something>' use examine instead.",
 	examine:
-		"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the id of what to examine (from the object list). For 'look under X', 'look behind X', 'look in X', add preposition: under, behind, in. Omit preposition for plain 'look at' or 'examine'.",
-	take: 'take(items): Pick up items from the current room. items is an array of item ids. For "take all", list every visible item id.',
-	drop: 'drop(items): Drop items from inventory. items is an array of item ids. For "drop all", list every inventory item id.',
+		"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the id of what to examine (from the object list). Use for 'look at X', 'look inside X' (preposition: in/inside), 'look under X', 'look behind X', 'look in X' — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'. Use 'open' only when the player explicitly says open (e.g. 'open the box').",
+	take: 'take(items): Pick up items from the current room. items is an array of item ids. For "take all" or "take everything", list every visible item id. For "take X and Y", list each item id in the array.',
+	drop: 'drop(items): Drop items from inventory. items is an array of item ids. For "drop all", list every inventory item id. For "drop all but X", list every inventory item id except X.',
 	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item id. target is the optional id of what to use it on.",
-	open: "open(target): Open a container or door. target is the id of what to open.",
+	open: "open(target): Open a container or door. target is the id of what to open. Use only when the player explicitly asks to open (e.g. 'open the box'); for 'look inside' use examine.",
 	talk: "talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
-	inventory: "inventory(): Check what the player is carrying. No parameters.",
+	inventory: "inventory(): Check what the player is carrying. No parameters. Use for queries like 'what am I carrying?'.",
 	help: "help(): Show the list of available commands. No parameters.",
 	quit: "quit(): End the game",
 	respond:
-		"respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational. message is the text to show.",
+		"respond(message): Reply to the player without changing game state. Use when input is ambiguous, incomplete, or conversational (not a clear game command). message is the text to show.",
 };
 
 export function buildAvailableActionsPrompt(actionNames: string[]): string {
@@ -72,15 +72,8 @@ const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adv
 Rules:
 - Choose exactly ONE action from the available actions list.
 - Return the action name and its parameters as structured JSON.
-- Normalize direction abbreviations: n=north, s=south, e=east, w=west, u=up, d=down.
 - For object references (target, items, npc): use the object's id (the identifier in square brackets in the game state), not the display name.
-- If the player input is ambiguous, incomplete, or conversational (not a clear game command), use the "respond" action with an appropriate clarifying message.
-- For "look" with no target, use the "look" action. For "look at <something>", use the "examine" action. For "look inside <something>", use "examine" with target and preposition "in" or "inside". Use "open" only when the player explicitly asks to open (e.g. "open the box", "open it").
-- For "look under <target>", "look behind <target>", or "look in <target>" (examining a specific aspect), use "examine" with target and preposition (e.g. under, behind, in). Omit preposition for plain "look at" or "examine".
-- For inventory queries like "what am I carrying?", use the "inventory" action.
-- For "take all" or "take everything", list ALL visible item ids in the items array.
-- For "drop all but X", list ALL inventory item ids EXCEPT X in the items array.
-- For "take X and Y", list each item id in the items array.`;
+- Follow the guidance in each action description for when to use it and how to fill parameters.`;
 
 export function buildStructuredOutputSystemPrompt(
 	context: ParserContext,
