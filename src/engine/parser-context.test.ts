@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest";
 import theForgottenManor from "../../games/the-forgotten-manor";
 import theGreatHall from "../../games/the-great-hall";
-import type { Room } from "../world/types";
+import type { GameObject, Room } from "../world/types";
 import { makeTestWorld } from "./__fixtures__/test-world";
 import { buildInitialState } from "./initial-state";
 import {
 	buildParserContext,
 	evaluateCondition,
+	resolveObjectDescription,
 	resolveRoomDescription,
 } from "./parser-context";
-import type { GameState, RoomState } from "./types";
+import type { GameState, ObjectState, RoomState } from "./types";
 
 // ─── evaluateCondition ───────────────────────────────────────────────────────
 
@@ -137,6 +138,45 @@ describe("resolveRoomDescription", () => {
 		expect(resolveRoomDescription(room, roomState)).toBe(
 			"Default description.",
 		);
+	});
+});
+
+// ─── resolveObjectDescription ────────────────────────────────────────────────
+
+describe("resolveObjectDescription", () => {
+	const obj: GameObject = {
+		id: "lamp",
+		name: "brass lamp",
+		synonyms: ["lamp"],
+		type: "item",
+		carriable: true,
+		state: {},
+		descriptions: {
+			default: "A brass lamp.",
+			lit: "The lamp glows brightly.",
+		},
+	};
+
+	it("returns default description when no flags are true", () => {
+		const objState: ObjectState = { flags: { lit: false } };
+		expect(resolveObjectDescription(obj, objState)).toBe("A brass lamp.");
+	});
+
+	it("returns state-driven description when matching flag is true", () => {
+		const objState: ObjectState = { flags: { lit: true } };
+		expect(resolveObjectDescription(obj, objState)).toBe(
+			"The lamp glows brightly.",
+		);
+	});
+
+	it("returns default when flag is true but no matching description", () => {
+		const objState: ObjectState = { flags: { broken: true } };
+		expect(resolveObjectDescription(obj, objState)).toBe("A brass lamp.");
+	});
+
+	it("returns default for empty flags", () => {
+		const objState: ObjectState = { flags: {} };
+		expect(resolveObjectDescription(obj, objState)).toBe("A brass lamp.");
 	});
 });
 
