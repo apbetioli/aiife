@@ -2,9 +2,103 @@ import { describe, expect, it } from "vitest";
 import theForgottenManor from "../../games/the-forgotten-manor";
 import theGreatHall from "../../games/the-great-hall";
 import { makeTestWorld } from "./__fixtures__/test-world";
-import { buildInitialState } from "./initial-state";
+import {
+	buildInitialState,
+	validateAllObjectsOwned,
+	validateContainment,
+	validateExitConditions,
+} from "./initial-state";
 
 describe("buildInitialState", () => {
+	// ─── World integrity validators (Phase 1.2) ───────────────────────────────
+
+	describe("validateAllObjectsOwned", () => {
+		it("returns empty for valid world", () => {
+			expect(validateAllObjectsOwned(makeTestWorld())).toEqual([]);
+		});
+		it("returns error for orphaned object", () => {
+			const world = makeTestWorld({
+				objects: {
+					...makeTestWorld().objects,
+					ghost: {
+						id: "ghost",
+						name: "ghost",
+						synonyms: [],
+						type: "npc",
+						carriable: false,
+						state: {},
+						descriptions: { default: "A ghost." },
+					},
+				},
+			});
+			expect(validateAllObjectsOwned(world)).toContainEqual(
+				expect.stringContaining('"ghost" is not in any room'),
+			);
+		});
+		it("returns error for double-owned object", () => {
+			const world = makeTestWorld();
+			world.rooms.room_a.contains = [...world.rooms.room_a.contains, "table"];
+			expect(validateAllObjectsOwned(world)).toContainEqual(
+				expect.stringMatching(/Object "table" is in room.*but also in/),
+			);
+		});
+	});
+
+	describe("validateContainment", () => {
+		it("returns empty for valid world", () => {
+			expect(validateContainment(makeTestWorld())).toEqual([]);
+		});
+		it("returns error for room containing unknown object", () => {
+			const world = makeTestWorld();
+			world.rooms.room_a.contains = [...world.rooms.room_a.contains, "nonexistent"];
+			expect(validateContainment(world)).toContainEqual(
+				'Room "room_a" contains unknown object "nonexistent"',
+			);
+		});
+		it("returns error for container containing unknown object", () => {
+			const world = makeTestWorld();
+			world.objects.chest.contains = ["nonexistent"];
+			expect(validateContainment(world)).toContainEqual(
+				'Object "chest" contains unknown object "nonexistent"',
+			);
+		});
+		it("returns error for player inventory referencing unknown object", () => {
+			const world = makeTestWorld();
+			world.player.inventory = ["nonexistent"];
+			expect(validateContainment(world)).toContainEqual(
+				'Player inventory references unknown object "nonexistent"',
+			);
+		});
+	});
+
+	describe("validateExitConditions", () => {
+		it("returns empty for valid world", () => {
+			expect(validateExitConditions(makeTestWorld())).toEqual([]);
+		});
+		it("returns error for condition referencing unknown object", () => {
+			const world = makeTestWorld();
+			world.rooms.room_a.exits.north = {
+				leads_to: "room_b",
+				condition: "phantom.open == true",
+				locked_message: "nope",
+			};
+			expect(validateExitConditions(world)).toContainEqual(
+				expect.stringContaining('unknown object "phantom"'),
+			);
+		});
+		it("returns error for leads_to unknown room", () => {
+			const world = makeTestWorld();
+			world.rooms.room_a.exits.north = {
+				leads_to: "void",
+				condition: "door.open == true",
+				locked_message: "nope",
+			};
+			expect(validateExitConditions(world)).toContainEqual(
+				expect.stringContaining('unknown room "void"'),
+			);
+		});
+	});
+
 	// ─── Happy path ──────────────────────────────────────────────────────────
 
 	it("builds a valid game state from a valid world", () => {

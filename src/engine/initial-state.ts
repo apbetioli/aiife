@@ -4,10 +4,11 @@ import { type GameState, GameStateSchema, type ObjectState } from "./types";
 // ─── Validation Helpers ───────────────────────────────────────────────────────
 
 /**
- * Validates that every object is in exactly one place: either in some room.contains,
- * in some container's contains, or in player.inventory.
+ * Validates that every object id in `world.objects` appears in exactly one
+ * owner's contains list (room, container, or player inventory).
+ * No orphaned or double-owned objects.
  */
-function validateObjectPlacement(world: World): string[] {
+export function validateAllObjectsOwned(world: World): string[] {
 	const errors: string[] = [];
 	const placement = new Map<string, string>(); // objId -> "room:roomId" | "container:objId" | "inventory"
 
@@ -59,9 +60,10 @@ function validateObjectPlacement(world: World): string[] {
 }
 
 /**
- * Validates that room.contains and container contains entries reference valid object ids.
+ * Validates that every id in room.contains, object.contains, and player.inventory
+ * references a real object in world.objects.
  */
-function validateContainment(world: World): string[] {
+export function validateContainment(world: World): string[] {
 	const errors: string[] = [];
 
 	for (const [roomId, room] of Object.entries(world.rooms)) {
@@ -82,15 +84,6 @@ function validateContainment(world: World): string[] {
 		}
 	}
 
-	return errors;
-}
-
-/**
- * Validates that player inventory entries reference valid object ids.
- */
-function validatePlayerInventory(world: World): string[] {
-	const errors: string[] = [];
-
 	for (const objId of world.player.inventory) {
 		if (!world.objects[objId]) {
 			errors.push(`Player inventory references unknown object "${objId}"`);
@@ -101,10 +94,9 @@ function validatePlayerInventory(world: World): string[] {
 }
 
 /**
- * Validates that exit conditions reference objects that actually exist.
- * Condition format: "object_id.state_key == value"
+ * Validates that exit conditions reference real object ids and valid target rooms.
  */
-function validateExitConditions(world: World): string[] {
+export function validateExitConditions(world: World): string[] {
 	const errors: string[] = [];
 	const conditionPattern = /^(\w+)\.\w+\s*[=!<>]+\s*.+$/;
 
@@ -157,15 +149,13 @@ export function buildInitialState(world: World): GameState {
 		throw new Error(`World schema validation failed:\n${issues}`);
 	}
 
-	const locationErrors = validateObjectPlacement(world);
+	const locationErrors = validateAllObjectsOwned(world);
 	const containmentErrors = validateContainment(world);
-	const inventoryErrors = validatePlayerInventory(world);
 	const exitErrors = validateExitConditions(world);
 
 	const allErrors = [
 		...locationErrors,
 		...containmentErrors,
-		...inventoryErrors,
 		...exitErrors,
 	];
 
