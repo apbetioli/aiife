@@ -16,6 +16,27 @@ function isActionForbidden(
 	return (target.forbiddenActions ?? []).includes(action);
 }
 
+function normalizeString(value: unknown): string {
+	return String(value).trim().toLowerCase();
+}
+
+function arraysMatch(expected: unknown[], produced: unknown[]): boolean {
+	const a = expected.map(normalizeString).sort();
+	const b = produced.map(normalizeString).sort();
+	return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+function paramValuesMatch(expected: unknown, produced: unknown): boolean {
+	if (expected === undefined || produced === undefined) return false;
+	if (Array.isArray(expected) && Array.isArray(produced)) {
+		return arraysMatch(expected, produced);
+	}
+	if (!Array.isArray(expected) && !Array.isArray(produced)) {
+		return normalizeString(expected) === normalizeString(produced);
+	}
+	return false;
+}
+
 /**
  * Binary score: 1.0 if the correct action was selected, 0.0 otherwise.
  * Golden: exact match to expectedAction.
@@ -65,37 +86,9 @@ export function parameterAccuracyScore(
 
 	let matches = 0;
 	for (const key of allKeys) {
-		const expected = target.expectedParams[key];
-		const produced = output.params[key];
-
-		if (expected === undefined || produced === undefined) continue;
-
-		// Both arrays — normalize (lowercase, sort) and compare element-wise
-		if (Array.isArray(expected) && Array.isArray(produced)) {
-			const expArr = expected.map((e: unknown) =>
-				String(e).trim().toLowerCase(),
-			);
-			const prodArr = produced.map((p: unknown) =>
-				String(p).trim().toLowerCase(),
-			);
-			expArr.sort();
-			prodArr.sort();
-			if (
-				expArr.length === prodArr.length &&
-				expArr.every((v: string, i: number) => v === prodArr[i])
-			) {
-				matches++;
-			}
-			continue;
+		if (paramValuesMatch(target.expectedParams[key], output.params[key])) {
+			matches++;
 		}
-
-		// Both scalars — existing string comparison
-		if (!Array.isArray(expected) && !Array.isArray(produced)) {
-			const expStr = String(expected).trim().toLowerCase();
-			const prodStr = String(produced).trim().toLowerCase();
-			if (expStr === prodStr) matches++;
-		}
-		// Mismatched types (one array, one scalar) — no match
 	}
 
 	return matches / allKeys.length;

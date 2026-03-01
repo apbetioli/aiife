@@ -35,17 +35,13 @@ export class GameEngine {
 		// TODO implement real game logic (move, take, drop, use, etc.)
 		DEBUG(`Action: ${intent.action} ${JSON.stringify(intent)}`);
 
-		if (intent.action === "respond" && intent.message != null) {
-			return {
-				message: intent.message,
-				success: true,
-				gameOver: false,
-				isVictory: false,
-			};
-		}
+		const message =
+			intent.action === "respond" && intent.message != null
+				? intent.message
+				: intent.message ?? "Success!";
 
 		return {
-			message: intent.message ?? "Success!",
+			message,
 			success: true,
 			gameOver: false,
 			isVictory: false,
