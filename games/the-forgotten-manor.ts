@@ -237,7 +237,6 @@ const world: World = {
 			name: "stone bench",
 			synonyms: ["bench", "stone bench", "seat"],
 			type: "fixture",
-			location: "garden",
 			carriable: false,
 			state: {},
 			descriptions: {
