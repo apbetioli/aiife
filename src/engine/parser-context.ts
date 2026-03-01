@@ -2,13 +2,14 @@ import {
 	type BlockedExit,
 	type Direction,
 	type Exit,
+	type GameObject,
 	type ParserContext,
 	ParserContextSchema,
 	type Room,
 	type ScopedObject,
 	type World,
 } from "../world/types";
-import type { GameState, RoomState } from "./types";
+import type { GameState, ObjectState, RoomState } from "./types";
 
 // ─── Condition Evaluator ──────────────────────────────────────────────────────
 
@@ -102,6 +103,23 @@ export function resolveRoomDescription(
 	}
 
 	return room.descriptions.default;
+}
+
+/**
+ * Resolves which description variant to use based on current object state.
+ * First matching true flag with a description key wins, then falls back to "default".
+ */
+export function resolveObjectDescription(
+	obj: GameObject,
+	objState: ObjectState,
+): string {
+	for (const [key, value] of Object.entries(objState.flags)) {
+		if (value === true && obj.descriptions[key]) {
+			return obj.descriptions[key];
+		}
+	}
+
+	return obj.descriptions.default;
 }
 
 // ─── Parser Context Builder ───────────────────────────────────────────────────
