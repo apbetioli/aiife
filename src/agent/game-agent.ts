@@ -21,6 +21,13 @@ export class GameAgent {
 
 	constructor(private model: LanguageModel) {}
 
+	/**
+	 * Used by the game engine to process the player's input and return the structured output of the intent.
+	 *
+	 * @param prompt - The player's input.
+	 * @param context - The current game state.
+	 * @returns The structured output of the intent.
+	 */
 	async processIntent(prompt: string, context: ParserContext) {
 		this.messages.push({ role: "user", content: prompt });
 
@@ -42,6 +49,12 @@ export class GameAgent {
 		return result.output;
 	}
 
+	/**
+	 * Used by the game engine to narrate the result of an action, which can be in the user's language.
+	 *
+	 * @param result - The result of an action.
+	 * @returns The narrated result.
+	 */
 	async narrateResult(result: ActionResult): Promise<ActionResult> {
 		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nCurrent game output to narrate:\n${result.message}`;
 
