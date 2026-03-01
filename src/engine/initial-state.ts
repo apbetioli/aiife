@@ -1,5 +1,5 @@
 import { type World, WorldSchema } from "../world/types";
-import { type GameState, GameStateSchema, type ObjectState } from "./types";
+import { type GameState, GameStateSchema } from "./types";
 
 // ─── Validation Helpers ───────────────────────────────────────────────────────
 
@@ -170,8 +170,8 @@ export function buildInitialState(world: World): GameState {
 
 	for (const [roomId, room] of Object.entries(world.rooms)) {
 		rooms[roomId] = {
-			visited: (room.state.visited as boolean) ?? false,
-			contains: [...room.contains], // copy, never mutate world definition
+			contains: [...room.contains],
+			flags: { visited: false, ...room.state },
 		};
 	}
 
@@ -180,11 +180,9 @@ export function buildInitialState(world: World): GameState {
 
 	for (const [objId, obj] of Object.entries(world.objects)) {
 		objects[objId] = {
-			// spread authored state flags (locked, open, examined, etc.)
-			...obj.state,
-			// copy contains list if present (containers)
+			flags: { ...obj.state },
 			...(obj.contains ? { contains: [...obj.contains] } : {}),
-		} as ObjectState;
+		};
 	}
 
 	// ── 4. Build player state ──────────────────────────────────────────────

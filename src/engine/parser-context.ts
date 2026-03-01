@@ -41,7 +41,7 @@ export function evaluateCondition(
 		return false;
 	}
 
-	const actual = objectState[stateKey];
+	const actual = objectState.flags[stateKey];
 	if (actual === undefined) {
 		console.warn(
 			`[evaluateCondition] Object "${objectId}" has no state key "${stateKey}"`,
@@ -86,16 +86,18 @@ export function resolveRoomDescription(
 	room: Room,
 	roomState: RoomState,
 ): string {
-	// Check each state flag — first matching key wins
-	for (const [key, value] of Object.entries(roomState)) {
-		if (key === "visited" || key === "contains") continue;
+	const flags = roomState.flags;
+
+	// State-driven flags (e.g. dark) take priority over generic "visited"
+	for (const [key, value] of Object.entries(flags)) {
+		if (key === "visited") continue;
 		if (value === true && room.descriptions[key]) {
 			return room.descriptions[key];
 		}
 	}
 
 	// Fall back to visited variant if seen before
-	if (roomState.visited && room.descriptions.visited) {
+	if (flags.visited && room.descriptions.visited) {
 		return room.descriptions.visited;
 	}
 
@@ -174,14 +176,12 @@ export function buildParserContext(
 			continue;
 		}
 
-		// Extract only state flags (exclude internal runtime fields)
-		const { contains, ...stateFlags } = objState;
-
+		// State flags only (contains is internal runtime data)
 		in_scope_objects.push({
 			id: objId,
 			name: worldObj.name,
 			type: worldObj.type,
-			state: stateFlags,
+			state: objState.flags,
 			source: "room",
 		});
 	}
@@ -203,13 +203,11 @@ export function buildParserContext(
 			continue;
 		}
 
-		const { contains, ...stateFlags } = objState;
-
 		in_scope_objects.push({
 			id: objId,
 			name: worldObj.name,
 			type: worldObj.type,
-			state: stateFlags,
+			state: objState.flags,
 			source: "inventory",
 		});
 	}
