@@ -11,7 +11,7 @@ import {
 import { DEBUG } from "../debug";
 import type { ParserContext } from "../world/types";
 import { NARRATION_SYSTEM_PROMPT } from "./prompt";
-import type { ActionResult } from "./types";
+import type { ActionResult, StructuredOutput } from "./types";
 import { StructuredOutputSchema } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
@@ -28,7 +28,10 @@ export class GameAgent {
 	 * @param context - The current game state.
 	 * @returns The structured output of the intent.
 	 */
-	async processIntent(prompt: string, context: ParserContext) {
+	async processIntent(
+		prompt: string,
+		context: ParserContext,
+	): Promise<StructuredOutput> {
 		this.messages.push({ role: "user", content: prompt });
 
 		const system = buildStructuredOutputSystemPrompt(

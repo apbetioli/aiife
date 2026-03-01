@@ -18,7 +18,10 @@ export class GameEngine {
 
 	async processInput(input: string): Promise<ActionResult> {
 		const trimmed = input.trim();
-		if (!trimmed) return { message: "Say something!", success: false };
+		if (!trimmed) {
+			const result = { message: "Say something!", success: false };
+			return this.agent.narrateResult(result);
+		}
 
 		const context = buildParserContext(this.world, this.state);
 		DEBUG(`Context: ${JSON.stringify(context)}`);
