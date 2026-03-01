@@ -29,7 +29,11 @@ export function buildAvailableActionsPrompt(actionNames: string[]): string {
 function formatScopedObject(o: ScopedObject): string {
 	const stateParts = o.state
 		? Object.entries(o.state)
-				.map(([k, v]) => (v === true ? k : v === false ? null : `${k}: ${v}`))
+				.map(([k, v]) => {
+					if (v === true) return k;
+					if (v === false) return null;
+					return `${k}: ${v}`;
+				})
 				.filter((x): x is string => x != null)
 		: [];
 	const tag = [o.type, ...stateParts].join(", ");
