@@ -14,6 +14,8 @@ import { NARRATION_SYSTEM_PROMPT } from "./prompt";
 import type { ActionResult } from "./types";
 import { StructuredOutputSchema } from "./types";
 
+const INTENT_HISTORY_LIMIT = 10;
+
 export class GameAgent {
 	private messages: ModelMessage[] = [];
 
@@ -32,7 +34,9 @@ export class GameAgent {
 			model: this.model,
 			output: Output.object({ schema: StructuredOutputSchema }),
 			system,
-			messages: this.messages.slice(-20),
+			// Gives context about recent interactions for solving ambiguous inputs in follow up answers.
+			// E.g. "TAKE" → "What do you want to take?" → "lantern" -> "Taken."
+			messages: this.messages.slice(-INTENT_HISTORY_LIMIT),
 		});
 
 		return result.output;
