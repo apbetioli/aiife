@@ -1,18 +1,17 @@
 import { z } from "zod";
-import { PlayerSchema } from "../world/types";
+import { PlayerSchema, StateSchema } from "../world/types";
 
 // ─── Game State Schema ────────────────────────────────────────────────────────
 
 const RoomStateSchema = z.object({
-	visited: z.boolean(),
 	contains: z.array(z.string()),
+	flags: StateSchema.default({}),
 });
 
-const ObjectStateSchema = z
-	.object({
-		contains: z.array(z.string()).optional(),
-	})
-	.catchall(z.union([z.boolean(), z.string(), z.number()]));
+const ObjectStateSchema = z.object({
+	contains: z.array(z.string()).optional(),
+	flags: StateSchema.default({}),
+});
 
 export const GameStateSchema = z.object({
 	world_id: z.string(),

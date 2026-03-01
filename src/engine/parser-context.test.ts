@@ -20,7 +20,13 @@ describe("evaluateCondition", () => {
 	): GameState {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.objects[objectId] = { ...flags };
+		const current = state.objects[objectId];
+		state.objects[objectId] = {
+			...(current && "contains" in current && current.contains
+				? { contains: current.contains }
+				: {}),
+			flags: { ...(current?.flags ?? {}), ...flags },
+		};
 		return state;
 	}
 
@@ -40,7 +46,10 @@ describe("evaluateCondition", () => {
 	});
 
 	it("evaluates numeric comparisons", () => {
-		const state = stateWith("counter", { value: 5 });
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		// counter may not exist in world; add minimal object state
+		state.objects["counter"] = { flags: { value: 5 } };
 
 		expect(evaluateCondition("counter.value > 3", state)).toBe(true);
 		expect(evaluateCondition("counter.value < 3", state)).toBe(false);
@@ -50,7 +59,10 @@ describe("evaluateCondition", () => {
 	});
 
 	it("evaluates string comparisons", () => {
-		const state = stateWith("npc", { mood: "angry" });
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.objects["npc"] = { flags: { mood: "angry" } };
+
 		expect(evaluateCondition("npc.mood == angry", state)).toBe(true);
 		expect(evaluateCondition("npc.mood != happy", state)).toBe(true);
 	});
@@ -88,42 +100,39 @@ describe("resolveRoomDescription", () => {
 	};
 
 	it("returns default description for unvisited room with no state flags", () => {
-		const roomState: RoomState = { visited: false, contains: [] };
+		const roomState: RoomState = { contains: [], flags: { visited: false } };
 		expect(resolveRoomDescription(room, roomState)).toBe(
 			"Default description.",
 		);
 	});
 
 	it("returns visited description for visited room", () => {
-		const roomState: RoomState = { visited: true, contains: [] };
+		const roomState: RoomState = { contains: [], flags: { visited: true } };
 		expect(resolveRoomDescription(room, roomState)).toBe(
 			"Visited description.",
 		);
 	});
 
 	it("returns state-driven description when a matching state flag is true", () => {
-		const roomState: RoomState & Record<string, unknown> = {
-			visited: false,
+		const roomState: RoomState = {
 			contains: [],
-			dark: true,
+			flags: { visited: false, dark: true },
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe("Dark description.");
 	});
 
 	it("prioritises state-driven descriptions over visited", () => {
-		const roomState: RoomState & Record<string, unknown> = {
-			visited: true,
+		const roomState: RoomState = {
 			contains: [],
-			dark: true,
+			flags: { visited: true, dark: true },
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe("Dark description.");
 	});
 
 	it("falls back to default when state flag is false", () => {
-		const roomState: RoomState & Record<string, unknown> = {
-			visited: false,
+		const roomState: RoomState = {
 			contains: [],
-			dark: false,
+			flags: { visited: false, dark: false },
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe(
 			"Default description.",
@@ -167,7 +176,7 @@ describe("buildParserContext", () => {
 	it("opens conditional exits when condition is true", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.objects.door.open = true;
+		state.objects.door.flags.open = true;
 
 		const ctx = buildParserContext(world, state);
 
@@ -231,7 +240,7 @@ describe("buildParserContext", () => {
 	it("uses visited description for visited rooms", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.rooms.room_a.visited = true;
+		state.rooms.room_a.flags.visited = true;
 
 		const ctx = buildParserContext(world, state);
 		expect(ctx.description).toBe("Room A again.");
@@ -279,7 +288,7 @@ describe("buildParserContext (The Great Hall)", () => {
 
 	it("opens cellar exit when cellar_door is open", () => {
 		const state = buildInitialState(theGreatHall);
-		state.objects.cellar_door.open = true;
+		state.objects.cellar_door.flags.open = true;
 		const ctx = buildParserContext(theGreatHall, state);
 
 		expect(ctx.available_exits).toContain("down");
@@ -345,7 +354,7 @@ describe("buildParserContext (The Forgotten Manor)", () => {
 
 	it("opens north exit when library_door is open", () => {
 		const state = buildInitialState(theForgottenManor);
-		state.objects.library_door.open = true;
+		state.objects.library_door.flags.open = true;
 		const ctx = buildParserContext(theForgottenManor, state);
 
 		expect(ctx.available_exits).toContain("north");
@@ -379,7 +388,7 @@ describe("buildParserContext (The Forgotten Manor)", () => {
 	it("opens east exit when study_door is open", () => {
 		const state = buildInitialState(theForgottenManor);
 		state.player.current_room = "library";
-		state.objects.study_door.open = true;
+		state.objects.study_door.flags.open = true;
 		const ctx = buildParserContext(theForgottenManor, state);
 
 		expect(ctx.available_exits).toContain("east");
@@ -387,7 +396,7 @@ describe("buildParserContext (The Forgotten Manor)", () => {
 
 	it("uses visited description for entrance_hall when visited", () => {
 		const state = buildInitialState(theForgottenManor);
-		state.rooms.entrance_hall.visited = true;
+		state.rooms.entrance_hall.flags.visited = true;
 		const ctx = buildParserContext(theForgottenManor, state);
 
 		expect(ctx.description).toContain("painting watches you silently");
@@ -396,7 +405,7 @@ describe("buildParserContext (The Forgotten Manor)", () => {
 	it("evaluateCondition: library_door.open for Forgotten Manor", () => {
 		const state = buildInitialState(theForgottenManor);
 		expect(evaluateCondition("library_door.open == true", state)).toBe(false);
-		state.objects.library_door.open = true;
+		state.objects.library_door.flags.open = true;
 		expect(evaluateCondition("library_door.open == true", state)).toBe(true);
 	});
 });

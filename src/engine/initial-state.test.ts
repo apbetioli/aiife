@@ -115,12 +115,12 @@ describe("buildInitialState", () => {
 		const state = buildInitialState(world);
 
 		expect(state.rooms.room_a).toEqual({
-			visited: false,
 			contains: ["door", "lamp", "chest"],
+			flags: { visited: false },
 		});
 		expect(state.rooms.room_b).toEqual({
-			visited: false,
 			contains: ["table"],
+			flags: { visited: false },
 		});
 	});
 
@@ -129,11 +129,10 @@ describe("buildInitialState", () => {
 		const state = buildInitialState(world);
 
 		expect(state.objects.door).toEqual({
-			locked: true,
-			open: false,
+			flags: { locked: true, open: false },
 		});
 		expect(state.objects.lamp).toEqual({
-			lit: false,
+			flags: { lit: false },
 		});
 	});
 
@@ -308,8 +307,8 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.rooms.great_hall).toEqual({
-				visited: false,
 				contains: ["brass_lantern", "cellar_door"],
+				flags: { visited: false },
 			});
 			expect(state.rooms.garden.contains).toEqual(["gardener"]);
 			expect(state.rooms.library.contains).toEqual(["old_book", "alcove"]);
@@ -321,14 +320,14 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.objects.cellar_door).toEqual({
-				open: false,
+				flags: { open: false },
 			});
 			expect(state.objects.wooden_chest).toEqual({
-				open: false,
+				flags: { open: false },
 				contains: ["gold_amulet"],
 			});
 			expect(state.objects.alcove).toEqual({
-				revealed: false,
+				flags: { revealed: false },
 				contains: ["rusty_key"],
 			});
 		});
@@ -359,8 +358,8 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theForgottenManor);
 
 			expect(state.rooms.entrance_hall).toEqual({
-				visited: false,
 				contains: ["painting", "library_door", "compartment"],
+				flags: { visited: false },
 			});
 			expect(state.rooms.library.contains).toEqual([
 				"journal",
@@ -375,20 +374,18 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theForgottenManor);
 
 			expect(state.objects.library_door).toEqual({
-				locked: true,
-				open: false,
+				flags: { locked: true, open: false },
 			});
 			expect(state.objects.compartment).toEqual({
-				open: false,
-				discovered: false,
+				flags: { open: false, discovered: false },
 				contains: ["brass_key"],
 			});
 			expect(state.objects.journal).toEqual({
-				read: false,
+				flags: { read: false },
 				contains: ["study_key"],
 			});
 			expect(state.objects.oak_desk).toEqual({
-				examined: false,
+				flags: { examined: false },
 			});
 		});
 
