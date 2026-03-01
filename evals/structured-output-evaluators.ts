@@ -58,6 +58,9 @@ export function parameterAccuracyScore(
 	const producedKeys = Object.keys(output.params);
 	const allKeys = Array.from(new Set([...expectedKeys, ...producedKeys]));
 
+	// No expected params → don't penalize whatever the model produced (e.g. respond+message)
+	if (expectedKeys.length === 0 && target.category === "secondary") return 1;
+
 	if (allKeys.length === 0) return 1;
 
 	let matches = 0;
