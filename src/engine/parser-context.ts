@@ -160,8 +160,7 @@ export function buildParserContext(
 	const blocked_exits: BlockedExit[] = [];
 
 	for (const [dir, exit] of Object.entries(room.exits) as [Direction, Exit][]) {
-		const isOpen =
-			exit.condition === null || evaluateCondition(exit.condition, state);
+		const isOpen = !exit.condition || evaluateCondition(exit.condition, state);
 
 		if (isOpen) {
 			available_exits.push(dir);

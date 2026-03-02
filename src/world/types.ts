@@ -40,7 +40,6 @@ const GameObjectSchema = z.object({
 	}),
 	requires_instrument: RequiresInstrumentSchema.optional(),
 	contains: z.array(z.string()).optional(), // only for containers
-	carriable: z.boolean().default(true),
 });
 
 // ─── Exit ─────────────────────────────────────────────────────────────────────
@@ -62,7 +61,7 @@ const DirectionSchema = z.enum([
 
 const ExitSchema = z.object({
 	leads_to: z.string(), // room id
-	condition: z.string().nullable(), // expression string e.g. "oak_door.open == true"
+	condition: z.string().optional(), // expression string e.g. "oak_door.open == true"
 	locked_message: z.string().optional(),
 });
 

@@ -15,9 +15,9 @@ const world: World = {
 			},
 			state: {},
 			exits: {
-				north: { leads_to: "library", condition: null },
-				west: { leads_to: "garden", condition: null },
-				up: { leads_to: "tower_room", condition: null },
+				north: { leads_to: "library" },
+				west: { leads_to: "garden" },
+				up: { leads_to: "tower_room" },
 				down: {
 					leads_to: "cellar",
 					condition: "cellar_door.open == true",
@@ -35,7 +35,7 @@ const world: World = {
 			},
 			state: {},
 			exits: {
-				east: { leads_to: "great_hall", condition: null },
+				east: { leads_to: "great_hall" },
 			},
 			contains: ["gardener"],
 		},
@@ -48,7 +48,7 @@ const world: World = {
 			},
 			state: {},
 			exits: {
-				south: { leads_to: "great_hall", condition: null },
+				south: { leads_to: "great_hall" },
 			},
 			contains: ["old_book", "alcove"],
 		},
@@ -61,7 +61,7 @@ const world: World = {
 			},
 			state: {},
 			exits: {
-				down: { leads_to: "great_hall", condition: null },
+				down: { leads_to: "great_hall" },
 			},
 			contains: ["wooden_chest"],
 		},
@@ -74,7 +74,7 @@ const world: World = {
 			},
 			state: {},
 			exits: {
-				up: { leads_to: "great_hall", condition: null },
+				up: { leads_to: "great_hall" },
 			},
 			contains: ["stone_pedestal"],
 		},

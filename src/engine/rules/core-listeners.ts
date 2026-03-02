@@ -20,14 +20,14 @@ export function registerCoreHandlers(
 ): void {
 	// ── take ──────────────────────────────────────────────────────────────
 
-	bus.on("take", (event, state, world) => {
+	bus.on("take", (event, state, _world) => {
 		const ids = (event.params.objects ?? [])
 			.map((s) => String(s).trim())
 			.filter(Boolean);
 		const toTake = ids.filter(
 			(id) =>
 				isInRoom(state, id) &&
-				(state.objects[id]?.flags.carriable !== false) &&
+				state.objects[id]?.flags.carriable !== false &&
 				!isInInventory(state, id),
 		);
 		if (ids.length === 0) return { state, cancel: "Take what?" };
