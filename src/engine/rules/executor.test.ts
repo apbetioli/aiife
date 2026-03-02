@@ -125,7 +125,7 @@ describe("executeAction", () => {
 
 	it("drop with no target cancels", () => {
 		const { world, bus, state } = setup();
-		const result = executeAction(bus, world, state, "drop", {});
+		const result = executeAction(bus, world, state, "drop", { objects: [] });
 
 		expect(result.cancelled).toBe(true);
 		expect(result.feedback.some((m) => m.includes("Drop what"))).toBe(true);
