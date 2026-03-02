@@ -25,6 +25,7 @@ export type {
 	ListenerRegistration,
 	ListenerScope,
 } from "./types";
+export { isEventName } from "./types";
 
 /**
  * Create an EventBus pre-configured with core guards, core listeners,
