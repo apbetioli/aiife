@@ -16,14 +16,14 @@ export const coreActions = {
 			"go(direction): Go in a direction. direction must be one of: north, south, east, west, northeast, northwest, southeast, southwest, up, down, in, out. Normalize shorthands to full names: n→north, s→south, e→east, w→west, ne→northeast, nw→northwest, se→southeast, sw→southwest, u→up, d→down (in, out have no common shorthand).",
 	},
 	take: {
-		schema: targetParams,
+		schema: z.object({ objects: z.array(z.string()) }),
 		description:
-			'take(items): Pick up items from the current room. items is an array of item ids. For "take all" or "take everything", list every visible item id. For "take X and Y", list each item id in the array.',
+			'take(objects): Pick up objects from the current room. objects is an array of object ids. For "take all" or "take everything", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',
 	},
 	drop: {
-		schema: targetParams,
+		schema: z.object({ objects: z.array(z.string()) }),
 		description:
-			'drop(items): Drop items from inventory. items is an array of item ids. For "drop all", list every inventory item id. For "drop all but X", list every inventory item id except X.',
+			'drop(objects): Drop objects from inventory. objects is an array of object ids. For "drop all", list every inventory object id. For "drop all but X", list every inventory object id except X. For "drop X and Y", list [X, Y]. For single "drop X", list [X].',
 	},
 	open: {
 		schema: targetParams,
@@ -48,12 +48,16 @@ export const coreActions = {
 	examine: {
 		schema: targetParams,
 		description:
-			"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the id of what to examine (from the object list). Shorthand: x. Use for 'look at X', 'look inside X' (preposition: in/inside), 'look under X', 'look behind X', 'look in X' — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'. Use 'open' only when the player explicitly says open (e.g. 'open the box').",
+			"examine(target, preposition?): Look closely at an item, actor, or feature. target is the id of what to examine (from the object list). Shorthand: x. Use for 'look at X', 'look inside X' (preposition: in/inside), 'look under X', 'look behind X', 'look in X' — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'. Use 'open' only when the player explicitly says open (e.g. 'open the box').",
 	},
 	use: {
-		schema: z.object({ target: z.string(), indirect: z.string().optional() }),
+		schema: z.object({
+			target: z.string().optional(),
+			indirect: z.string().optional(),
+			objects: z.array(z.string()).optional(),
+		}),
 		description:
-			"use(items, target?): Use an item, optionally on a target. items is an array with the item id. target is the optional id of what to use it on.",
+			"use(objects, target?): Use an object, optionally on a target. objects is an array with the object id. target is the optional id of what to use it on.",
 	},
 	move: {
 		schema: z.object({ target: z.string(), direction: z.string().optional() }),
@@ -68,7 +72,7 @@ export const coreActions = {
 	talk: {
 		schema: z.object({ target: z.string() }),
 		description:
-			"talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
+			"talk(actor): Talk to an actor in the current room. actor is the id of the person to talk to.",
 	},
 	enter: { schema: z.object({ room: z.string() }), description: "" },
 	exit: { schema: z.object({ room: z.string() }), description: "" },

@@ -1,6 +1,7 @@
 import {
 	ensureVisited,
 	isInInventory,
+	isInRoom,
 	moveObjectFromInventoryToRoom,
 	moveObjectFromRoomToInventory,
 	movePlayer,
@@ -20,24 +21,43 @@ export function registerCoreHandlers(
 	// ── take ──────────────────────────────────────────────────────────────
 
 	bus.on("take", (event, state, world) => {
-		const target = getTarget(event.params);
-		if (isInInventory(state, target))
-			return { state, cancel: "You're already carrying that." };
-		if (!world.objects[target]?.carriable)
+		const ids = (event.params.objects ?? []).map((s) => String(s).trim()).filter(Boolean);
+		const toTake = ids.filter(
+			(id) =>
+				isInRoom(state, id) &&
+				world.objects[id]?.carriable &&
+				!isInInventory(state, id),
+		);
+		if (ids.length === 0)
+			return { state, cancel: "Take what?" };
+		if (toTake.length === 0) {
+			if (ids.some((id) => isInInventory(state, id)))
+				return { state, cancel: "You're already carrying that." };
 			return { state, cancel: "You can't take that." };
-		return { state: moveObjectFromRoomToInventory(state, target) };
+		}
+		let nextState = state;
+		for (const id of toTake) {
+			nextState = moveObjectFromRoomToInventory(nextState, id);
+		}
+		return { state: nextState };
 	});
 
 	// ── drop ──────────────────────────────────────────────────────────────
 
 	bus.on("drop", (event, state, _world) => {
-		return {
-			state: moveObjectFromInventoryToRoom(
-				state,
-				getTarget(event.params),
-				state.player.current_room,
-			),
-		};
+		const ids = (event.params.objects ?? []).map((s) => String(s).trim()).filter(Boolean);
+		const toDrop = ids.filter((id) => isInInventory(state, id));
+		if (toDrop.length === 0) {
+			if (ids.length === 0)
+				return { state, cancel: "Drop what?" };
+			return { state, cancel: "You're not carrying any of those." };
+		}
+		const roomId = state.player.current_room;
+		let nextState = state;
+		for (const id of toDrop) {
+			nextState = moveObjectFromInventoryToRoom(nextState, id, roomId);
+		}
+		return { state: nextState };
 	});
 
 	// ── open ──────────────────────────────────────────────────────────────

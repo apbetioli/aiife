@@ -62,10 +62,10 @@ describe("evaluateCondition", () => {
 	it("evaluates string comparisons", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.objects.npc = { flags: { mood: "angry" } };
+		state.objects.actor = { flags: { mood: "angry" } };
 
-		expect(evaluateCondition("npc.mood == angry", state)).toBe(true);
-		expect(evaluateCondition("npc.mood != happy", state)).toBe(true);
+		expect(evaluateCondition("actor.mood == angry", state)).toBe(true);
+		expect(evaluateCondition("actor.mood != happy", state)).toBe(true);
 	});
 
 	it("returns false for unknown objects", () => {

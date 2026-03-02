@@ -78,7 +78,7 @@ const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adv
 Rules:
 - Choose exactly ONE action from the available actions list.
 - Return the action name and its parameters as structured JSON.
-- For object references (target, items, npc): use the object's id (in square brackets in the game state), not the display name.
+- For object references (target, objects, actor): use the object's id (in square brackets in the game state), not the display name.
 - If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.`;
 
 export function buildStructuredOutputSystemPrompt(

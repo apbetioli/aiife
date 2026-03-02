@@ -161,7 +161,7 @@ describe("EventBus", () => {
 			{ priority: 100 },
 		);
 
-		const event = new GameEvent("take", { target: "lamp" });
+		const event = new GameEvent("take", { objects: ["lamp"] });
 		const result = bus.emit(event, world, freshState());
 
 		expect(order).toEqual(["guard"]);
@@ -180,7 +180,7 @@ describe("EventBus", () => {
 			{ priority: 50 },
 		);
 
-		const event = new GameEvent("take", { target: "table" });
+		const event = new GameEvent("take", { objects: ["table"] });
 		const result = bus.emit(event, world, freshState());
 
 		expect(result.cancelled).toBe(true);
