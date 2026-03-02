@@ -176,7 +176,7 @@ export function buildInitialState(world: World): GameState {
 
 	for (const [objId, obj] of Object.entries(world.objects)) {
 		objects[objId] = {
-			flags: { ...obj.state },
+			flags: { carriable: true, ...obj.state },
 			...(obj.contains ? { contains: [...obj.contains] } : {}),
 		};
 	}

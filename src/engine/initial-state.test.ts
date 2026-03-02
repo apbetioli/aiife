@@ -25,8 +25,7 @@ describe("buildInitialState", () => {
 						name: "ghost",
 						synonyms: [],
 						type: "actor",
-						carriable: false,
-						state: {},
+						state: { carriable: false },
 						descriptions: { default: "A ghost." },
 					},
 				},
@@ -132,10 +131,10 @@ describe("buildInitialState", () => {
 		const state = buildInitialState(world);
 
 		expect(state.objects.door).toEqual({
-			flags: { locked: true, open: false },
+			flags: { locked: true, open: false, carriable: false },
 		});
 		expect(state.objects.lamp).toEqual({
-			flags: { lit: false },
+			flags: { lit: false, carriable: true },
 		});
 	});
 
@@ -184,8 +183,7 @@ describe("buildInitialState", () => {
 					name: "ghost",
 					synonyms: [],
 					type: "actor",
-					carriable: false,
-					state: {},
+					state: { carriable: false },
 					descriptions: { default: "A ghost." },
 				},
 			},
@@ -323,14 +321,14 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.objects.cellar_door).toEqual({
-				flags: { open: false },
+				flags: { open: false, carriable: false },
 			});
 			expect(state.objects.wooden_chest).toEqual({
-				flags: { open: false },
+				flags: { open: false, carriable: false },
 				contains: ["gold_amulet"],
 			});
 			expect(state.objects.alcove).toEqual({
-				flags: { revealed: false },
+				flags: { revealed: false, carriable: false },
 				contains: ["rusty_key"],
 			});
 		});
@@ -377,18 +375,18 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theForgottenManor);
 
 			expect(state.objects.library_door).toEqual({
-				flags: { locked: true, open: false },
+				flags: { locked: true, open: false, carriable: false },
 			});
 			expect(state.objects.compartment).toEqual({
-				flags: { open: false, discovered: false },
+				flags: { open: false, discovered: false, carriable: false },
 				contains: ["brass_key"],
 			});
 			expect(state.objects.journal).toEqual({
-				flags: { read: false },
+				flags: { read: false, carriable: true },
 				contains: ["study_key"],
 			});
 			expect(state.objects.oak_desk).toEqual({
-				flags: { examined: false },
+				flags: { examined: false, carriable: false },
 			});
 		});
 
