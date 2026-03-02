@@ -10,17 +10,33 @@ export type IntentParams = Partial<StructuredOutput> & {
 	[key: string]: unknown;
 };
 
+interface ResolvedParams {
+	target: string;
+	instrument?: string;
+	indirect?: string;
+}
+
+/**
+ * Resolve all intent params in one pass, consuming items sequentially
+ * so each value is used at most once.
+ */
+export function resolveParams(params: IntentParams): ResolvedParams {
+	const items = [...(params.items ?? [])];
+
+	const target =
+		params.target?.trim() ?? params.npc?.trim() ?? items.shift()?.trim() ?? "";
+	const instrument = params.instrument?.trim() ?? items.shift()?.trim();
+	const indirect = params.indirect?.trim() ?? items.shift()?.trim();
+
+	return { target, instrument, indirect };
+}
+
+/** Shorthand — most listeners only need the target. */
 export function getTarget(params: IntentParams): string {
-	const target = params.target ?? params.items?.[0] ?? params.npc;
-	return target?.trim() ?? "";
+	return resolveParams(params).target;
 }
 
-export function getIndirect(params: IntentParams): string | undefined {
-	const v = params.indirect ?? params.items?.[0];
-	return v?.trim();
-}
-
+/** Resolve the instrument (key, weapon, etc.) without colliding with target. */
 export function getInstrument(params: IntentParams): string | undefined {
-	const v = params.instrument ?? params.items?.[0];
-	return v?.trim();
+	return resolveParams(params).instrument;
 }
