@@ -16,13 +16,13 @@ export function registerCoreEffects(bus: EventBus): void {
 				room: from,
 			});
 			let currentState = exitResult.state;
-			event.feedback.push(...exitResult.feedback);
+			event.sayAll(exitResult.feedback);
 
 			const enterResult = executeAction(bus, world, currentState, "enter", {
 				room: to,
 			});
 			currentState = enterResult.state;
-			event.feedback.push(...enterResult.feedback);
+			event.sayAll(enterResult.feedback);
 
 			return currentState;
 		},

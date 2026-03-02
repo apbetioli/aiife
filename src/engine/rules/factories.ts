@@ -136,7 +136,7 @@ export function registerDaemon(
 			if (!options.condition(world, state)) return state;
 			const newState = options.effect(world, state);
 			const msg = options.feedback?.(world, newState);
-			if (msg) event.feedback.push(msg);
+			if (msg) event.say(msg);
 			return newState;
 		},
 		{ priority: options.priority ?? PRIORITY.DAEMON },

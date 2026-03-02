@@ -46,13 +46,37 @@ export function isEventName(name: string): name is EventName {
 
 // ─── Event ───────────────────────────────────────────────────────────────────
 
-export interface GameEvent<N extends EventName> {
-	name: N;
+export class GameEvent<N extends EventName> {
 	phase: EventPhase;
-	params: EventParamsMap[N];
-	cancelled: boolean;
-	cancelReason?: string;
-	feedback: string[];
+	cancelled = false;
+	private _feedback: string[] = [];
+
+	constructor(
+		readonly name: N,
+		readonly params: EventParamsMap[N],
+	) {
+		this.phase = "before";
+	}
+
+	/** Cancel the action with a player-facing reason. */
+	cancel(reason: string): void {
+		this.cancelled = true;
+		this._feedback.push(reason);
+	}
+
+	/** Add a player-facing message. */
+	say(message: string): void {
+		this._feedback.push(message);
+	}
+
+	/** Add multiple player-facing messages. */
+	sayAll(messages: readonly string[]): void {
+		this._feedback.push(...messages);
+	}
+
+	get feedback(): readonly string[] {
+		return this._feedback;
+	}
 }
 
 // ─── Listener ────────────────────────────────────────────────────────────────

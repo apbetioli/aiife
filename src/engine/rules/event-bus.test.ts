@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { makeTestWorld } from "../__fixtures__/test-world";
 import { buildInitialState } from "../initial-state";
 import { EventBus } from "./event-bus";
-import type { GameEvent } from "./types";
+import { GameEvent } from "./types";
 
 const world = makeTestWorld();
 
@@ -20,13 +20,8 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event: GameEvent<"examine"> = {
-			name: "examine",
-			phase: "on",
-			params: { target: "lamp" },
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("examine", { target: "lamp" });
+		event.phase = "on";
 
 		bus.emit(event, world, freshState());
 		expect(calls).toEqual(["lamp"]);
@@ -45,13 +40,8 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event: GameEvent<"examine"> = {
-			name: "examine",
-			phase: "on",
-			params: { target: "lamp" },
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("examine", { target: "lamp" });
+		event.phase = "on";
 
 		// Player starts in room_a
 		bus.emit(event, world, freshState());
@@ -71,13 +61,8 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event: GameEvent<"examine"> = {
-			name: "examine",
-			phase: "on",
-			params: { target: "lamp" },
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("examine", { target: "lamp" });
+		event.phase = "on";
 
 		bus.emit(event, world, freshState());
 		expect(calls).toEqual(["lamp"]);
@@ -117,13 +102,8 @@ describe("EventBus", () => {
 			{ priority: 100 },
 		);
 
-		const event: GameEvent<"tick"> = {
-			name: "tick",
-			phase: "on",
-			params: {} as Record<string, never>,
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("tick", {} as Record<string, never>);
+		event.phase = "on";
 
 		bus.emit(event, world, freshState());
 		expect(order).toEqual([50, 100, 200]);
@@ -143,17 +123,15 @@ describe("EventBus", () => {
 			{ once: true },
 		);
 
-		const event = (): GameEvent<"tick"> => ({
-			name: "tick",
-			phase: "on",
-			params: {} as Record<string, never>,
-			cancelled: false,
-			feedback: [],
-		});
+		const makeEvent = () => {
+			const e = new GameEvent("tick", {} as Record<string, never>);
+			e.phase = "on";
+			return e;
+		};
 
-		bus.emit(event(), world, freshState());
-		bus.emit(event(), world, freshState());
-		bus.emit(event(), world, freshState());
+		bus.emit(makeEvent(), world, freshState());
+		bus.emit(makeEvent(), world, freshState());
+		bus.emit(makeEvent(), world, freshState());
 
 		expect(count).toBe(1);
 	});
@@ -164,8 +142,7 @@ describe("EventBus", () => {
 
 		bus.onGlobal("before", "take", (event, state, _w) => {
 			phases.push("before");
-			event.cancelled = true;
-			event.cancelReason = "Nope.";
+			event.cancel("Nope.");
 			return state;
 		});
 		bus.onGlobal("on", "take", (_event, state, _w) => {
@@ -179,13 +156,7 @@ describe("EventBus", () => {
 
 		// Manually run the three-phase pattern
 		const state = freshState();
-		const event: GameEvent<"take"> = {
-			name: "take",
-			phase: "before",
-			params: { target: "lamp" },
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("take", { target: "lamp" });
 
 		event.phase = "before";
 		bus.emit(event, world, state);
@@ -200,30 +171,24 @@ describe("EventBus", () => {
 
 		expect(phases).toEqual(["before"]);
 		expect(event.cancelled).toBe(true);
-		expect(event.cancelReason).toBe("Nope.");
+		expect(event.feedback).toContain("Nope.");
 	});
 
-	it("cancel reason appears in feedback when added", () => {
+	it("cancel reason appears in feedback", () => {
 		const bus = new EventBus();
 
 		bus.onGlobal("before", "take", (event, state, _w) => {
-			event.cancelled = true;
-			event.cancelReason = "You can't take that.";
+			event.cancel("You can't take that.");
 			return state;
 		});
 
-		const event: GameEvent<"take"> = {
-			name: "take",
-			phase: "before",
-			params: { target: "table" },
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("take", { target: "table" });
+		event.phase = "before";
 
 		bus.emit(event, world, freshState());
 
 		expect(event.cancelled).toBe(true);
-		expect(event.cancelReason).toBe("You can't take that.");
+		expect(event.feedback).toContain("You can't take that.");
 	});
 
 	it("multiple listeners accumulate state changes", () => {
@@ -238,13 +203,8 @@ describe("EventBus", () => {
 			turn: state.turn + 10,
 		}));
 
-		const event: GameEvent<"tick"> = {
-			name: "tick",
-			phase: "on",
-			params: {} as Record<string, never>,
-			cancelled: false,
-			feedback: [],
-		};
+		const event = new GameEvent("tick", {} as Record<string, never>);
+		event.phase = "on";
 
 		const state = freshState();
 		const initial = state.turn;
@@ -261,19 +221,17 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event = (): GameEvent<"tick"> => ({
-			name: "tick",
-			phase: "on",
-			params: {} as Record<string, never>,
-			cancelled: false,
-			feedback: [],
-		});
+		const makeEvent = () => {
+			const e = new GameEvent("tick", {} as Record<string, never>);
+			e.phase = "on";
+			return e;
+		};
 
-		bus.emit(event(), world, freshState());
+		bus.emit(makeEvent(), world, freshState());
 		expect(count).toBe(1);
 
 		unsub();
-		bus.emit(event(), world, freshState());
+		bus.emit(makeEvent(), world, freshState());
 		expect(count).toBe(1);
 	});
 });
