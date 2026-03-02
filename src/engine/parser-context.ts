@@ -1,3 +1,4 @@
+import { DEBUG } from "../debug";
 import {
 	type BlockedExit,
 	type Direction,
@@ -251,6 +252,8 @@ export function buildParserContext(
 					.join("\n"),
 		);
 	}
+
+	DEBUG(`Context: ${JSON.stringify(result.data)}`);
 
 	return result.data;
 }
