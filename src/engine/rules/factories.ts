@@ -2,6 +2,7 @@ import type { World } from "../../world/types";
 import { isInInventory, setObjectState } from "../mutators";
 import type { GameState } from "../types";
 import type { EventBus } from "./event-bus";
+import { getInstrument } from "./param-helpers";
 import type { EventName, GameEvent } from "./types";
 
 // ─── Container ───────────────────────────────────────────────────────────────
@@ -102,15 +103,13 @@ export function registerLockable(
 		"unlock",
 		objectId,
 		(event, state, _world) => {
-			if (
-				!event.params.instrument ||
-				!isInInventory(state, event.params.instrument)
-			) {
+			const instrument = getInstrument(event.params);
+			if (!instrument || !isInInventory(state, instrument)) {
 				event.cancelled = true;
 				event.cancelReason = "You don't have anything to unlock it with.";
 				return state;
 			}
-			if (event.params.instrument !== keyId) {
+			if (instrument !== keyId) {
 				event.cancelled = true;
 				event.cancelReason = "That doesn't fit the lock.";
 			}

@@ -7,6 +7,7 @@ import {
 	setPlayerState,
 } from "../mutators";
 import type { EventBus } from "./event-bus";
+import { getTarget } from "./param-helpers";
 
 const MUTATION_PRIORITY = 100;
 
@@ -17,7 +18,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"take",
 		(event, state, _world) => {
-			return moveObjectFromRoomToInventory(state, event.params.target);
+			return moveObjectFromRoomToInventory(state, getTarget(event.params));
 		},
 		{ priority: MUTATION_PRIORITY },
 	);
@@ -30,7 +31,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		(event, state, _world) => {
 			return moveObjectFromInventoryToRoom(
 				state,
-				event.params.target,
+				getTarget(event.params),
 				state.player.current_room,
 			);
 		},
@@ -43,7 +44,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"open",
 		(event, state, _world) => {
-			return setObjectState(state, event.params.target, "open", true);
+			return setObjectState(state, getTarget(event.params), "open", true);
 		},
 		{ priority: MUTATION_PRIORITY },
 	);
@@ -54,7 +55,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"close",
 		(event, state, _world) => {
-			return setObjectState(state, event.params.target, "open", false);
+			return setObjectState(state, getTarget(event.params), "open", false);
 		},
 		{ priority: MUTATION_PRIORITY },
 	);
@@ -65,7 +66,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"unlock",
 		(event, state, _world) => {
-			return setObjectState(state, event.params.target, "locked", false);
+			return setObjectState(state, getTarget(event.params), "locked", false);
 		},
 		{ priority: MUTATION_PRIORITY },
 	);
@@ -76,7 +77,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"lock",
 		(event, state, _world) => {
-			return setObjectState(state, event.params.target, "locked", true);
+			return setObjectState(state, getTarget(event.params), "locked", true);
 		},
 		{ priority: MUTATION_PRIORITY },
 	);
@@ -87,7 +88,7 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"examine",
 		(event, state, _world) => {
-			return setObjectState(state, event.params.target, "examined", true);
+			return setObjectState(state, getTarget(event.params), "examined", true);
 		},
 		{ priority: MUTATION_PRIORITY },
 	);
@@ -98,8 +99,9 @@ export function registerCoreListeners(bus: EventBus): void {
 		"on",
 		"go",
 		(event, state, _world) => {
-			let s = movePlayer(state, event.params.to);
-			s = ensureVisited(s, event.params.to);
+			const to = event.params.to as string;
+			let s = movePlayer(state, to);
+			s = ensureVisited(s, to);
 			return s;
 		},
 		{ priority: MUTATION_PRIORITY },
