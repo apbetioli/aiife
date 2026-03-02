@@ -189,8 +189,6 @@ describe("executeAction", () => {
 		// Use the unconditional south exit from room_a to room_b
 		const result = executeAction(bus, world, state, "go", {
 			direction: "south",
-			from: "room_a",
-			to: "room_b",
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -203,8 +201,6 @@ describe("executeAction", () => {
 		// north exit requires door.open == true, but door starts locked/closed
 		const result = executeAction(bus, world, state, "go", {
 			direction: "north",
-			from: "room_a",
-			to: "room_b",
 		});
 
 		expect(result.cancelled).toBe(true);

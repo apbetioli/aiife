@@ -1,13 +1,11 @@
 import type { Direction, World } from "../../world/types";
 import type { GameState } from "../types";
-import type { IntentParams } from "./param-helpers";
-
 
 // ─── Discriminated Params ────────────────────────────────────────────────────
 
 // TODO these input schemas should come from the action registry
 export type EventParamsMap = {
-	go: { direction: Direction; from: string; to: string };
+	go: { direction: Direction };
 	take: { target: string };
 	drop: { target: string };
 	open: { target: string };
@@ -29,13 +27,26 @@ export type EventParamsMap = {
 // ─── Event Names ─────────────────────────────────────────────────────────────
 
 export type EventName = keyof EventParamsMap;
-export type EventPhase = "before" | "on" | "after";
 
 /** Runtime set of valid event names — kept in sync via `satisfies`. */
 const eventNames = [
-	"go", "take", "drop", "open", "close", "unlock", "lock",
-	"examine", "use", "move", "attack", "talk",
-	"enter", "exit", "tick", "game:start", "game:end",
+	"go",
+	"take",
+	"drop",
+	"open",
+	"close",
+	"unlock",
+	"lock",
+	"examine",
+	"use",
+	"move",
+	"attack",
+	"talk",
+	"enter",
+	"exit",
+	"tick",
+	"game:start",
+	"game:end",
 ] as const satisfies readonly EventName[];
 
 const eventNameSet: ReadonlySet<string> = new Set(eventNames);
@@ -47,53 +58,32 @@ export function isEventName(name: string): name is EventName {
 // ─── Event ───────────────────────────────────────────────────────────────────
 
 export class GameEvent<N extends EventName> {
-	phase: EventPhase;
-	cancelled = false;
-	private _feedback: string[] = [];
-
 	constructor(
 		readonly name: N,
 		readonly params: EventParamsMap[N],
-	) {
-		this.phase = "before";
-	}
-
-	/** Cancel the action with a player-facing reason. */
-	cancel(reason: string): void {
-		this.cancelled = true;
-		this._feedback.push(reason);
-	}
-
-	/** Add a player-facing message. */
-	say(message: string): void {
-		this._feedback.push(message);
-	}
-
-	/** Add multiple player-facing messages. */
-	sayAll(messages: readonly string[]): void {
-		this._feedback.push(...messages);
-	}
-
-	get feedback(): readonly string[] {
-		return this._feedback;
-	}
+	) {}
 }
 
 // ─── Listener ────────────────────────────────────────────────────────────────
+
+export type ListenerResult = {
+	state: GameState;
+	cancel?: string;
+	feedback?: string[];
+};
 
 export type EventListener<N extends EventName> = (
 	event: GameEvent<N>,
 	state: GameState,
 	world: World,
-) => GameState;
+) => ListenerResult | GameState;
 
-export type ListenerScope = "global" | "room" | "object";
+export type ListenerScope = "global" | "scoped";
 
 export interface ListenerRegistration<N extends EventName = EventName> {
 	scope: ListenerScope;
 	scopeId?: string;
 	event: N;
-	phase: EventPhase;
 	listener: EventListener<N>;
 	priority: number;
 	once: boolean;
