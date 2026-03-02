@@ -8,7 +8,7 @@ import { createRules } from "./index";
 
 function setup(overrides?: Partial<World>) {
 	const world = makeTestWorld(overrides);
-	const bus = createRules(world);
+	const { bus } = createRules(world);
 	const state = buildInitialState(world);
 	return { world, bus, state };
 }
@@ -234,5 +234,55 @@ describe("executeAction", () => {
 		);
 
 		expect(result.state.player.state.moves).toBe(movesBefore + 1);
+	});
+
+	// ── look ──────────────────────────────────────────────────────────────
+
+	it("look returns room description with objects and exits", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "look", {});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.feedback.length).toBeGreaterThan(0);
+		const text = result.feedback.join(" ");
+		expect(text).toContain("Room A");
+		expect(text).toContain("You can see:");
+		expect(text).toContain("Exits:");
+	});
+
+	// ── inventory ─────────────────────────────────────────────────────────
+
+	it("inventory lists carried items", () => {
+		const { world, bus, state } = setup();
+		// sword is in inventory
+		const result = executeAction(bus, world, state, "inventory", {});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.feedback.join(" ")).toContain("iron sword");
+	});
+
+	it("inventory reports empty when nothing carried", () => {
+		const { world, bus } = setup();
+		let { state } = setup();
+		// Remove sword from inventory
+		state = {
+			...state,
+			player: { ...state.player, inventory: [] },
+		};
+
+		const result = executeAction(bus, world, state, "inventory", {});
+
+		expect(result.feedback.join(" ")).toContain("You aren't carrying anything.");
+	});
+
+	// ── quit ──────────────────────────────────────────────────────────────
+
+	it("quit sets player quit flag", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "quit", {});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.state.player.state.quit).toBe(true);
+		expect(result.feedback.join(" ")).toContain("Goodbye!");
 	});
 });

@@ -1,66 +1,22 @@
-import type { Direction, World } from "../../world/types";
+import type { World } from "../../world/types";
 import type { GameState } from "../types";
+import type { CoreEventName, CoreEventParamsMap } from "./action-registry";
 
-// ─── Discriminated Params ────────────────────────────────────────────────────
+// ─── Event Names & Params ────────────────────────────────────────────────────
 
-// TODO these input schemas should come from the action registry
-export type EventParamsMap = {
-	go: { direction: Direction };
-	take: { target: string };
-	drop: { target: string };
-	open: { target: string };
-	close: { target: string };
-	unlock: { target: string; instrument?: string };
-	lock: { target: string; instrument?: string };
-	examine: { target: string };
-	use: { target: string; indirect?: string };
-	move: { target: string; direction?: string };
-	attack: { target: string; instrument?: string };
-	talk: { target: string };
-	enter: { room: string };
-	exit: { room: string };
-	tick: Record<string, never>;
-	"game:start": Record<string, never>;
-	"game:end": { victory: boolean };
-};
+/** Core names get autocomplete; custom names accepted via `(string & {})`. */
+export type EventName = CoreEventName | (string & {});
 
-// ─── Event Names ─────────────────────────────────────────────────────────────
-
-export type EventName = keyof EventParamsMap;
-
-/** Runtime set of valid event names — kept in sync via `satisfies`. */
-const eventNames = [
-	"go",
-	"take",
-	"drop",
-	"open",
-	"close",
-	"unlock",
-	"lock",
-	"examine",
-	"use",
-	"move",
-	"attack",
-	"talk",
-	"enter",
-	"exit",
-	"tick",
-	"game:start",
-	"game:end",
-] as const satisfies readonly EventName[];
-
-const eventNameSet: ReadonlySet<string> = new Set(eventNames);
-
-export function isEventName(name: string): name is EventName {
-	return eventNameSet.has(name);
-}
+/** Resolves params for core events; custom events get `Record<string, unknown>`. */
+export type EventParamsFor<N extends string> =
+	N extends CoreEventName ? CoreEventParamsMap[N] : Record<string, unknown>;
 
 // ─── Event ───────────────────────────────────────────────────────────────────
 
-export class GameEvent<N extends EventName> {
+export class GameEvent<N extends EventName = EventName> {
 	constructor(
 		readonly name: N,
-		readonly params: EventParamsMap[N],
+		readonly params: EventParamsFor<N & string>,
 	) {}
 }
 

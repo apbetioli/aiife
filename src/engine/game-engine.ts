@@ -1,3 +1,4 @@
+import { respondDescription } from "../../evals/structured-output-prompt";
 import { GameAgent } from "../agent/game-agent";
 import { createModel } from "../agent/model";
 import type { ActionResult, StructuredOutput } from "../agent/types";
@@ -6,11 +7,11 @@ import type { World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
 import {
+	type ActionRegistry,
 	createRules,
 	type EventBus,
-	type EventParamsMap,
 	executeAction,
-	isEventName,
+	executeUntrustedAction,
 } from "./rules";
 import type { GameState } from "./types";
 
@@ -27,11 +28,19 @@ export class GameEngine {
 	private state: GameState;
 	private agent: GameAgent;
 	private bus: EventBus;
+	private registry: ActionRegistry;
 
 	constructor(private world: World) {
-		this.agent = new GameAgent(createModel());
+		const { bus, registry } = createRules(world);
+		this.bus = bus;
+		this.registry = registry;
+
+		const descriptions = {
+			...registry.getDescriptions(),
+			respond: respondDescription,
+		};
+		this.agent = new GameAgent(createModel(), descriptions);
 		this.state = buildInitialState(world);
-		this.bus = createRules(world);
 	}
 
 	async processInput(input: string): Promise<ActionResult> {
@@ -62,16 +71,17 @@ export class GameEngine {
 		}
 
 		const action = intent.action;
-		if (!isEventName(action)) {
+		if (!this.registry.has(action)) {
 			return {
 				message: intent.message ?? "I don't understand that.",
 				success: false,
 			};
 		}
 
-		const params = toEventParams(intent) as EventParamsMap[typeof action];
-		const result = executeAction(
+		const params = toEventParams(intent);
+		const result = executeUntrustedAction(
 			this.bus,
+			this.registry,
 			this.world,
 			this.state,
 			action,
@@ -103,6 +113,6 @@ export class GameEngine {
 	}
 
 	isGameOver(): boolean {
-		return false;
+		return this.state.player.state.quit === true;
 	}
 }

@@ -1,13 +1,16 @@
 import type { World } from "../../world/types";
+import { ActionRegistry } from "./action-registry";
 import { registerCoreHandlers } from "./core-listeners";
 import { EventBus } from "./event-bus";
 import { registerContainer } from "./factories";
 
+export { ActionRegistry } from "./action-registry";
+export type { CoreEventName, CoreEventParamsMap } from "./action-registry";
 export { registerCoreHandlers } from "./core-listeners";
 export { EventBus } from "./event-bus";
 export type { EmitResult } from "./event-bus";
 export type { ExecuteResult } from "./executor";
-export { executeAction } from "./executor";
+export { executeAction, executeUntrustedAction } from "./executor";
 export { PRIORITY } from "./priorities";
 export {
 	registerContainer,
@@ -17,22 +20,22 @@ export {
 export type {
 	EventListener,
 	EventName,
-	EventParamsMap,
+	EventParamsFor,
 	GameEvent,
 	ListenerRegistration,
 	ListenerResult,
 	ListenerScope,
 } from "./types";
-export { isEventName } from "./types";
 
 /**
- * Create an EventBus pre-configured with core handlers
+ * Create an EventBus and ActionRegistry pre-configured with core handlers
  * and world-specific factories derived from the world definition.
  */
-export function createRules(world: World): EventBus {
+export function createRules(world: World): { bus: EventBus; registry: ActionRegistry } {
 	const bus = new EventBus();
+	const registry = new ActionRegistry();
 
-	registerCoreHandlers(bus);
+	registerCoreHandlers(bus, registry);
 
 	// Auto-register containers
 	for (const [id, obj] of Object.entries(world.objects)) {
@@ -41,5 +44,5 @@ export function createRules(world: World): EventBus {
 		}
 	}
 
-	return bus;
+	return { bus, registry };
 }
