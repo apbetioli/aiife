@@ -28,7 +28,7 @@ export function executeUntrustedAction(
 	if (!result.success) {
 		return {
 			state,
-			feedback: [result.error.issues.map((i) => i.message).join("; ")],
+			feedback: [result.error.issues.map((i) => i.message).join("\n")],
 			cancelled: true,
 		};
 	}

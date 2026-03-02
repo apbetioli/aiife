@@ -48,10 +48,10 @@ describe("ActionRegistry", () => {
 
 	it("safeParse() returns success for valid params", () => {
 		const registry = new ActionRegistry();
-		const result = registry.safeParse("take", { target: "lamp" });
+		const result = registry.safeParse("take", { objects: ["lamp"] });
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.data).toEqual({ target: "lamp" });
+			expect(result.data).toEqual({ objects: ["lamp"] });
 		}
 	});
 

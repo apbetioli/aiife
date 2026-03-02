@@ -19,7 +19,7 @@ describe("executeAction", () => {
 	it("take moves object from room to inventory", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "take", {
-			target: "lamp",
+			objects: ["lamp"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -27,10 +27,36 @@ describe("executeAction", () => {
 		expect(result.state.rooms.room_a.contains).not.toContain("lamp");
 	});
 
+	it("take with objects array takes multiple (TAKE X and Y)", () => {
+		const base = makeTestWorld();
+		const { world, bus, state } = setup({
+			rooms: {
+				...base.rooms,
+				room_a: {
+					...base.rooms.room_a,
+					contains: ["door", "lamp", "chest", "gem"],
+				},
+			},
+			objects: {
+				...base.objects,
+				chest: { ...base.objects.chest, contains: [] },
+			},
+		});
+		const result = executeAction(bus, world, state, "take", {
+			objects: ["lamp", "gem"],
+		});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.state.player.inventory).toContain("lamp");
+		expect(result.state.player.inventory).toContain("gem");
+		expect(result.state.rooms.room_a.contains).not.toContain("lamp");
+		expect(result.state.rooms.room_a.contains).not.toContain("gem");
+	});
+
 	it("take blocked for non-carriable objects", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "take", {
-			target: "table",
+			objects: ["table"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -41,7 +67,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		// sword is already in inventory
 		const result = executeAction(bus, world, state, "take", {
-			target: "sword",
+			objects: ["sword"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -54,12 +80,66 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		// sword is in inventory
 		const result = executeAction(bus, world, state, "drop", {
-			target: "sword",
+			objects: ["sword"],
 		});
 
 		expect(result.cancelled).toBe(false);
 		expect(result.state.player.inventory).not.toContain("sword");
 		expect(result.state.rooms.room_a.contains).toContain("sword");
+	});
+
+	it("drop with objects array drops multiple (DROP X and Y)", () => {
+		const { world, bus, state } = setup();
+		// Put sword and lamp in inventory: take lamp first
+		let s = state;
+		s = executeAction(bus, world, s, "take", { objects: ["lamp"] }).state;
+		expect(s.player.inventory).toContain("sword");
+		expect(s.player.inventory).toContain("lamp");
+
+		const result = executeAction(bus, world, s, "drop", {
+			objects: ["sword", "lamp"],
+		});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.state.player.inventory).not.toContain("sword");
+		expect(result.state.player.inventory).not.toContain("lamp");
+		expect(result.state.rooms.room_a.contains).toContain("sword");
+		expect(result.state.rooms.room_a.contains).toContain("lamp");
+	});
+
+	it("drop all (objects = full inventory)", () => {
+		const { world, bus, state } = setup();
+		// Take lamp so we have two items
+		let s = state;
+		s = executeAction(bus, world, s, "take", { objects: ["lamp"] }).state;
+
+		const result = executeAction(bus, world, s, "drop", {
+			objects: ["sword", "lamp"],
+		});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.state.player.inventory).toHaveLength(0);
+		expect(result.state.rooms.room_a.contains).toContain("sword");
+		expect(result.state.rooms.room_a.contains).toContain("lamp");
+	});
+
+	it("drop with no target cancels", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "drop", {});
+
+		expect(result.cancelled).toBe(true);
+		expect(result.feedback.some((m) => m.includes("Drop what"))).toBe(true);
+	});
+
+	it("drop with objects not in inventory cancels", () => {
+		const { world, bus, state } = setup();
+		// Only sword in inventory; ask to drop lamp and gem
+		const result = executeAction(bus, world, state, "drop", {
+			objects: ["lamp", "gem"],
+		});
+
+		expect(result.cancelled).toBe(true);
+		expect(result.feedback.some((m) => m.includes("not carrying"))).toBe(true);
 	});
 
 	// ── open ──────────────────────────────────────────────────────────────

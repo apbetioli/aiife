@@ -25,10 +25,10 @@ export interface GameAction {
 export const StructuredOutputSchema = z.object({
 	action: z.string(),
 	direction: z.string().nullable(),
-	items: z.array(z.string()).nullable(),
+	objects: z.array(z.string()).nullable(),
 	target: z.string().nullable(),
 	preposition: z.string().nullable(),
-	npc: z.string().nullable(),
+	actor: z.string().nullable(),
 	message: z.string().nullable(),
 });
 

@@ -19,7 +19,7 @@ const ObjectTypeSchema = z.enum([
 	"fixture",
 	"container",
 	"door",
-	"npc",
+	"actor",
 	"weapon",
 	"key",
 ]);

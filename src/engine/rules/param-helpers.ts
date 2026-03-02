@@ -1,7 +1,7 @@
 import type { StructuredOutput } from "../../agent/types";
 
 /**
- * Intent-shaped params: LLM may return target, items[], npc, indirect, instrument.
+ * Intent-shaped params: LLM may return target, objects[], actor, indirect, instrument.
  * Helpers coalesce so listeners/guards can read a single "resolved" value.
  */
 export type IntentParams = Partial<StructuredOutput> & {
@@ -17,16 +17,16 @@ interface ResolvedParams {
 }
 
 /**
- * Resolve all intent params in one pass, consuming items sequentially
+ * Resolve all intent params in one pass, consuming objects sequentially
  * so each value is used at most once.
  */
 export function resolveParams(params: IntentParams): ResolvedParams {
-	const items = [...(params.items ?? [])];
+	const objects = [...(params.objects ?? [])];
 
 	const target =
-		params.target?.trim() ?? params.npc?.trim() ?? items.shift()?.trim() ?? "";
-	const instrument = params.instrument?.trim() ?? items.shift()?.trim();
-	const indirect = params.indirect?.trim() ?? items.shift()?.trim();
+		params.target?.trim() ?? params.actor?.trim() ?? objects.shift()?.trim() ?? "";
+	const instrument = params.instrument?.trim() ?? objects.shift()?.trim();
+	const indirect = params.indirect?.trim() ?? objects.shift()?.trim();
 
 	return { target, instrument, indirect };
 }

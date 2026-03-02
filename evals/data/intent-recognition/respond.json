@@ -97,7 +97,7 @@
 			"category": "secondary"
 		},
 		"metadata": {
-			"description": "Drop without specifying items — should respond to ambiguous input"
+			"description": "Drop without specifying objects — should respond to ambiguous input"
 		}
 	},
 	{

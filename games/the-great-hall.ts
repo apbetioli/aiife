@@ -182,7 +182,7 @@ const world: World = {
 			id: "gardener",
 			name: "old gardener",
 			synonyms: ["gardener", "old man", "man"],
-			type: "npc",
+			type: "actor",
 			state: {},
 			descriptions: {
 				default:
