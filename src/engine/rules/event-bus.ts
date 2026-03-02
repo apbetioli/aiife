@@ -1,6 +1,7 @@
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import { getTarget } from "./param-helpers";
+import { PRIORITY } from "./priorities";
 import type {
 	EventListener,
 	EventName,
@@ -37,7 +38,7 @@ export class EventBus {
 			event,
 			phase,
 			listener,
-			priority: options?.priority ?? 100,
+			priority: options?.priority ?? PRIORITY.MUTATION,
 			once: options?.once ?? false,
 		});
 	}
@@ -55,7 +56,7 @@ export class EventBus {
 			event,
 			phase,
 			listener,
-			priority: options?.priority ?? 100,
+			priority: options?.priority ?? PRIORITY.MUTATION,
 			once: options?.once ?? false,
 		});
 	}
@@ -73,7 +74,7 @@ export class EventBus {
 			event,
 			phase,
 			listener,
-			priority: options?.priority ?? 100,
+			priority: options?.priority ?? PRIORITY.MUTATION,
 			once: options?.once ?? false,
 		});
 	}

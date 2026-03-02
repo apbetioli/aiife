@@ -10,6 +10,7 @@ export { registerCoreListeners } from "./core-listeners";
 export { EventBus } from "./event-bus";
 export type { ExecuteResult } from "./executor";
 export { executeAction } from "./executor";
+export { PRIORITY } from "./priorities";
 export {
 	registerContainer,
 	registerDaemon,

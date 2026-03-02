@@ -1,7 +1,6 @@
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
-
-const EFFECT_PRIORITY = 150;
+import { PRIORITY } from "./priorities";
 
 export function registerCoreEffects(bus: EventBus): void {
 	// ── go: fire exit/enter sub-events ────────────────────────────────────
@@ -27,6 +26,6 @@ export function registerCoreEffects(bus: EventBus): void {
 
 			return currentState;
 		},
-		{ priority: EFFECT_PRIORITY },
+		{ priority: PRIORITY.EFFECT },
 	);
 }

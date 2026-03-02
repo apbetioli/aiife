@@ -3,9 +3,7 @@ import { isInInventory } from "../mutators";
 import { evaluateCondition } from "../parser-context";
 import type { EventBus } from "./event-bus";
 import { getInstrument, getTarget } from "./param-helpers";
-
-const GO_RESOLVE_PRIORITY = 0;
-const GUARD_PRIORITY = 50;
+import { PRIORITY } from "./priorities";
 
 export function registerCoreGuards(bus: EventBus): void {
 	// ── go resolve (from/to from state/world) ───────────────────────────────
@@ -32,7 +30,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GO_RESOLVE_PRIORITY },
+		{ priority: PRIORITY.RESOLVE },
 	);
 
 	// ── take ──────────────────────────────────────────────────────────────
@@ -48,7 +46,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY },
+		{ priority: PRIORITY.GUARD },
 	);
 
 	bus.onGlobal(
@@ -63,7 +61,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return _state;
 		},
-		{ priority: GUARD_PRIORITY },
+		{ priority: PRIORITY.GUARD },
 	);
 
 	// ── open ──────────────────────────────────────────────────────────────
@@ -80,7 +78,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY },
+		{ priority: PRIORITY.GUARD },
 	);
 
 	bus.onGlobal(
@@ -95,7 +93,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY + 1 },
+		{ priority: PRIORITY.GUARD + 1 },
 	);
 
 	// ── close ─────────────────────────────────────────────────────────────
@@ -112,7 +110,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY },
+		{ priority: PRIORITY.GUARD },
 	);
 
 	// ── unlock ────────────────────────────────────────────────────────────
@@ -128,7 +126,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY },
+		{ priority: PRIORITY.GUARD },
 	);
 
 	bus.onGlobal(
@@ -145,7 +143,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY + 1 },
+		{ priority: PRIORITY.GUARD + 1 },
 	);
 
 	// ── go (validation after resolve) ────────────────────────────────────────
@@ -172,6 +170,6 @@ export function registerCoreGuards(bus: EventBus): void {
 			}
 			return state;
 		},
-		{ priority: GUARD_PRIORITY },
+		{ priority: PRIORITY.GUARD },
 	);
 }
