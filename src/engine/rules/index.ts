@@ -4,19 +4,19 @@ import { registerCoreHandlers } from "./core-listeners";
 import { EventBus } from "./event-bus";
 import { registerContainer } from "./factories";
 
-export { ActionRegistry } from "./action-registry";
 export type { CoreEventName, CoreEventParamsMap } from "./action-registry";
+export { ActionRegistry } from "./action-registry";
 export { registerCoreHandlers } from "./core-listeners";
-export { EventBus } from "./event-bus";
 export type { EmitResult } from "./event-bus";
+export { EventBus } from "./event-bus";
 export type { ExecuteResult } from "./executor";
 export { executeAction, executeUntrustedAction } from "./executor";
-export { PRIORITY } from "./priorities";
 export {
 	registerContainer,
 	registerDaemon,
 	registerRoomEvent,
 } from "./factories";
+export { PRIORITY } from "./priorities";
 export type {
 	EventListener,
 	EventName,
@@ -31,7 +31,10 @@ export type {
  * Create an EventBus and ActionRegistry pre-configured with core handlers
  * and world-specific factories derived from the world definition.
  */
-export function createRules(world: World): { bus: EventBus; registry: ActionRegistry } {
+export function createRules(world: World): {
+	bus: EventBus;
+	registry: ActionRegistry;
+} {
 	const bus = new EventBus();
 	const registry = new ActionRegistry();
 

@@ -272,7 +272,9 @@ describe("executeAction", () => {
 
 		const result = executeAction(bus, world, state, "inventory", {});
 
-		expect(result.feedback.join(" ")).toContain("You aren't carrying anything.");
+		expect(result.feedback.join(" ")).toContain(
+			"You aren't carrying anything.",
+		);
 	});
 
 	// ── quit ──────────────────────────────────────────────────────────────

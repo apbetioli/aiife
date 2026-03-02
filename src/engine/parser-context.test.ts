@@ -50,7 +50,7 @@ describe("evaluateCondition", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 		// counter may not exist in world; add minimal object state
-		state.objects["counter"] = { flags: { value: 5 } };
+		state.objects.counter = { flags: { value: 5 } };
 
 		expect(evaluateCondition("counter.value > 3", state)).toBe(true);
 		expect(evaluateCondition("counter.value < 3", state)).toBe(false);
@@ -62,7 +62,7 @@ describe("evaluateCondition", () => {
 	it("evaluates string comparisons", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.objects["npc"] = { flags: { mood: "angry" } };
+		state.objects.npc = { flags: { mood: "angry" } };
 
 		expect(evaluateCondition("npc.mood == angry", state)).toBe(true);
 		expect(evaluateCondition("npc.mood != happy", state)).toBe(true);

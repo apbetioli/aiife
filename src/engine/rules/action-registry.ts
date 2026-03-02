@@ -32,7 +32,8 @@ export const coreActions = {
 	},
 	close: {
 		schema: targetParams,
-		description: "close(target): Close a container or door. target is the id of what to close.",
+		description:
+			"close(target): Close a container or door. target is the id of what to close.",
 	},
 	unlock: {
 		schema: targetInstrumentParams,
@@ -56,7 +57,8 @@ export const coreActions = {
 	},
 	move: {
 		schema: z.object({ target: z.string(), direction: z.string().optional() }),
-		description: "move(target, direction?): Move an object. target is the id of what to move. direction is optional.",
+		description:
+			"move(target, direction?): Move an object. target is the id of what to move. direction is optional.",
 	},
 	attack: {
 		schema: targetInstrumentParams,
@@ -65,7 +67,8 @@ export const coreActions = {
 	},
 	talk: {
 		schema: z.object({ target: z.string() }),
-		description: "talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
+		description:
+			"talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
 	},
 	enter: { schema: z.object({ room: z.string() }), description: "" },
 	exit: { schema: z.object({ room: z.string() }), description: "" },
@@ -81,9 +84,13 @@ export const coreActions = {
 	},
 	help: {
 		schema: z.object({}),
-		description: "help(): Show the list of available commands. No parameters. Shorthand: h.",
+		description:
+			"help(): Show the list of available commands. No parameters. Shorthand: h.",
 	},
-	quit: { schema: z.object({}), description: "quit(): End the game. Shorthand: q." },
+	quit: {
+		schema: z.object({}),
+		description: "quit(): End the game. Shorthand: q.",
+	},
 	tick: { schema: z.object({}), description: "" },
 	"game:start": { schema: z.object({}), description: "" },
 	"game:end": { schema: z.object({ victory: z.boolean() }), description: "" },
@@ -118,11 +125,17 @@ export class ActionRegistry {
 
 	constructor() {
 		for (const [name, entry] of Object.entries(coreActions)) {
-			this.actions.set(name, { schema: entry.schema, description: entry.description });
+			this.actions.set(name, {
+				schema: entry.schema,
+				description: entry.description,
+			});
 		}
 	}
 
-	register(name: string, entry: { schema: z.ZodType; description: string }): void {
+	register(
+		name: string,
+		entry: { schema: z.ZodType; description: string },
+	): void {
 		this.actions.set(name, entry);
 	}
 
@@ -143,7 +156,9 @@ export class ActionRegistry {
 	safeParse(
 		name: string,
 		params: unknown,
-	): { success: true; data: Record<string, unknown> } | { success: false; error: z.ZodError } {
+	):
+		| { success: true; data: Record<string, unknown> }
+		| { success: false; error: z.ZodError } {
 		const entry = this.actions.get(name);
 		if (!entry) {
 			return {

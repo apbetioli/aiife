@@ -4,9 +4,7 @@ import {
 	type ModelMessage,
 	Output,
 } from "ai";
-import {
-	buildStructuredOutputSystemPrompt,
-} from "../../evals/structured-output-prompt";
+import { buildStructuredOutputSystemPrompt } from "../../evals/structured-output-prompt";
 import { DEBUG } from "../debug";
 import type { ParserContext } from "../world/types";
 import { NARRATION_SYSTEM_PROMPT } from "./prompt";

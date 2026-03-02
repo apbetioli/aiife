@@ -32,5 +32,9 @@ export function executeUntrustedAction(
 			cancelled: true,
 		};
 	}
-	return bus.emit(new GameEvent(action, result.data as Record<string, unknown>), world, state);
+	return bus.emit(
+		new GameEvent(action, result.data as Record<string, unknown>),
+		world,
+		state,
+	);
 }

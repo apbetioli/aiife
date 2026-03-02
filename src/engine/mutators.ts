@@ -21,9 +21,7 @@ export function moveObjectFromRoomToInventory(
 	const room = state.rooms[roomId];
 
 	if (!room.contains.includes(objectId)) {
-		throw new Error(
-			`Object "${objectId}" is not in room "${roomId}"`,
-		);
+		throw new Error(`Object "${objectId}" is not in room "${roomId}"`);
 	}
 
 	return {

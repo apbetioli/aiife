@@ -12,7 +12,6 @@ import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
 import { getInstrument, getTarget } from "./param-helpers";
-import { PRIORITY } from "./priorities";
 
 export function registerCoreHandlers(
 	bus: EventBus,

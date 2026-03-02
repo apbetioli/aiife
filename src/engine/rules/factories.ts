@@ -94,7 +94,11 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 interface RoomEventOptions<N extends EventName> {
 	priority?: number;
 	once?: boolean;
-	effect: (event: GameEvent<N>, state: GameState, world: World) => ListenerResult | GameState;
+	effect: (
+		event: GameEvent<N>,
+		state: GameState,
+		world: World,
+	) => ListenerResult | GameState;
 }
 
 /**
