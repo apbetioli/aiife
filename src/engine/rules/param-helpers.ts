@@ -24,7 +24,10 @@ export function resolveParams(params: IntentParams): ResolvedParams {
 	const objects = [...(params.objects ?? [])];
 
 	const target =
-		params.target?.trim() ?? params.actor?.trim() ?? objects.shift()?.trim() ?? "";
+		params.target?.trim() ??
+		params.actor?.trim() ??
+		objects.shift()?.trim() ??
+		"";
 	const instrument = params.instrument?.trim() ?? objects.shift()?.trim();
 	const indirect = params.indirect?.trim() ?? objects.shift()?.trim();
 

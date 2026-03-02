@@ -21,15 +21,16 @@ export function registerCoreHandlers(
 	// ── take ──────────────────────────────────────────────────────────────
 
 	bus.on("take", (event, state, world) => {
-		const ids = (event.params.objects ?? []).map((s) => String(s).trim()).filter(Boolean);
+		const ids = (event.params.objects ?? [])
+			.map((s) => String(s).trim())
+			.filter(Boolean);
 		const toTake = ids.filter(
 			(id) =>
 				isInRoom(state, id) &&
 				world.objects[id]?.carriable &&
 				!isInInventory(state, id),
 		);
-		if (ids.length === 0)
-			return { state, cancel: "Take what?" };
+		if (ids.length === 0) return { state, cancel: "Take what?" };
 		if (toTake.length === 0) {
 			if (ids.some((id) => isInInventory(state, id)))
 				return { state, cancel: "You're already carrying that." };
@@ -45,11 +46,12 @@ export function registerCoreHandlers(
 	// ── drop ──────────────────────────────────────────────────────────────
 
 	bus.on("drop", (event, state, _world) => {
-		const ids = (event.params.objects ?? []).map((s) => String(s).trim()).filter(Boolean);
+		const ids = (event.params.objects ?? [])
+			.map((s) => String(s).trim())
+			.filter(Boolean);
 		const toDrop = ids.filter((id) => isInInventory(state, id));
 		if (toDrop.length === 0) {
-			if (ids.length === 0)
-				return { state, cancel: "Drop what?" };
+			if (ids.length === 0) return { state, cancel: "Drop what?" };
 			return { state, cancel: "You're not carrying any of those." };
 		}
 		const roomId = state.player.current_room;
