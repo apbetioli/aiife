@@ -39,25 +39,6 @@ export function executeAction<N extends EventName>(
 	const onResult = bus.emit(event, world, currentState);
 	currentState = onResult.state;
 
-	// Special: go fires exit/enter sub-events
-	if (action === "go") {
-		const goParams = params as EventParamsMap["go"];
-		const from = goParams.from ?? "";
-		const to = goParams.to ?? "";
-
-		const exitResult = executeAction(bus, world, currentState, "exit", {
-			room: from,
-		});
-		currentState = exitResult.state;
-		event.feedback.push(...exitResult.feedback);
-
-		const enterResult = executeAction(bus, world, currentState, "enter", {
-			room: to,
-		});
-		currentState = enterResult.state;
-		event.feedback.push(...enterResult.feedback);
-	}
-
 	// ── After phase (side-effects/descriptions) ───────────────────────────
 	event.phase = "after";
 	const afterResult = bus.emit(event, world, currentState);
