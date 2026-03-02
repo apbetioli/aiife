@@ -1,6 +1,7 @@
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import type { EventBus } from "./event-bus";
+import { PRIORITY } from "./priorities";
 import type { EventName, GameEvent } from "./types";
 
 // ─── Container ───────────────────────────────────────────────────────────────
@@ -40,7 +41,7 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 				},
 			};
 		},
-		{ priority: 110 },
+		{ priority: PRIORITY.POST_MUTATION },
 	);
 
 	// On close: move items back into the container
@@ -82,7 +83,7 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 				},
 			};
 		},
-		{ priority: 110 },
+		{ priority: PRIORITY.POST_MUTATION },
 	);
 }
 
@@ -105,7 +106,7 @@ export function registerRoomEvent<N extends EventName>(
 	options: RoomEventOptions<N>,
 ): () => void {
 	return bus.onRoom(options.phase ?? "after", event, roomId, options.effect, {
-		priority: options.priority ?? 150,
+		priority: options.priority ?? PRIORITY.EFFECT,
 		once: options.once ?? false,
 	});
 }
@@ -138,6 +139,6 @@ export function registerDaemon(
 			if (msg) event.feedback.push(msg);
 			return newState;
 		},
-		{ priority: options.priority ?? 200 },
+		{ priority: options.priority ?? PRIORITY.DAEMON },
 	);
 }
