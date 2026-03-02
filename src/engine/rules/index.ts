@@ -3,7 +3,7 @@ import { registerCoreEffects } from "./core-effects";
 import { registerCoreGuards } from "./core-guards";
 import { registerCoreListeners } from "./core-listeners";
 import { EventBus } from "./event-bus";
-import { registerContainer, registerLockable } from "./factories";
+import { registerContainer } from "./factories";
 
 export { registerCoreGuards } from "./core-guards";
 export { registerCoreListeners } from "./core-listeners";
@@ -13,7 +13,6 @@ export { executeAction } from "./executor";
 export {
 	registerContainer,
 	registerDaemon,
-	registerLockable,
 	registerRoomEvent,
 } from "./factories";
 export type {
@@ -41,13 +40,6 @@ export function createRules(world: World): EventBus {
 	for (const [id, obj] of Object.entries(world.objects)) {
 		if (obj.type === "container") {
 			registerContainer(bus, id);
-		}
-	}
-
-	// Auto-register lockables with requires_instrument
-	for (const [id, obj] of Object.entries(world.objects)) {
-		if (obj.requires_instrument?.unlock) {
-			registerLockable(bus, id, obj.requires_instrument.unlock);
 		}
 	}
 

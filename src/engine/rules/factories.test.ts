@@ -50,7 +50,7 @@ describe("registerContainer", () => {
 	});
 });
 
-describe("registerLockable", () => {
+describe("unlock with requires_instrument", () => {
 	function setupLockable() {
 		const world = makeTestWorld({
 			objects: {

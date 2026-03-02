@@ -1,8 +1,6 @@
 import type { World } from "../../world/types";
-import { isInInventory, setObjectState } from "../mutators";
 import type { GameState } from "../types";
 import type { EventBus } from "./event-bus";
-import { getInstrument } from "./param-helpers";
 import type { EventName, GameEvent } from "./types";
 
 // ─── Container ───────────────────────────────────────────────────────────────
@@ -83,47 +81,6 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 					},
 				},
 			};
-		},
-		{ priority: 110 },
-	);
-}
-
-// ─── Lockable ────────────────────────────────────────────────────────────────
-
-/**
- * Sets up lock/unlock behaviour for an object that requires a specific key.
- */
-export function registerLockable(
-	bus: EventBus,
-	objectId: string,
-	keyId: string,
-): void {
-	bus.onObject(
-		"before",
-		"unlock",
-		objectId,
-		(event, state, _world) => {
-			const instrument = getInstrument(event.params);
-			if (!instrument || !isInInventory(state, instrument)) {
-				event.cancelled = true;
-				event.cancelReason = "You don't have anything to unlock it with.";
-				return state;
-			}
-			if (instrument !== keyId) {
-				event.cancelled = true;
-				event.cancelReason = "That doesn't fit the lock.";
-			}
-			return state;
-		},
-		{ priority: 40 },
-	); // Lower than core guards so it runs first
-
-	bus.onObject(
-		"on",
-		"unlock",
-		objectId,
-		(_event, state, _world) => {
-			return setObjectState(state, objectId, "locked", false);
 		},
 		{ priority: 110 },
 	);
