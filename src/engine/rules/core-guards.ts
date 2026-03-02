@@ -87,7 +87,6 @@ export function registerCoreGuards(bus: EventBus): void {
 		"before",
 		"open",
 		(event, state, _world) => {
-			if (event.cancelled) return state;
 			const target = getTarget(event.params);
 			const objState = state.objects[target];
 			if (objState?.flags.open === true) {
@@ -136,7 +135,6 @@ export function registerCoreGuards(bus: EventBus): void {
 		"before",
 		"unlock",
 		(event, state, w) => {
-			if (event.cancelled) return state;
 			const target = getTarget(event.params);
 			const instrument = getInstrument(event.params);
 			const obj = w.objects[target];
