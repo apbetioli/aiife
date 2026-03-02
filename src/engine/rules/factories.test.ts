@@ -7,7 +7,7 @@ import { createRules } from "./index";
 describe("registerContainer", () => {
 	it("opening container moves contents to room", () => {
 		const world = makeTestWorld();
-		const bus = createRules(world);
+		const { bus } = createRules(world);
 		const state = buildInitialState(world);
 
 		// chest contains gem, chest is in room_a
@@ -28,7 +28,7 @@ describe("registerContainer", () => {
 
 	it("closing container moves contents back", () => {
 		const world = makeTestWorld();
-		const bus = createRules(world);
+		const { bus } = createRules(world);
 		let state = buildInitialState(world);
 
 		// First open the chest to move gem to room
@@ -61,7 +61,7 @@ describe("unlock with requires_instrument", () => {
 				},
 			},
 		});
-		const bus = createRules(world);
+		const { bus } = createRules(world);
 		const state = buildInitialState(world);
 		return { world, bus, state };
 	}
@@ -89,7 +89,7 @@ describe("unlock with requires_instrument", () => {
 				},
 			},
 		});
-		const bus = createRules(world);
+		const { bus } = createRules(world);
 		const state = buildInitialState(world);
 
 		// sword is in inventory but isn't the right key

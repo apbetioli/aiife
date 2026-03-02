@@ -5,7 +5,6 @@ import {
 	Output,
 } from "ai";
 import {
-	ACTION_DESCRIPTIONS,
 	buildStructuredOutputSystemPrompt,
 } from "../../evals/structured-output-prompt";
 import { DEBUG } from "../debug";
@@ -19,7 +18,10 @@ const INTENT_HISTORY_LIMIT = 10;
 export class GameAgent {
 	private messages: ModelMessage[] = [];
 
-	constructor(private model: LanguageModel) {}
+	constructor(
+		private model: LanguageModel,
+		private descriptions: Record<string, string>,
+	) {}
 
 	/**
 	 * Used by the game engine to process the player's input and return the structured output of the intent.
@@ -36,7 +38,8 @@ export class GameAgent {
 
 		const system = buildStructuredOutputSystemPrompt(
 			context,
-			Object.keys(ACTION_DESCRIPTIONS),
+			Object.keys(this.descriptions),
+			this.descriptions,
 		);
 		DEBUG(`System: ${system}`);
 

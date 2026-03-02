@@ -1,29 +1,30 @@
+import { coreActionDescriptions } from "../src/engine/rules/action-registry";
 import type { ParserContext, ScopedObject } from "../src/world/types";
 
+/** Description for respond — the only action not routed through the bus. */
+export const respondDescription =
+	"respond(message): Reply without changing game state. Use when input is ambiguous or incomplete (e.g. 'take' or 'drop' with no object and multiple options — ask e.g. 'What do you want to take?').";
+
+/** All action descriptions: core bus actions (with non-empty descriptions) + respond. */
 export const ACTION_DESCRIPTIONS: Record<string, string> = {
-	go: "go(direction): Go in a direction. direction must be one of: north, south, east, west, northeast, northwest, southeast, southwest, up, down, in, out. Normalize shorthands to full names: n→north, s→south, e→east, w→west, ne→northeast, nw→northwest, se→southeast, sw→southwest, u→up, d→down (in, out have no common shorthand).",
-	look: "look(): Look around the current room. No parameters. Shorthand: l. Use for 'look' with no target; for 'look at <something>' use examine instead.",
-	examine:
-		"examine(target, preposition?): Look closely at an item, NPC, or feature. target is the id of what to examine (from the object list). Shorthand: x. Use for 'look at X', 'look inside X' (preposition: in/inside), 'look under X', 'look behind X', 'look in X' — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'. Use 'open' only when the player explicitly says open (e.g. 'open the box').",
-	take: 'take(items): Pick up items from the current room. items is an array of item ids. For "take all" or "take everything", list every visible item id. For "take X and Y", list each item id in the array.',
-	drop: 'drop(items): Drop items from inventory. items is an array of item ids. For "drop all", list every inventory item id. For "drop all but X", list every inventory item id except X.',
-	use: "use(items, target?): Use an item, optionally on a target. items is an array with the item id. target is the optional id of what to use it on.",
-	open: "open(target): Open a container or door. target is the id of what to open. Use only when the player explicitly asks to open (e.g. 'open the box'); for 'look inside' use examine.",
-	talk: "talk(npc): Talk to an NPC in the current room. npc is the id of the person to talk to.",
-	inventory:
-		"inventory(): Check what the player is carrying. No parameters. Shorthand: i. Use for queries like 'what am I carrying?'.",
-	help: "help(): Show the list of available commands. No parameters. Shorthand: h.",
-	quit: "quit(): End the game. Shorthand: q.",
-	respond:
-		"respond(message): Reply without changing game state. Use when input is ambiguous or incomplete (e.g. 'take' or 'drop' with no object and multiple options — ask e.g. 'What do you want to take?').",
+	...coreActionDescriptions,
+	respond: respondDescription,
 };
 
-export function buildAvailableActionsPrompt(actionNames: string[]): string {
-	const descriptions = actionNames
-		.filter((name) => name in ACTION_DESCRIPTIONS)
-		.map((name) => `- ${ACTION_DESCRIPTIONS[name]}`);
+// Remove internal events with empty descriptions
+for (const [key, value] of Object.entries(ACTION_DESCRIPTIONS)) {
+	if (!value) delete ACTION_DESCRIPTIONS[key];
+}
 
-	return `Available actions:\n${descriptions.join("\n")}`;
+export function buildAvailableActionsPrompt(
+	actionNames: string[],
+	descriptions: Record<string, string> = ACTION_DESCRIPTIONS,
+): string {
+	const lines = actionNames
+		.filter((name) => name in descriptions)
+		.map((name) => `- ${descriptions[name]}`);
+
+	return `Available actions:\n${lines.join("\n")}`;
 }
 
 function formatScopedObject(o: ScopedObject): string {
@@ -83,12 +84,13 @@ Rules:
 export function buildStructuredOutputSystemPrompt(
 	context: ParserContext,
 	actions: string[],
+	descriptions?: Record<string, string>,
 ): string {
 	return [
 		STRUCTURED_OUTPUT_SYSTEM_PROMPT,
 		"",
 		buildGameStateSnapshotPrompt(context),
 		"",
-		buildAvailableActionsPrompt(actions),
+		buildAvailableActionsPrompt(actions, descriptions),
 	].join("\n");
 }

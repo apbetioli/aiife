@@ -7,13 +7,17 @@ import {
 	setObjectState,
 	setPlayerState,
 } from "../mutators";
-import { evaluateCondition } from "../parser-context";
+import { evaluateCondition, resolveRoomDescription } from "../parser-context";
+import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
 import { getInstrument, getTarget } from "./param-helpers";
 import { PRIORITY } from "./priorities";
 
-export function registerCoreHandlers(bus: EventBus): void {
+export function registerCoreHandlers(
+	bus: EventBus,
+	registry: ActionRegistry,
+): void {
 	// ── take ──────────────────────────────────────────────────────────────
 
 	bus.on("take", (event, state, world) => {
@@ -23,7 +27,7 @@ export function registerCoreHandlers(bus: EventBus): void {
 		if (!world.objects[target]?.carriable)
 			return { state, cancel: "You can't take that." };
 		return { state: moveObjectFromRoomToInventory(state, target) };
-	}, { priority: PRIORITY.MUTATION });
+	});
 
 	// ── drop ──────────────────────────────────────────────────────────────
 
@@ -35,7 +39,7 @@ export function registerCoreHandlers(bus: EventBus): void {
 				state.player.current_room,
 			),
 		};
-	}, { priority: PRIORITY.MUTATION });
+	});
 
 	// ── open ──────────────────────────────────────────────────────────────
 
@@ -47,7 +51,7 @@ export function registerCoreHandlers(bus: EventBus): void {
 		if (objState?.flags.open === true)
 			return { state, cancel: "It's already open." };
 		return { state: setObjectState(state, target, "open", true) };
-	}, { priority: PRIORITY.MUTATION });
+	});
 
 	// ── close ─────────────────────────────────────────────────────────────
 
@@ -57,7 +61,7 @@ export function registerCoreHandlers(bus: EventBus): void {
 		if (objState?.flags.open === false)
 			return { state, cancel: "It's already closed." };
 		return { state: setObjectState(state, target, "open", false) };
-	}, { priority: PRIORITY.MUTATION });
+	});
 
 	// ── unlock ────────────────────────────────────────────────────────────
 
@@ -71,27 +75,30 @@ export function registerCoreHandlers(bus: EventBus): void {
 		if (requiredKey && instrument !== requiredKey)
 			return { state, cancel: "That doesn't fit the lock." };
 		return { state: setObjectState(state, target, "locked", false) };
-	}, { priority: PRIORITY.MUTATION });
+	});
 
 	// ── lock ──────────────────────────────────────────────────────────────
 
 	bus.on("lock", (event, state, _world) => {
-		return { state: setObjectState(state, getTarget(event.params), "locked", true) };
-	}, { priority: PRIORITY.MUTATION });
+		return {
+			state: setObjectState(state, getTarget(event.params), "locked", true),
+		};
+	});
 
 	// ── examine ───────────────────────────────────────────────────────────
 
 	bus.on("examine", (event, state, _world) => {
-		return { state: setObjectState(state, getTarget(event.params), "examined", true) };
-	}, { priority: PRIORITY.MUTATION });
+		return {
+			state: setObjectState(state, getTarget(event.params), "examined", true),
+		};
+	});
 
 	// ── go ────────────────────────────────────────────────────────────────
 
 	bus.on("go", (event, state, world) => {
 		const room = world.rooms[state.player.current_room];
 		const exit = room?.exits[event.params.direction];
-		if (!exit)
-			return { state, cancel: "You can't go that way." };
+		if (!exit) return { state, cancel: "You can't go that way." };
 		if (exit.condition && !evaluateCondition(exit.condition, state))
 			return { state, cancel: exit.locked_message ?? "The way is blocked." };
 
@@ -102,12 +109,71 @@ export function registerCoreHandlers(bus: EventBus): void {
 		s = executeAction(bus, world, s, "exit", { room: from }).state;
 		s = executeAction(bus, world, s, "enter", { room: to }).state;
 		return { state: s };
-	}, { priority: PRIORITY.MUTATION });
+	});
 
 	// ── tick ──────────────────────────────────────────────────────────────
 
 	bus.on("tick", (_event, state, _world) => {
 		const moves = (state.player.state.moves as number) ?? 0;
 		return { state: setPlayerState(state, "moves", moves + 1) };
-	}, { priority: PRIORITY.MUTATION });
+	});
+
+	// ── look ──────────────────────────────────────────────────────────────
+
+	bus.on("look", (_event, state, world) => {
+		const roomId = state.player.current_room;
+		const room = world.rooms[roomId];
+		const roomState = state.rooms[roomId];
+		const description = resolveRoomDescription(room, roomState);
+
+		const lines: string[] = [`**${room.name}**`, description];
+
+		const objectNames = roomState.contains
+			.map((id) => world.objects[id]?.name)
+			.filter(Boolean);
+		if (objectNames.length > 0) {
+			lines.push(`You can see: ${objectNames.join(", ")}.`);
+		}
+
+		const exits = Object.entries(room.exits)
+			.filter(
+				([, exit]) =>
+					!exit.condition || evaluateCondition(exit.condition, state),
+			)
+			.map(([dir]) => dir);
+		if (exits.length > 0) {
+			lines.push(`Exits: ${exits.join(", ")}.`);
+		}
+
+		return { state, feedback: [lines.join("\n")] };
+	});
+
+	// ── inventory ─────────────────────────────────────────────────────────
+
+	bus.on("inventory", (_event, state, world) => {
+		if (state.player.inventory.length === 0) {
+			return { state, feedback: ["You aren't carrying anything."] };
+		}
+		const names = state.player.inventory.map(
+			(id) => world.objects[id]?.name ?? id,
+		);
+		return { state, feedback: [`You are carrying: ${names.join(", ")}.`] };
+	});
+
+	// ── help ──────────────────────────────────────────────────────────────
+
+	bus.on("help", (_event, state, _world) => {
+		const descriptions = registry.getDescriptions();
+		const lines = Object.values(descriptions).map((d) => `- ${d}`);
+		return { state, feedback: ["Available commands:", ...lines] };
+	});
+
+	// ── quit ──────────────────────────────────────────────────────────────
+
+	bus.on("quit", (_event, state, _world) => {
+		return {
+			state: setPlayerState(state, "quit", true),
+			feedback: ["Goodbye!"],
+		};
+	});
 }
