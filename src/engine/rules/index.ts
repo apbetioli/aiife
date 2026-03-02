@@ -1,4 +1,5 @@
 import type { World } from "../../world/types";
+import { registerCoreEffects } from "./core-effects";
 import { registerCoreGuards } from "./core-guards";
 import { registerCoreListeners } from "./core-listeners";
 import { EventBus } from "./event-bus";
@@ -34,6 +35,7 @@ export function createRules(world: World): EventBus {
 
 	registerCoreGuards(bus);
 	registerCoreListeners(bus);
+	registerCoreEffects(bus);
 
 	// Auto-register containers
 	for (const [id, obj] of Object.entries(world.objects)) {
