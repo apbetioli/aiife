@@ -31,6 +31,19 @@ export type EventParamsMap = {
 export type EventName = keyof EventParamsMap;
 export type EventPhase = "before" | "on" | "after";
 
+/** Runtime set of valid event names — kept in sync via `satisfies`. */
+const eventNames = [
+	"go", "take", "drop", "open", "close", "unlock", "lock",
+	"examine", "use", "move", "attack", "talk",
+	"enter", "exit", "tick", "game:start", "game:end",
+] as const satisfies readonly EventName[];
+
+const eventNameSet: ReadonlySet<string> = new Set(eventNames);
+
+export function isEventName(name: string): name is EventName {
+	return eventNameSet.has(name);
+}
+
 // ─── Event ───────────────────────────────────────────────────────────────────
 
 export interface GameEvent<N extends EventName> {

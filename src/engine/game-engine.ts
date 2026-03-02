@@ -1,4 +1,3 @@
-import { ACTION_DESCRIPTIONS } from "../../evals/structured-output-prompt";
 import { GameAgent } from "../agent/game-agent";
 import { createModel } from "../agent/model";
 import type { ActionResult, StructuredOutput } from "../agent/types";
@@ -9,9 +8,9 @@ import { buildParserContext } from "./parser-context";
 import {
 	createRules,
 	type EventBus,
-	type EventName,
 	type EventParamsMap,
 	executeAction,
+	isEventName,
 } from "./rules";
 import type { GameState } from "./types";
 
@@ -62,19 +61,20 @@ export class GameEngine {
 			};
 		}
 
-		if (!Object.keys(ACTION_DESCRIPTIONS).includes(intent.action)) {
+		const action = intent.action;
+		if (!isEventName(action)) {
 			return {
 				message: intent.message ?? "I don't understand that.",
 				success: false,
 			};
 		}
 
-		const params = toEventParams(intent) as EventParamsMap[EventName];
+		const params = toEventParams(intent) as EventParamsMap[typeof action];
 		const result = executeAction(
 			this.bus,
 			this.world,
 			this.state,
-			intent.action as EventName,
+			action,
 			params,
 		);
 		this.state = result.state;
@@ -85,7 +85,7 @@ export class GameEngine {
 			this.world,
 			this.state,
 			"tick",
-			{} as EventParamsMap["tick"],
+			{},
 		);
 		this.state = tickResult.state;
 
