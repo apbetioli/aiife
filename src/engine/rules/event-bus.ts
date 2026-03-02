@@ -95,6 +95,7 @@ export class EventBus {
 		const toRemove: ListenerRegistration[] = [];
 
 		for (const reg of matching) {
+			if (event.cancelled) break;
 			currentState = (reg.listener as EventListener<N>)(
 				event,
 				currentState,
