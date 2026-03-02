@@ -85,20 +85,32 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		const order: number[] = [];
 
-		bus.on("tick", (_e, state, _w) => {
-			order.push(200);
-			return state;
-		}, { priority: 200 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push(200);
+				return state;
+			},
+			{ priority: 200 },
+		);
 
-		bus.on("tick", (_e, state, _w) => {
-			order.push(50);
-			return state;
-		}, { priority: 50 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push(50);
+				return state;
+			},
+			{ priority: 50 },
+		);
 
-		bus.on("tick", (_e, state, _w) => {
-			order.push(100);
-			return state;
-		}, { priority: 100 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push(100);
+				return state;
+			},
+			{ priority: 100 },
+		);
 
 		const event = new GameEvent("tick", {} as Record<string, never>);
 		bus.emit(event, world, freshState());
@@ -109,10 +121,14 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		let count = 0;
 
-		bus.on("tick", (_e, state, _w) => {
-			count++;
-			return state;
-		}, { once: true });
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				count++;
+				return state;
+			},
+			{ once: true },
+		);
 
 		const makeEvent = () => new GameEvent("tick", {} as Record<string, never>);
 
@@ -127,15 +143,23 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		const order: string[] = [];
 
-		bus.on("take", (_event, state, _w) => {
-			order.push("guard");
-			return { state, cancel: "Nope." };
-		}, { priority: 50 });
+		bus.on(
+			"take",
+			(_event, state, _w) => {
+				order.push("guard");
+				return { state, cancel: "Nope." };
+			},
+			{ priority: 50 },
+		);
 
-		bus.on("take", (_event, state, _w) => {
-			order.push("mutation");
-			return state;
-		}, { priority: 100 });
+		bus.on(
+			"take",
+			(_event, state, _w) => {
+				order.push("mutation");
+				return state;
+			},
+			{ priority: 100 },
+		);
 
 		const event = new GameEvent("take", { target: "lamp" });
 		const result = bus.emit(event, world, freshState());
@@ -148,9 +172,13 @@ describe("EventBus", () => {
 	it("cancel reason appears in feedback", () => {
 		const bus = new EventBus();
 
-		bus.on("take", (_event, state, _w) => {
-			return { state, cancel: "You can't take that." };
-		}, { priority: 50 });
+		bus.on(
+			"take",
+			(_event, state, _w) => {
+				return { state, cancel: "You can't take that." };
+			},
+			{ priority: 50 },
+		);
 
 		const event = new GameEvent("take", { target: "table" });
 		const result = bus.emit(event, world, freshState());
@@ -162,15 +190,23 @@ describe("EventBus", () => {
 	it("multiple listeners at different priorities accumulate state changes", () => {
 		const bus = new EventBus();
 
-		bus.on("tick", (_e, state, _w) => ({
-			...state,
-			turn: state.turn + 1,
-		}), { priority: 100 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => ({
+				...state,
+				turn: state.turn + 1,
+			}),
+			{ priority: 100 },
+		);
 
-		bus.on("tick", (_e, state, _w) => ({
-			...state,
-			turn: state.turn + 10,
-		}), { priority: 200 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => ({
+				...state,
+				turn: state.turn + 10,
+			}),
+			{ priority: 200 },
+		);
 
 		const event = new GameEvent("tick", {} as Record<string, never>);
 		const state = freshState();
@@ -201,13 +237,21 @@ describe("EventBus", () => {
 	it("feedback accumulates across priorities", () => {
 		const bus = new EventBus();
 
-		bus.on("tick", (_e, state, _w) => {
-			return { state, feedback: ["First"] };
-		}, { priority: 100 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				return { state, feedback: ["First"] };
+			},
+			{ priority: 100 },
+		);
 
-		bus.on("tick", (_e, state, _w) => {
-			return { state, feedback: ["Second"] };
-		}, { priority: 200 });
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				return { state, feedback: ["Second"] };
+			},
+			{ priority: 200 },
+		);
 
 		const event = new GameEvent("tick", {} as Record<string, never>);
 		const result = bus.emit(event, world, freshState());

@@ -8,8 +8,9 @@ import type { CoreEventName, CoreEventParamsMap } from "./action-registry";
 export type EventName = CoreEventName | (string & {});
 
 /** Resolves params for core events; custom events get `Record<string, unknown>`. */
-export type EventParamsFor<N extends string> =
-	N extends CoreEventName ? CoreEventParamsMap[N] : Record<string, unknown>;
+export type EventParamsFor<N extends string> = N extends CoreEventName
+	? CoreEventParamsMap[N]
+	: Record<string, unknown>;
 
 // ─── Event ───────────────────────────────────────────────────────────────────
 

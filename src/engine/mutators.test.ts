@@ -143,11 +143,7 @@ describe("mutators", () => {
 	describe("moveObjectFromInventoryToContainer", () => {
 		it("removes from inventory and adds to container contains", () => {
 			const state = freshState();
-			const next = moveObjectFromInventoryToContainer(
-				state,
-				"sword",
-				"chest",
-			);
+			const next = moveObjectFromInventoryToContainer(state, "sword", "chest");
 
 			expect(next.player.inventory).not.toContain("sword");
 			expect(next.objects.chest.contains).toContain("sword");
@@ -162,11 +158,7 @@ describe("mutators", () => {
 
 		it("does not mutate original state", () => {
 			const state = deepFreeze(freshState());
-			const next = moveObjectFromInventoryToContainer(
-				state,
-				"sword",
-				"chest",
-			);
+			const next = moveObjectFromInventoryToContainer(state, "sword", "chest");
 
 			expect(state.player.inventory).toContain("sword");
 			expect(state.objects.chest.contains).not.toContain("sword");

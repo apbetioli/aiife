@@ -50,7 +50,10 @@ describe("buildInitialState", () => {
 		});
 		it("returns error for room containing unknown object", () => {
 			const world = makeTestWorld();
-			world.rooms.room_a.contains = [...world.rooms.room_a.contains, "nonexistent"];
+			world.rooms.room_a.contains = [
+				...world.rooms.room_a.contains,
+				"nonexistent",
+			];
 			expect(validateContainment(world)).toContainEqual(
 				'Room "room_a" contains unknown object "nonexistent"',
 			);

@@ -153,11 +153,7 @@ export function buildInitialState(world: World): GameState {
 	const containmentErrors = validateContainment(world);
 	const exitErrors = validateExitConditions(world);
 
-	const allErrors = [
-		...locationErrors,
-		...containmentErrors,
-		...exitErrors,
-	];
+	const allErrors = [...locationErrors, ...containmentErrors, ...exitErrors];
 
 	if (allErrors.length > 0) {
 		throw new Error(

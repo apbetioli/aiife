@@ -1,6 +1,5 @@
-import { generateText, Output } from "ai";
-
 import { getTracer } from "@lmnr-ai/lmnr";
+import { generateText, Output } from "ai";
 import { createEvalModel } from "../src/agent/model";
 import type {
 	StructuredOutput,

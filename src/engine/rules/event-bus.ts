@@ -111,12 +111,12 @@ export class EventBus {
 
 			// Find scoped listener that matches current context
 			const scopedMatch = group.find(
-				(reg) => reg.scope === "scoped" && this.matchesScope(reg, event, currentState),
+				(reg) =>
+					reg.scope === "scoped" && this.matchesScope(reg, event, currentState),
 			);
 
 			// Pick scoped if it exists, otherwise global
-			const chosen = scopedMatch
-				?? group.find((reg) => reg.scope === "global");
+			const chosen = scopedMatch ?? group.find((reg) => reg.scope === "global");
 
 			if (!chosen) continue;
 
@@ -154,7 +154,9 @@ export class EventBus {
 		if (reg.scope !== "scoped" || !reg.scopeId) return false;
 		// Match by room or by object target
 		if (reg.scopeId === state.player.current_room) return true;
-		return getTarget(event.params as Parameters<typeof getTarget>[0]) === reg.scopeId;
+		return (
+			getTarget(event.params as Parameters<typeof getTarget>[0]) === reg.scopeId
+		);
 	}
 
 	private normalizeResult(raw: ListenerResult | GameState): ListenerResult {
