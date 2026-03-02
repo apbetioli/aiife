@@ -1,8 +1,9 @@
+import { ACTION_DESCRIPTIONS } from "../../evals/structured-output-prompt";
 import { GameAgent } from "../agent/game-agent";
 import { createModel } from "../agent/model";
 import type { ActionResult, StructuredOutput } from "../agent/types";
 import { DEBUG } from "../debug";
-import type { Direction, World } from "../world/types";
+import type { World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
 import {
@@ -13,6 +14,15 @@ import {
 	executeAction,
 } from "./rules";
 import type { GameState } from "./types";
+
+function toEventParams(intent: StructuredOutput): Record<string, unknown> {
+	const params: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(intent)) {
+		if (key === "action" || key === "message") continue;
+		if (value !== null && value !== undefined) params[key] = value;
+	}
+	return params;
+}
 
 export class GameEngine {
 	private state: GameState;
@@ -37,7 +47,7 @@ export class GameEngine {
 		const intent = await this.agent.processIntent(trimmed, context);
 
 		const result = this.runAction(intent);
-		
+
 		return this.agent.narrateResult(result);
 	}
 
@@ -52,20 +62,19 @@ export class GameEngine {
 			};
 		}
 
-		const mapped = this.mapIntent(intent);
-		if (!mapped) {
+		if (!Object.keys(ACTION_DESCRIPTIONS).includes(intent.action)) {
 			return {
 				message: intent.message ?? "I don't understand that.",
 				success: false,
 			};
 		}
 
-		const { action, params } = mapped;
+		const params = toEventParams(intent) as EventParamsMap[EventName];
 		const result = executeAction(
 			this.bus,
 			this.world,
 			this.state,
-			action,
+			intent.action as EventName,
 			params,
 		);
 		this.state = result.state;
@@ -91,68 +100,6 @@ export class GameEngine {
 			gameOver: false,
 			isVictory: false,
 		};
-	}
-
-	private mapIntent(
-		intent: StructuredOutput,
-	): { action: EventName; params: EventParamsMap[EventName] } | null {
-		switch (intent.action) {
-			case "go": {
-				const direction = intent.direction as Direction;
-				const from = this.state.player.current_room;
-				const room = this.world.rooms[from];
-				const exit = room?.exits[direction];
-				return {
-					action: "go",
-					params: {
-						direction,
-						from,
-						to: exit?.leads_to ?? "",
-					},
-				};
-			}
-			case "take":
-			case "drop":
-			case "open":
-			case "close":
-			case "examine":
-				return {
-					action: intent.action,
-					params: { target: intent.target ?? "" },
-				};
-			case "unlock":
-			case "lock":
-				return {
-					action: intent.action,
-					params: {
-						target: intent.target ?? "",
-						instrument: intent.items?.[0] ?? undefined,
-					},
-				};
-			case "use":
-				return {
-					action: "use",
-					params: {
-						target: intent.target ?? "",
-						indirect: intent.items?.[0] ?? undefined,
-					},
-				};
-			case "attack":
-				return {
-					action: "attack",
-					params: {
-						target: intent.target ?? "",
-						instrument: intent.items?.[0] ?? undefined,
-					},
-				};
-			case "talk":
-				return {
-					action: "talk",
-					params: { target: intent.npc ?? intent.target ?? "" },
-				};
-			default:
-				return null;
-		}
 	}
 
 	isGameOver(): boolean {

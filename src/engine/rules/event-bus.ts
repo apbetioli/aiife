@@ -1,5 +1,6 @@
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
+import { getTarget } from "./param-helpers";
 import type {
 	EventListener,
 	EventName,
@@ -121,10 +122,7 @@ export class EventBus {
 			case "room":
 				return reg.scopeId === state.player.current_room;
 			case "object":
-				return (
-					"target" in event.params &&
-					(event.params as { target: string }).target === reg.scopeId
-				);
+				return getTarget(event.params as Parameters<typeof getTarget>[0]) === reg.scopeId;
 			default:
 				return false;
 		}

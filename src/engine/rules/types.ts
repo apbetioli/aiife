@@ -1,31 +1,11 @@
 import type { Direction, World } from "../../world/types";
 import type { GameState } from "../types";
+import type { IntentParams } from "./param-helpers";
 
-// ─── Event Names ─────────────────────────────────────────────────────────────
-
-export type EventName =
-	| "go"
-	| "take"
-	| "drop"
-	| "open"
-	| "close"
-	| "unlock"
-	| "lock"
-	| "examine"
-	| "use"
-	| "move"
-	| "attack"
-	| "talk"
-	| "enter"
-	| "exit"
-	| "tick"
-	| "game:start"
-	| "game:end";
-
-export type EventPhase = "before" | "on" | "after";
 
 // ─── Discriminated Params ────────────────────────────────────────────────────
 
+// TODO these input schemas should come from the action registry
 export type EventParamsMap = {
 	go: { direction: Direction; from: string; to: string };
 	take: { target: string };
@@ -45,6 +25,11 @@ export type EventParamsMap = {
 	"game:start": Record<string, never>;
 	"game:end": { victory: boolean };
 };
+
+// ─── Event Names ─────────────────────────────────────────────────────────────
+
+export type EventName = keyof EventParamsMap;
+export type EventPhase = "before" | "on" | "after";
 
 // ─── Event ───────────────────────────────────────────────────────────────────
 

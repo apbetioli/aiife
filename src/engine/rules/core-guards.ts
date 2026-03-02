@@ -2,17 +2,47 @@ import type { Direction } from "../../world/types";
 import { isInInventory } from "../mutators";
 import { evaluateCondition } from "../parser-context";
 import type { EventBus } from "./event-bus";
+import { getInstrument, getTarget } from "./param-helpers";
 
+const GO_RESOLVE_PRIORITY = 0;
 const GUARD_PRIORITY = 50;
 
 export function registerCoreGuards(bus: EventBus): void {
+	// ── go resolve (from/to from state/world) ───────────────────────────────
+
+	bus.onGlobal(
+		"before",
+		"go",
+		(event, state, world) => {
+			const params = event.params;
+			if (!params.direction) return state;
+			if (params.to != null && params.to !== "") return state;
+
+			const from = state.player.current_room;
+			const room = world.rooms[from];
+			const exit = room?.exits[params.direction as Direction];
+			const to = exit?.leads_to ?? "";
+
+			params.from = from;
+			params.to = to;
+
+			if (!exit) {
+				event.cancelled = true;
+				event.cancelReason = "You can't go that way.";
+			}
+			return state;
+		},
+		{ priority: GO_RESOLVE_PRIORITY },
+	);
+
 	// ── take ──────────────────────────────────────────────────────────────
 
 	bus.onGlobal(
 		"before",
 		"take",
 		(event, state, _world) => {
-			if (isInInventory(state, event.params.target)) {
+			const target = getTarget(event.params);
+			if (isInInventory(state, target)) {
 				event.cancelled = true;
 				event.cancelReason = "You're already carrying that.";
 			}
@@ -25,7 +55,8 @@ export function registerCoreGuards(bus: EventBus): void {
 		"before",
 		"take",
 		(event, _state, world) => {
-			const obj = world.objects[event.params.target];
+			const target = getTarget(event.params);
+			const obj = world.objects[target];
 			if (obj && !obj.carriable) {
 				event.cancelled = true;
 				event.cancelReason = "You can't take that.";
@@ -41,7 +72,8 @@ export function registerCoreGuards(bus: EventBus): void {
 		"before",
 		"open",
 		(event, state, _world) => {
-			const objState = state.objects[event.params.target];
+			const target = getTarget(event.params);
+			const objState = state.objects[target];
 			if (objState?.flags.locked === true) {
 				event.cancelled = true;
 				event.cancelReason = "It's locked.";
@@ -56,7 +88,8 @@ export function registerCoreGuards(bus: EventBus): void {
 		"open",
 		(event, state, _world) => {
 			if (event.cancelled) return state;
-			const objState = state.objects[event.params.target];
+			const target = getTarget(event.params);
+			const objState = state.objects[target];
 			if (objState?.flags.open === true) {
 				event.cancelled = true;
 				event.cancelReason = "It's already open.";
@@ -72,7 +105,8 @@ export function registerCoreGuards(bus: EventBus): void {
 		"before",
 		"close",
 		(event, state, _world) => {
-			const objState = state.objects[event.params.target];
+			const target = getTarget(event.params);
+			const objState = state.objects[target];
 			if (objState?.flags.open === false) {
 				event.cancelled = true;
 				event.cancelReason = "It's already closed.";
@@ -88,10 +122,8 @@ export function registerCoreGuards(bus: EventBus): void {
 		"before",
 		"unlock",
 		(event, state, _world) => {
-			if (
-				!event.params.instrument ||
-				!isInInventory(state, event.params.instrument)
-			) {
+			const instrument = getInstrument(event.params);
+			if (!instrument || !isInInventory(state, instrument)) {
 				event.cancelled = true;
 				event.cancelReason = "You don't have anything to unlock it with.";
 			}
@@ -105,9 +137,11 @@ export function registerCoreGuards(bus: EventBus): void {
 		"unlock",
 		(event, state, w) => {
 			if (event.cancelled) return state;
-			const obj = w.objects[event.params.target];
+			const target = getTarget(event.params);
+			const instrument = getInstrument(event.params);
+			const obj = w.objects[target];
 			const requiredKey = obj?.requires_instrument?.unlock;
-			if (requiredKey && event.params.instrument !== requiredKey) {
+			if (requiredKey && instrument !== requiredKey) {
 				event.cancelled = true;
 				event.cancelReason = "That doesn't fit the lock.";
 			}
@@ -116,13 +150,13 @@ export function registerCoreGuards(bus: EventBus): void {
 		{ priority: GUARD_PRIORITY + 1 },
 	);
 
-	// ── go ────────────────────────────────────────────────────────────────
+	// ── go (validation after resolve) ────────────────────────────────────────
 
 	bus.onGlobal(
 		"before",
 		"go",
 		(event, state, world) => {
-			const room = world.rooms[event.params.from];
+			const room = world.rooms[event.params.from as string];
 			if (!room) {
 				event.cancelled = true;
 				event.cancelReason = "You can't go that way.";
