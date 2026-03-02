@@ -44,7 +44,6 @@ const world: World = {
 				},
 				south: {
 					leads_to: "garden",
-					condition: null,
 				},
 			},
 			contains: ["painting", "library_door", "compartment"],
@@ -62,7 +61,6 @@ const world: World = {
 			exits: {
 				south: {
 					leads_to: "entrance_hall",
-					condition: null,
 				},
 				east: {
 					leads_to: "study",
@@ -85,7 +83,6 @@ const world: World = {
 			exits: {
 				north: {
 					leads_to: "entrance_hall",
-					condition: null,
 				},
 			},
 			contains: ["stone_bench", "fountain"],
@@ -103,7 +100,6 @@ const world: World = {
 			exits: {
 				west: {
 					leads_to: "library",
-					condition: null,
 				},
 			},
 			contains: ["oak_desk", "candle"],

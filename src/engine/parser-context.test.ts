@@ -263,7 +263,11 @@ describe("buildParserContext", () => {
 
 		const doorObj = ctx.in_scope_objects.find((o) => o.id === "door");
 		expect(doorObj).toBeDefined();
-		expect(doorObj?.state).toEqual({ locked: true, open: false, carriable: false });
+		expect(doorObj?.state).toEqual({
+			locked: true,
+			open: false,
+			carriable: false,
+		});
 	});
 
 	it("throws for unknown current room", () => {

@@ -29,7 +29,6 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 					},
 					south: {
 						leads_to: "room_b",
-						condition: null,
 					},
 				},
 				contains: ["door", "lamp", "chest"],
@@ -46,7 +45,6 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 				exits: {
 					south: {
 						leads_to: "room_a",
-						condition: null,
 					},
 				},
 				contains: ["table"],
