@@ -25,8 +25,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			params.to = to;
 
 			if (!exit) {
-				event.cancelled = true;
-				event.cancelReason = "You can't go that way.";
+				event.cancel("You can't go that way.");
 			}
 			return state;
 		},
@@ -41,8 +40,7 @@ export function registerCoreGuards(bus: EventBus): void {
 		(event, state, _world) => {
 			const target = getTarget(event.params);
 			if (isInInventory(state, target)) {
-				event.cancelled = true;
-				event.cancelReason = "You're already carrying that.";
+				event.cancel("You're already carrying that.");
 			}
 			return state;
 		},
@@ -56,8 +54,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			const target = getTarget(event.params);
 			const obj = world.objects[target];
 			if (obj && !obj.carriable) {
-				event.cancelled = true;
-				event.cancelReason = "You can't take that.";
+				event.cancel("You can't take that.");
 			}
 			return _state;
 		},
@@ -73,8 +70,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			const target = getTarget(event.params);
 			const objState = state.objects[target];
 			if (objState?.flags.locked === true) {
-				event.cancelled = true;
-				event.cancelReason = "It's locked.";
+				event.cancel("It's locked.");
 			}
 			return state;
 		},
@@ -88,8 +84,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			const target = getTarget(event.params);
 			const objState = state.objects[target];
 			if (objState?.flags.open === true) {
-				event.cancelled = true;
-				event.cancelReason = "It's already open.";
+				event.cancel("It's already open.");
 			}
 			return state;
 		},
@@ -105,8 +100,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			const target = getTarget(event.params);
 			const objState = state.objects[target];
 			if (objState?.flags.open === false) {
-				event.cancelled = true;
-				event.cancelReason = "It's already closed.";
+				event.cancel("It's already closed.");
 			}
 			return state;
 		},
@@ -121,8 +115,7 @@ export function registerCoreGuards(bus: EventBus): void {
 		(event, state, _world) => {
 			const instrument = getInstrument(event.params);
 			if (!instrument || !isInInventory(state, instrument)) {
-				event.cancelled = true;
-				event.cancelReason = "You don't have anything to unlock it with.";
+				event.cancel("You don't have anything to unlock it with.");
 			}
 			return state;
 		},
@@ -138,8 +131,7 @@ export function registerCoreGuards(bus: EventBus): void {
 			const obj = w.objects[target];
 			const requiredKey = obj?.requires_instrument?.unlock;
 			if (requiredKey && instrument !== requiredKey) {
-				event.cancelled = true;
-				event.cancelReason = "That doesn't fit the lock.";
+				event.cancel("That doesn't fit the lock.");
 			}
 			return state;
 		},
@@ -154,19 +146,16 @@ export function registerCoreGuards(bus: EventBus): void {
 		(event, state, world) => {
 			const room = world.rooms[event.params.from as string];
 			if (!room) {
-				event.cancelled = true;
-				event.cancelReason = "You can't go that way.";
+				event.cancel("You can't go that way.");
 				return state;
 			}
 			const exit = room.exits[event.params.direction as Direction];
 			if (!exit) {
-				event.cancelled = true;
-				event.cancelReason = "You can't go that way.";
+				event.cancel("You can't go that way.");
 				return state;
 			}
 			if (exit.condition && !evaluateCondition(exit.condition, state)) {
-				event.cancelled = true;
-				event.cancelReason = exit.locked_message ?? "The way is blocked.";
+				event.cancel(exit.locked_message ?? "The way is blocked.");
 			}
 			return state;
 		},

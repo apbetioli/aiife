@@ -1,11 +1,11 @@
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import type { EventBus } from "./event-bus";
-import type { EventName, EventParamsMap, GameEvent } from "./types";
+import { type EventName, type EventParamsMap, GameEvent } from "./types";
 
 export interface ExecuteResult {
 	state: GameState;
-	feedback: string[];
+	feedback: readonly string[];
 	cancelled: boolean;
 }
 
@@ -16,13 +16,7 @@ export function executeAction<N extends EventName>(
 	action: N,
 	params: EventParamsMap[N],
 ): ExecuteResult {
-	const event: GameEvent<N> = {
-		name: action,
-		phase: "before",
-		params,
-		cancelled: false,
-		feedback: [],
-	};
+	const event = new GameEvent(action, params);
 
 	// ── Before phase (guards/validation) ──────────────────────────────────
 	event.phase = "before";
@@ -30,7 +24,6 @@ export function executeAction<N extends EventName>(
 	let currentState = beforeResult.state;
 
 	if (event.cancelled) {
-		if (event.cancelReason) event.feedback.push(event.cancelReason);
 		return { state: currentState, feedback: event.feedback, cancelled: true };
 	}
 
