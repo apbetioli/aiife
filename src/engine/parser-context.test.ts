@@ -149,8 +149,7 @@ describe("resolveObjectDescription", () => {
 		name: "brass lamp",
 		synonyms: ["lamp"],
 		type: "item",
-		carriable: true,
-		state: {},
+		state: { carriable: true },
 		descriptions: {
 			default: "A brass lamp.",
 			lit: "The lamp glows brightly.",
@@ -264,7 +263,7 @@ describe("buildParserContext", () => {
 
 		const doorObj = ctx.in_scope_objects.find((o) => o.id === "door");
 		expect(doorObj).toBeDefined();
-		expect(doorObj?.state).toEqual({ locked: true, open: false });
+		expect(doorObj?.state).toEqual({ locked: true, open: false, carriable: false });
 	});
 
 	it("throws for unknown current room", () => {

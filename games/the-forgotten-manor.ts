@@ -118,8 +118,7 @@ const world: World = {
 			name: "faded painting",
 			synonyms: ["painting", "portrait", "picture", "stern man"],
 			type: "fixture",
-			carriable: false,
-			state: { examined: false },
+			state: { examined: false, carriable: false },
 			descriptions: {
 				default:
 					"A portrait of a stern-looking man in Victorian dress. His eyes seem to follow you. The frame looks slightly loose on one side.",
@@ -133,8 +132,7 @@ const world: World = {
 			name: "hidden compartment",
 			synonyms: ["compartment", "hidden compartment", "niche", "hole"],
 			type: "container",
-			carriable: false,
-			state: { open: false, discovered: false },
+			state: { open: false, discovered: false, carriable: false },
 			contains: ["brass_key"],
 			descriptions: {
 				default: "A small recess hidden behind the painting. It's closed.",
@@ -148,8 +146,7 @@ const world: World = {
 			name: "brass key",
 			synonyms: ["key", "brass key", "small key"],
 			type: "key",
-			carriable: true,
-			state: {},
+			state: { carriable: true },
 			descriptions: {
 				default:
 					"A small brass key, tarnished with age. A label tied to it reads 'Library'.",
@@ -161,8 +158,7 @@ const world: World = {
 			name: "oak door",
 			synonyms: ["door", "oak door", "north door", "library door"],
 			type: "door",
-			carriable: false,
-			state: { locked: true, open: false },
+			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "brass_key" },
 			descriptions: {
 				default: "A heavy oak door with an iron lock. It leads north.",
@@ -178,8 +174,7 @@ const world: World = {
 			name: "leather journal",
 			synonyms: ["journal", "book", "diary", "leather journal"],
 			type: "item",
-			carriable: true,
-			state: { read: false },
+			state: { read: false, carriable: true },
 			contains: ["study_key"],
 			descriptions: {
 				default:
@@ -193,8 +188,7 @@ const world: World = {
 			name: "iron key",
 			synonyms: ["key", "iron key", "study key"],
 			type: "key",
-			carriable: true,
-			state: {},
+			state: { carriable: true },
 			descriptions: {
 				default:
 					"A small iron key hidden inside the back cover of the journal. A faint engraving reads 'Study'.",
@@ -206,8 +200,7 @@ const world: World = {
 			name: "narrow door",
 			synonyms: ["door", "narrow door", "east door", "study door"],
 			type: "door",
-			carriable: false,
-			state: { locked: true, open: false },
+			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "study_key" },
 			descriptions: {
 				default:
@@ -222,8 +215,7 @@ const world: World = {
 			name: "bookshelf",
 			synonyms: ["bookshelf", "shelves", "bookcase", "books"],
 			type: "fixture",
-			carriable: false,
-			state: {},
+			state: { carriable: false },
 			descriptions: {
 				default:
 					"Rows of rotting leather-bound volumes. Most are too degraded to read. Nothing useful catches your eye.",
@@ -237,8 +229,7 @@ const world: World = {
 			name: "stone bench",
 			synonyms: ["bench", "stone bench", "seat"],
 			type: "fixture",
-			carriable: false,
-			state: {},
+			state: { carriable: false },
 			descriptions: {
 				default:
 					"A weathered stone bench. Moss has grown into every crack. Comfortable enough for sitting, but there's nothing interesting about it.",
@@ -250,8 +241,7 @@ const world: World = {
 			name: "stone fountain",
 			synonyms: ["fountain", "stone fountain", "basin"],
 			type: "fixture",
-			carriable: false,
-			state: {},
+			state: { carriable: false },
 			descriptions: {
 				default:
 					"A stone fountain, long since dry. A carved fish at the centre once spouted water. Now it just stares blankly at the sky.",
@@ -265,8 +255,7 @@ const world: World = {
 			name: "oak desk",
 			synonyms: ["desk", "oak desk", "table"],
 			type: "fixture",
-			carriable: false,
-			state: { examined: false },
+			state: { examined: false, carriable: false },
 			descriptions: {
 				default:
 					"A large oak desk covered in scattered papers and dust. Something glints beneath the papers.",
@@ -280,8 +269,7 @@ const world: World = {
 			name: "unlit candle",
 			synonyms: ["candle", "unlit candle", "taper"],
 			type: "item",
-			carriable: true,
-			state: { lit: false },
+			state: { lit: false, carriable: true },
 			descriptions: {
 				default: "A half-burned candle in a brass holder. It's unlit.",
 				lit: "The candle burns with a warm, steady flame.",

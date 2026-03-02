@@ -85,110 +85,101 @@ const world: World = {
 			name: "brass lantern",
 			synonyms: ["lantern", "lamp", "light"],
 			type: "item",
-			state: {},
+			state: { carriable: true },
 			descriptions: {
 				default: "A sturdy brass lantern. It casts a warm, steady glow.",
 			},
-			carriable: true,
 		},
 		old_book: {
 			id: "old_book",
 			name: "old book",
 			synonyms: ["book", "leather book", "volume"],
 			type: "item",
-			state: {},
+			state: { carriable: true },
 			descriptions: {
 				default:
 					'A crumbling leather-bound book. The only legible passage reads: "...and the amulet shall rest upon the pedestal, and the way shall be opened..."',
 			},
-			carriable: true,
 		},
 		alcove: {
 			id: "alcove",
 			name: "alcove",
 			synonyms: ["shadowy alcove", "wall alcove", "recess"],
 			type: "container",
-			state: { revealed: false },
+			state: { revealed: false, carriable: false },
 			descriptions: {
 				default:
 					"A shadowy alcove set into the wall. You might look more closely.",
 			},
 			contains: ["rusty_key"],
-			carriable: false,
 		},
 		rusty_key: {
 			id: "rusty_key",
 			name: "rusty key",
 			synonyms: ["key", "iron key", "old key"],
 			type: "key",
-			state: {},
+			state: { carriable: true },
 			descriptions: {
 				default:
 					"A rusty iron key, cold to the touch. It looks like it might fit a heavy lock.",
 			},
-			carriable: true,
 		},
 		wooden_chest: {
 			id: "wooden_chest",
 			name: "wooden chest",
 			synonyms: ["chest", "ornate chest", "box"],
 			type: "container",
-			state: { open: false },
+			state: { open: false, carriable: false },
 			descriptions: {
 				default: "An ornate wooden chest with iron bindings. It is closed.",
 				open: "An ornate wooden chest with iron bindings. It is open and empty.",
 			},
 			contains: ["gold_amulet"],
-			carriable: false,
 		},
 		gold_amulet: {
 			id: "gold_amulet",
 			name: "gold amulet",
 			synonyms: ["amulet", "golden amulet", "necklace"],
 			type: "item",
-			state: {},
+			state: { carriable: true },
 			descriptions: {
 				default:
 					"A gleaming gold amulet on a fine chain. Strange runes are etched into its surface, matching those on a pedestal somewhere below.",
 			},
-			carriable: true,
 		},
 		stone_pedestal: {
 			id: "stone_pedestal",
 			name: "stone pedestal",
 			synonyms: ["pedestal", "altar", "runes"],
 			type: "fixture",
-			state: {},
+			state: { carriable: false },
 			descriptions: {
 				default:
 					"A waist-high stone pedestal covered in ancient runes. There is a shallow, circular depression on its top surface — just the right size for an amulet.",
 			},
-			carriable: false,
 		},
 		cellar_door: {
 			id: "cellar_door",
 			name: "heavy iron door",
 			synonyms: ["iron door", "door", "floor door", "trapdoor"],
 			type: "door",
-			state: { open: false },
+			state: { open: false, carriable: false },
 			descriptions: {
 				default: "A heavy iron door set into the floor. It is locked.",
 				open: "The heavy iron door in the floor stands open, revealing stone steps descending into darkness.",
 			},
 			requires_instrument: { unlock: "rusty_key" },
-			carriable: false,
 		},
 		gardener: {
 			id: "gardener",
 			name: "old gardener",
 			synonyms: ["gardener", "old man", "man"],
 			type: "actor",
-			state: {},
+			state: { carriable: false },
 			descriptions: {
 				default:
 					"A weathered old man in dirt-stained clothes, tending to the wildflowers with surprising care. He might have a hint about the library alcove.",
 			},
-			carriable: false,
 		},
 	},
 	player: {
