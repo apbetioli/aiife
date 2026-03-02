@@ -5,8 +5,6 @@
  * rather than introducing new magic numbers.
  */
 export const PRIORITY = {
-	/** Param resolution (e.g. direction → from/to) */
-	RESOLVE: 0,
 	/** Validation & cancellation guards */
 	GUARD: 50,
 	/** Core state mutations */

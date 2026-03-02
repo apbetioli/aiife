@@ -2,7 +2,7 @@ import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import type { EventBus } from "./event-bus";
 import { PRIORITY } from "./priorities";
-import type { EventName, GameEvent } from "./types";
+import type { EventName, GameEvent, ListenerResult } from "./types";
 
 // ─── Container ───────────────────────────────────────────────────────────────
 
@@ -12,31 +12,32 @@ import type { EventName, GameEvent } from "./types";
  */
 export function registerContainer(bus: EventBus, objectId: string): void {
 	// On open: move contained items into the room
-	bus.onObject(
-		"on",
+	bus.on(
 		"open",
 		objectId,
 		(_event, state, _world) => {
 			const container = state.objects[objectId];
-			if (!container?.contains?.length) return state;
+			if (!container?.contains?.length) return { state };
 
 			const roomId = state.player.current_room;
 			const room = state.rooms[roomId];
 
 			return {
-				...state,
-				rooms: {
-					...state.rooms,
-					[roomId]: {
-						...room,
-						contains: [...room.contains, ...container.contains],
+				state: {
+					...state,
+					rooms: {
+						...state.rooms,
+						[roomId]: {
+							...room,
+							contains: [...room.contains, ...container.contains],
+						},
 					},
-				},
-				objects: {
-					...state.objects,
-					[objectId]: {
-						...container,
-						contains: [],
+					objects: {
+						...state.objects,
+						[objectId]: {
+							...container,
+							contains: [],
+						},
 					},
 				},
 			};
@@ -45,13 +46,12 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 	);
 
 	// On close: move items back into the container
-	bus.onObject(
-		"on",
+	bus.on(
 		"close",
 		objectId,
 		(_event, state, world) => {
 			const containerDef = world.objects[objectId];
-			if (!containerDef?.contains?.length) return state;
+			if (!containerDef?.contains?.length) return { state };
 
 			const roomId = state.player.current_room;
 			const room = state.rooms[roomId];
@@ -61,24 +61,26 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 			const toReturn = originalContents.filter((id) =>
 				room.contains.includes(id),
 			);
-			if (!toReturn.length) return state;
+			if (!toReturn.length) return { state };
 
 			const container = state.objects[objectId];
 
 			return {
-				...state,
-				rooms: {
-					...state.rooms,
-					[roomId]: {
-						...room,
-						contains: room.contains.filter((id) => !toReturn.includes(id)),
+				state: {
+					...state,
+					rooms: {
+						...state.rooms,
+						[roomId]: {
+							...room,
+							contains: room.contains.filter((id) => !toReturn.includes(id)),
+						},
 					},
-				},
-				objects: {
-					...state.objects,
-					[objectId]: {
-						...container,
-						contains: [...(container.contains ?? []), ...toReturn],
+					objects: {
+						...state.objects,
+						[objectId]: {
+							...container,
+							contains: [...(container.contains ?? []), ...toReturn],
+						},
 					},
 				},
 			};
@@ -90,10 +92,9 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 // ─── Room Event ──────────────────────────────────────────────────────────────
 
 interface RoomEventOptions<N extends EventName> {
-	phase?: "before" | "on" | "after";
 	priority?: number;
 	once?: boolean;
-	effect: (event: GameEvent<N>, state: GameState, world: World) => GameState;
+	effect: (event: GameEvent<N>, state: GameState, world: World) => ListenerResult | GameState;
 }
 
 /**
@@ -105,7 +106,7 @@ export function registerRoomEvent<N extends EventName>(
 	event: N,
 	options: RoomEventOptions<N>,
 ): () => void {
-	return bus.onRoom(options.phase ?? "after", event, roomId, options.effect, {
+	return bus.on(event, roomId, options.effect, {
 		priority: options.priority ?? PRIORITY.EFFECT,
 		once: options.once ?? false,
 	});
@@ -129,15 +130,16 @@ export function registerDaemon(
 	_name: string,
 	options: DaemonOptions,
 ): () => void {
-	return bus.onGlobal(
-		"on",
+	return bus.on(
 		"tick",
-		(event, state, world) => {
-			if (!options.condition(world, state)) return state;
+		(_event, state, world) => {
+			if (!options.condition(world, state)) return { state };
 			const newState = options.effect(world, state);
 			const msg = options.feedback?.(world, newState);
-			if (msg) event.say(msg);
-			return newState;
+			return {
+				state: newState,
+				feedback: msg ? [msg] : undefined,
+			};
 		},
 		{ priority: options.priority ?? PRIORITY.DAEMON },
 	);
