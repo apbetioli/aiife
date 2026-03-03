@@ -203,7 +203,7 @@
 					{
 						"id": "old_gardener",
 						"name": "old gardener",
-						"type": "npc",
+						"type": "actor",
 						"state": {},
 						"source": "room"
 					}
@@ -246,7 +246,7 @@
 					{
 						"id": "old_gardener",
 						"name": "old gardener",
-						"type": "npc",
+						"type": "actor",
 						"state": {},
 						"source": "room"
 					}
