@@ -123,6 +123,23 @@ export function resolveObjectDescription(
 	return obj.descriptions.default;
 }
 
+/**
+ * Resolves object description with an optional preposition (e.g. behind, under, in).
+ * If preposition is given and the object has that description key, returns it.
+ * Otherwise falls back to state-driven resolveObjectDescription.
+ */
+export function resolveObjectDescriptionWithPreposition(
+	obj: GameObject,
+	objState: ObjectState,
+	preposition?: string,
+): string {
+	const key = preposition?.trim().toLowerCase();
+	if (key && obj.descriptions[key]) {
+		return obj.descriptions[key];
+	}
+	return resolveObjectDescription(obj, objState);
+}
+
 // ─── Parser Context Builder ───────────────────────────────────────────────────
 
 /**

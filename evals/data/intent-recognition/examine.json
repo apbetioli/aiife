@@ -360,5 +360,93 @@
 		"metadata": {
 			"description": "Look inside container — examine with preposition in (alias 'box' → wooden chest)"
 		}
+	},
+	{
+		"data": {
+			"prompt": "look behind the dresser",
+			"context": {
+				"room": "The Bedroom",
+				"description": "A dusty bedroom with an old dresser against the wall.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "dresser",
+						"name": "dresser",
+						"type": "fixture",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": {
+				"target": "dresser",
+				"preposition": "behind"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Look behind an object — examine with preposition behind"
+		}
+	},
+	{
+		"data": {
+			"prompt": "look under the bed",
+			"context": {
+				"room": "The Bedroom",
+				"description": "A dusty bedroom with a large bed.",
+				"available_exits": ["south"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "bed",
+						"name": "bed",
+						"type": "fixture",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "examine",
+			"expectedParams": {
+				"target": "bed",
+				"preposition": "under"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Look under an object — examine with preposition under"
+		}
 	}
 ]
