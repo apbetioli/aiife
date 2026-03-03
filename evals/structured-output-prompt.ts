@@ -52,14 +52,8 @@ export function buildGameStateSnapshotPrompt(context: ParserContext): string {
 	const blockedExits = joinOrNone(
 		context.blocked_exits.map((e) => e.direction),
 	);
-	const roomObjects = formatObjectsInScope(
-		context.in_scope_objects,
-		"room",
-	);
-	const inventory = formatObjectsInScope(
-		context.in_scope_objects,
-		"inventory",
-	);
+	const roomObjects = formatObjectsInScope(context.in_scope_objects, "room");
+	const inventory = formatObjectsInScope(context.in_scope_objects, "inventory");
 
 	return `Current state:
   - Room: ${context.room} — ${context.description}
