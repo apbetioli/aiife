@@ -8,7 +8,7 @@ import {
 	setObjectState,
 	setPlayerState,
 } from "../mutators";
-import { evaluateCondition, resolveRoomDescription } from "../parser-context";
+import { evaluateCondition, resolveObjectDescriptionWithPreposition, resolveRoomDescription } from "../parser-context";
 import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
@@ -108,10 +108,27 @@ export function registerCoreHandlers(
 
 	// ── examine ───────────────────────────────────────────────────────────
 
-	bus.on("examine", (event, state, _world) => {
-		return {
-			state: setObjectState(state, getTarget(event.params), "examined", true),
-		};
+	bus.on("examine", (event, state, world) => {
+		const targetId = getTarget(event.params);
+		if (!targetId) {
+			return { state, cancel: "Examine what?" };
+		}
+		const obj = world.objects[targetId];
+		const objState = state.objects[targetId];
+		if (!obj || !objState) {
+			return { state, cancel: "You don't see that here." };
+		}
+		if (!isInRoom(state, targetId) && !isInInventory(state, targetId)) {
+			return { state, cancel: "You don't see that here." };
+		}
+		const preposition = event.params.preposition?.trim();
+		const description = resolveObjectDescriptionWithPreposition(
+			obj,
+			objState,
+			preposition || undefined,
+		);
+		const nextState = setObjectState(state, targetId, "examined", true);
+		return { state: nextState, feedback: [description] };
 	});
 
 	// ── go ────────────────────────────────────────────────────────────────

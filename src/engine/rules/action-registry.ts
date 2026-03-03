@@ -46,7 +46,10 @@ export const coreActions = {
 			"lock(target, instrument?): Lock something. target is the id of what to lock. instrument is the optional key id.",
 	},
 	examine: {
-		schema: targetParams,
+		schema: z.object({
+			target: z.string(),
+			preposition: z.string().optional(),
+		}),
 		description:
 			"examine(target, preposition?): Look closely at an item, actor, or feature. target is the id of what to examine (from the object list). Shorthand: x. Use for 'look at X', 'look inside X' (preposition: in/inside), 'look under X', 'look behind X', 'look in X' — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'. Use 'open' only when the player explicitly says open (e.g. 'open the box').",
 	},

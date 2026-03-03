@@ -299,6 +299,42 @@ describe("executeAction", () => {
 		expect(result.state.objects.lamp.flags.examined).toBe(true);
 	});
 
+	it("examine with preposition returns preposition description as feedback", () => {
+		const base = makeTestWorld();
+		const { world, bus, state } = setup({
+			objects: {
+				...base.objects,
+				chest: {
+					...base.objects.chest,
+					descriptions: {
+						default: "A wooden chest.",
+						behind: "A small key is hidden behind the chest.",
+					},
+				},
+			},
+		});
+		const result = executeAction(bus, world, state, "examine", {
+			target: "chest",
+			preposition: "behind",
+		});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.feedback).toContain(
+			"A small key is hidden behind the chest.",
+		);
+		expect(result.state.objects.chest?.flags.examined).toBe(true);
+	});
+
+	it("examine with target only returns default object description as feedback", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "examine", {
+			target: "lamp",
+		});
+
+		expect(result.cancelled).toBe(false);
+		expect(result.feedback).toContain("A brass lamp.");
+	});
+
 	// ── tick ──────────────────────────────────────────────────────────────
 
 	it("tick increments moves", () => {
