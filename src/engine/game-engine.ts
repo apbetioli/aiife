@@ -1,4 +1,3 @@
-import { respondDescription } from "../../evals/structured-output-prompt";
 import { GameAgent } from "../agent/game-agent";
 import { createModel } from "../agent/model";
 import type { ActionResult, StructuredOutput } from "../agent/types";
@@ -34,12 +33,7 @@ export class GameEngine {
 		const { bus, registry } = createRules(world);
 		this.bus = bus;
 		this.registry = registry;
-
-		const descriptions = {
-			...registry.getDescriptions(),
-			respond: respondDescription,
-		};
-		this.agent = new GameAgent(createModel(), descriptions);
+		this.agent = new GameAgent(createModel(), registry.getDescriptions());
 		this.state = buildInitialState(world);
 	}
 

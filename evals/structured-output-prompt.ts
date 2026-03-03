@@ -1,27 +1,19 @@
-import { coreActionDescriptions } from "../src/engine/rules/action-registry";
+import { coreActions } from "../src/engine/rules/action-registry";
 import type { ParserContext, ScopedObject } from "../src/world/types";
 
-/** Description for respond — the only action not routed through the bus. */
-export const respondDescription =
-	"respond(message): Reply without changing game state. Use when input is ambiguous or incomplete (e.g. 'take' or 'drop' with no object and multiple options — ask e.g. 'What do you want to take?').";
-
-/** All action descriptions: core bus actions (with non-empty descriptions) + respond. */
-export const ACTION_DESCRIPTIONS: Record<string, string> = {
-	...coreActionDescriptions,
-	respond: respondDescription,
-};
-
-// Remove internal events with empty descriptions
-for (const [key, value] of Object.entries(ACTION_DESCRIPTIONS)) {
-	if (!value) delete ACTION_DESCRIPTIONS[key];
-}
+const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
+	Object.entries(coreActions).map(([name, action]) => [
+		name,
+		action.description,
+	]),
+);
 
 export function buildAvailableActionsPrompt(
 	actionNames: string[],
-	descriptions: Record<string, string> = ACTION_DESCRIPTIONS,
+	descriptions: Record<string, string> = ACTION_DESCRIPTIONS_MAP,
 ): string {
 	const lines = actionNames
-		.filter((name) => name in descriptions)
+		.filter((name) => name in descriptions && descriptions[name] !== "")
 		.map((name) => `- ${descriptions[name]}`);
 
 	return `Available actions:\n${lines.join("\n")}`;
@@ -41,29 +33,33 @@ function formatScopedObject(o: ScopedObject): string {
 	return `${o.name} (${tag}) [${o.id}]`;
 }
 
+function formatObjectsInScope(
+	objects: ScopedObject[],
+	source: "room" | "inventory",
+): string {
+	const filtered = objects.filter((o) => o.source === source);
+	return filtered.length > 0
+		? filtered.map(formatScopedObject).join(", ")
+		: "none";
+}
+
+function joinOrNone(items: string[]): string {
+	return items.length > 0 ? items.join(", ") : "none";
+}
+
 export function buildGameStateSnapshotPrompt(context: ParserContext): string {
-	const exits =
-		context.available_exits.length > 0
-			? context.available_exits.join(", ")
-			: "none";
-	const blockedExits =
-		context.blocked_exits.length > 0
-			? context.blocked_exits.map((e) => e.direction).join(", ")
-			: "none";
-	const roomObjects =
-		context.in_scope_objects.length > 0
-			? context.in_scope_objects
-					.filter((o) => o.source === "room")
-					.map((o) => formatScopedObject(o))
-					.join(", ")
-			: "none";
-	const inventory =
-		context.in_scope_objects.length > 0
-			? context.in_scope_objects
-					.filter((o) => o.source === "inventory")
-					.map((o) => formatScopedObject(o))
-					.join(", ")
-			: "none";
+	const exits = joinOrNone(context.available_exits);
+	const blockedExits = joinOrNone(
+		context.blocked_exits.map((e) => e.direction),
+	);
+	const roomObjects = formatObjectsInScope(
+		context.in_scope_objects,
+		"room",
+	);
+	const inventory = formatObjectsInScope(
+		context.in_scope_objects,
+		"inventory",
+	);
 
 	return `Current state:
   - Room: ${context.room} — ${context.description}

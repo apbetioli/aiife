@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { ActionRegistry, coreActionSchemas } from "./action-registry";
+import { ActionRegistry, coreActions } from "./action-registry";
 
 describe("ActionRegistry", () => {
 	it("has() returns true for core actions", () => {
@@ -26,7 +26,7 @@ describe("ActionRegistry", () => {
 	it("names() returns all core action names", () => {
 		const registry = new ActionRegistry();
 		const names = registry.names();
-		const expected = Object.keys(coreActionSchemas);
+		const expected = Object.keys(coreActions);
 		expect(names).toEqual(expected);
 	});
 
