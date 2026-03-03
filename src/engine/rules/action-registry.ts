@@ -95,19 +95,15 @@ export const coreActions = {
 		schema: z.object({}),
 		description: "quit(): End the game. Shorthand: q.",
 	},
+	respond: {
+		schema: z.object({ message: z.string() }),
+		description:
+			"respond(message): Reply without changing game state. Use when input is ambiguous or incomplete (e.g. 'take' or 'drop' with no object and multiple options — ask e.g. 'What do you want to take?').",
+	},
 	tick: { schema: z.object({}), description: "" },
 	"game:start": { schema: z.object({}), description: "" },
 	"game:end": { schema: z.object({ victory: z.boolean() }), description: "" },
 } as const satisfies Record<string, { schema: z.ZodType; description: string }>;
-
-// Derived for backward compatibility and typing
-export const coreActionSchemas = Object.fromEntries(
-	Object.entries(coreActions).map(([k, v]) => [k, v.schema]),
-) as { [K in keyof typeof coreActions]: (typeof coreActions)[K]["schema"] };
-
-export const coreActionDescriptions = Object.fromEntries(
-	Object.entries(coreActions).map(([k, v]) => [k, v.description]),
-) as Record<keyof typeof coreActions, string>;
 
 // ─── Derived Types ───────────────────────────────────────────────────────────
 
@@ -118,6 +114,12 @@ export type CoreEventParamsMap = {
 export type CoreEventName = keyof CoreEventParamsMap;
 
 // ─── ActionRegistry ──────────────────────────────────────────────────────────
+
+function unknownActionError(actionName: string): z.ZodError {
+	return new z.ZodError([
+		{ code: "custom", message: `Unknown action: ${actionName}`, path: [] },
+	]);
+}
 
 interface ActionEntry {
 	schema: z.ZodType;
@@ -164,22 +166,15 @@ export class ActionRegistry {
 		| { success: true; data: Record<string, unknown> }
 		| { success: false; error: z.ZodError } {
 		const entry = this.actions.get(name);
-		if (!entry) {
-			return {
-				success: false,
-				error: new z.ZodError([
-					{ code: "custom", message: `Unknown action: ${name}`, path: [] },
-				]),
-			};
-		}
+		if (!entry) return { success: false, error: unknownActionError(name) };
 		return entry.schema.safeParse(params);
 	}
 
 	getDescriptions(): Record<string, string> {
-		const result: Record<string, string> = {};
-		for (const [name, entry] of this.actions) {
-			if (entry.description) result[name] = entry.description;
-		}
-		return result;
+		return Object.fromEntries(
+			[...this.actions]
+				.filter(([, entry]) => entry.description)
+				.map(([name, entry]) => [name, entry.description]),
+		);
 	}
 }
