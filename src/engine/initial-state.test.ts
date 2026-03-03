@@ -295,8 +295,6 @@ describe("buildInitialState", () => {
 		it("builds valid initial state from world", () => {
 			const state = buildInitialState(theGreatHall);
 
-			console.log(state);
-
 			expect(state.world_id).toBe("the_great_hall");
 			expect(state.version).toBe("1.0.0");
 			expect(state.turn).toBe(0);
