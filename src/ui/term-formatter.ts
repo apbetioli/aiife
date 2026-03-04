@@ -21,10 +21,10 @@ export class TerminalFormatter {
 		return text;
 	}
 
-	formatWelcome(text: string): string {
+	formatWelcome(text: string, color: string = CYAN): string {
 		const formatted = text.replace(/\*\*(.+?)\*\*/g, `${BOLD}$1${RESET}`);
-		return `\n${CYAN}${"═".repeat(
+		return `\n${color}${"═".repeat(
 			50,
-		)}${RESET}\n${formatted}\n${CYAN}${"═".repeat(50)}${RESET}\n`;
+		)}${RESET}\n${formatted}\n${color}${"═".repeat(50)}${RESET}\n`;
 	}
 }
