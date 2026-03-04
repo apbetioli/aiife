@@ -54,22 +54,42 @@ export class GameAgent {
 	}
 
 	/**
-	 * Used by the game engine to narrate the result of an action, which can be in the user's language.
+	 * Used by the game engine to narrate the result of an action in the player's language.
 	 *
 	 * @param result - The result of an action.
 	 * @returns The narrated result.
 	 */
 	async narrateResult(result: ActionResult): Promise<ActionResult> {
-		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nCurrent game output to narrate:\n${result.message}`;
-
+		const prompt = buildNarrationPrompt(result, this.messages);
 		const narrateResponse = await generateText({
 			model: this.model,
 			prompt,
 		});
-
 		const text = narrateResponse.text || result.message;
 		this.messages.push({ role: "assistant", content: text });
-
 		return { ...result, message: text };
 	}
+}
+
+function getLastUserContent(messages: ModelMessage[]): string | undefined {
+	const lastUser = [...messages].reverse().find((m) => m.role === "user");
+	return lastUser && typeof lastUser.content === "string"
+		? lastUser.content
+		: undefined;
+}
+
+function buildNarrationPrompt(
+	result: ActionResult,
+	messages: ModelMessage[],
+): string {
+	const isGeneric = !result.message.trim() || result.message.trim() === "Done.";
+	const actionHint =
+		isGeneric && result.action
+			? `\nAction performed (use for confirmation only): ${result.action}`
+			: "";
+	const lastInput = getLastUserContent(messages);
+	const languageHint = lastInput
+		? `\nPlayer's last input (respond in this language): ${lastInput}`
+		: "";
+	return `${NARRATION_SYSTEM_PROMPT}\n\nCurrent game output to narrate:\n${result.message}${actionHint}${languageHint}`;
 }

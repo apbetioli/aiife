@@ -12,7 +12,7 @@ import { evaluateCondition, resolveObjectDescriptionWithPreposition, resolveRoom
 import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
-import { getInstrument, getTarget } from "./param-helpers";
+import { getInstrument, getObjectIds, getTarget } from "./param-helpers";
 
 export function registerCoreHandlers(
 	bus: EventBus,
@@ -21,9 +21,7 @@ export function registerCoreHandlers(
 	// ── take ──────────────────────────────────────────────────────────────
 
 	bus.on("take", (event, state, _world) => {
-		const ids = (event.params.objects ?? [])
-			.map((s) => String(s).trim())
-			.filter(Boolean);
+		const ids = getObjectIds(event.params);
 		const toTake = ids.filter(
 			(id) =>
 				isInRoom(state, id) &&
@@ -46,9 +44,7 @@ export function registerCoreHandlers(
 	// ── drop ──────────────────────────────────────────────────────────────
 
 	bus.on("drop", (event, state, _world) => {
-		const ids = (event.params.objects ?? [])
-			.map((s) => String(s).trim())
-			.filter(Boolean);
+		const ids = getObjectIds(event.params);
 		const toDrop = ids.filter((id) => isInInventory(state, id));
 		if (toDrop.length === 0) {
 			if (ids.length === 0) return { state, cancel: "Drop what?" };
@@ -115,10 +111,11 @@ export function registerCoreHandlers(
 		}
 		const obj = world.objects[targetId];
 		const objState = state.objects[targetId];
-		if (!obj || !objState) {
-			return { state, cancel: "You don't see that here." };
-		}
-		if (!isInRoom(state, targetId) && !isInInventory(state, targetId)) {
+		const notHere =
+			!obj ||
+			!objState ||
+			(!isInRoom(state, targetId) && !isInInventory(state, targetId));
+		if (notHere) {
 			return { state, cancel: "You don't see that here." };
 		}
 		const preposition = event.params.preposition?.trim();
@@ -142,11 +139,11 @@ export function registerCoreHandlers(
 
 		const from = state.player.current_room;
 		const to = exit.leads_to;
-		let s = movePlayer(state, to);
-		s = ensureVisited(s, to);
-		s = executeAction(bus, world, s, "exit", { room: from }).state;
-		s = executeAction(bus, world, s, "enter", { room: to }).state;
-		return { state: s };
+		let nextState = movePlayer(state, to);
+		nextState = ensureVisited(nextState, to);
+		nextState = executeAction(bus, world, nextState, "exit", { room: from }).state;
+		nextState = executeAction(bus, world, nextState, "enter", { room: to }).state;
+		return { state: nextState };
 	});
 
 	// ── tick ──────────────────────────────────────────────────────────────
