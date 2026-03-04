@@ -14,13 +14,17 @@ import {
 } from "./rules";
 import type { GameState } from "./types";
 
+const INTENT_PARAM_KEYS_TO_SKIP = new Set(["action", "message"]);
+
 function toEventParams(intent: StructuredOutput): Record<string, unknown> {
-	const params: Record<string, unknown> = {};
-	for (const [key, value] of Object.entries(intent)) {
-		if (key === "action" || key === "message") continue;
-		if (value !== null && value !== undefined) params[key] = value;
-	}
-	return params;
+	return Object.fromEntries(
+		Object.entries(intent).filter(
+			([key, value]) =>
+				!INTENT_PARAM_KEYS_TO_SKIP.has(key) &&
+				value !== null &&
+				value !== undefined,
+		),
+	);
 }
 
 export class GameEngine {
@@ -97,6 +101,8 @@ export class GameEngine {
 			result.feedback.length > 0
 				? result.feedback.join(" ")
 				: (intent.message ?? "Done.");
+
+		DEBUG(`Message: ${message}`);
 
 		return {
 			message,

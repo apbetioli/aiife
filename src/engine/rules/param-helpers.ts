@@ -34,6 +34,13 @@ export function resolveParams(params: IntentParams): ResolvedParams {
 	return { target, instrument, indirect };
 }
 
+/** Shorthand — list of object IDs from intent params (trimmed, non-empty). */
+export function getObjectIds(params: IntentParams): string[] {
+	return (params.objects ?? [])
+		.map((s) => String(s).trim())
+		.filter(Boolean);
+}
+
 /** Shorthand — most listeners only need the target. */
 export function getTarget(params: IntentParams): string {
 	return resolveParams(params).target;

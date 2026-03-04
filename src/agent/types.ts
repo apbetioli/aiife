@@ -5,6 +5,8 @@ export interface ActionResult {
 	success: boolean;
 	gameOver?: boolean;
 	isVictory?: boolean;
+	/** Action that was performed (e.g. "take", "drop"). Used by narrator for fallback when message is generic. */
+	action?: string;
 }
 export interface ParsePattern {
 	pattern: RegExp;
