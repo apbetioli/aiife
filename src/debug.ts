@@ -1,17 +1,17 @@
+import { YELLOW } from "./ui/ansi";
 import { TerminalFormatter } from "./ui/term-formatter";
 
 export function DEBUG(...args: unknown[]) {
 	const narrator = new TerminalFormatter();
 
 	const format = (text: string) => {
-		return narrator.format({
-			message: text,
-			success: false,
-			gameOver: true,
-		});
+		return narrator.formatWelcome(
+			narrator.format({ message: text, success: false, gameOver: true }),
+			YELLOW,
+		);
 	};
 
 	if (process.env.DEBUG) {
-		console.debug(format(`[DEBUG] ${(args ?? []).join(" ")}`));
+		console.error(format(`[DEBUG] ${(args ?? []).join(" ")}`));
 	}
 }
