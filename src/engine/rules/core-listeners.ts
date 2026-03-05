@@ -279,6 +279,50 @@ export function registerCoreHandlers(
 		return { state, feedback: [lines.join("\n")] };
 	});
 
+	// ── talk ──────────────────────────────────────────────────────────────
+
+	bus.on("talk", (event, state, world) => {
+		const target = getTarget(event.params);
+		if (!target) return { state, cancel: "Talk to whom?" };
+		const obj = world.objects[target];
+		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target)))
+			return { state, cancel: "You don't see anyone by that name here." };
+		return { state, cancel: `${obj.name} doesn't seem interested in talking.` };
+	});
+
+	// ── use ───────────────────────────────────────────────────────────────
+
+	bus.on("use", (event, state, world) => {
+		const target = getTarget(event.params);
+		if (!target) return { state, cancel: "Use what?" };
+		const obj = world.objects[target];
+		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target)))
+			return { state, cancel: "You don't see that here." };
+		return { state, cancel: `You can't figure out how to use the ${obj.name}.` };
+	});
+
+	// ── move ──────────────────────────────────────────────────────────────
+
+	bus.on("move", (event, state, world) => {
+		const target = getTarget(event.params);
+		if (!target) return { state, cancel: "Move what?" };
+		const obj = world.objects[target];
+		if (!obj || !isInRoom(state, target))
+			return { state, cancel: "You don't see that here." };
+		return { state, cancel: `You can't move the ${obj.name}.` };
+	});
+
+	// ── attack ────────────────────────────────────────────────────────────
+
+	bus.on("attack", (event, state, world) => {
+		const target = getTarget(event.params);
+		if (!target) return { state, cancel: "Attack what?" };
+		const obj = world.objects[target];
+		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target)))
+			return { state, cancel: "You don't see that here." };
+		return { state, cancel: `Attacking the ${obj.name} has no effect.` };
+	});
+
 	// ── quit ──────────────────────────────────────────────────────────────
 
 	bus.on("quit", (_event, state, _world) => {
