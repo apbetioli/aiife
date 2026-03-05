@@ -2,7 +2,7 @@ import type { ModelMessage } from "ai";
 import { Box, useApp } from "ink";
 import { useCallback, useMemo, useState } from "react";
 import { GameAgent } from "../agent/game-agent.ts";
-import { createModel } from "../agent/model.ts";
+import { createNarratorModel, createParserModel } from "../agent/model.ts";
 import { GameEngine } from "../engine/game-engine.ts";
 import type { TokenUsageInfo, ToolApprovalRequest } from "../types.ts";
 import type { World } from "../world/types.ts";
@@ -27,7 +27,7 @@ export function App({ world }: AppProps) {
 	const { agent, introMessage } = useMemo(() => {
 		const e = new GameEngine(world);
 		const intro = e.start();
-		const a = new GameAgent(createModel(), e);
+		const a = new GameAgent(createParserModel(), e, createNarratorModel());
 		return { agent: a, introMessage: intro.message };
 	}, [world]);
 	const [messages, setMessages] = useState<Message[]>([

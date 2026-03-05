@@ -24,6 +24,7 @@ export class GameAgent {
 	constructor(
 		private model: LanguageModel,
 		private engine: GameEngine,
+		private narratorModel: LanguageModel = model,
 	) {}
 
 	async run(
@@ -82,7 +83,7 @@ export class GameAgent {
 	): Promise<string> {
 		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
 
-		const stream = streamText({ model: this.model, prompt });
+		const stream = streamText({ model: this.narratorModel, prompt });
 
 		let text = "";
 		try {
