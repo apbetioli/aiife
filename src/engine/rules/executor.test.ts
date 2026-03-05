@@ -360,7 +360,7 @@ describe("executeAction", () => {
 		expect(result.feedback.length).toBeGreaterThan(0);
 		const text = result.feedback.join(" ");
 		expect(text).toContain("Room A");
-		expect(text).toContain("You can see:");
+		expect(text).toContain("There is a");
 		expect(text).toContain("Exits:");
 	});
 
