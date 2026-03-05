@@ -90,27 +90,26 @@ export class GameAgent {
 		playerInput: string,
 		callbacks: AgentCallbacks,
 	): Promise<string> {
-		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
-
-		const stream = streamText({
-			model: this.narratorModel,
-			prompt,
-			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
-		});
-
-		let text = "";
+		const fallback = result.message || "Done.";
 		try {
+			const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
+			const stream = streamText({
+				model: this.narratorModel,
+				prompt,
+				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
+			});
+
+			let text = "";
 			for await (const chunk of stream.fullStream) {
 				if (chunk.type === "text-delta") {
 					text += chunk.text;
 					callbacks.onToken(chunk.text);
 				}
 			}
+			return text || fallback;
 		} catch {
 			// Narrator failed (timeout, connection, etc.) — use game output as-is
-			text = result.message;
+			return fallback;
 		}
-
-		return text || result.message || "Done.";
 	}
 }
