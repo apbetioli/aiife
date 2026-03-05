@@ -15,6 +15,11 @@ import { StructuredOutputSchema } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 
+/** Returns true if input contains non-ASCII characters (likely non-English). */
+function needsTranslation(input: string): boolean {
+	return !/^[\x20-\x7E]*$/.test(input);
+}
+
 export class GameAgent {
 	constructor(
 		private model: LanguageModel,
@@ -55,65 +60,44 @@ export class GameAgent {
 		const result = this.engine.runAction(intent);
 		callbacks.onToolCallEnd(action, result.message);
 
-		let uiCurrentText = "";
-		let streamError: Error | null = null;
+		let outputText: string;
 
-		const narrateResult = streamText({
-			model: this.model,
-			prompt: buildNarrationPrompt(result, messages),
-		});
+		if (needsTranslation(input)) {
+			outputText = await this.narrate(result, input, callbacks);
+		} else {
+			outputText = result.message || "Done.";
+			callbacks.onToken(outputText);
+		}
 
+		callbacks.onComplete(outputText);
+		messages.push({ role: "assistant", content: outputText });
+
+		return messages;
+	}
+
+	private async narrate(
+		result: ActionResult,
+		playerInput: string,
+		callbacks: AgentCallbacks,
+	): Promise<string> {
+		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
+
+		const stream = streamText({ model: this.model, prompt });
+
+		let text = "";
 		try {
-			for await (const chunk of narrateResult.fullStream) {
+			for await (const chunk of stream.fullStream) {
 				if (chunk.type === "text-delta") {
-					uiCurrentText += chunk.text;
+					text += chunk.text;
 					callbacks.onToken(chunk.text);
 				}
 			}
 		} catch (error: unknown) {
-			streamError = error as Error;
-			if (
-				!uiCurrentText &&
-				!streamError.message.includes("No output generated")
-			) {
-				throw streamError;
+			if (!text && !(error as Error).message?.includes("No output generated")) {
+				throw error;
 			}
 		}
 
-		if (streamError && !uiCurrentText) {
-			uiCurrentText +=
-				"Sorry about that, I'm having trouble with my memory. Let's try again.";
-			callbacks.onToken(uiCurrentText);
-		}
-
-		const responseMessage = await narrateResult.response;
-		messages.push(...responseMessage.messages);
-
-		callbacks.onComplete(uiCurrentText);
-
-		return messages;
+		return text || result.message || "Done.";
 	}
-}
-
-function getLastUserContent(messages: ModelMessage[]): string | undefined {
-	const lastUser = [...messages].reverse().find((m) => m.role === "user");
-	return lastUser && typeof lastUser.content === "string"
-		? lastUser.content
-		: undefined;
-}
-
-function buildNarrationPrompt(
-	result: ActionResult,
-	messages: ModelMessage[],
-): string {
-	const isGeneric = !result.message.trim() || result.message.trim() === "Done.";
-	const actionHint =
-		isGeneric && result.action
-			? `\nAction performed (use for confirmation only): ${result.action}`
-			: "";
-	const lastInput = getLastUserContent(messages);
-	const languageHint = lastInput
-		? `\nPlayer's last input (respond in this language): ${lastInput}`
-		: "";
-	return `${NARRATION_SYSTEM_PROMPT}\n\nCurrent game output to narrate:\n${result.message}${actionHint}${languageHint}`;
 }
