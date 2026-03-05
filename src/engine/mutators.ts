@@ -11,6 +11,21 @@ export function isInInventory(state: GameState, objectId: string): boolean {
 	return state.player.inventory.includes(objectId);
 }
 
+/** Returns the container ID if objectId is inside an open container in the current room. */
+export function findOpenContainerInRoom(
+	state: GameState,
+	objectId: string,
+): string | undefined {
+	const room = state.rooms[state.player.current_room];
+	for (const cid of room.contains) {
+		const container = state.objects[cid];
+		if (container?.flags.open && container.contains?.includes(objectId)) {
+			return cid;
+		}
+	}
+	return undefined;
+}
+
 // ─── Move Functions ──────────────────────────────────────────────────────────
 
 export function moveObjectFromRoomToInventory(
