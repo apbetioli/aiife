@@ -11,11 +11,11 @@ interface ModelConfig {
 
 function resolveConfig(prefix: string): ModelConfig {
 	return {
-		provider: process.env[`${prefix}PROVIDER`] ?? "anthropic",
+		provider: process.env[`${prefix}_PROVIDER`] ?? "anthropic",
 		anthropicModel:
-			process.env[`${prefix}ANTHROPIC_MODEL`] ?? "claude-haiku-4-5-20251001",
-		openaiModel: process.env[`${prefix}OPENAI_MODEL`] ?? "gpt-4o-mini",
-		ollamaModel: process.env[`${prefix}OLLAMA_MODEL`] ?? "llama3.1",
+			process.env[`${prefix}_ANTHROPIC_MODEL`] ?? "claude-haiku-4-5-20251001",
+		openaiModel: process.env[`${prefix}_OPENAI_MODEL`] ?? "gpt-4o-mini",
+		ollamaModel: process.env[`${prefix}_OLLAMA_MODEL`] ?? "llama3.1",
 	};
 }
 
@@ -55,10 +55,10 @@ function getModelId(config: ModelConfig): string {
 	}
 }
 
-/** Parser model — fast/cheap, used for intent recognition. Env: LLM_PROVIDER, ANTHROPIC_MODEL, etc. */
+/** Parser model — fast/cheap, used for intent recognition. Env: INTENT_PROVIDER, ANTHROPIC_MODEL, etc. */
 export function createParserModel(): LanguageModel {
-	return createModelFromConfig(resolveConfig(""));
-}
+	return createModelFromConfig(resolveConfig("INTENT"));
+}	
 
 /** Narrator model — used for translation only. Env: NARRATOR_PROVIDER, NARRATOR_ANTHROPIC_MODEL, etc. Falls back to parser model config. */
 export function createNarratorModel(): LanguageModel {
@@ -75,4 +75,19 @@ export function createEvalModel(): LanguageModel {
 
 export function getEvalModelId(): string {
 	return getModelId(resolveConfig("EVAL_"));
+}
+
+/** Human-readable summary of which models are configured. For DEBUG logging. */
+export function getModelsDebugInfo(): string {
+	const parser = resolveConfig("INTENT");
+	const hasNarrator = Boolean(process.env.NARRATOR_PROVIDER);
+	const narrator = hasNarrator ? resolveConfig("NARRATOR") : parser;
+	const hasEval = Boolean(process.env.EVAL_PROVIDER);
+	const evalCfg = hasEval ? resolveConfig("EVAL") : null;
+	const lines = [
+		`parser:  ${parser.provider} / ${getModelId(parser)}`,
+		`narrator: ${hasNarrator ? `${narrator.provider} / ${getModelId(narrator)}` : "same as parser"}`,
+	];
+	if (evalCfg) lines.push(`eval:    ${evalCfg.provider} / ${getModelId(evalCfg)}`);
+	return lines.join("\n");
 }
