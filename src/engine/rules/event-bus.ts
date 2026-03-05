@@ -107,7 +107,8 @@ export class EventBus {
 		for (const priority of priorities) {
 			if (cancelled) break;
 
-			const group = byPriority.get(priority)!;
+			const group = byPriority.get(priority);
+			if (!group) continue;
 
 			// Find scoped listener that matches current context
 			const scopedMatch = group.find(

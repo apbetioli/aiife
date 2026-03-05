@@ -8,7 +8,11 @@ import {
 	setObjectState,
 	setPlayerState,
 } from "../mutators";
-import { evaluateCondition, resolveObjectDescriptionWithPreposition, resolveRoomDescription } from "../parser-context";
+import {
+	evaluateCondition,
+	resolveObjectDescriptionWithPreposition,
+	resolveRoomDescription,
+} from "../parser-context";
 import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
@@ -141,8 +145,12 @@ export function registerCoreHandlers(
 		const to = exit.leads_to;
 		let nextState = movePlayer(state, to);
 		nextState = ensureVisited(nextState, to);
-		nextState = executeAction(bus, world, nextState, "exit", { room: from }).state;
-		nextState = executeAction(bus, world, nextState, "enter", { room: to }).state;
+		nextState = executeAction(bus, world, nextState, "exit", {
+			room: from,
+		}).state;
+		nextState = executeAction(bus, world, nextState, "enter", {
+			room: to,
+		}).state;
 		return { state: nextState };
 	});
 
