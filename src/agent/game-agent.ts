@@ -3,71 +3,95 @@ import {
 	type LanguageModel,
 	type ModelMessage,
 	Output,
+	streamText,
 } from "ai";
 import { buildStructuredOutputSystemPrompt } from "../../evals/structured-output-prompt";
-import { DEBUG } from "../debug";
-import type { ParserContext } from "../world/types";
+import type { GameEngine } from "../engine/game-engine";
+import type { AgentCallbacks } from "../types";
 import { NARRATION_SYSTEM_PROMPT } from "./prompt";
-import type { ActionResult, StructuredOutput } from "./types";
+import { filterCompatibleMessages } from "./system/filterMessages";
+import type { ActionResult } from "./types";
 import { StructuredOutputSchema } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 
 export class GameAgent {
-	private messages: ModelMessage[] = [];
-
 	constructor(
 		private model: LanguageModel,
-		private descriptions: Record<string, string>,
+		private engine: GameEngine,
 	) {}
 
-	/**
-	 * Used by the game engine to process the player's input and return the structured output of the intent.
-	 *
-	 * @param prompt - The player's input.
-	 * @param context - The current game state.
-	 * @returns The structured output of the intent.
-	 */
-	async processIntent(
-		prompt: string,
-		context: ParserContext,
-	): Promise<StructuredOutput> {
-		this.messages.push({ role: "user", content: prompt });
+	async run(
+		input: string,
+		conversationHistory: ModelMessage[],
+		callbacks: AgentCallbacks,
+	): Promise<ModelMessage[]> {
+		const workingHistory = filterCompatibleMessages(conversationHistory);
 
 		const system = buildStructuredOutputSystemPrompt(
-			context,
-			Object.keys(this.descriptions),
-			this.descriptions,
+			this.engine.getParserContext(),
+			Object.keys(this.engine.getDescriptions()),
+			this.engine.getDescriptions(),
 		);
-		DEBUG(`System: ${system}`);
 
-		const result = await generateText({
-			model: this.model,
-			output: Output.object({ schema: StructuredOutputSchema }),
-			system,
+		const messages: ModelMessage[] = [
+			{ role: "system", content: system },
 			// Gives context about recent interactions for solving ambiguous inputs in follow up answers.
 			// E.g. "TAKE" → "What do you want to take?" → "lantern" -> "Taken."
-			messages: this.messages.slice(-INTENT_HISTORY_LIMIT),
-		});
+			...workingHistory.slice(-INTENT_HISTORY_LIMIT),
+			{ role: "user", content: input },
+		];
 
-		return result.output;
-	}
-
-	/**
-	 * Used by the game engine to narrate the result of an action in the player's language.
-	 *
-	 * @param result - The result of an action.
-	 * @returns The narrated result.
-	 */
-	async narrateResult(result: ActionResult): Promise<ActionResult> {
-		const prompt = buildNarrationPrompt(result, this.messages);
-		const narrateResponse = await generateText({
+		const intentResult = await generateText({
 			model: this.model,
-			prompt,
+			output: Output.object({ schema: StructuredOutputSchema }),
+			messages,
 		});
-		const text = narrateResponse.text || result.message;
-		this.messages.push({ role: "assistant", content: text });
-		return { ...result, message: text };
+
+		const intent = intentResult.output;
+		const { action, ...params } = intent;
+		callbacks.onToolCallStart(action, params);
+
+		const result = this.engine.runAction(intent);
+		callbacks.onToolCallEnd(action, result.message);
+
+		let uiCurrentText = "";
+		let streamError: Error | null = null;
+
+		const narrateResult = streamText({
+			model: this.model,
+			prompt: buildNarrationPrompt(result, messages),
+		});
+
+		try {
+			for await (const chunk of narrateResult.fullStream) {
+				if (chunk.type === "text-delta") {
+					uiCurrentText += chunk.text;
+					callbacks.onToken(chunk.text);
+				}
+			}
+		} catch (error: unknown) {
+			streamError = error as Error;
+			if (
+				!uiCurrentText &&
+				!streamError.message.includes("No output generated")
+			) {
+				throw streamError;
+			}
+		}
+
+		if (streamError && !uiCurrentText) {
+			uiCurrentText +=
+				"Sorry about that, I'm having trouble with my memory. Let's try again.";
+			callbacks.onToken(uiCurrentText);
+		}
+
+		const responseMessage = await narrateResult.response;
+		messages.push(...responseMessage.messages);
+
+		callbacks.onComplete(uiCurrentText);
+
+		return messages;
 	}
 }
 

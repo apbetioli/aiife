@@ -12,7 +12,10 @@
 		"resolveJsonModule": true,
 		"declaration": true,
 		"declarationMap": true,
-		"sourceMap": true
+		"sourceMap": true,
+		"jsx": "react-jsx",
+		"noEmit": true,
+		"allowImportingTsExtensions": true
 	},
 	"include": ["src/**/*", "evals/**/*"],
 	"exclude": ["node_modules", "dist"]

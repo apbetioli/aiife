@@ -1,8 +1,5 @@
-import { GameAgent } from "../agent/game-agent";
-import { createModel } from "../agent/model";
 import type { ActionResult, StructuredOutput } from "../agent/types";
-import { DEBUG } from "../debug";
-import type { World } from "../world/types";
+import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
 import {
@@ -29,7 +26,6 @@ function toEventParams(intent: StructuredOutput): Record<string, unknown> {
 
 export class GameEngine {
 	private state: GameState;
-	private agent: GameAgent;
 	private bus: EventBus;
 	private registry: ActionRegistry;
 
@@ -37,29 +33,18 @@ export class GameEngine {
 		const { bus, registry } = createRules(world);
 		this.bus = bus;
 		this.registry = registry;
-		this.agent = new GameAgent(createModel(), registry.getDescriptions());
 		this.state = buildInitialState(world);
 	}
 
-	async processInput(input: string): Promise<ActionResult> {
-		const trimmed = input.trim();
-		if (!trimmed) {
-			const result = { message: "Say something!", success: false };
-			return this.agent.narrateResult(result);
-		}
-
-		const context = buildParserContext(this.world, this.state);
-
-		const intent = await this.agent.processIntent(trimmed, context);
-
-		const result = this.runAction(intent);
-
-		return this.agent.narrateResult(result);
+	getParserContext(): ParserContext {
+		return buildParserContext(this.world, this.state);
 	}
 
-	private runAction(intent: StructuredOutput): ActionResult {
-		DEBUG(`Action: ${intent.action} ${JSON.stringify(intent)}`);
+	getDescriptions(): Record<string, string> {
+		return this.registry.getDescriptions();
+	}
 
+	runAction(intent: StructuredOutput): ActionResult {
 		// Conversational response — no game action
 		if (intent.action === "respond") {
 			return {
@@ -101,8 +86,6 @@ export class GameEngine {
 			result.feedback.length > 0
 				? result.feedback.join(" ")
 				: (intent.message ?? "Done.");
-
-		DEBUG(`Message: ${message}`);
 
 		return {
 			message,

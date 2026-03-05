@@ -36,9 +36,7 @@ export function resolveParams(params: IntentParams): ResolvedParams {
 
 /** Shorthand — list of object IDs from intent params (trimmed, non-empty). */
 export function getObjectIds(params: IntentParams): string[] {
-	return (params.objects ?? [])
-		.map((s) => String(s).trim())
-		.filter(Boolean);
+	return (params.objects ?? []).map((s) => String(s).trim()).filter(Boolean);
 }
 
 /** Shorthand — most listeners only need the target. */
