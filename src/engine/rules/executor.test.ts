@@ -148,7 +148,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		// chest starts closed and not locked
 		const result = executeAction(bus, world, state, "open", {
-			target: "chest",
+			objects: ["chest"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -159,7 +159,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		// door starts locked
 		const result = executeAction(bus, world, state, "open", {
-			target: "door",
+			objects: ["door"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -173,7 +173,7 @@ describe("executeAction", () => {
 		state = setObjectState(state, "chest", "open", true);
 
 		const result = executeAction(bus, world, state, "open", {
-			target: "chest",
+			objects: ["chest"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -189,7 +189,7 @@ describe("executeAction", () => {
 		state = setObjectState(state, "chest", "open", true);
 
 		const result = executeAction(bus, world, state, "close", {
-			target: "chest",
+			objects: ["chest"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -200,7 +200,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		// chest starts closed (open: false)
 		const result = executeAction(bus, world, state, "close", {
-			target: "chest",
+			objects: ["chest"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -221,8 +221,7 @@ describe("executeAction", () => {
 		});
 
 		const result = executeAction(bus, world, state, "unlock", {
-			target: "door",
-			instrument: "sword",
+			objects: ["door", "sword"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -241,8 +240,7 @@ describe("executeAction", () => {
 		});
 
 		const result = executeAction(bus, world, state, "unlock", {
-			target: "door",
-			instrument: "sword",
+			objects: ["door", "sword"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -253,7 +251,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 
 		const result = executeAction(bus, world, state, "unlock", {
-			target: "door",
+			objects: ["door"],
 		});
 
 		expect(result.cancelled).toBe(true);
@@ -292,7 +290,7 @@ describe("executeAction", () => {
 	it("examine sets examined=true", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "examine", {
-			target: "lamp",
+			objects: ["lamp"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -314,7 +312,7 @@ describe("executeAction", () => {
 			},
 		});
 		const result = executeAction(bus, world, state, "examine", {
-			target: "chest",
+			objects: ["chest"],
 			preposition: "behind",
 		});
 
@@ -328,7 +326,7 @@ describe("executeAction", () => {
 	it("examine with target only returns default object description as feedback", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "examine", {
-			target: "lamp",
+			objects: ["lamp"],
 		});
 
 		expect(result.cancelled).toBe(false);

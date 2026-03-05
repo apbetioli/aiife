@@ -1,4 +1,7 @@
-import z from "zod";
+export {
+	type StructuredOutput,
+	StructuredOutputSchema,
+} from "../engine/rules/action-registry";
 
 export interface ActionResult {
 	message: string;
@@ -23,18 +26,6 @@ export interface GameAction {
 	action: string;
 	params: Record<string, unknown>;
 }
-
-export const StructuredOutputSchema = z.object({
-	action: z.string(),
-	direction: z.string().nullable(),
-	objects: z.array(z.string()).nullable(),
-	target: z.string().nullable(),
-	preposition: z.string().nullable(),
-	actor: z.string().nullable(),
-	message: z.string().nullable(),
-});
-
-export type StructuredOutput = z.infer<typeof StructuredOutputSchema>;
 
 export type StructuredOutputResult = {
 	action: string;

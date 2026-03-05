@@ -34,7 +34,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "old_book"
+				"objects": ["old_book"]
 			},
 			"category": "golden"
 		},
@@ -84,7 +84,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "alcove"
+				"objects": ["alcove"]
 			},
 			"category": "golden"
 		},
@@ -134,7 +134,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "stone_pedestal"
+				"objects": ["stone_pedestal"]
 			},
 			"category": "golden"
 		},
@@ -177,7 +177,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "old_book"
+				"objects": ["old_book"]
 			},
 			"category": "golden"
 		},
@@ -220,7 +220,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "oriental_rug",
+				"objects": ["oriental_rug"],
 				"preposition": "under"
 			},
 			"category": "golden"
@@ -264,7 +264,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "dusty_painting",
+				"objects": ["dusty_painting"],
 				"preposition": "behind"
 			},
 			"category": "golden"
@@ -308,7 +308,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "tall_mirror",
+				"objects": ["tall_mirror"],
 				"preposition": "in"
 			},
 			"category": "golden"
@@ -352,13 +352,13 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "wooden_chest",
-				"preposition": "in"
+				"objects": ["wooden_chest"],
+				"preposition": "inside"
 			},
 			"category": "golden"
 		},
 		"metadata": {
-			"description": "Look inside container — examine with preposition in (alias 'box' → wooden chest)"
+			"description": "Look inside container — examine with preposition inside (alias 'box' → wooden chest)"
 		}
 	},
 	{
@@ -396,7 +396,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "dresser",
+				"objects": ["dresser"],
 				"preposition": "behind"
 			},
 			"category": "golden"
@@ -440,7 +440,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"target": "bed",
+				"objects": ["bed"],
 				"preposition": "under"
 			},
 			"category": "golden"
