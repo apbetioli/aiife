@@ -220,7 +220,7 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = setObjectState(state, "door", "locked", false);
 
-			expect(next.objects.door.flags.locked).toBe(false);
+			expect(next.objects.door.state.locked).toBe(false);
 		});
 
 		it("throws if object does not exist", () => {
@@ -234,8 +234,8 @@ describe("mutators", () => {
 			const state = deepFreeze(freshState());
 			const next = setObjectState(state, "door", "locked", false);
 
-			expect(state.objects.door.flags.locked).toBe(true);
-			expect(next.objects.door.flags.locked).toBe(false);
+			expect(state.objects.door.state.locked).toBe(true);
+			expect(next.objects.door.state.locked).toBe(false);
 		});
 	});
 
@@ -244,7 +244,7 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = setRoomState(state, "room_a", "dark", true);
 
-			expect(next.rooms.room_a.flags.dark).toBe(true);
+			expect(next.rooms.room_a.state.dark).toBe(true);
 		});
 
 		it("throws if room does not exist", () => {
@@ -258,8 +258,8 @@ describe("mutators", () => {
 			const state = deepFreeze(freshState());
 			const next = setRoomState(state, "room_a", "dark", true);
 
-			expect(state.rooms.room_a.flags.dark).toBeUndefined();
-			expect(next.rooms.room_a.flags.dark).toBe(true);
+			expect(state.rooms.room_a.state.dark).toBeUndefined();
+			expect(next.rooms.room_a.state.dark).toBe(true);
 		});
 	});
 
@@ -304,7 +304,7 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = ensureVisited(state, "room_a");
 
-			expect(next.rooms.room_a.flags.visited).toBe(true);
+			expect(next.rooms.room_a.state.visited).toBe(true);
 		});
 
 		it("is idempotent", () => {
@@ -312,7 +312,7 @@ describe("mutators", () => {
 			const once = ensureVisited(state, "room_a");
 			const twice = ensureVisited(once, "room_a");
 
-			expect(twice.rooms.room_a.flags.visited).toBe(true);
+			expect(twice.rooms.room_a.state.visited).toBe(true);
 			// Returns same reference when already visited
 			expect(twice).toBe(once);
 		});
@@ -321,8 +321,8 @@ describe("mutators", () => {
 			const state = deepFreeze(freshState());
 			const next = ensureVisited(state, "room_a");
 
-			expect(state.rooms.room_a.flags.visited).toBe(false);
-			expect(next.rooms.room_a.flags.visited).toBe(true);
+			expect(state.rooms.room_a.state.visited).toBe(false);
+			expect(next.rooms.room_a.state.visited).toBe(true);
 		});
 	});
 });

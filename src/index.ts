@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import React from "react";
 import { getModelsDebugInfo } from "./agent/model.ts";
 import { App } from "./ui/index.tsx";
+import type { GameSetup } from "./engine/rules/index.ts";
 import { WorldSchema } from "./world/types.ts";
 
 const DEFAULT_GAME = "the-great-hall";
@@ -24,7 +25,11 @@ async function main() {
 	}
 
 	const world = WorldSchema.parse(mod.default);
-	render(React.createElement(App, { world }));
+	const setup =
+		typeof mod.setup === "function"
+			? (mod.setup as GameSetup)
+			: undefined;
+	render(React.createElement(App, { world, setup }));
 }
 
 main();

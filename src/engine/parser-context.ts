@@ -42,7 +42,7 @@ export function evaluateCondition(
 		return false;
 	}
 
-	const actual = objectState.flags[stateKey];
+	const actual = objectState.state[stateKey];
 	if (actual === undefined) {
 		console.warn(
 			`[evaluateCondition] Object "${objectId}" has no state key "${stateKey}"`,
@@ -87,10 +87,10 @@ export function resolveRoomDescription(
 	room: Room,
 	roomState: RoomState,
 ): string {
-	const flags = roomState.flags;
+	const state = roomState.state;
 
 	// State-driven flags (e.g. dark) take priority over generic "visited"
-	for (const [key, value] of Object.entries(flags)) {
+	for (const [key, value] of Object.entries(state)) {
 		if (key === "visited") continue;
 		if (value === true && room.descriptions[key]) {
 			return room.descriptions[key];
@@ -98,7 +98,7 @@ export function resolveRoomDescription(
 	}
 
 	// Fall back to visited variant if seen before
-	if (flags.visited && room.descriptions.visited) {
+	if (state.visited && room.descriptions.visited) {
 		return room.descriptions.visited;
 	}
 
@@ -113,7 +113,7 @@ export function resolveObjectDescription(
 	obj: GameObject,
 	objState: ObjectState,
 ): string {
-	for (const [key, value] of Object.entries(objState.flags)) {
+	for (const [key, value] of Object.entries(objState.state)) {
 		if (value === true && obj.descriptions[key]) {
 			return obj.descriptions[key];
 		}
@@ -215,7 +215,7 @@ export function buildParserContext(
 			id: objId,
 			name: worldObj.name,
 			type: worldObj.type,
-			state: objState.flags,
+			state: objState.state,
 			source: "room",
 		});
 	}
@@ -241,7 +241,7 @@ export function buildParserContext(
 			id: objId,
 			name: worldObj.name,
 			type: worldObj.type,
-			state: objState.flags,
+			state: objState.state,
 			source: "inventory",
 		});
 	}

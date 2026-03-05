@@ -152,7 +152,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.state.objects.chest.flags.open).toBe(true);
+		expect(result.state.objects.chest.state.open).toBe(true);
 	});
 
 	it("open blocked when locked", () => {
@@ -193,7 +193,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.state.objects.chest.flags.open).toBe(false);
+		expect(result.state.objects.chest.state.open).toBe(false);
 	});
 
 	it("close blocked when already closed", () => {
@@ -225,7 +225,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.state.objects.door.flags.locked).toBe(false);
+		expect(result.state.objects.door.state.locked).toBe(false);
 	});
 
 	it("unlock blocked with wrong instrument", () => {
@@ -271,7 +271,7 @@ describe("executeAction", () => {
 
 		expect(result.cancelled).toBe(false);
 		expect(result.state.player.current_room).toBe("room_b");
-		expect(result.state.rooms.room_b.flags.visited).toBe(true);
+		expect(result.state.rooms.room_b.state.visited).toBe(true);
 	});
 
 	it("go blocked when exit condition fails", () => {
@@ -294,7 +294,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.state.objects.lamp.flags.examined).toBe(true);
+		expect(result.state.objects.lamp.state.examined).toBe(true);
 	});
 
 	it("examine with preposition returns preposition description as feedback", () => {
@@ -320,7 +320,7 @@ describe("executeAction", () => {
 		expect(result.feedback).toContain(
 			"A small key is hidden behind the chest.",
 		);
-		expect(result.state.objects.chest?.flags.examined).toBe(true);
+		expect(result.state.objects.chest?.state.examined).toBe(true);
 	});
 
 	it("examine with target only returns default object description as feedback", () => {

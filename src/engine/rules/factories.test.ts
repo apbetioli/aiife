@@ -4,7 +4,7 @@ import { buildInitialState } from "../initial-state";
 import { executeAction } from "./executor";
 import { createRules } from "./index";
 
-describe("registerContainer", () => {
+describe("open and close container", () => {
 	it("opening container moves contents to room", () => {
 		const world = makeTestWorld();
 		const { bus } = createRules(world);
@@ -19,7 +19,7 @@ describe("registerContainer", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.state.objects.chest.flags.open).toBe(true);
+		expect(result.state.objects.chest.state.open).toBe(true);
 		// gem should now be in the room
 		expect(result.state.rooms.room_a.contains).toContain("gem");
 		// gem should no longer be in the container
@@ -74,7 +74,7 @@ describe("unlock with requires_instrument", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.state.objects.door.flags.locked).toBe(false);
+		expect(result.state.objects.door.state.locked).toBe(false);
 	});
 
 	it("wrong key is blocked", () => {

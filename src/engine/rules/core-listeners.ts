@@ -31,7 +31,7 @@ export function registerCoreHandlers(
 		if (ids.length === 0) return { state, cancel: "Take what?" };
 
 		const canTake = (id: string) =>
-			state.objects[id]?.flags.carriable !== false && !isInInventory(state, id);
+			state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
 
 		const fromRoom = ids.filter((id) => isInRoom(state, id) && canTake(id));
 		const fromContainer: { id: string; containerId: string }[] = [];
@@ -85,9 +85,9 @@ export function registerCoreHandlers(
 		if (!obj || !objState) return { state, cancel: "You don't see that here." };
 		if (obj.type !== "container" && obj.type !== "door")
 			return { state, cancel: "You can't open that." };
-		if (objState.flags.locked === true)
+		if (objState.state.locked === true)
 			return { state, cancel: "It's locked." };
-		if (objState.flags.open === true)
+		if (objState.state.open === true)
 			return { state, cancel: "It's already open." };
 		const nextState = setObjectState(state, target, "open", true);
 
@@ -113,7 +113,7 @@ export function registerCoreHandlers(
 		if (!obj || !objState) return { state, cancel: "You don't see that here." };
 		if (obj.type !== "container" && obj.type !== "door")
 			return { state, cancel: "You can't close that." };
-		if (objState.flags.open === false)
+		if (objState.state.open === false)
 			return { state, cancel: "It's already closed." };
 		return { state: setObjectState(state, target, "open", false) };
 	});
@@ -219,7 +219,7 @@ export function registerCoreHandlers(
 			if (!obj) continue;
 			const objState = state.objects[id];
 			lines.push(`There is a ${obj.name} here.`);
-			if (obj.type === "container" && objState?.flags.open) {
+			if (obj.type === "container" && objState?.state.open) {
 				const contentNames = (objState.contains ?? [])
 					.map((cid) => world.objects[cid]?.name)
 					.filter(Boolean);

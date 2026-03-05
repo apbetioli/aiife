@@ -27,11 +27,17 @@ export type {
 	ListenerScope,
 } from "./types";
 
+/** Optional setup function that game modules can export to register custom actions/listeners. */
+export type GameSetup = (bus: EventBus, registry: ActionRegistry) => void;
+
 /**
  * Create an EventBus and ActionRegistry pre-configured with core handlers
  * and world-specific factories derived from the world definition.
  */
-export function createRules(world: World): {
+export function createRules(
+	world: World,
+	setup?: GameSetup,
+): {
 	bus: EventBus;
 	registry: ActionRegistry;
 } {
@@ -46,6 +52,9 @@ export function createRules(world: World): {
 			registerContainer(bus, id);
 		}
 	}
+
+	// Run game-specific setup
+	setup?.(bus, registry);
 
 	return { bus, registry };
 }
