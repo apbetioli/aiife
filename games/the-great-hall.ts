@@ -163,9 +163,10 @@ const world: World = {
 			name: "heavy iron door",
 			synonyms: ["iron door", "door", "floor door", "trapdoor"],
 			type: "door",
-			state: { open: false, carriable: false },
+			state: { locked: true, open: false, carriable: false },
 			descriptions: {
 				default: "A heavy iron door set into the floor. It is locked.",
+				unlocked: "A heavy iron door set into the floor.",
 				open: "The heavy iron door in the floor stands open, revealing stone steps descending into darkness.",
 			},
 			requires_instrument: { unlock: "rusty_key" },
