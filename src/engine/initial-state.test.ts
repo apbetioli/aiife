@@ -319,7 +319,7 @@ describe("buildInitialState", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.objects.cellar_door).toEqual({
-				flags: { open: false, carriable: false },
+				flags: { locked: true, open: false, carriable: false },
 			});
 			expect(state.objects.wooden_chest).toEqual({
 				flags: { open: false, carriable: false },
