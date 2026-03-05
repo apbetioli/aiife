@@ -15,6 +15,12 @@ import { StructuredOutputSchema } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 
+const LLM_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS) || 60_000;
+
+export function getErrorMessage(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
+}
+
 /** Returns true if input contains non-ASCII characters (likely non-English). */
 function needsTranslation(input: string): boolean {
 	return !/^[\x20-\x7E]*$/.test(input);
@@ -52,6 +58,7 @@ export class GameAgent {
 			model: this.model,
 			output: Output.object({ schema: StructuredOutputSchema }),
 			messages,
+			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 		});
 
 		const intent = intentResult.output;
@@ -83,7 +90,11 @@ export class GameAgent {
 	): Promise<string> {
 		const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
 
-		const stream = streamText({ model: this.narratorModel, prompt });
+		const stream = streamText({
+			model: this.narratorModel,
+			prompt,
+			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
+		});
 
 		let text = "";
 		try {
@@ -93,10 +104,9 @@ export class GameAgent {
 					callbacks.onToken(chunk.text);
 				}
 			}
-		} catch (error: unknown) {
-			if (!text && !(error as Error).message?.includes("No output generated")) {
-				throw error;
-			}
+		} catch {
+			// Narrator failed (timeout, connection, etc.) — use game output as-is
+			text = result.message;
 		}
 
 		return text || result.message || "Done.";

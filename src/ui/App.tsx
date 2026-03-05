@@ -1,7 +1,7 @@
 import type { ModelMessage } from "ai";
 import { Box, useApp } from "ink";
 import { useCallback, useMemo, useState } from "react";
-import { GameAgent } from "../agent/game-agent.ts";
+import { GameAgent, getErrorMessage } from "../agent/game-agent.ts";
 import { createNarratorModel, createParserModel } from "../agent/model.ts";
 import { GameEngine } from "../engine/game-engine.ts";
 import type { TokenUsageInfo, ToolApprovalRequest } from "../types.ts";
@@ -104,11 +104,9 @@ export function App({ world }: AppProps) {
 
 				setConversationHistory(newHistory);
 			} catch (error) {
-				const errorMessage =
-					error instanceof Error ? error.message : "Unknown error";
 				setMessages((prev) => [
 					...prev,
-					{ role: "assistant", content: `Error: ${errorMessage}` },
+					{ role: "assistant", content: `Oops! ${getErrorMessage(error)}` },
 				]);
 			} finally {
 				setIsLoading(false);

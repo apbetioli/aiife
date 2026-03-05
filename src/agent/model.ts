@@ -37,6 +37,11 @@ function createModelFromConfig(config: ModelConfig): LanguageModel {
 	}
 }
 
+function createOptionalModel(configPrefix: string): LanguageModel {
+	if (!process.env[`${configPrefix}PROVIDER`]) return createParserModel();
+	return createModelFromConfig(resolveConfig(configPrefix));
+}
+
 function getModelId(config: ModelConfig): string {
 	switch (config.provider) {
 		case "anthropic":
@@ -57,9 +62,7 @@ export function createParserModel(): LanguageModel {
 
 /** Narrator model — used for translation only. Env: NARRATOR_PROVIDER, NARRATOR_ANTHROPIC_MODEL, etc. Falls back to parser model config. */
 export function createNarratorModel(): LanguageModel {
-	const narratorProvider = process.env.NARRATOR_PROVIDER;
-	if (!narratorProvider) return createParserModel();
-	return createModelFromConfig(resolveConfig("NARRATOR_"));
+	return createOptionalModel("NARRATOR_");
 }
 
 /** Backwards compat alias. */
@@ -67,7 +70,7 @@ export const createModel = createParserModel;
 
 /** Eval model. Env: EVAL_PROVIDER, EVAL_ANTHROPIC_MODEL, etc. */
 export function createEvalModel(): LanguageModel {
-	return createModelFromConfig(resolveConfig("EVAL_"));
+	return createOptionalModel("EVAL_");
 }
 
 export function getEvalModelId(): string {
