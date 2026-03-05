@@ -79,14 +79,18 @@ export function registerCoreHandlers(
 
 	bus.on("open", (event, state, world) => {
 		const target = getTarget(event.params);
+		if (!target) return { state, cancel: "Open what?" };
+		const obj = world.objects[target];
 		const objState = state.objects[target];
-		if (objState?.flags.locked === true)
+		if (!obj || !objState) return { state, cancel: "You don't see that here." };
+		if (obj.type !== "container" && obj.type !== "door")
+			return { state, cancel: "You can't open that." };
+		if (objState.flags.locked === true)
 			return { state, cancel: "It's locked." };
-		if (objState?.flags.open === true)
+		if (objState.flags.open === true)
 			return { state, cancel: "It's already open." };
 		const nextState = setObjectState(state, target, "open", true);
 
-		const obj = world.objects[target];
 		const contents = (objState?.contains ?? [])
 			.map((id) => world.objects[id]?.name)
 			.filter(Boolean);
@@ -101,10 +105,15 @@ export function registerCoreHandlers(
 
 	// ── close ─────────────────────────────────────────────────────────────
 
-	bus.on("close", (event, state, _world) => {
+	bus.on("close", (event, state, world) => {
 		const target = getTarget(event.params);
+		if (!target) return { state, cancel: "Close what?" };
+		const obj = world.objects[target];
 		const objState = state.objects[target];
-		if (objState?.flags.open === false)
+		if (!obj || !objState) return { state, cancel: "You don't see that here." };
+		if (obj.type !== "container" && obj.type !== "door")
+			return { state, cancel: "You can't close that." };
+		if (objState.flags.open === false)
 			return { state, cancel: "It's already closed." };
 		return { state: setObjectState(state, target, "open", false) };
 	});
