@@ -21,8 +21,36 @@ export interface EmitResult {
 	cancelled: boolean;
 }
 
+function groupListenersByPriority(
+	listeners: ListenerRegistration[],
+	eventName: EventName,
+): Map<number, ListenerRegistration[]> {
+	const byPriority = new Map<number, ListenerRegistration[]>();
+
+	for (const registration of listeners) {
+		if (registration.event !== eventName) continue;
+
+		let group = byPriority.get(registration.priority);
+		if (!group) {
+			group = [];
+			byPriority.set(registration.priority, group);
+		}
+
+		group.push(registration);
+	}
+
+	return byPriority;
+}
+
 export class EventBus {
 	private listeners: ListenerRegistration[] = [];
+
+	private unregister(registration: ListenerRegistration): void {
+		const index = this.listeners.indexOf(registration);
+		if (index >= 0) {
+			this.listeners.splice(index, 1);
+		}
+	}
 
 	// Global: on(event, listener, opts?)
 	on<N extends EventName>(
@@ -61,7 +89,7 @@ export class EventBus {
 			options = maybeOptions;
 		}
 
-		const reg: ListenerRegistration<N> = {
+		const registration: ListenerRegistration<N> = {
 			scope,
 			scopeId,
 			event,
@@ -70,11 +98,10 @@ export class EventBus {
 			once: options?.once ?? false,
 		};
 
-		const r = reg as unknown as ListenerRegistration;
-		this.listeners.push(r);
+		const storedRegistration = registration as unknown as ListenerRegistration;
+		this.listeners.push(storedRegistration);
 		return () => {
-			const idx = this.listeners.indexOf(r);
-			if (idx >= 0) this.listeners.splice(idx, 1);
+			this.unregister(storedRegistration);
 		};
 	}
 
@@ -83,21 +110,11 @@ export class EventBus {
 		world: World,
 		state: GameState,
 	): EmitResult {
-		// Find all listeners for this event
-		const matching = this.listeners.filter((reg) => reg.event === event.name);
-
-		// Group by priority
-		const byPriority = new Map<number, ListenerRegistration[]>();
-		for (const reg of matching) {
-			let group = byPriority.get(reg.priority);
-			if (!group) {
-				group = [];
-				byPriority.set(reg.priority, group);
-			}
-			group.push(reg);
-		}
-
-		const priorities = [...byPriority.keys()].sort((a, b) => a - b);
+		const listenersByPriority = groupListenersByPriority(
+			this.listeners,
+			event.name,
+		);
+		const priorities = [...listenersByPriority.keys()].sort((a, b) => a - b);
 
 		let currentState = state;
 		const feedback: string[] = [];
@@ -107,17 +124,19 @@ export class EventBus {
 		for (const priority of priorities) {
 			if (cancelled) break;
 
-			const group = byPriority.get(priority);
+			const group = listenersByPriority.get(priority);
 			if (!group) continue;
 
 			// Find scoped listener that matches current context
 			const scopedMatch = group.find(
-				(reg) =>
-					reg.scope === "scoped" && this.matchesScope(reg, event, currentState),
+				(registration) =>
+					registration.scope === "scoped" &&
+					this.matchesScope(registration, event, currentState),
 			);
 
 			// Pick scoped if it exists, otherwise global
-			const chosen = scopedMatch ?? group.find((reg) => reg.scope === "global");
+			const chosen =
+				scopedMatch ?? group.find((registration) => registration.scope === "global");
 
 			if (!chosen) continue;
 
