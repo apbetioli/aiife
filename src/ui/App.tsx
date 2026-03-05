@@ -1,11 +1,11 @@
 import type { ModelMessage } from "ai";
 import { Box, useApp } from "ink";
-import { useCallback, useState } from "react";
-import world from "../../games/the-great-hall.ts";
+import { useCallback, useMemo, useState } from "react";
 import { GameAgent } from "../agent/game-agent.ts";
 import { createModel } from "../agent/model.ts";
 import { GameEngine } from "../engine/game-engine.ts";
 import type { TokenUsageInfo, ToolApprovalRequest } from "../types.ts";
+import type { World } from "../world/types.ts";
 import { Input } from "./components/Input.tsx";
 import { type Message, MessageList } from "./components/MessageList.tsx";
 import { Spinner } from "./components/Spinner.tsx";
@@ -18,14 +18,20 @@ interface ActiveToolCall extends ToolCallProps {
 	id: string;
 }
 
-const engine = new GameEngine(world);
-const introResult = engine.start();
-const agent = new GameAgent(createModel(), engine);
+export interface AppProps {
+	world: World;
+}
 
-export function App() {
+export function App({ world }: AppProps) {
 	const { exit } = useApp();
+	const { agent, introMessage } = useMemo(() => {
+		const e = new GameEngine(world);
+		const intro = e.start();
+		const a = new GameAgent(createModel(), e);
+		return { agent: a, introMessage: intro.message };
+	}, [world]);
 	const [messages, setMessages] = useState<Message[]>([
-		{ role: "assistant", content: introResult.message },
+		{ role: "assistant", content: introMessage },
 	]);
 	const [conversationHistory, setConversationHistory] = useState<
 		ModelMessage[]
@@ -106,7 +112,7 @@ export function App() {
 				setIsLoading(false);
 			}
 		},
-		[conversationHistory, exit],
+		[agent, conversationHistory, exit],
 	);
 
 	return (
