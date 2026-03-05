@@ -43,6 +43,8 @@ export function App({ world }: AppProps) {
 		useState<ToolApprovalRequest | null>(null);
 	const [tokenUsage, setTokenUsage] = useState<TokenUsageInfo | null>(null);
 
+	const isDebug = process.env.DEBUG === "true";
+
 	const handleSubmit = useCallback(
 		async (userInput: string) => {
 			if (userInput.toLowerCase() === "quit") {
@@ -119,7 +121,7 @@ export function App({ world }: AppProps) {
 		<Box flexDirection="column" padding={1}>
 			<Box marginBottom={1}>
 				<Text bold color="magenta">
-					🤖 AI Dungeon Master
+					🤖 Dungeon Master
 				</Text>
 				<Text dimColor> (type "quit" to quit)</Text>
 			</Box>
@@ -134,7 +136,7 @@ export function App({ world }: AppProps) {
 					</Box>
 				)}
 
-				{activeToolCalls.length > 0 && !pendingApproval && (
+				{isDebug && activeToolCalls.length > 0 && !pendingApproval && (
 					<Box flexDirection="column" marginTop={1}>
 						{activeToolCalls.map((tc) => (
 							<ToolCall
@@ -173,7 +175,7 @@ export function App({ world }: AppProps) {
 				<Input onSubmit={handleSubmit} disabled={isLoading} color="blue" />
 			)}
 
-			<TokenUsage usage={tokenUsage} />
+			{isDebug && <TokenUsage usage={tokenUsage} />}
 		</Box>
 	);
 }
