@@ -28,8 +28,8 @@ describe("save / load", () => {
 		state.turn = 5;
 		state.player.current_room = "room_b";
 		state.player.inventory = ["sword", "gem"];
-		state.objects.door.flags.locked = false;
-		state.rooms.room_a.flags.visited = true;
+		state.objects.door.state.locked = false;
+		state.rooms.room_a.state.visited = true;
 
 		const file = save(state);
 		const json = JSON.parse(JSON.stringify(file));
@@ -38,8 +38,8 @@ describe("save / load", () => {
 		expect(restored).toEqual(state);
 		expect(restored.turn).toBe(5);
 		expect(restored.player.current_room).toBe("room_b");
-		expect(restored.objects.door.flags.locked).toBe(false);
-		expect(restored.rooms.room_a.flags.visited).toBe(true);
+		expect(restored.objects.door.state.locked).toBe(false);
+		expect(restored.rooms.room_a.state.visited).toBe(true);
 	});
 
 	it("load throws on invalid save file", () => {

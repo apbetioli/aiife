@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { GameAgent, getErrorMessage } from "../agent/game-agent.ts";
 import { createNarratorModel, createParserModel } from "../agent/model.ts";
 import { GameEngine } from "../engine/game-engine.ts";
+import type { GameSetup } from "../engine/rules/index.ts";
 import type { TokenUsageInfo, ToolApprovalRequest } from "../types.ts";
 import type { World } from "../world/types.ts";
 import { Input } from "./components/Input.tsx";
@@ -20,16 +21,17 @@ interface ActiveToolCall extends ToolCallProps {
 
 export interface AppProps {
 	world: World;
+	setup?: GameSetup;
 }
 
-export function App({ world }: AppProps) {
+export function App({ world, setup }: AppProps) {
 	const { exit } = useApp();
 	const { agent, introMessage } = useMemo(() => {
-		const e = new GameEngine(world);
+		const e = new GameEngine(world, setup);
 		const intro = e.start();
 		const a = new GameAgent(createParserModel(), e, createNarratorModel());
 		return { agent: a, introMessage: intro.message };
-	}, [world]);
+	}, [world, setup]);
 	const [messages, setMessages] = useState<Message[]>([
 		{ role: "assistant", content: introMessage },
 	]);

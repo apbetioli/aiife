@@ -167,7 +167,7 @@ export function buildInitialState(world: World): GameState {
 	for (const [roomId, room] of Object.entries(world.rooms)) {
 		rooms[roomId] = {
 			contains: [...room.contains],
-			flags: { visited: false, ...room.state },
+			state: { visited: false, ...room.state },
 		};
 	}
 
@@ -176,7 +176,7 @@ export function buildInitialState(world: World): GameState {
 
 	for (const [objId, obj] of Object.entries(world.objects)) {
 		objects[objId] = {
-			flags: { carriable: true, ...obj.state },
+			state: { carriable: true, ...obj.state },
 			...(obj.contains ? { contains: [...obj.contains] } : {}),
 		};
 	}

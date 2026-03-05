@@ -8,8 +8,9 @@ import {
 	type EventBus,
 	executeAction,
 	executeUntrustedAction,
+	type GameSetup,
 } from "./rules";
-import { load, save, type SaveFile } from "./save";
+import { load, type SaveFile, save } from "./save";
 import type { GameState } from "./types";
 
 const INTENT_PARAM_KEYS_TO_SKIP = new Set(["action", "message"]);
@@ -32,8 +33,11 @@ export class GameEngine {
 	private registry: ActionRegistry;
 	private history: GameState[] = [];
 
-	constructor(private world: World) {
-		const { bus, registry } = createRules(world);
+	constructor(
+		private world: World,
+		setup?: GameSetup,
+	) {
+		const { bus, registry } = createRules(world, setup);
 		this.bus = bus;
 		this.registry = registry;
 		this.state = buildInitialState(world);

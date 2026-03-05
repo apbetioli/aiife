@@ -19,7 +19,7 @@ export function findOpenContainerInRoom(
 	const room = state.rooms[state.player.current_room];
 	for (const cid of room.contains) {
 		const container = state.objects[cid];
-		if (container?.flags.open && container.contains?.includes(objectId)) {
+		if (container?.state.open && container.contains?.includes(objectId)) {
 			return cid;
 		}
 	}
@@ -157,7 +157,7 @@ export function setObjectState(
 			...state.objects,
 			[objectId]: {
 				...obj,
-				flags: { ...obj.flags, [key]: value },
+				state: { ...obj.state, [key]: value },
 			},
 		},
 	};
@@ -180,7 +180,7 @@ export function setRoomState(
 			...state.rooms,
 			[roomId]: {
 				...room,
-				flags: { ...room.flags, [key]: value },
+				state: { ...room.state, [key]: value },
 			},
 		},
 	};
@@ -217,7 +217,7 @@ export function movePlayer(state: GameState, roomId: string): GameState {
 
 export function ensureVisited(state: GameState, roomId: string): GameState {
 	const room = state.rooms[roomId];
-	if (room.flags.visited) return state;
+	if (room.state.visited) return state;
 
 	return setRoomState(state, roomId, "visited", true);
 }

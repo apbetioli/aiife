@@ -5,12 +5,12 @@ import { PlayerSchema, StateSchema } from "../world/types";
 
 const RoomStateSchema = z.object({
 	contains: z.array(z.string()),
-	flags: StateSchema.default({}),
+	state: StateSchema.default({}),
 });
 
 const ObjectStateSchema = z.object({
 	contains: z.array(z.string()).optional(),
-	flags: StateSchema.default({}),
+	state: StateSchema.default({}),
 });
 
 export const GameStateSchema = z.object({
