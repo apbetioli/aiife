@@ -9,9 +9,11 @@ import {
 	executeAction,
 	executeUntrustedAction,
 } from "./rules";
+import { load, save, type SaveFile } from "./save";
 import type { GameState } from "./types";
 
 const INTENT_PARAM_KEYS_TO_SKIP = new Set(["action", "message"]);
+const MAX_UNDO_HISTORY = 50;
 
 function toEventParams(intent: StructuredOutput): Record<string, unknown> {
 	return Object.fromEntries(
@@ -28,6 +30,7 @@ export class GameEngine {
 	private state: GameState;
 	private bus: EventBus;
 	private registry: ActionRegistry;
+	private history: GameState[] = [];
 
 	constructor(private world: World) {
 		const { bus, registry } = createRules(world);
@@ -72,6 +75,9 @@ export class GameEngine {
 			};
 		}
 
+		// Save state before mutation for undo
+		this.pushHistory();
+
 		const params = toEventParams(intent);
 		const result = executeUntrustedAction(
 			this.bus,
@@ -107,7 +113,45 @@ export class GameEngine {
 		};
 	}
 
+	undo(): ActionResult {
+		const prev = this.history.pop();
+		if (!prev) {
+			return { message: "Nothing to undo.", success: false };
+		}
+		this.state = prev;
+		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
+		return { message: lookResult.feedback.join("\n"), success: true };
+	}
+
+	save(): SaveFile {
+		return save(this.state);
+	}
+
+	restore(file: unknown): ActionResult {
+		const restored = load(file);
+		if (restored.world_id !== this.world.id) {
+			return {
+				message: `Save is for "${restored.world_id}", but current game is "${this.world.id}".`,
+				success: false,
+			};
+		}
+		this.pushHistory();
+		this.state = restored;
+		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
+		return {
+			message: `Game restored.\n${lookResult.feedback.join("\n")}`,
+			success: true,
+		};
+	}
+
 	isGameOver(): boolean {
 		return this.state.player.state.quit === true;
+	}
+
+	private pushHistory(): void {
+		this.history.push(structuredClone(this.state));
+		if (this.history.length > MAX_UNDO_HISTORY) {
+			this.history.shift();
+		}
 	}
 }
