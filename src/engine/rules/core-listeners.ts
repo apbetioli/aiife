@@ -251,9 +251,23 @@ export function registerCoreHandlers(
 	// ── help ──────────────────────────────────────────────────────────────
 
 	bus.on("help", (_event, state, _world) => {
-		const descriptions = registry.getDescriptions();
-		const lines = Object.values(descriptions).map((d) => `- ${d}`);
-		return { state, feedback: ["Available commands:", ...lines] };
+		const lines = [
+			"Available commands:",
+			"  go <direction>     - Move in a direction (n, s, e, w, up, down, ...)",
+			"  look (l)           - Look around the current room",
+			"  examine <thing> (x)- Look closely at something",
+			"  take <thing>       - Pick up an object",
+			"  drop <thing>       - Drop an object from inventory",
+			"  open <thing>       - Open a container or door",
+			"  close <thing>      - Close a container or door",
+			"  unlock <thing>     - Unlock something (with key if needed)",
+			"  use <thing>        - Use an object, optionally on a target",
+			"  talk <person>      - Talk to someone",
+			"  inventory (i)      - Check what you're carrying",
+			"  help (h)           - Show this list",
+			"  quit (q)           - End the game",
+		];
+		return { state, feedback: [lines.join("\n")] };
 	});
 
 	// ── quit ──────────────────────────────────────────────────────────────
