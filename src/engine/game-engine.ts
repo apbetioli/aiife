@@ -36,6 +36,17 @@ export class GameEngine {
 		this.state = buildInitialState(world);
 	}
 
+	start(): ActionResult {
+		const startResult = executeAction(this.bus, this.world, this.state, "game:start", {});
+		this.state = startResult.state;
+
+		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
+		this.state = lookResult.state;
+
+		const message = [...startResult.feedback, ...lookResult.feedback].join("\n");
+		return { message, success: true };
+	}
+
 	getParserContext(): ParserContext {
 		return buildParserContext(this.world, this.state);
 	}

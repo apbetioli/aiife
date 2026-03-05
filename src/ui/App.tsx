@@ -19,11 +19,14 @@ interface ActiveToolCall extends ToolCallProps {
 }
 
 const engine = new GameEngine(world);
+const introResult = engine.start();
 const agent = new GameAgent(createModel(), engine);
 
 export function App() {
 	const { exit } = useApp();
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [messages, setMessages] = useState<Message[]>([
+		{ role: "assistant", content: introResult.message },
+	]);
 	const [conversationHistory, setConversationHistory] = useState<
 		ModelMessage[]
 	>([]);
