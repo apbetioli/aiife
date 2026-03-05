@@ -1,7 +1,9 @@
 import {
 	ensureVisited,
+	findOpenContainerInRoom,
 	isInInventory,
 	isInRoom,
+	moveObjectFromContainerToInventory,
 	moveObjectFromInventoryToRoom,
 	moveObjectFromRoomToInventory,
 	movePlayer,
@@ -26,21 +28,32 @@ export function registerCoreHandlers(
 
 	bus.on("take", (event, state, _world) => {
 		const ids = getObjectIds(event.params);
-		const toTake = ids.filter(
-			(id) =>
-				isInRoom(state, id) &&
-				state.objects[id]?.flags.carriable !== false &&
-				!isInInventory(state, id),
-		);
 		if (ids.length === 0) return { state, cancel: "Take what?" };
-		if (toTake.length === 0) {
+
+		const canTake = (id: string) =>
+			state.objects[id]?.flags.carriable !== false && !isInInventory(state, id);
+
+		const fromRoom = ids.filter((id) => isInRoom(state, id) && canTake(id));
+		const fromContainer: { id: string; containerId: string }[] = [];
+		for (const id of ids) {
+			if (fromRoom.includes(id)) continue;
+			if (!canTake(id)) continue;
+			const cid = findOpenContainerInRoom(state, id);
+			if (cid) fromContainer.push({ id, containerId: cid });
+		}
+
+		if (fromRoom.length === 0 && fromContainer.length === 0) {
 			if (ids.some((id) => isInInventory(state, id)))
 				return { state, cancel: "You're already carrying that." };
 			return { state, cancel: "You can't take that." };
 		}
+
 		let nextState = state;
-		for (const id of toTake) {
+		for (const id of fromRoom) {
 			nextState = moveObjectFromRoomToInventory(nextState, id);
+		}
+		for (const { id, containerId } of fromContainer) {
+			nextState = moveObjectFromContainerToInventory(nextState, id, containerId);
 		}
 		return { state: nextState };
 	});
