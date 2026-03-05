@@ -38,7 +38,9 @@ export class GameAgent {
 		conversationHistory: ModelMessage[],
 		callbacks: AgentCallbacks,
 	): Promise<ModelMessage[]> {
-		const workingHistory = filterCompatibleMessages(conversationHistory);
+		const recentHistory = filterCompatibleMessages(conversationHistory).slice(
+			-INTENT_HISTORY_LIMIT,
+		);
 
 		const system = buildStructuredOutputSystemPrompt(
 			this.engine.getParserContext(),
@@ -46,18 +48,14 @@ export class GameAgent {
 			this.engine.getDescriptions(),
 		);
 
-		const messages: ModelMessage[] = [
-			{ role: "system", content: system },
-			// Gives context about recent interactions for solving ambiguous inputs in follow up answers.
-			// E.g. "TAKE" → "What do you want to take?" → "lantern" -> "Taken."
-			...workingHistory.slice(-INTENT_HISTORY_LIMIT),
-			{ role: "user", content: input },
-		];
-
 		const intentResult = await generateText({
 			model: this.model,
 			output: Output.object({ schema: StructuredOutputSchema }),
-			messages,
+			messages: [
+				{ role: "system", content: system },
+				...recentHistory,
+				{ role: "user", content: input },
+			],
 			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 		});
 
@@ -78,9 +76,13 @@ export class GameAgent {
 		}
 
 		callbacks.onComplete(outputText);
-		messages.push({ role: "assistant", content: outputText });
 
-		return messages;
+		// Return only the bounded history window for next call
+		return [
+			...recentHistory,
+			{ role: "user", content: input },
+			{ role: "assistant", content: outputText },
+		];
 	}
 
 	private async narrate(
