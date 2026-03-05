@@ -64,14 +64,26 @@ export function registerCoreHandlers(
 
 	// ── open ──────────────────────────────────────────────────────────────
 
-	bus.on("open", (event, state, _world) => {
+	bus.on("open", (event, state, world) => {
 		const target = getTarget(event.params);
 		const objState = state.objects[target];
 		if (objState?.flags.locked === true)
 			return { state, cancel: "It's locked." };
 		if (objState?.flags.open === true)
 			return { state, cancel: "It's already open." };
-		return { state: setObjectState(state, target, "open", true) };
+		const nextState = setObjectState(state, target, "open", true);
+
+		const obj = world.objects[target];
+		const contents = (objState?.contains ?? [])
+			.map((id) => world.objects[id]?.name)
+			.filter(Boolean);
+		const name = obj?.name ?? target;
+		const feedback =
+			contents.length > 0
+				? `Opening the ${name} reveals:\n${contents.map((n) => `  ${n}`).join("\n")}`
+				: `Opened.`;
+
+		return { state: nextState, feedback: [feedback] };
 	});
 
 	// ── close ─────────────────────────────────────────────────────────────
@@ -145,13 +157,22 @@ export function registerCoreHandlers(
 		const to = exit.leads_to;
 		let nextState = movePlayer(state, to);
 		nextState = ensureVisited(nextState, to);
-		nextState = executeAction(bus, world, nextState, "exit", {
+		const exitResult = executeAction(bus, world, nextState, "exit", {
 			room: from,
-		}).state;
-		nextState = executeAction(bus, world, nextState, "enter", {
+		});
+		nextState = exitResult.state;
+		const enterResult = executeAction(bus, world, nextState, "enter", {
 			room: to,
-		}).state;
-		return { state: nextState };
+		});
+		nextState = enterResult.state;
+		const lookResult = executeAction(bus, world, nextState, "look", {});
+		nextState = lookResult.state;
+		const feedback = [
+			...exitResult.feedback,
+			...enterResult.feedback,
+			...lookResult.feedback,
+		];
+		return { state: nextState, feedback };
 	});
 
 	// ── tick ──────────────────────────────────────────────────────────────
@@ -171,11 +192,22 @@ export function registerCoreHandlers(
 
 		const lines: string[] = [`**${room.name}**`, description];
 
-		const objectNames = roomState.contains
-			.map((id) => world.objects[id]?.name)
-			.filter(Boolean);
-		if (objectNames.length > 0) {
-			lines.push(`You can see: ${objectNames.join(", ")}.`);
+		for (const id of roomState.contains) {
+			const obj = world.objects[id];
+			if (!obj) continue;
+			const objState = state.objects[id];
+			lines.push(`There is a ${obj.name} here.`);
+			if (obj.type === "container" && objState?.flags.open) {
+				const contentNames = (objState.contains ?? [])
+					.map((cid) => world.objects[cid]?.name)
+					.filter(Boolean);
+				if (contentNames.length > 0) {
+					lines.push(`The ${obj.name} contains:`);
+					for (const name of contentNames) {
+						lines.push(`  ${name}`);
+					}
+				}
+			}
 		}
 
 		const exits = Object.entries(room.exits)
