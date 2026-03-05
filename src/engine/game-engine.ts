@@ -93,9 +93,10 @@ export class GameEngine {
 		);
 		this.state = tickResult.state;
 
+		const allFeedback = [...result.feedback, ...tickResult.feedback];
 		const message =
-			result.feedback.length > 0
-				? result.feedback.join(" ")
+			allFeedback.length > 0
+				? allFeedback.join(" ")
 				: (intent.message ?? "Done.");
 
 		return {
