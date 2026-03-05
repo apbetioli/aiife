@@ -3,11 +3,7 @@ import { DirectionSchema } from "../../world/types";
 
 // ─── Core Actions (schema + description) ─────────────────────────────────────
 
-const targetParams = z.object({ target: z.string() });
-const targetInstrumentParams = z.object({
-	target: z.string(),
-	instrument: z.string().optional(),
-});
+const objectsParams = z.object({ objects: z.array(z.string()) });
 
 export const coreActions = {
 	go: {
@@ -16,66 +12,65 @@ export const coreActions = {
 			"go(direction): Go in a direction. direction must be one of: north, south, east, west, northeast, northwest, southeast, southwest, up, down, in, out. Normalize shorthands to full names: n→north, s→south, e→east, w→west, ne→northeast, nw→northwest, se→southeast, sw→southwest, u→up, d→down (in, out have no common shorthand).",
 	},
 	take: {
-		schema: z.object({ objects: z.array(z.string()) }),
+		schema: objectsParams,
 		description:
-			'take(objects): Pick up objects from the current room. objects is an array of object ids. For "take all" or "take everything", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',
+			'take(objects): Pick up objects from the current room. For "take all", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',
 	},
 	drop: {
-		schema: z.object({ objects: z.array(z.string()) }),
+		schema: objectsParams,
 		description:
-			'drop(objects): Drop objects from inventory. objects is an array of object ids. For "drop all", list every inventory object id. For "drop all but X", list every inventory object id except X. For "drop X and Y", list [X, Y]. For single "drop X", list [X].',
+			'drop(objects): Drop objects from inventory. For "drop all", list every inventory object id. For "drop all but X", list every inventory object id except X. For "drop X and Y", list [X, Y]. For single "drop X", list [X].',
 	},
 	open: {
-		schema: targetParams,
+		schema: objectsParams,
 		description:
-			"open(target): Open a container or door. target is the id of what to open. Use only when the player explicitly asks to open (e.g. 'open the box'); for 'look inside' use examine.",
+			"open(objects): Open a container or door. objects: [target_id]. Use only when the player explicitly asks to open (e.g. 'open the box').",
 	},
 	close: {
-		schema: targetParams,
+		schema: objectsParams,
 		description:
-			"close(target): Close a container or door. target is the id of what to close.",
+			"close(objects): Close a container or door. objects: [target_id].",
 	},
 	unlock: {
-		schema: targetInstrumentParams,
+		schema: objectsParams,
 		description:
-			"unlock(target, instrument?): Unlock something. target is the id of what to unlock. instrument is the optional key id.",
+			"unlock(objects): Unlock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
 	},
 	lock: {
-		schema: targetInstrumentParams,
+		schema: objectsParams,
 		description:
-			"lock(target, instrument?): Lock something. target is the id of what to lock. instrument is the optional key id.",
+			"lock(objects): Lock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
 	},
 	examine: {
 		schema: z.object({
-			target: z.string(),
+			objects: z.array(z.string()),
 			preposition: z.string().optional(),
 		}),
 		description:
-			"examine(target, preposition?): Look closely at an item, actor, or feature. target is the id of what to examine (from the object list). Shorthand: x. Use for 'look at X', 'look under X', 'look behind X', 'look in X' — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'. Use 'open' only when the player explicitly says open (e.g. 'open the box').",
+			"examine(objects, preposition?): Look closely at an item, actor, or feature. objects: [target_id]. Shorthand: x. Use for 'look at X', 'look under X', 'look behind X', 'look in X', look inside X — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'.",
 	},
 	use: {
-		schema: z.object({
-			target: z.string().optional(),
-			indirect: z.string().optional(),
-			objects: z.array(z.string()).optional(),
-		}),
+		schema: objectsParams,
 		description:
-			"use(objects, target?): Use an object, optionally on a target. objects is an array with the object id. target is the optional id of what to use it on.",
+			"use(objects): Use an object, optionally on a target. objects: [item_id] or [item_id, target_id] (e.g. 'use key on door' → [key, door]).",
 	},
 	move: {
-		schema: z.object({ target: z.string(), direction: z.string().optional() }),
+		schema: z.object({
+			objects: z.array(z.string()),
+			direction: z.string().optional(),
+		}),
 		description:
-			"move(target, direction?): Move an object. target is the id of what to move. direction is optional.",
+			"move(objects, direction?): Move an object. objects: [target_id]. direction is optional.",
 	},
 	attack: {
-		schema: targetInstrumentParams,
+		schema: objectsParams,
 		description:
-			"attack(target, instrument?): Attack something. target is the id of what to attack. instrument is the optional weapon id.",
+			"attack(objects): Attack something. objects: [target_id] or [target_id, weapon_id].",
 	},
 	talk: {
-		schema: z.object({ target: z.string() }),
+		schema: objectsParams,
 		description:
-			"talk(actor): Talk to an actor in the current room. actor is the id of the person to talk to.",
+			"talk(objects): Talk to an actor in the current room. objects: [actor_id].",
 	},
 	enter: { schema: z.object({ room: z.string() }), description: "" },
 	exit: { schema: z.object({ room: z.string() }), description: "" },
@@ -107,6 +102,39 @@ export const coreActions = {
 	"game:start": { schema: z.object({}), description: "" },
 	"game:end": { schema: z.object({ victory: z.boolean() }), description: "" },
 } as const satisfies Record<string, { schema: z.ZodType; description: string }>;
+
+// ─── Parser Schema (flat shape for LLM structured output) ───────────────────
+// All param fields from player-facing coreActions, made nullable.
+// If you add a param field to a core action, add it here too — the runtime
+// check below will throw if they drift apart.
+
+export const StructuredOutputSchema = z.object({
+	action: z.string(),
+	direction: z.string().nullable(),
+	objects: z.array(z.string()).nullable(),
+	preposition: z.string().nullable(),
+	message: z.string().nullable(),
+});
+
+export type StructuredOutput = z.infer<typeof StructuredOutputSchema>;
+
+// Runtime drift check: every param field in a player-facing action must exist
+// in StructuredOutputSchema. Runs once at import time.
+(function assertParserSchemaCoversActions() {
+	const parserKeys = new Set(Object.keys(StructuredOutputSchema.shape));
+	for (const [name, entry] of Object.entries(coreActions)) {
+		if (!entry.description) continue;
+		for (const key of Object.keys(
+			(entry.schema as z.ZodObject<z.ZodRawShape>).shape,
+		)) {
+			if (!parserKeys.has(key)) {
+				throw new Error(
+					`StructuredOutputSchema is missing field "${key}" from action "${name}". Add it as a nullable field.`,
+				);
+			}
+		}
+	}
+})();
 
 // ─── Derived Types ───────────────────────────────────────────────────────────
 

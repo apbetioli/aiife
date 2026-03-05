@@ -16,11 +16,11 @@ describe("EventBus", () => {
 		const calls: string[] = [];
 
 		bus.on("examine", (event, state, _w) => {
-			calls.push(event.params.target);
+			calls.push(event.params.objects[0]);
 			return state;
 		});
 
-		const event = new GameEvent("examine", { target: "lamp" });
+		const event = new GameEvent("examine", { objects: ["lamp"] });
 		bus.emit(event, world, freshState());
 		expect(calls).toEqual(["lamp"]);
 	});
@@ -38,7 +38,7 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event = new GameEvent("examine", { target: "lamp" });
+		const event = new GameEvent("examine", { objects: ["lamp"] });
 		// Player starts in room_a
 		bus.emit(event, world, freshState());
 		expect(calls).toEqual(["room_a"]);
@@ -57,7 +57,7 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event = new GameEvent("examine", { target: "lamp" });
+		const event = new GameEvent("examine", { objects: ["lamp"] });
 		bus.emit(event, world, freshState());
 		// Scoped wins, global should not fire at the same priority
 		expect(calls).toEqual(["scoped"]);
@@ -76,7 +76,7 @@ describe("EventBus", () => {
 			return state;
 		});
 
-		const event = new GameEvent("examine", { target: "lamp" });
+		const event = new GameEvent("examine", { objects: ["lamp"] });
 		bus.emit(event, world, freshState());
 		expect(calls).toEqual(["global"]);
 	});

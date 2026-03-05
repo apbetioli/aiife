@@ -34,7 +34,7 @@
 		"target": {
 			"expectedAction": "open",
 			"expectedParams": {
-				"target": "wooden_chest"
+				"objects": ["wooden_chest"]
 			},
 			"category": "golden"
 		},
@@ -77,7 +77,7 @@
 		"target": {
 			"expectedAction": "open",
 			"expectedParams": {
-				"target": "wooden_chest"
+				"objects": ["wooden_chest"]
 			},
 			"category": "golden"
 		},

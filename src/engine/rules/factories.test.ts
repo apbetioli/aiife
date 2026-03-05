@@ -15,7 +15,7 @@ describe("registerContainer", () => {
 		expect(state.rooms.room_a.contains).not.toContain("gem");
 
 		const result = executeAction(bus, world, state, "open", {
-			target: "chest",
+			objects: ["chest"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -33,7 +33,7 @@ describe("registerContainer", () => {
 
 		// First open the chest to move gem to room
 		const openResult = executeAction(bus, world, state, "open", {
-			target: "chest",
+			objects: ["chest"],
 		});
 		state = openResult.state;
 
@@ -42,7 +42,7 @@ describe("registerContainer", () => {
 
 		// Now close it
 		const closeResult = executeAction(bus, world, state, "close", {
-			target: "chest",
+			objects: ["chest"],
 		});
 
 		expect(closeResult.state.rooms.room_a.contains).not.toContain("gem");
@@ -70,8 +70,7 @@ describe("unlock with requires_instrument", () => {
 		const { world, bus, state } = setupLockable();
 
 		const result = executeAction(bus, world, state, "unlock", {
-			target: "door",
-			instrument: "sword",
+			objects: ["door", "sword"],
 		});
 
 		expect(result.cancelled).toBe(false);
@@ -94,8 +93,7 @@ describe("unlock with requires_instrument", () => {
 
 		// sword is in inventory but isn't the right key
 		const result = executeAction(bus, world, state, "unlock", {
-			target: "door",
-			instrument: "sword",
+			objects: ["door", "sword"],
 		});
 
 		expect(result.cancelled).toBe(true);
