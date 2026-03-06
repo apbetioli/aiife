@@ -1,17 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { ActionRegistry, coreActions } from "./action-registry";
+import { ActionRegistry } from "./action-registry";
+import type { CoreActionContext } from "./core-actions";
+import { coreActionDefinitions, registerCoreActions } from "./core-actions";
+import { EventBus } from "./event-bus";
+import { executeAction } from "./executor";
+
+function createRegistryWithCoreActions(): ActionRegistry {
+	const bus = new EventBus();
+	const registry = new ActionRegistry();
+	registerCoreActions(bus, registry, { bus, executeAction } as CoreActionContext);
+	return registry;
+}
 
 describe("ActionRegistry", () => {
 	it("has() returns true for core actions", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		expect(registry.has("go")).toBe(true);
 		expect(registry.has("take")).toBe(true);
 		expect(registry.has("tick")).toBe(true);
 	});
 
 	it("has() returns true for meta actions", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		expect(registry.has("look")).toBe(true);
 		expect(registry.has("inventory")).toBe(true);
 		expect(registry.has("help")).toBe(true);
@@ -19,35 +30,35 @@ describe("ActionRegistry", () => {
 	});
 
 	it("has() returns false for unknown actions", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		expect(registry.has("fly")).toBe(false);
 	});
 
 	it("names() returns all core action names", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const names = registry.names();
-		const expected = Object.keys(coreActions);
+		const expected = Object.keys(coreActionDefinitions);
 		expect(names).toEqual(expected);
 	});
 
 	it("validate() accepts valid params", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const result = registry.validate("go", { direction: "north" });
 		expect(result).toEqual({ direction: "north" });
 	});
 
 	it("validate() throws on invalid params", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		expect(() => registry.validate("go", { direction: "sideways" })).toThrow();
 	});
 
 	it("validate() throws for unknown action", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		expect(() => registry.validate("fly", {})).toThrow("Unknown action: fly");
 	});
 
 	it("safeParse() returns success for valid params", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const result = registry.safeParse("take", { objects: ["lamp"] });
 		expect(result.success).toBe(true);
 		if (result.success) {
@@ -56,13 +67,13 @@ describe("ActionRegistry", () => {
 	});
 
 	it("safeParse() returns failure for invalid params", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const result = registry.safeParse("take", {});
 		expect(result.success).toBe(false);
 	});
 
 	it("safeParse() returns failure for unknown action", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const result = registry.safeParse("fly", {});
 		expect(result.success).toBe(false);
 		if (!result.success) {
@@ -71,7 +82,7 @@ describe("ActionRegistry", () => {
 	});
 
 	it("register() adds a custom action", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const praySchema = z.object({ target: z.string().optional() });
 
 		registry.register("pray", {
@@ -90,7 +101,7 @@ describe("ActionRegistry", () => {
 	});
 
 	it("getDescriptions() excludes empty descriptions (internal events)", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		const descriptions = registry.getDescriptions();
 
 		// Internal events have empty descriptions
@@ -117,7 +128,7 @@ describe("ActionRegistry", () => {
 	});
 
 	it("getDescriptions() includes custom action descriptions", () => {
-		const registry = new ActionRegistry();
+		const registry = createRegistryWithCoreActions();
 		registry.register("pray", {
 			schema: z.object({}),
 			description: "pray(): Pray.",

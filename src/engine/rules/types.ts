@@ -1,6 +1,6 @@
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
-import type { CoreEventName, CoreEventParamsMap } from "./action-registry";
+import type { CoreEventName, CoreEventParamsMap } from "./core-actions";
 
 // ─── Event Names & Params ────────────────────────────────────────────────────
 
