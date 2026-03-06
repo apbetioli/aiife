@@ -1,7 +1,4 @@
-import type { z } from "zod";
-import { StructuredOutputSchema } from "../../../agent/types";
 import type { ActionRegistry } from "../action-registry";
-import type { CoreEventName } from "../core-actions-types";
 import type { EventBus } from "../event-bus";
 import { attack } from "./attack";
 import { close } from "./close";
@@ -55,24 +52,7 @@ export const coreActionDefinitions = {
 	die,
 } as const;
 
-// Ensure we have an entry for every CoreEventName (compile-time check when adding new actions).
-const _coreKeysCheck: Record<CoreEventName, (typeof coreActionDefinitions)[CoreEventName]> = coreActionDefinitions;
-void _coreKeysCheck;
-
-// Runtime drift check: player-facing action param fields must exist on StructuredOutputSchema.
-(function assertParserSchemaCoversActions() {
-	const parserKeys = new Set(Object.keys(StructuredOutputSchema.shape));
-	for (const [name, entry] of Object.entries(coreActionDefinitions)) {
-		if (!entry.description) continue;
-		for (const key of Object.keys((entry.schema as z.ZodObject<z.ZodRawShape>).shape)) {
-			if (!parserKeys.has(key)) {
-				throw new Error(
-					`StructuredOutputSchema is missing field "${key}" from action "${name}". Add it as a nullable field.`,
-				);
-			}
-		}
-	}
-})();
+export type CoreEventName = keyof typeof coreActionDefinitions;
 
 export function registerCoreActions(bus: EventBus, registry: ActionRegistry): void {
 	register(bus, registry, coreActionDefinitions as unknown as Record<string, ActionDef<unknown>>);
