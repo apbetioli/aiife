@@ -39,6 +39,7 @@ export class ActionRegistry {
 		return entry.schema.safeParse(params);
 	}
 
+	/** Returns name → description for entries with non-empty description (excludes internal events like tick, enter, exit). */
 	getDescriptions(): Record<string, string> {
 		return Object.fromEntries(
 			[...this.actions].filter(([, entry]) => entry.description).map(([name, entry]) => [name, entry.description]),

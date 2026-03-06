@@ -16,7 +16,7 @@ describe("EventBus", () => {
 		const calls: string[] = [];
 
 		bus.on("examine", (event, state, _w) => {
-			calls.push(event.params.objects[0]);
+			calls.push((event.params.objects as string[])[0]);
 			return state;
 		});
 

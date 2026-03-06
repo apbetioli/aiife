@@ -1,15 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { ActionRegistry } from "./action-registry";
-import type { CoreActionContext } from "./core-actions";
 import { coreActionDefinitions, registerCoreActions } from "./core-actions";
 import { EventBus } from "./event-bus";
-import { executeAction } from "./executor";
 
 function createRegistryWithCoreActions(): ActionRegistry {
 	const bus = new EventBus();
 	const registry = new ActionRegistry();
-	registerCoreActions(bus, registry, { bus, executeAction } as CoreActionContext);
+	registerCoreActions(bus, registry);
 	return registry;
 }
 
@@ -34,7 +32,7 @@ describe("ActionRegistry", () => {
 		expect(registry.has("fly")).toBe(false);
 	});
 
-	it("names() returns all core action names", () => {
+	it("names() returns all core action names (drift check: registry stays in sync with core definitions)", () => {
 		const registry = createRegistryWithCoreActions();
 		const names = registry.names();
 		const expected = Object.keys(coreActionDefinitions);
