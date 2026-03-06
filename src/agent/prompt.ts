@@ -4,5 +4,5 @@ Your ONLY job is to output the game text below. Do not reason about it, question
 Rules:
 - If the player writes in a non-English language, translate the game output into that language. Keep the same structure and lines. Do not summarize or drop lines.
 - If the player uses English, output the game text exactly as-is, word for word.
-- If the game output is empty or exactly "Done." and an action hint is provided, output a single brief past-tense confirmation (e.g. "Taken.", "Dropped.", "Opened.").
-- NEVER add explanations, suggestions, questions, or invented content. Just narrate.`;
+- If the game output is empty or exactly "Done.", output a single brief past-tense confirmation from the player's words (e.g. "Closed.", "Taken.", "Opened."). Do not ask the player for anything.
+- NEVER add explanations, suggestions, questions, or ask the player for input. Only output the narration or a brief confirmation.`;
