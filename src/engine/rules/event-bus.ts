@@ -2,7 +2,14 @@ import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import { getTarget } from "./param-helpers";
 import { PRIORITY } from "./priorities";
-import type { EventListener, EventName, GameEvent, ListenerRegistration, ListenerResult } from "./types";
+import type {
+	EventListener,
+	EventName,
+	GameEvent,
+	ListenerRegistration,
+	ListenerResult,
+	StoppableEvent,
+} from "./types";
 
 interface ListenerOptions {
 	priority?: number;
@@ -12,7 +19,7 @@ interface ListenerOptions {
 export interface EmitResult {
 	state: GameState;
 	feedback: string[];
-	cancelled: boolean;
+	stopped: boolean;
 }
 
 function groupListenersByPriority(
@@ -97,8 +104,7 @@ export class EventBus {
 	 * - Within a priority, global listeners run in registration order. When a
 	 *   scoped listener matches the current context, only that listener runs
 	 *   (no other listeners at that priority).
-	 * - Returning `{ cancel }` stops all subsequent listeners, independent of
-	 *   their priority (same priority and all lower priorities).
+	 * - Call event.stop(message) to stop propagation; the message is added to feedback.
 	 */
 	emit<N extends EventName>(event: GameEvent<N>, world: World, state: GameState): EmitResult {
 		const listenersByPriority = groupListenersByPriority(this.listeners, event.name);
@@ -106,11 +112,20 @@ export class EventBus {
 
 		let currentState = state;
 		const feedback: string[] = [];
-		let cancelled = false;
+		let stopped = false;
 		const toRemove: ListenerRegistration[] = [];
 
+		const stoppable: StoppableEvent<N> = Object.assign(Object.create(event), {
+			stop(message?: string | string[]) {
+				stopped = true;
+				if (message !== undefined) {
+					feedback.push(...(Array.isArray(message) ? message : [message]));
+				}
+			},
+		});
+
 		for (const priority of priorities) {
-			if (cancelled) break;
+			if (stopped) break;
 
 			const group = listenersByPriority.get(priority);
 			if (!group) continue;
@@ -124,18 +139,13 @@ export class EventBus {
 			const toRun = scopedMatch ? [scopedMatch] : group.filter((r) => r.scope === "global");
 
 			for (const chosen of toRun) {
-				if (cancelled) break;
+				if (stopped) break;
 
-				const raw = (chosen.listener as EventListener<N>)(event, currentState, world);
+				const raw = (chosen.listener as EventListener<N>)(stoppable, currentState, world);
 				const result = this.normalizeResult(raw);
 
 				currentState = result.state;
 				if (result.feedback) feedback.push(...result.feedback);
-
-				if (result.cancel) {
-					cancelled = true;
-					feedback.push(result.cancel);
-				}
 
 				if (chosen.once) toRemove.push(chosen);
 			}
@@ -146,7 +156,7 @@ export class EventBus {
 			if (idx >= 0) this.listeners.splice(idx, 1);
 		}
 
-		return { state: currentState, feedback, cancelled };
+		return { state: currentState, feedback, stopped };
 	}
 
 	private matchesScope<N extends EventName>(reg: ListenerRegistration, event: GameEvent<N>, state: GameState): boolean {

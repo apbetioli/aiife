@@ -25,6 +25,7 @@ export type {
 	ListenerRegistration,
 	ListenerResult,
 	ListenerScope,
+	StoppableEvent,
 } from "./types";
 
 /** Optional setup function that game modules can export to register custom actions/listeners. */

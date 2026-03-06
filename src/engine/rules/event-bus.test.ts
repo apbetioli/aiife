@@ -179,9 +179,10 @@ describe("EventBus", () => {
 
 		bus.on(
 			"take",
-			(_event, state, _w) => {
+			(event, state, _w) => {
 				order.push("guard");
-				return { state, cancel: "Nope." };
+				event.stop("Nope.");
+				return state;
 			},
 			{ priority: 50 },
 		);
@@ -199,7 +200,7 @@ describe("EventBus", () => {
 		const result = bus.emit(event, world, freshState());
 
 		expect(order).toEqual(["guard"]);
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("Nope.");
 	});
 
@@ -217,9 +218,10 @@ describe("EventBus", () => {
 		);
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(event, state, _w) => {
 				order.push("second");
-				return { state, cancel: "Stop" };
+				event.stop("Stop");
+				return state;
 			},
 			{ priority: 100 },
 		);
@@ -236,7 +238,7 @@ describe("EventBus", () => {
 		const result = bus.emit(event, world, freshState());
 
 		expect(order).toEqual(["first", "second"]);
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("Stop");
 	});
 
@@ -245,8 +247,9 @@ describe("EventBus", () => {
 
 		bus.on(
 			"take",
-			(_event, state, _w) => {
-				return { state, cancel: "You can't take that." };
+			(event, state, _w) => {
+				event.stop("You can't take that.");
+				return state;
 			},
 			{ priority: 50 },
 		);
@@ -254,7 +257,7 @@ describe("EventBus", () => {
 		const event = new GameEvent("take", { objects: ["table"] });
 		const result = bus.emit(event, world, freshState());
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("You can't take that.");
 	});
 

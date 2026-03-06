@@ -22,7 +22,7 @@ describe("executeAction", () => {
 			objects: ["lamp"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).toContain("lamp");
 		expect(result.state.rooms.room_a.contains).not.toContain("lamp");
 	});
@@ -46,7 +46,7 @@ describe("executeAction", () => {
 			objects: ["lamp", "gem"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).toContain("lamp");
 		expect(result.state.player.inventory).toContain("gem");
 		expect(result.state.rooms.room_a.contains).not.toContain("lamp");
@@ -59,7 +59,7 @@ describe("executeAction", () => {
 			objects: ["table"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("You can't take that.");
 	});
 
@@ -70,7 +70,7 @@ describe("executeAction", () => {
 			objects: ["sword"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("You're already carrying that.");
 	});
 
@@ -83,7 +83,7 @@ describe("executeAction", () => {
 			objects: ["sword"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).not.toContain("sword");
 		expect(result.state.rooms.room_a.contains).toContain("sword");
 	});
@@ -100,7 +100,7 @@ describe("executeAction", () => {
 			objects: ["sword", "lamp"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).not.toContain("sword");
 		expect(result.state.player.inventory).not.toContain("lamp");
 		expect(result.state.rooms.room_a.contains).toContain("sword");
@@ -117,7 +117,7 @@ describe("executeAction", () => {
 			objects: ["sword", "lamp"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).toHaveLength(0);
 		expect(result.state.rooms.room_a.contains).toContain("sword");
 		expect(result.state.rooms.room_a.contains).toContain("lamp");
@@ -127,7 +127,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "drop", { objects: [] });
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback.some((m) => m.includes("Drop what"))).toBe(true);
 	});
 
@@ -138,7 +138,7 @@ describe("executeAction", () => {
 			objects: ["lamp", "gem"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback.some((m) => m.includes("not carrying"))).toBe(true);
 	});
 
@@ -151,7 +151,7 @@ describe("executeAction", () => {
 			objects: ["chest"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.objects.chest.state.open).toBe(true);
 	});
 
@@ -162,7 +162,7 @@ describe("executeAction", () => {
 			objects: ["door"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("It's locked.");
 	});
 
@@ -176,7 +176,7 @@ describe("executeAction", () => {
 			objects: ["chest"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("It's already open.");
 	});
 
@@ -192,7 +192,7 @@ describe("executeAction", () => {
 			objects: ["chest"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.objects.chest.state.open).toBe(false);
 	});
 
@@ -203,7 +203,7 @@ describe("executeAction", () => {
 			objects: ["chest"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("It's already closed.");
 	});
 
@@ -224,7 +224,7 @@ describe("executeAction", () => {
 			objects: ["door", "sword"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.objects.door.state.locked).toBe(false);
 	});
 
@@ -243,7 +243,7 @@ describe("executeAction", () => {
 			objects: ["door", "sword"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("That doesn't fit the lock.");
 	});
 
@@ -254,7 +254,7 @@ describe("executeAction", () => {
 			objects: ["door"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("You don't have anything to unlock it with.");
 	});
 
@@ -267,7 +267,7 @@ describe("executeAction", () => {
 			direction: "south",
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.current_room).toBe("room_b");
 		expect(result.state.rooms.room_b.state.visited).toBe(true);
 	});
@@ -279,7 +279,7 @@ describe("executeAction", () => {
 			direction: "north",
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("The door is locked.");
 	});
 
@@ -291,7 +291,7 @@ describe("executeAction", () => {
 			objects: ["lamp"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.objects.lamp.state.examined).toBe(true);
 	});
 
@@ -314,7 +314,7 @@ describe("executeAction", () => {
 			preposition: "behind",
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.feedback).toContain("A small key is hidden behind the chest.");
 		expect(result.state.objects.chest?.state.examined).toBe(true);
 	});
@@ -325,7 +325,7 @@ describe("executeAction", () => {
 			objects: ["lamp"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.feedback).toContain("A brass lamp.");
 	});
 
@@ -346,7 +346,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "look", {});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.feedback.length).toBeGreaterThan(0);
 		const text = result.feedback.join(" ");
 		expect(text).toContain("Room A");
@@ -361,7 +361,7 @@ describe("executeAction", () => {
 		// sword is in inventory
 		const result = executeAction(bus, world, state, "inventory", {});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.feedback.join(" ")).toContain("iron sword");
 	});
 
@@ -385,7 +385,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "quit", {});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.player.state.quit).toBe(true);
 		expect(result.feedback.join(" ")).toContain("Goodbye!");
 	});
