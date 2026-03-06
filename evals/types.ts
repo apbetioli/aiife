@@ -94,3 +94,8 @@ export interface StructuredOutputDatasetEntry {
 	target: StructuredOutputEvalTarget;
 	metadata?: { description?: string };
 }
+
+export type StructuredOutputResult = {
+	action: string;
+	params: Record<string, unknown>;
+};

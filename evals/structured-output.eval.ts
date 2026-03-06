@@ -1,6 +1,5 @@
 import { evaluate } from "@lmnr-ai/lmnr";
 import { getEvalModelId } from "../src/agent/model";
-import type { StructuredOutputResult } from "../src/agent/types";
 import drop from "./data/intent-recognition/drop.json" with { type: "json" };
 import examine from "./data/intent-recognition/examine.json" with { type: "json" };
 import go from "./data/intent-recognition/go.json" with { type: "json" };
@@ -14,7 +13,12 @@ import talk from "./data/intent-recognition/talk.json" with { type: "json" };
 import use from "./data/intent-recognition/use.json" with { type: "json" };
 import { actionSelectionScore, combinedIntentScore, parameterAccuracyScore } from "./structured-output-evaluators";
 import { structuredOutputExecutor } from "./structured-output-executor";
-import type { StructuredOutputDatasetEntry, StructuredOutputEvalData, StructuredOutputEvalTarget } from "./types";
+import type {
+	StructuredOutputDatasetEntry,
+	StructuredOutputEvalData,
+	StructuredOutputEvalTarget,
+	StructuredOutputResult,
+} from "./types";
 
 const dataset = [
 	...go,

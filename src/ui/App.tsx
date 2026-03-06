@@ -30,7 +30,7 @@ export function App({ world, setup }: AppProps) {
 		const engine = new GameEngine(world, setup);
 		const intro = engine.start();
 		const agent = new GameAgent(createParserModel(), engine, createNarratorModel());
-		return { agent: agent, introMessage: intro.message };
+		return { agent: agent, introMessage: intro };
 	}, [world, setup]);
 	const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: introMessage }]);
 	const [conversationHistory, setConversationHistory] = useState<ModelMessage[]>([]);

@@ -1,4 +1,4 @@
-import type { ActionResult, StructuredOutput } from "../agent/types";
+import type { StructuredOutput } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
@@ -40,15 +40,14 @@ export class GameEngine {
 		this.state = buildInitialState(world);
 	}
 
-	start(): ActionResult {
+	start(): string {
 		const startResult = executeAction(this.bus, this.world, this.state, "game:start", {});
 		this.state = startResult.state;
 
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
 		this.state = lookResult.state;
 
-		const message = [...startResult.feedback, ...lookResult.feedback].join("\n");
-		return { message, success: true };
+		return [...startResult.feedback, ...lookResult.feedback].join("\n");
 	}
 
 	getParserContext(): ParserContext {
@@ -59,21 +58,15 @@ export class GameEngine {
 		return this.registry.getDescriptions();
 	}
 
-	runAction(intent: StructuredOutput): ActionResult {
+	runAction(intent: StructuredOutput): string {
 		// Conversational response — no game action
 		if (intent.action === "respond") {
-			return {
-				message: intent.message ?? "",
-				success: true,
-			};
+			return intent.message ?? "";
 		}
 
 		const action = intent.action;
 		if (!this.registry.has(action)) {
-			return {
-				message: intent.message ?? "I don't understand that.",
-				success: false,
-			};
+			return intent.message ?? "I don't understand that.";
 		}
 
 		// Save state before mutation for undo
@@ -88,45 +81,32 @@ export class GameEngine {
 		this.state = tickResult.state;
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
-		const message = allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? "Done.");
-
-		return {
-			message,
-			success: !result.stopped,
-			gameOver: false,
-			isVictory: false,
-		};
+		return allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? "Done.");
 	}
 
-	undo(): ActionResult {
+	undo(): string {
 		const prev = this.history.pop();
 		if (!prev) {
-			return { message: "Nothing to undo.", success: false };
+			return "Nothing to undo.";
 		}
 		this.state = prev;
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
-		return { message: lookResult.feedback.join("\n"), success: true };
+		return lookResult.feedback.join("\n");
 	}
 
 	save(): SaveFile {
 		return save(this.state);
 	}
 
-	restore(file: unknown): ActionResult {
+	restore(file: unknown): string {
 		const restored = load(file);
 		if (restored.world_id !== this.world.id) {
-			return {
-				message: `Save is for "${restored.world_id}", but current game is "${this.world.id}".`,
-				success: false,
-			};
+			return `Save is for "${restored.world_id}", but current game is "${this.world.id}".`;
 		}
 		this.pushHistory();
 		this.state = restored;
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
-		return {
-			message: `Game restored.\n${lookResult.feedback.join("\n")}`,
-			success: true,
-		};
+		return `Game restored.\n${lookResult.feedback.join("\n")}`;
 	}
 
 	isGameOver(): boolean {
