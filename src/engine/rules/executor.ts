@@ -29,7 +29,7 @@ export function executeUntrustedAction(
 		return {
 			state,
 			feedback: [result.error.issues.map((i) => i.message).join("\n")],
-			cancelled: true,
+			stopped: true,
 		};
 	}
 	return bus.emit(new GameEvent(action, result.data as Record<string, unknown>), world, state);

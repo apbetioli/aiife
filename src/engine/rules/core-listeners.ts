@@ -21,7 +21,10 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 
 	bus.on("take", (event, state, _world) => {
 		const ids = getObjectIds(event.params);
-		if (ids.length === 0) return { state, cancel: "Take what?" };
+		if (ids.length === 0) {
+			event.stop("Take what?");
+			return state;
+		}
 
 		const canTake = (id: string) => state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
 
@@ -35,8 +38,12 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 		}
 
 		if (fromRoom.length === 0 && fromContainer.length === 0) {
-			if (ids.some((id) => isInInventory(state, id))) return { state, cancel: "You're already carrying that." };
-			return { state, cancel: "You can't take that." };
+			if (ids.some((id) => isInInventory(state, id))) {
+				event.stop("You're already carrying that.");
+				return state;
+			}
+			event.stop("You can't take that.");
+			return state;
 		}
 
 		let nextState = state;
@@ -55,8 +62,12 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 		const ids = getObjectIds(event.params);
 		const toDrop = ids.filter((id) => isInInventory(state, id));
 		if (toDrop.length === 0) {
-			if (ids.length === 0) return { state, cancel: "Drop what?" };
-			return { state, cancel: "You're not carrying any of those." };
+			if (ids.length === 0) {
+				event.stop("Drop what?");
+				return state;
+			}
+			event.stop("You're not carrying any of those.");
+			return state;
 		}
 		const roomId = state.player.current_room;
 		let nextState = state;
@@ -70,13 +81,28 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 
 	bus.on("open", (event, state, world) => {
 		const target = getTarget(event.params);
-		if (!target) return { state, cancel: "Open what?" };
+		if (!target) {
+			event.stop("Open what?");
+			return state;
+		}
 		const obj = world.objects[target];
 		const objState = state.objects[target];
-		if (!obj || !objState) return { state, cancel: "You don't see that here." };
-		if (obj.type !== "container" && obj.type !== "door") return { state, cancel: "You can't open that." };
-		if (objState.state.locked === true) return { state, cancel: "It's locked." };
-		if (objState.state.open === true) return { state, cancel: "It's already open." };
+		if (!obj || !objState) {
+			event.stop("You don't see that here.");
+			return state;
+		}
+		if (obj.type !== "container" && obj.type !== "door") {
+			event.stop("You can't open that.");
+			return state;
+		}
+		if (objState.state.locked === true) {
+			event.stop("It's locked.");
+			return state;
+		}
+		if (objState.state.open === true) {
+			event.stop("It's already open.");
+			return state;
+		}
 		const nextState = setObjectState(state, target, "open", true);
 
 		const contents = (objState?.contains ?? []).map((id) => world.objects[id]?.name).filter(Boolean);
@@ -91,12 +117,24 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 
 	bus.on("close", (event, state, world) => {
 		const target = getTarget(event.params);
-		if (!target) return { state, cancel: "Close what?" };
+		if (!target) {
+			event.stop("Close what?");
+			return state;
+		}
 		const obj = world.objects[target];
 		const objState = state.objects[target];
-		if (!obj || !objState) return { state, cancel: "You don't see that here." };
-		if (obj.type !== "container" && obj.type !== "door") return { state, cancel: "You can't close that." };
-		if (objState.state.open === false) return { state, cancel: "It's already closed." };
+		if (!obj || !objState) {
+			event.stop("You don't see that here.");
+			return state;
+		}
+		if (obj.type !== "container" && obj.type !== "door") {
+			event.stop("You can't close that.");
+			return state;
+		}
+		if (objState.state.open === false) {
+			event.stop("It's already closed.");
+			return state;
+		}
 		return { state: setObjectState(state, target, "open", false) };
 	});
 
@@ -105,11 +143,16 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 	bus.on("unlock", (event, state, world) => {
 		const target = getTarget(event.params);
 		const instrument = getInstrument(event.params);
-		if (!instrument || !isInInventory(state, instrument))
-			return { state, cancel: "You don't have anything to unlock it with." };
+		if (!instrument || !isInInventory(state, instrument)) {
+			event.stop("You don't have anything to unlock it with.");
+			return state;
+		}
 		const obj = world.objects[target];
 		const requiredKey = obj?.requires_instrument?.unlock;
-		if (requiredKey && instrument !== requiredKey) return { state, cancel: "That doesn't fit the lock." };
+		if (requiredKey && instrument !== requiredKey) {
+			event.stop("That doesn't fit the lock.");
+			return state;
+		}
 		return { state: setObjectState(state, target, "locked", false) };
 	});
 
@@ -126,13 +169,15 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 	bus.on("examine", (event, state, world) => {
 		const targetId = getTarget(event.params);
 		if (!targetId) {
-			return { state, cancel: "Examine what?" };
+			event.stop("Examine what?");
+			return state;
 		}
 		const obj = world.objects[targetId];
 		const objState = state.objects[targetId];
 		const notHere = !obj || !objState || (!isInRoom(state, targetId) && !isInInventory(state, targetId));
 		if (notHere) {
-			return { state, cancel: "You don't see that here." };
+			event.stop("You don't see that here.");
+			return state;
 		}
 		const preposition = event.params.preposition?.trim();
 		const description = resolveObjectDescriptionWithPreposition(obj, objState, preposition || undefined);
@@ -145,9 +190,14 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 	bus.on("go", (event, state, world) => {
 		const room = world.rooms[state.player.current_room];
 		const exit = room?.exits[event.params.direction];
-		if (!exit) return { state, cancel: "You can't go that way." };
-		if (exit.condition && !evaluateCondition(exit.condition, state))
-			return { state, cancel: exit.locked_message ?? "The way is blocked." };
+		if (!exit) {
+			event.stop("You can't go that way.");
+			return state;
+		}
+		if (exit.condition && !evaluateCondition(exit.condition, state)) {
+			event.stop(exit.locked_message ?? "The way is blocked.");
+			return state;
+		}
 
 		const from = state.player.current_room;
 		const to = exit.leads_to;
@@ -246,43 +296,68 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 
 	bus.on("talk", (event, state, world) => {
 		const target = getTarget(event.params);
-		if (!target) return { state, cancel: "Talk to whom?" };
+		if (!target) {
+			event.stop("Talk to whom?");
+			return state;
+		}
 		const obj = world.objects[target];
-		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target)))
-			return { state, cancel: "You don't see anyone by that name here." };
-		return { state, cancel: `${obj.name} doesn't seem interested in talking.` };
+		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target))) {
+			event.stop("You don't see anyone by that name here.");
+			return state;
+		}
+		event.stop(`${obj.name} doesn't seem interested in talking.`);
+		return state;
 	});
 
 	// ── use ───────────────────────────────────────────────────────────────
 
 	bus.on("use", (event, state, world) => {
 		const target = getTarget(event.params);
-		if (!target) return { state, cancel: "Use what?" };
+		if (!target) {
+			event.stop("Use what?");
+			return state;
+		}
 		const obj = world.objects[target];
-		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target)))
-			return { state, cancel: "You don't see that here." };
-		return { state, cancel: `You can't figure out how to use the ${obj.name}.` };
+		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target))) {
+			event.stop("You don't see that here.");
+			return state;
+		}
+		event.stop(`You can't figure out how to use the ${obj.name}.`);
+		return state;
 	});
 
 	// ── move ──────────────────────────────────────────────────────────────
 
 	bus.on("move", (event, state, world) => {
 		const target = getTarget(event.params);
-		if (!target) return { state, cancel: "Move what?" };
+		if (!target) {
+			event.stop("Move what?");
+			return state;
+		}
 		const obj = world.objects[target];
-		if (!obj || !isInRoom(state, target)) return { state, cancel: "You don't see that here." };
-		return { state, cancel: `You can't move the ${obj.name}.` };
+		if (!obj || !isInRoom(state, target)) {
+			event.stop("You don't see that here.");
+			return state;
+		}
+		event.stop(`You can't move the ${obj.name}.`);
+		return state;
 	});
 
 	// ── attack ────────────────────────────────────────────────────────────
 
 	bus.on("attack", (event, state, world) => {
 		const target = getTarget(event.params);
-		if (!target) return { state, cancel: "Attack what?" };
+		if (!target) {
+			event.stop("Attack what?");
+			return state;
+		}
 		const obj = world.objects[target];
-		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target)))
-			return { state, cancel: "You don't see that here." };
-		return { state, cancel: `Attacking the ${obj.name} has no effect.` };
+		if (!obj || (!isInRoom(state, target) && !isInInventory(state, target))) {
+			event.stop("You don't see that here.");
+			return state;
+		}
+		event.stop(`Attacking the ${obj.name} has no effect.`);
+		return state;
 	});
 
 	// ── quit ──────────────────────────────────────────────────────────────
@@ -294,10 +369,8 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 		};
 	});
 
-	bus.on("die", (_event, state, _world) => {
-		return {
-			state: setPlayerState(state, "dead", true),
-			cancel: "You died!",
-		};
+	bus.on("die", (event, state, _world) => {
+		event.stop("You died!");
+		return { state: setPlayerState(state, "dead", true) };
 	});
 }

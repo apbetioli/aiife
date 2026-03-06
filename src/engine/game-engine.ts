@@ -88,11 +88,11 @@ export class GameEngine {
 		this.state = tickResult.state;
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
-		const message = allFeedback.length > 0 ? allFeedback.join(" ") : (intent.message ?? "Done.");
+		const message = allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? "Done.");
 
 		return {
 			message,
-			success: !result.cancelled,
+			success: !result.stopped,
 			gameOver: false,
 			isVictory: false,
 		};

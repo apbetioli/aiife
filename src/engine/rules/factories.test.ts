@@ -18,7 +18,7 @@ describe("open and close container", () => {
 			objects: ["chest"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.objects.chest.state.open).toBe(true);
 		// gem should now be in the room
 		expect(result.state.rooms.room_a.contains).toContain("gem");
@@ -73,7 +73,7 @@ describe("unlock with requires_instrument", () => {
 			objects: ["door", "sword"],
 		});
 
-		expect(result.cancelled).toBe(false);
+		expect(result.stopped).toBe(false);
 		expect(result.state.objects.door.state.locked).toBe(false);
 	});
 
@@ -96,7 +96,7 @@ describe("unlock with requires_instrument", () => {
 			objects: ["door", "sword"],
 		});
 
-		expect(result.cancelled).toBe(true);
+		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("That doesn't fit the lock.");
 	});
 });

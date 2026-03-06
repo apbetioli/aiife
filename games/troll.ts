@@ -121,10 +121,8 @@ export const setup: GameSetup = (bus) => {
 	bus.on("attack", "troll", (event, state, world) => {
 		const troll = state.objects.troll;
 		if (troll?.state.knocked_out === true) {
-			return {
-				state,
-				cancel: "The troll is already unconscious. No need for further violence.",
-			};
+			event.stop("The troll is already unconscious. No need for further violence.");
+			return state;
 		}
 
 		const weapon = (event.params.objects as string[])?.[1];
@@ -135,11 +133,8 @@ export const setup: GameSetup = (bus) => {
 		if (!weapon) {
 			if (!hasMetalSword && !hasWoodenSword) {
 				const result = executeAction(bus, world, state, "die", {});
-				return {
-					state: result.state,
-					feedback: ["You swing your fists at the troll. He laughs and shoves you back."],
-					cancel: result.feedback,
-				};
+				event.stop(["You swing your fists at the troll. He laughs and shoves you back.", ...result.feedback]);
+				return result.state;
 			}
 			// Auto-pick best weapon
 			if (hasMetalSword) {
@@ -179,25 +174,29 @@ export const setup: GameSetup = (bus) => {
 			};
 		}
 
-		return { state, cancel: "You don't have that weapon." };
+		event.stop("You don't have that weapon.");
+		return state;
 	});
 
 	// ── talk to troll ─────────────────────────────────────────────────────
-	bus.on("talk", "troll", (_event, state) => {
+	bus.on("talk", "troll", (event, state) => {
 		const troll = state.objects.troll;
 		if (troll?.state.knocked_out === true) {
-			return { state, cancel: "The troll is unconscious. It snores loudly." };
+			event.stop("The troll is unconscious. It snores loudly.");
+			return state;
 		}
-		return { state, cancel: 'The troll grunts: "Me no talk. Me SMASH!"' };
+		event.stop('The troll grunts: "Me no talk. Me SMASH!"');
+		return state;
 	});
 
 	// ── intercept take ─────────────────────────────────────────────────────
 
 	bus.on(
 		"take",
-		(_event, state) => {
+		(event, state) => {
 			if (state.player.state.dead) {
-				return { state, cancel: "You are dead. You cannot take anything." };
+				event.stop("You are dead. You cannot take anything.");
+				return state;
 			}
 			return state;
 		},
@@ -217,9 +216,7 @@ export const setup: GameSetup = (bus) => {
 
 	registerDaemon(bus, "sword-glow-effect", {
 		condition: (world, state) => {
-			const hasMetalSword = isInInventory(state, "metal_sword");
-			const _isTrollNearby = isTrollNearby(state, world);
-			return !state.player.state.dead && hasMetalSword && _isTrollNearby;
+			return !state.player.state.dead && isInInventory(state, "metal_sword") && isTrollNearby(state, world);
 		},
 		effect: (_, state) => state,
 		feedback: () => "The sword glows with a green light.",

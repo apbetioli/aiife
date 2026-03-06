@@ -23,14 +23,18 @@ export class GameEvent<N extends EventName = EventName> {
 
 // ─── Listener ────────────────────────────────────────────────────────────────
 
+/** Event passed to listeners; call stop() to cancel propagation (message goes to feedback). */
+export type StoppableEvent<N extends EventName> = GameEvent<N> & {
+	stop(message?: string | string[]): void;
+};
+
 export type ListenerResult = {
 	state: GameState;
-	cancel?: string;
 	feedback?: string[];
 };
 
 export type EventListener<N extends EventName> = (
-	event: GameEvent<N>,
+	event: StoppableEvent<N>,
 	state: GameState,
 	world: World,
 ) => ListenerResult | GameState;
