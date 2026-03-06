@@ -62,9 +62,6 @@ export function createNarratorModel(): LanguageModel {
 	return createOptionalModel("NARRATOR_");
 }
 
-/** Backwards compat alias. */
-export const createModel = createParserModel;
-
 /** Eval model. Env: EVAL_PROVIDER, EVAL_ANTHROPIC_MODEL, etc. */
 export function createEvalModel(): LanguageModel {
 	return createOptionalModel("EVAL_");

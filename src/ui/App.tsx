@@ -19,7 +19,7 @@ interface ActiveToolCall extends ToolCallProps {
 	id: string;
 }
 
-export interface AppProps {
+interface AppProps {
 	world: World;
 	setup?: GameSetup;
 }
@@ -27,10 +27,10 @@ export interface AppProps {
 export function App({ world, setup }: AppProps) {
 	const { exit } = useApp();
 	const { agent, introMessage } = useMemo(() => {
-		const e = new GameEngine(world, setup);
-		const intro = e.start();
-		const a = new GameAgent(createParserModel(), e, createNarratorModel());
-		return { agent: a, introMessage: intro.message };
+		const engine = new GameEngine(world, setup);
+		const intro = engine.start();
+		const agent = new GameAgent(createParserModel(), engine, createNarratorModel());
+		return { agent: agent, introMessage: intro.message };
 	}, [world, setup]);
 	const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: introMessage }]);
 	const [conversationHistory, setConversationHistory] = useState<ModelMessage[]>([]);

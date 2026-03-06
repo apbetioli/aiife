@@ -3,11 +3,11 @@ import { generateText, Output } from "ai";
 import { createEvalModel } from "../src/agent/model";
 import type { StructuredOutput, StructuredOutputResult } from "../src/agent/types";
 import { StructuredOutputSchema } from "../src/agent/types";
-import { buildStructuredOutputSystemPrompt } from "./structured-output-prompt";
+import { buildIntentSystemPrompt } from "./structured-output-prompt";
 import type { StructuredOutputEvalData } from "./types";
 
 export async function structuredOutputExecutor(data: StructuredOutputEvalData): Promise<StructuredOutputResult> {
-	const systemPrompt = buildStructuredOutputSystemPrompt(data.context, data.availableActions);
+	const systemPrompt = buildIntentSystemPrompt(data.context, data.availableActions);
 
 	const result = await generateText({
 		model: createEvalModel(),

@@ -1,5 +1,7 @@
 import { isInInventory, setObjectState } from "../src/engine/mutators";
-import { executeAction, type GameSetup, PRIORITY, registerDaemon } from "../src/engine/rules";
+import { executeAction, type GameSetup} from "../src/engine/rules";
+import { registerDaemon } from "../src/engine/rules/factories";
+import { PRIORITY } from "../src/engine/rules/priorities";
 import type { GameState } from "../src/engine/types";
 import type { World } from "../src/world/types";
 
