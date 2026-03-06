@@ -1,13 +1,12 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { isInInventory, setObjectState } from "../../mutators";
-import type { ActionDef } from "./types";
-import { getTarget, getInstrument } from "./types";
 import { objectsSchema } from "./schemas";
+import type { ActionDef } from "./types";
+import { getInstrument, getTarget } from "./types";
 
 export const unlock: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,
-	description:
-		"unlock(objects): Unlock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
+	description: "unlock(objects): Unlock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
 	handler: (event, state, world) => {
 		const target = getTarget(event.params as { objects?: string[] });
 		const instrument = getInstrument(event.params as { objects?: string[] });

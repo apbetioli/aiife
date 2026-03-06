@@ -1,33 +1,33 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { StructuredOutputSchema } from "../../../agent/types";
+import type { ActionRegistry } from "../action-registry";
 import type { CoreEventName } from "../core-actions-types";
-import type { ActionDef } from "./types";
-import { registerCoreActions as register } from "./types";
-import { go } from "./go";
-import { take } from "./take";
-import { drop } from "./drop";
-import { open } from "./open";
-import { close } from "./close";
-import { unlock } from "./unlock";
-import { lock } from "./lock";
-import { examine } from "./examine";
-import { use } from "./use";
-import { move } from "./move";
+import type { EventBus } from "../event-bus";
 import { attack } from "./attack";
-import { talk } from "./talk";
+import { close } from "./close";
+import { die } from "./die";
+import { drop } from "./drop";
 import { enter } from "./enter";
+import { examine } from "./examine";
 import { exit } from "./exit";
-import { look } from "./look";
-import { inventory } from "./inventory";
+import { gameEnd } from "./game-end";
+import { gameStart } from "./game-start";
+import { go } from "./go";
 import { help } from "./help";
+import { inventory } from "./inventory";
+import { lock } from "./lock";
+import { look } from "./look";
+import { move } from "./move";
+import { open } from "./open";
 import { quit } from "./quit";
 import { respond } from "./respond";
+import { take } from "./take";
+import { talk } from "./talk";
 import { tick } from "./tick";
-import { gameStart } from "./game-start";
-import { gameEnd } from "./game-end";
-import { die } from "./die";
-import type { ActionRegistry } from "../action-registry";
-import type { EventBus } from "../event-bus";
+import type { ActionDef } from "./types";
+import { registerCoreActions as register } from "./types";
+import { unlock } from "./unlock";
+import { use } from "./use";
 
 export const coreActionDefinitions = {
 	go,
@@ -78,4 +78,4 @@ export function registerCoreActions(bus: EventBus, registry: ActionRegistry): vo
 	register(bus, registry, coreActionDefinitions as unknown as Record<string, ActionDef<unknown>>);
 }
 
-export type { StoppableEventLike, ActionDef } from "./types";
+export type { ActionDef, StoppableEventLike } from "./types";

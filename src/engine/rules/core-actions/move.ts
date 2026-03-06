@@ -1,7 +1,7 @@
-import { z } from "zod";
+import type { z } from "zod";
+import { objectsWithDirectionSchema } from "./schemas";
 import type { ActionDef } from "./types";
 import { resolveTarget } from "./types";
-import { objectsWithDirectionSchema } from "./schemas";
 
 export const move: ActionDef<z.infer<typeof objectsWithDirectionSchema>> = {
 	schema: objectsWithDirectionSchema,
