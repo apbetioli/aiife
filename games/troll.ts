@@ -1,5 +1,10 @@
 import { isInInventory, setObjectState } from "../src/engine/mutators";
-import { type GameSetup, PRIORITY, registerDaemon } from "../src/engine/rules";
+import {
+	executeAction,
+	type GameSetup,
+	PRIORITY,
+	registerDaemon,
+} from "../src/engine/rules";
 import type { GameState } from "../src/engine/types";
 import type { World } from "../src/world/types";
 
@@ -142,10 +147,11 @@ export const setup: GameSetup = (bus) => {
 		// No weapon specified
 		if (!weapon) {
 			if (!hasMetalSword && !hasWoodenSword) {
+				const result = executeAction(bus, world, state, "die", {});
 				return {
-					state,
-					cancel:
-						"You swing your fists at the troll. He laughs and shoves you back.",
+					state: result.state,
+					feedback: ["You swing your fists at the troll. He laughs and shoves you back."],
+					cancel: result.feedback,
 				};
 			}
 			// Auto-pick best weapon
@@ -198,9 +204,23 @@ export const setup: GameSetup = (bus) => {
 		return { state, cancel: 'The troll grunts: "Me no talk. Me SMASH!"' };
 	});
 
+	// ── intercept take ─────────────────────────────────────────────────────
+
+	bus.on(
+		"take",
+		(_event, state) => {
+			if (state.player.state.dead) {
+				return { state, cancel: "You are dead. You cannot take anything." };
+			}
+			return state;
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
 	// ── troll attacks back each turn ──────────────────────────────────────
 	registerDaemon(bus, "troll-counter-attack", {
 		condition: (_, state) =>
+			!state.player.state.dead &&
 			state.player.current_room === "troll_cave" &&
 			state.objects.troll?.state.knocked_out !== true,
 		effect: (_, state) => state,
@@ -213,9 +233,7 @@ export const setup: GameSetup = (bus) => {
 		condition: (world, state) => {
 			const hasMetalSword = isInInventory(state, "metal_sword");
 			const _isTrollNearby = isTrollNearby(state, world);
-			console.error("hasMetalSword", hasMetalSword);
-			console.error("isTrollNearby", _isTrollNearby);
-			return hasMetalSword && _isTrollNearby;
+			return !state.player.state.dead && hasMetalSword && _isTrollNearby;
 		},
 		effect: (_, state) => state,
 		feedback: () => "The sword glows with a green light.",

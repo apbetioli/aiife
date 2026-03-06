@@ -331,4 +331,11 @@ export function registerCoreHandlers(
 			feedback: ["Goodbye!"],
 		};
 	});
+
+	bus.on("die", (_event, state, _world) => {
+		return {
+			state: setPlayerState(state, "dead", true),
+			cancel: "You died!",
+		};
+	});
 }
