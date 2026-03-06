@@ -26,6 +26,11 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 			return state;
 		}
 
+		if (state.player.state.dead) {
+			event.stop("Your hand passes through its object.");
+			return state;
+		}
+
 		const canTake = (id: string) => state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
 
 		const fromRoom = ids.filter((id) => isInRoom(state, id) && canTake(id));
@@ -262,9 +267,14 @@ export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): 
 
 	// ── inventory ─────────────────────────────────────────────────────────
 
-	bus.on("inventory", (_event, state, world) => {
+	bus.on("inventory", (event, state, world) => {
+		if (state.player.state.dead) {
+			event.stop("You have no possessions.");
+			return state;
+		}
 		if (state.player.inventory.length === 0) {
-			return { state, feedback: ["You aren't carrying anything."] };
+			event.stop("You aren't carrying anything.");
+			return state;
 		}
 		const names = state.player.inventory.map((id) => world.objects[id]?.name ?? id);
 		return { state, feedback: [`You are carrying: ${names.join(", ")}.`] };
