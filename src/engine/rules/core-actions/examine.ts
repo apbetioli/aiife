@@ -2,8 +2,8 @@ import type { z } from "zod";
 import { setObjectState } from "../../mutators";
 import { resolveObjectDescriptionWithPreposition } from "../../parser-context";
 import { objectsWithPrepositionSchema } from "./schemas";
+import { resolveTarget } from "./helpers";
 import type { ActionDef } from "./types";
-import { resolveTarget } from "./types";
 
 export const examine: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 	schema: objectsWithPrepositionSchema,

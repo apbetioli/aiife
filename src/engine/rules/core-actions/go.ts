@@ -2,8 +2,8 @@ import type { z } from "zod";
 import { ensureVisited, movePlayer } from "../../mutators";
 import { evaluateCondition } from "../../parser-context";
 import { directionSchema } from "./schemas";
+import { runAction } from "./helpers";
 import type { ActionDef } from "./types";
-import { runAction } from "./types";
 
 const description =
 	"go(direction): Go in a direction. direction must be one of: north, south, east, west, northeast, northwest, southeast, southwest, up, down, in, out. Normalize shorthands to full names: n→north, s→south, e→east, w→west, ne→northeast, nw→northwest, se→southeast, sw→southwest, u→up, d→down (in, out have no common shorthand).";

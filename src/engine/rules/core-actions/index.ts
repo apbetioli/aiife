@@ -21,8 +21,8 @@ import { respond } from "./respond";
 import { take } from "./take";
 import { talk } from "./talk";
 import { tick } from "./tick";
+import { registerCoreActions as register } from "./helpers";
 import type { ActionDef } from "./types";
-import { registerCoreActions as register } from "./types";
 import { unlock } from "./unlock";
 import { use } from "./use";
 
