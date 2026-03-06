@@ -1,7 +1,9 @@
 import type { World } from "../../world/types";
 import { ActionRegistry } from "./action-registry";
-import { registerCoreHandlers } from "./core-listeners";
+import type { CoreActionContext } from "./core-actions";
+import { registerCoreActions } from "./core-actions";
 import { EventBus } from "./event-bus";
+import { executeAction } from "./executor";
 import { registerContainer } from "./factories";
 
 export { ActionRegistry } from "./action-registry";
@@ -26,7 +28,7 @@ export function createRules(
 	const bus = new EventBus();
 	const registry = new ActionRegistry();
 
-	registerCoreHandlers(bus, registry);
+	registerCoreActions(bus, registry, { bus, executeAction } as CoreActionContext);
 
 	// Auto-register containers
 	for (const [id, obj] of Object.entries(world.objects)) {

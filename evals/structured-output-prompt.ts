@@ -1,8 +1,8 @@
-import { coreActions } from "../src/engine/rules/action-registry";
+import { coreActionDefinitions } from "../src/engine/rules/core-actions";
 import type { ParserContext, ScopedObject } from "../src/world/types";
 
 const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
-	Object.entries(coreActions).map(([name, action]) => [name, action.description]),
+	Object.entries(coreActionDefinitions).map(([name, action]) => [name, action.description]),
 );
 
 function buildAvailableActionsPrompt(
