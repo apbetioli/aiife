@@ -1,5 +1,4 @@
-import type { StructuredOutputResult } from "../src/agent/types";
-import type { StructuredOutputEvalTarget } from "./types";
+import type { StructuredOutputEvalTarget, StructuredOutputResult } from "./types";
 
 function isActionAcceptable(action: string, target: StructuredOutputEvalTarget): boolean {
 	const acceptable = target.acceptableActions ?? [target.expectedAction];

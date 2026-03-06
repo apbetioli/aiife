@@ -4,7 +4,6 @@ import type { GameEngine } from "../engine/game-engine";
 import type { AgentCallbacks } from "../types";
 import { NARRATION_SYSTEM_PROMPT } from "./prompt";
 import { filterCompatibleMessages } from "./system/filterMessages";
-import type { ActionResult } from "./types";
 import { StructuredOutputSchema } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
@@ -44,7 +43,7 @@ export class GameAgent {
 
 		const result = this.engine.runAction(intent);
 
-		callbacks.onToolCallEnd(action, result.message);
+		callbacks.onToolCallEnd(action, result);
 
 		const outputText = await this.narrate(result, input, callbacks);
 
@@ -54,11 +53,11 @@ export class GameAgent {
 		return [...recentHistory, { role: "user", content: input }, { role: "assistant", content: outputText }];
 	}
 
-	private async narrate(result: ActionResult, playerInput: string, callbacks: AgentCallbacks): Promise<string> {
-		const fallback = result.message || "Done.";
+	private async narrate(message: string, playerInput: string, callbacks: AgentCallbacks): Promise<string> {
+		const fallback = message || "Done.";
 
 		try {
-			const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
+			const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${message}\nPlayer language (match this): "${playerInput}"`;
 
 			const stream = streamText({
 				model: this.narratorModel,

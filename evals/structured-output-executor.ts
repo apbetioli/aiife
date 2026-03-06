@@ -1,10 +1,10 @@
 import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, Output } from "ai";
 import { createEvalModel } from "../src/agent/model";
-import type { StructuredOutput, StructuredOutputResult } from "../src/agent/types";
+import type { StructuredOutput } from "../src/agent/types";
 import { StructuredOutputSchema } from "../src/agent/types";
 import { buildIntentSystemPrompt } from "./structured-output-prompt";
-import type { StructuredOutputEvalData } from "./types";
+import type { StructuredOutputEvalData, StructuredOutputResult } from "./types";
 
 export async function structuredOutputExecutor(data: StructuredOutputEvalData): Promise<StructuredOutputResult> {
 	const systemPrompt = buildIntentSystemPrompt(data.context, data.availableActions);
