@@ -1,18 +1,12 @@
 import type { StructuredOutputResult } from "../src/agent/types";
 import type { StructuredOutputEvalTarget } from "./types";
 
-function isActionAcceptable(
-	action: string,
-	target: StructuredOutputEvalTarget,
-): boolean {
+function isActionAcceptable(action: string, target: StructuredOutputEvalTarget): boolean {
 	const acceptable = target.acceptableActions ?? [target.expectedAction];
 	return acceptable.includes(action);
 }
 
-function isActionForbidden(
-	action: string,
-	target: StructuredOutputEvalTarget,
-): boolean {
+function isActionForbidden(action: string, target: StructuredOutputEvalTarget): boolean {
 	return (target.forbiddenActions ?? []).includes(action);
 }
 
@@ -43,10 +37,7 @@ function paramValuesMatch(expected: unknown, produced: unknown): boolean {
  * Secondary: action must be in acceptableActions (or expectedAction if not set).
  * Negative: 0 if action is in forbiddenActions, 1 otherwise.
  */
-export function actionSelectionScore(
-	output: StructuredOutputResult,
-	target?: StructuredOutputEvalTarget,
-): number {
+export function actionSelectionScore(output: StructuredOutputResult, target?: StructuredOutputEvalTarget): number {
 	if (!target) return 0;
 	if (target.category === "negative") {
 		return isActionForbidden(output.action, target) ? 0 : 1;
@@ -63,17 +54,10 @@ export function actionSelectionScore(
  * Score = matching keys / union of all keys.
  * Negative: not applied (returns 1). Secondary: only when action is acceptable.
  */
-export function parameterAccuracyScore(
-	output: StructuredOutputResult,
-	target?: StructuredOutputEvalTarget,
-): number {
+export function parameterAccuracyScore(output: StructuredOutputResult, target?: StructuredOutputEvalTarget): number {
 	if (!target) return 0;
 	if (target.category === "negative") return 1;
-	if (
-		target.category === "secondary" &&
-		!isActionAcceptable(output.action, target)
-	)
-		return 0;
+	if (target.category === "secondary" && !isActionAcceptable(output.action, target)) return 0;
 
 	const expectedKeys = Object.keys(target.expectedParams);
 	const producedKeys = Object.keys(output.params);
@@ -99,10 +83,7 @@ export function parameterAccuracyScore(
  * If action is wrong, score is 0 regardless of params.
  * Negative: 0 if forbidden action selected, 1 otherwise (params not weighted).
  */
-export function combinedIntentScore(
-	output: StructuredOutputResult,
-	target?: StructuredOutputEvalTarget,
-): number {
+export function combinedIntentScore(output: StructuredOutputResult, target?: StructuredOutputEvalTarget): number {
 	const actionScore = actionSelectionScore(output, target);
 	if (actionScore === 0) return 0;
 	if (target?.category === "negative") return 1;

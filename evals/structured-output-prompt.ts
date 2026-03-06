@@ -2,10 +2,7 @@ import { coreActions } from "../src/engine/rules/action-registry";
 import type { ParserContext, ScopedObject } from "../src/world/types";
 
 const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
-	Object.entries(coreActions).map(([name, action]) => [
-		name,
-		action.description,
-	]),
+	Object.entries(coreActions).map(([name, action]) => [name, action.description]),
 );
 
 export function buildAvailableActionsPrompt(
@@ -33,14 +30,9 @@ function formatScopedObject(o: ScopedObject): string {
 	return `${o.name} (${tag}) [${o.id}]`;
 }
 
-function formatObjectsInScope(
-	objects: ScopedObject[],
-	source: "room" | "inventory",
-): string {
+function formatObjectsInScope(objects: ScopedObject[], source: "room" | "inventory"): string {
 	const filtered = objects.filter((o) => o.source === source);
-	return filtered.length > 0
-		? filtered.map(formatScopedObject).join(", ")
-		: "none";
+	return filtered.length > 0 ? filtered.map(formatScopedObject).join(", ") : "none";
 }
 
 function joinOrNone(items: string[]): string {
@@ -49,9 +41,7 @@ function joinOrNone(items: string[]): string {
 
 export function buildGameStateSnapshotPrompt(context: ParserContext): string {
 	const exits = joinOrNone(context.available_exits);
-	const blockedExits = joinOrNone(
-		context.blocked_exits.map((e) => e.direction),
-	);
+	const blockedExits = joinOrNone(context.blocked_exits.map((e) => e.direction));
 	const roomObjects = formatObjectsInScope(context.in_scope_objects, "room");
 	const inventory = formatObjectsInScope(context.in_scope_objects, "inventory");
 

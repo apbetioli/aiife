@@ -30,16 +30,12 @@ export function save(state: GameState): SaveFile {
 export function load(file: unknown): GameState {
 	const result = SaveFileSchema.safeParse(file);
 	if (!result.success) {
-		const issues = result.error.issues
-			.map((i) => `  [${i.path.join(".")}] ${i.message}`)
-			.join("\n");
+		const issues = result.error.issues.map((i) => `  [${i.path.join(".")}] ${i.message}`).join("\n");
 		throw new Error(`Invalid save file:\n${issues}`);
 	}
 
 	if (result.data.schema_version !== SCHEMA_VERSION) {
-		throw new Error(
-			`Unsupported save file version: ${result.data.schema_version} (expected ${SCHEMA_VERSION})`,
-		);
+		throw new Error(`Unsupported save file version: ${result.data.schema_version} (expected ${SCHEMA_VERSION})`);
 	}
 
 	return result.data.state;

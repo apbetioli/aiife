@@ -1,10 +1,4 @@
-import {
-	generateText,
-	type LanguageModel,
-	type ModelMessage,
-	Output,
-	streamText,
-} from "ai";
+import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
 import { buildStructuredOutputSystemPrompt } from "../../evals/structured-output-prompt";
 import type { GameEngine } from "../engine/game-engine";
 import type { AgentCallbacks } from "../types";
@@ -33,14 +27,8 @@ export class GameAgent {
 		private narratorModel: LanguageModel = model,
 	) {}
 
-	async run(
-		input: string,
-		conversationHistory: ModelMessage[],
-		callbacks: AgentCallbacks,
-	): Promise<ModelMessage[]> {
-		const recentHistory = filterCompatibleMessages(conversationHistory).slice(
-			-INTENT_HISTORY_LIMIT,
-		);
+	async run(input: string, conversationHistory: ModelMessage[], callbacks: AgentCallbacks): Promise<ModelMessage[]> {
+		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
 
 		const system = buildStructuredOutputSystemPrompt(
 			this.engine.getParserContext(),
@@ -51,11 +39,7 @@ export class GameAgent {
 		const intentResult = await generateText({
 			model: this.model,
 			output: Output.object({ schema: StructuredOutputSchema }),
-			messages: [
-				{ role: "system", content: system },
-				...recentHistory,
-				{ role: "user", content: input },
-			],
+			messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
 			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 		});
 
@@ -78,18 +62,10 @@ export class GameAgent {
 		callbacks.onComplete(outputText);
 
 		// Return only the bounded history window for next call
-		return [
-			...recentHistory,
-			{ role: "user", content: input },
-			{ role: "assistant", content: outputText },
-		];
+		return [...recentHistory, { role: "user", content: input }, { role: "assistant", content: outputText }];
 	}
 
-	private async narrate(
-		result: ActionResult,
-		playerInput: string,
-		callbacks: AgentCallbacks,
-	): Promise<string> {
+	private async narrate(result: ActionResult, playerInput: string, callbacks: AgentCallbacks): Promise<string> {
 		const fallback = result.message || "Done.";
 		try {
 			const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;

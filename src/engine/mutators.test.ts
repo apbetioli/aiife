@@ -73,9 +73,7 @@ describe("mutators", () => {
 
 		it("throws if object not in current room", () => {
 			const state = freshState();
-			expect(() => moveObjectFromRoomToInventory(state, "table")).toThrow(
-				'Object "table" is not in room "room_a"',
-			);
+			expect(() => moveObjectFromRoomToInventory(state, "table")).toThrow('Object "table" is not in room "room_a"');
 		});
 
 		it("does not mutate original state", () => {
@@ -99,9 +97,7 @@ describe("mutators", () => {
 
 		it("throws if object not in inventory", () => {
 			const state = freshState();
-			expect(() =>
-				moveObjectFromInventoryToRoom(state, "lamp", "room_a"),
-			).toThrow('Object "lamp" is not in inventory');
+			expect(() => moveObjectFromInventoryToRoom(state, "lamp", "room_a")).toThrow('Object "lamp" is not in inventory');
 		});
 
 		it("does not mutate original state", () => {
@@ -125,9 +121,9 @@ describe("mutators", () => {
 
 		it("throws if object not in container", () => {
 			const state = freshState();
-			expect(() =>
-				moveObjectFromContainerToInventory(state, "lamp", "chest"),
-			).toThrow('Object "lamp" is not in container "chest"');
+			expect(() => moveObjectFromContainerToInventory(state, "lamp", "chest")).toThrow(
+				'Object "lamp" is not in container "chest"',
+			);
 		});
 
 		it("does not mutate original state", () => {
@@ -151,9 +147,9 @@ describe("mutators", () => {
 
 		it("throws if object not in inventory", () => {
 			const state = freshState();
-			expect(() =>
-				moveObjectFromInventoryToContainer(state, "lamp", "chest"),
-			).toThrow('Object "lamp" is not in inventory');
+			expect(() => moveObjectFromInventoryToContainer(state, "lamp", "chest")).toThrow(
+				'Object "lamp" is not in inventory',
+			);
 		});
 
 		it("does not mutate original state", () => {
@@ -171,12 +167,8 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = moveObjectFromRoomToInventory(state, "lamp");
 
-			const inRooms = Object.values(next.rooms).filter((r) =>
-				r.contains.includes("lamp"),
-			);
-			const inContainers = Object.values(next.objects).filter((o) =>
-				o.contains?.includes("lamp"),
-			);
+			const inRooms = Object.values(next.rooms).filter((r) => r.contains.includes("lamp"));
+			const inContainers = Object.values(next.objects).filter((o) => o.contains?.includes("lamp"));
 			const inInventory = next.player.inventory.includes("lamp") ? 1 : 0;
 
 			expect(inRooms.length + inContainers.length + inInventory).toBe(1);
@@ -186,12 +178,8 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = moveObjectFromInventoryToRoom(state, "sword", "room_a");
 
-			const inRooms = Object.values(next.rooms).filter((r) =>
-				r.contains.includes("sword"),
-			);
-			const inContainers = Object.values(next.objects).filter((o) =>
-				o.contains?.includes("sword"),
-			);
+			const inRooms = Object.values(next.rooms).filter((r) => r.contains.includes("sword"));
+			const inContainers = Object.values(next.objects).filter((o) => o.contains?.includes("sword"));
 			const inInventory = next.player.inventory.includes("sword") ? 1 : 0;
 
 			expect(inRooms.length + inContainers.length + inInventory).toBe(1);
@@ -201,12 +189,8 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = moveObjectFromContainerToInventory(state, "gem", "chest");
 
-			const inRooms = Object.values(next.rooms).filter((r) =>
-				r.contains.includes("gem"),
-			);
-			const inContainers = Object.values(next.objects).filter((o) =>
-				o.contains?.includes("gem"),
-			);
+			const inRooms = Object.values(next.rooms).filter((r) => r.contains.includes("gem"));
+			const inContainers = Object.values(next.objects).filter((o) => o.contains?.includes("gem"));
 			const inInventory = next.player.inventory.includes("gem") ? 1 : 0;
 
 			expect(inRooms.length + inContainers.length + inInventory).toBe(1);
@@ -225,9 +209,7 @@ describe("mutators", () => {
 
 		it("throws if object does not exist", () => {
 			const state = freshState();
-			expect(() => setObjectState(state, "ghost", "visible", true)).toThrow(
-				'Object "ghost" does not exist',
-			);
+			expect(() => setObjectState(state, "ghost", "visible", true)).toThrow('Object "ghost" does not exist');
 		});
 
 		it("does not mutate original state", () => {
@@ -249,9 +231,7 @@ describe("mutators", () => {
 
 		it("throws if room does not exist", () => {
 			const state = freshState();
-			expect(() => setRoomState(state, "void", "dark", true)).toThrow(
-				'Room "void" does not exist',
-			);
+			expect(() => setRoomState(state, "void", "dark", true)).toThrow('Room "void" does not exist');
 		});
 
 		it("does not mutate original state", () => {

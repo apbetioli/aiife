@@ -10,28 +10,20 @@ import {
 	setObjectState,
 	setPlayerState,
 } from "../mutators";
-import {
-	evaluateCondition,
-	resolveObjectDescriptionWithPreposition,
-	resolveRoomDescription,
-} from "../parser-context";
+import { evaluateCondition, resolveObjectDescriptionWithPreposition, resolveRoomDescription } from "../parser-context";
 import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 import { executeAction } from "./executor";
 import { getInstrument, getObjectIds, getTarget } from "./param-helpers";
 
-export function registerCoreHandlers(
-	bus: EventBus,
-	registry: ActionRegistry,
-): void {
+export function registerCoreHandlers(bus: EventBus, _registry: ActionRegistry): void {
 	// ── take ──────────────────────────────────────────────────────────────
 
 	bus.on("take", (event, state, _world) => {
 		const ids = getObjectIds(event.params);
 		if (ids.length === 0) return { state, cancel: "Take what?" };
 
-		const canTake = (id: string) =>
-			state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
+		const canTake = (id: string) => state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
 
 		const fromRoom = ids.filter((id) => isInRoom(state, id) && canTake(id));
 		const fromContainer: { id: string; containerId: string }[] = [];
@@ -43,8 +35,7 @@ export function registerCoreHandlers(
 		}
 
 		if (fromRoom.length === 0 && fromContainer.length === 0) {
-			if (ids.some((id) => isInInventory(state, id)))
-				return { state, cancel: "You're already carrying that." };
+			if (ids.some((id) => isInInventory(state, id))) return { state, cancel: "You're already carrying that." };
 			return { state, cancel: "You can't take that." };
 		}
 
@@ -83,22 +74,15 @@ export function registerCoreHandlers(
 		const obj = world.objects[target];
 		const objState = state.objects[target];
 		if (!obj || !objState) return { state, cancel: "You don't see that here." };
-		if (obj.type !== "container" && obj.type !== "door")
-			return { state, cancel: "You can't open that." };
-		if (objState.state.locked === true)
-			return { state, cancel: "It's locked." };
-		if (objState.state.open === true)
-			return { state, cancel: "It's already open." };
+		if (obj.type !== "container" && obj.type !== "door") return { state, cancel: "You can't open that." };
+		if (objState.state.locked === true) return { state, cancel: "It's locked." };
+		if (objState.state.open === true) return { state, cancel: "It's already open." };
 		const nextState = setObjectState(state, target, "open", true);
 
-		const contents = (objState?.contains ?? [])
-			.map((id) => world.objects[id]?.name)
-			.filter(Boolean);
+		const contents = (objState?.contains ?? []).map((id) => world.objects[id]?.name).filter(Boolean);
 		const name = obj?.name ?? target;
 		const feedback =
-			contents.length > 0
-				? `Opening the ${name} reveals:\n${contents.map((n) => `  ${n}`).join("\n")}`
-				: `Opened.`;
+			contents.length > 0 ? `Opening the ${name} reveals:\n${contents.map((n) => `  ${n}`).join("\n")}` : `Opened.`;
 
 		return { state: nextState, feedback: [feedback] };
 	});
@@ -111,10 +95,8 @@ export function registerCoreHandlers(
 		const obj = world.objects[target];
 		const objState = state.objects[target];
 		if (!obj || !objState) return { state, cancel: "You don't see that here." };
-		if (obj.type !== "container" && obj.type !== "door")
-			return { state, cancel: "You can't close that." };
-		if (objState.state.open === false)
-			return { state, cancel: "It's already closed." };
+		if (obj.type !== "container" && obj.type !== "door") return { state, cancel: "You can't close that." };
+		if (objState.state.open === false) return { state, cancel: "It's already closed." };
 		return { state: setObjectState(state, target, "open", false) };
 	});
 
@@ -127,8 +109,7 @@ export function registerCoreHandlers(
 			return { state, cancel: "You don't have anything to unlock it with." };
 		const obj = world.objects[target];
 		const requiredKey = obj?.requires_instrument?.unlock;
-		if (requiredKey && instrument !== requiredKey)
-			return { state, cancel: "That doesn't fit the lock." };
+		if (requiredKey && instrument !== requiredKey) return { state, cancel: "That doesn't fit the lock." };
 		return { state: setObjectState(state, target, "locked", false) };
 	});
 
@@ -149,19 +130,12 @@ export function registerCoreHandlers(
 		}
 		const obj = world.objects[targetId];
 		const objState = state.objects[targetId];
-		const notHere =
-			!obj ||
-			!objState ||
-			(!isInRoom(state, targetId) && !isInInventory(state, targetId));
+		const notHere = !obj || !objState || (!isInRoom(state, targetId) && !isInInventory(state, targetId));
 		if (notHere) {
 			return { state, cancel: "You don't see that here." };
 		}
 		const preposition = event.params.preposition?.trim();
-		const description = resolveObjectDescriptionWithPreposition(
-			obj,
-			objState,
-			preposition || undefined,
-		);
+		const description = resolveObjectDescriptionWithPreposition(obj, objState, preposition || undefined);
 		const nextState = setObjectState(state, targetId, "examined", true);
 		return { state: nextState, feedback: [description] };
 	});
@@ -189,11 +163,7 @@ export function registerCoreHandlers(
 		nextState = enterResult.state;
 		const lookResult = executeAction(bus, world, nextState, "look", {});
 		nextState = lookResult.state;
-		const feedback = [
-			...exitResult.feedback,
-			...enterResult.feedback,
-			...lookResult.feedback,
-		];
+		const feedback = [...exitResult.feedback, ...enterResult.feedback, ...lookResult.feedback];
 		return { state: nextState, feedback };
 	});
 
@@ -220,9 +190,7 @@ export function registerCoreHandlers(
 			const objState = state.objects[id];
 			lines.push(`There is a ${obj.name} here.`);
 			if (obj.type === "container" && objState?.state.open) {
-				const contentNames = (objState.contains ?? [])
-					.map((cid) => world.objects[cid]?.name)
-					.filter(Boolean);
+				const contentNames = (objState.contains ?? []).map((cid) => world.objects[cid]?.name).filter(Boolean);
 				if (contentNames.length > 0) {
 					lines.push(`The ${obj.name} contains:`);
 					for (const name of contentNames) {
@@ -233,10 +201,7 @@ export function registerCoreHandlers(
 		}
 
 		const exits = Object.entries(room.exits)
-			.filter(
-				([, exit]) =>
-					!exit.condition || evaluateCondition(exit.condition, state),
-			)
+			.filter(([, exit]) => !exit.condition || evaluateCondition(exit.condition, state))
 			.map(([dir]) => dir);
 		if (exits.length > 0) {
 			lines.push(`Exits: ${exits.join(", ")}.`);
@@ -251,9 +216,7 @@ export function registerCoreHandlers(
 		if (state.player.inventory.length === 0) {
 			return { state, feedback: ["You aren't carrying anything."] };
 		}
-		const names = state.player.inventory.map(
-			(id) => world.objects[id]?.name ?? id,
-		);
+		const names = state.player.inventory.map((id) => world.objects[id]?.name ?? id);
 		return { state, feedback: [`You are carrying: ${names.join(", ")}.`] };
 	});
 
@@ -307,8 +270,7 @@ export function registerCoreHandlers(
 		const target = getTarget(event.params);
 		if (!target) return { state, cancel: "Move what?" };
 		const obj = world.objects[target];
-		if (!obj || !isInRoom(state, target))
-			return { state, cancel: "You don't see that here." };
+		if (!obj || !isInRoom(state, target)) return { state, cancel: "You don't see that here." };
 		return { state, cancel: `You can't move the ${obj.name}.` };
 	});
 

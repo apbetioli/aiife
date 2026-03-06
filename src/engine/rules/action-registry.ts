@@ -28,8 +28,7 @@ export const coreActions = {
 	},
 	close: {
 		schema: objectsParams,
-		description:
-			"close(objects): Close a container or door. objects: [target_id].",
+		description: "close(objects): Close a container or door. objects: [target_id].",
 	},
 	unlock: {
 		schema: objectsParams,
@@ -38,8 +37,7 @@ export const coreActions = {
 	},
 	lock: {
 		schema: objectsParams,
-		description:
-			"lock(objects): Lock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
+		description: "lock(objects): Lock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
 	},
 	examine: {
 		schema: z.object({
@@ -59,18 +57,15 @@ export const coreActions = {
 			objects: z.array(z.string()),
 			direction: z.string().optional(),
 		}),
-		description:
-			"move(objects, direction?): Move an object. objects: [target_id]. direction is optional.",
+		description: "move(objects, direction?): Move an object. objects: [target_id]. direction is optional.",
 	},
 	attack: {
 		schema: objectsParams,
-		description:
-			"attack(objects): Attack something. objects: [target_id] or [target_id, weapon_id].",
+		description: "attack(objects): Attack something. objects: [target_id] or [target_id, weapon_id].",
 	},
 	talk: {
 		schema: objectsParams,
-		description:
-			"talk(objects): Talk to an actor in the current room. objects: [actor_id].",
+		description: "talk(objects): Talk to an actor in the current room. objects: [actor_id].",
 	},
 	enter: { schema: z.object({ room: z.string() }), description: "" },
 	exit: { schema: z.object({ room: z.string() }), description: "" },
@@ -86,8 +81,7 @@ export const coreActions = {
 	},
 	help: {
 		schema: z.object({}),
-		description:
-			"help(): Show the list of available commands. No parameters. Shorthand: h.",
+		description: "help(): Show the list of available commands. No parameters. Shorthand: h.",
 	},
 	quit: {
 		schema: z.object({}),
@@ -124,9 +118,7 @@ export type StructuredOutput = z.infer<typeof StructuredOutputSchema>;
 	const parserKeys = new Set(Object.keys(StructuredOutputSchema.shape));
 	for (const [name, entry] of Object.entries(coreActions)) {
 		if (!entry.description) continue;
-		for (const key of Object.keys(
-			(entry.schema as z.ZodObject<z.ZodRawShape>).shape,
-		)) {
+		for (const key of Object.keys((entry.schema as z.ZodObject<z.ZodRawShape>).shape)) {
 			if (!parserKeys.has(key)) {
 				throw new Error(
 					`StructuredOutputSchema is missing field "${key}" from action "${name}". Add it as a nullable field.`,
@@ -147,9 +139,7 @@ export type CoreEventName = keyof CoreEventParamsMap;
 // ─── ActionRegistry ──────────────────────────────────────────────────────────
 
 function unknownActionError(actionName: string): z.ZodError {
-	return new z.ZodError([
-		{ code: "custom", message: `Unknown action: ${actionName}`, path: [] },
-	]);
+	return new z.ZodError([{ code: "custom", message: `Unknown action: ${actionName}`, path: [] }]);
 }
 
 interface ActionEntry {
@@ -169,10 +159,7 @@ export class ActionRegistry {
 		}
 	}
 
-	register(
-		name: string,
-		entry: { schema: z.ZodType; description: string },
-	): void {
+	register(name: string, entry: { schema: z.ZodType; description: string }): void {
 		this.actions.set(name, entry);
 	}
 
@@ -193,9 +180,7 @@ export class ActionRegistry {
 	safeParse(
 		name: string,
 		params: unknown,
-	):
-		| { success: true; data: Record<string, unknown> }
-		| { success: false; error: z.ZodError } {
+	): { success: true; data: Record<string, unknown> } | { success: false; error: z.ZodError } {
 		const entry = this.actions.get(name);
 		if (!entry) return { success: false, error: unknownActionError(name) };
 		return entry.schema.safeParse(params);
@@ -203,9 +188,7 @@ export class ActionRegistry {
 
 	getDescriptions(): Record<string, string> {
 		return Object.fromEntries(
-			[...this.actions]
-				.filter(([, entry]) => entry.description)
-				.map(([name, entry]) => [name, entry.description]),
+			[...this.actions].filter(([, entry]) => entry.description).map(([name, entry]) => [name, entry.description]),
 		);
 	}
 }

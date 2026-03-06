@@ -58,9 +58,7 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 			const originalContents = containerDef.contains;
 
 			// Only move back items that are still in the room
-			const toReturn = originalContents.filter((id) =>
-				room.contains.includes(id),
-			);
+			const toReturn = originalContents.filter((id) => room.contains.includes(id));
 			if (!toReturn.length) return { state };
 
 			const container = state.objects[objectId];
@@ -94,11 +92,7 @@ export function registerContainer(bus: EventBus, objectId: string): void {
 interface RoomEventOptions<N extends EventName> {
 	priority?: number;
 	once?: boolean;
-	effect: (
-		event: GameEvent<N>,
-		state: GameState,
-		world: World,
-	) => ListenerResult | GameState;
+	effect: (event: GameEvent<N>, state: GameState, world: World) => ListenerResult | GameState;
 }
 
 /**
@@ -129,11 +123,7 @@ interface DaemonOptions {
  * Register a global tick listener that checks a condition each turn
  * and applies an effect when met.
  */
-export function registerDaemon(
-	bus: EventBus,
-	_name: string,
-	options: DaemonOptions,
-): () => void {
+export function registerDaemon(bus: EventBus, _name: string, options: DaemonOptions): () => void {
 	return bus.on(
 		"tick",
 		(_event, state, world) => {

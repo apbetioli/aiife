@@ -30,9 +30,7 @@ describe("buildInitialState", () => {
 					},
 				},
 			});
-			expect(validateAllObjectsOwned(world)).toContainEqual(
-				expect.stringContaining('"ghost" is not in any room'),
-			);
+			expect(validateAllObjectsOwned(world)).toContainEqual(expect.stringContaining('"ghost" is not in any room'));
 		});
 		it("returns error for double-owned object", () => {
 			const world = makeTestWorld();
@@ -49,27 +47,18 @@ describe("buildInitialState", () => {
 		});
 		it("returns error for room containing unknown object", () => {
 			const world = makeTestWorld();
-			world.rooms.room_a.contains = [
-				...world.rooms.room_a.contains,
-				"nonexistent",
-			];
-			expect(validateContainment(world)).toContainEqual(
-				'Room "room_a" contains unknown object "nonexistent"',
-			);
+			world.rooms.room_a.contains = [...world.rooms.room_a.contains, "nonexistent"];
+			expect(validateContainment(world)).toContainEqual('Room "room_a" contains unknown object "nonexistent"');
 		});
 		it("returns error for container containing unknown object", () => {
 			const world = makeTestWorld();
 			world.objects.chest.contains = ["nonexistent"];
-			expect(validateContainment(world)).toContainEqual(
-				'Object "chest" contains unknown object "nonexistent"',
-			);
+			expect(validateContainment(world)).toContainEqual('Object "chest" contains unknown object "nonexistent"');
 		});
 		it("returns error for player inventory referencing unknown object", () => {
 			const world = makeTestWorld();
 			world.player.inventory = ["nonexistent"];
-			expect(validateContainment(world)).toContainEqual(
-				'Player inventory references unknown object "nonexistent"',
-			);
+			expect(validateContainment(world)).toContainEqual('Player inventory references unknown object "nonexistent"');
 		});
 	});
 
@@ -84,9 +73,7 @@ describe("buildInitialState", () => {
 				condition: "phantom.open == true",
 				locked_message: "nope",
 			};
-			expect(validateExitConditions(world)).toContainEqual(
-				expect.stringContaining('unknown object "phantom"'),
-			);
+			expect(validateExitConditions(world)).toContainEqual(expect.stringContaining('unknown object "phantom"'));
 		});
 		it("returns error for leads_to unknown room", () => {
 			const world = makeTestWorld();
@@ -95,9 +82,7 @@ describe("buildInitialState", () => {
 				condition: "door.open == true",
 				locked_message: "nope",
 			};
-			expect(validateExitConditions(world)).toContainEqual(
-				expect.stringContaining('unknown room "void"'),
-			);
+			expect(validateExitConditions(world)).toContainEqual(expect.stringContaining('unknown room "void"'));
 		});
 	});
 
@@ -189,9 +174,7 @@ describe("buildInitialState", () => {
 			},
 		});
 		// ghost is not in any room.contains, any object.contains, or player.inventory
-		expect(() => buildInitialState(world)).toThrow(
-			'Object "ghost" is not in any room, container, or player inventory',
-		);
+		expect(() => buildInitialState(world)).toThrow('Object "ghost" is not in any room, container, or player inventory');
 	});
 
 	// ─── Validation: containment consistency ─────────────────────────────────
@@ -201,30 +184,21 @@ describe("buildInitialState", () => {
 		// table is in room_b; also add to room_a
 		world.rooms.room_a.contains = [...world.rooms.room_a.contains, "table"];
 
-		expect(() => buildInitialState(world)).toThrow(
-			/Object "table" is in room.*but also in/,
-		);
+		expect(() => buildInitialState(world)).toThrow(/Object "table" is in room.*but also in/);
 	});
 
 	it("rejects containers listing unknown objects", () => {
 		const world = makeTestWorld();
 		world.objects.chest.contains = ["nonexistent"];
 
-		expect(() => buildInitialState(world)).toThrow(
-			'Object "chest" contains unknown object "nonexistent"',
-		);
+		expect(() => buildInitialState(world)).toThrow('Object "chest" contains unknown object "nonexistent"');
 	});
 
 	it("rejects rooms listing unknown objects in contains", () => {
 		const world = makeTestWorld();
-		world.rooms.room_a.contains = [
-			...world.rooms.room_a.contains,
-			"nonexistent",
-		];
+		world.rooms.room_a.contains = [...world.rooms.room_a.contains, "nonexistent"];
 
-		expect(() => buildInitialState(world)).toThrow(
-			'Room "room_a" contains unknown object "nonexistent"',
-		);
+		expect(() => buildInitialState(world)).toThrow('Room "room_a" contains unknown object "nonexistent"');
 	});
 
 	// ─── Validation: player inventory ────────────────────────────────────────
@@ -233,9 +207,7 @@ describe("buildInitialState", () => {
 		const world = makeTestWorld();
 		world.player.inventory = ["nonexistent"];
 
-		expect(() => buildInitialState(world)).toThrow(
-			'Player inventory references unknown object "nonexistent"',
-		);
+		expect(() => buildInitialState(world)).toThrow('Player inventory references unknown object "nonexistent"');
 	});
 
 	it("rejects inventory when object is also in a room", () => {
@@ -243,9 +215,7 @@ describe("buildInitialState", () => {
 		// lamp is in room_a; add to inventory too
 		world.player.inventory = ["sword", "lamp"];
 
-		expect(() => buildInitialState(world)).toThrow(
-			/Object "lamp" is in player inventory but also in/,
-		);
+		expect(() => buildInitialState(world)).toThrow(/Object "lamp" is in player inventory but also in/);
 	});
 
 	// ─── Validation: exit conditions ─────────────────────────────────────────
@@ -258,9 +228,7 @@ describe("buildInitialState", () => {
 			locked_message: "nope",
 		};
 
-		expect(() => buildInitialState(world)).toThrow(
-			'unparseable condition: "this is not valid"',
-		);
+		expect(() => buildInitialState(world)).toThrow('unparseable condition: "this is not valid"');
 	});
 
 	it("rejects exits referencing unknown objects in conditions", () => {
@@ -271,9 +239,7 @@ describe("buildInitialState", () => {
 			locked_message: "nope",
 		};
 
-		expect(() => buildInitialState(world)).toThrow(
-			'condition references unknown object "phantom"',
-		);
+		expect(() => buildInitialState(world)).toThrow('condition references unknown object "phantom"');
 	});
 
 	it("rejects exits leading to unknown rooms", () => {
@@ -284,9 +250,7 @@ describe("buildInitialState", () => {
 			locked_message: "nope",
 		};
 
-		expect(() => buildInitialState(world)).toThrow(
-			'leads_to unknown room "void"',
-		);
+		expect(() => buildInitialState(world)).toThrow('leads_to unknown room "void"');
 	});
 
 	// ─── The Great Hall ───────────────────────────────────────────────────────
@@ -360,11 +324,7 @@ describe("buildInitialState", () => {
 				contains: ["painting", "library_door", "compartment"],
 				state: { visited: false },
 			});
-			expect(state.rooms.library.contains).toEqual([
-				"journal",
-				"study_door",
-				"bookshelf",
-			]);
+			expect(state.rooms.library.contains).toEqual(["journal", "study_door", "bookshelf"]);
 			expect(state.rooms.garden.contains).toEqual(["stone_bench", "fountain"]);
 			expect(state.rooms.study.contains).toEqual(["oak_desk", "candle"]);
 		});

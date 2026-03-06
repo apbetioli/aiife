@@ -12,10 +12,7 @@ export function isInInventory(state: GameState, objectId: string): boolean {
 }
 
 /** Returns the container ID if objectId is inside an open container in the current room. */
-export function findOpenContainerInRoom(
-	state: GameState,
-	objectId: string,
-): string | undefined {
+export function findOpenContainerInRoom(state: GameState, objectId: string): string | undefined {
 	const room = state.rooms[state.player.current_room];
 	for (const cid of room.contains) {
 		const container = state.objects[cid];
@@ -28,10 +25,7 @@ export function findOpenContainerInRoom(
 
 // ─── Move Functions ──────────────────────────────────────────────────────────
 
-export function moveObjectFromRoomToInventory(
-	state: GameState,
-	objectId: string,
-): GameState {
+export function moveObjectFromRoomToInventory(state: GameState, objectId: string): GameState {
 	const roomId = state.player.current_room;
 	const room = state.rooms[roomId];
 
@@ -55,11 +49,7 @@ export function moveObjectFromRoomToInventory(
 	};
 }
 
-export function moveObjectFromInventoryToRoom(
-	state: GameState,
-	objectId: string,
-	roomId: string,
-): GameState {
+export function moveObjectFromInventoryToRoom(state: GameState, objectId: string, roomId: string): GameState {
 	if (!state.player.inventory.includes(objectId)) {
 		throw new Error(`Object "${objectId}" is not in inventory`);
 	}
@@ -82,17 +72,11 @@ export function moveObjectFromInventoryToRoom(
 	};
 }
 
-export function moveObjectFromContainerToInventory(
-	state: GameState,
-	objectId: string,
-	containerId: string,
-): GameState {
+export function moveObjectFromContainerToInventory(state: GameState, objectId: string, containerId: string): GameState {
 	const container = state.objects[containerId];
 
 	if (!container?.contains?.includes(objectId)) {
-		throw new Error(
-			`Object "${objectId}" is not in container "${containerId}"`,
-		);
+		throw new Error(`Object "${objectId}" is not in container "${containerId}"`);
 	}
 
 	return {
@@ -111,11 +95,7 @@ export function moveObjectFromContainerToInventory(
 	};
 }
 
-export function moveObjectFromInventoryToContainer(
-	state: GameState,
-	objectId: string,
-	containerId: string,
-): GameState {
+export function moveObjectFromInventoryToContainer(state: GameState, objectId: string, containerId: string): GameState {
 	if (!state.player.inventory.includes(objectId)) {
 		throw new Error(`Object "${objectId}" is not in inventory`);
 	}
@@ -186,11 +166,7 @@ export function setRoomState(
 	};
 }
 
-export function setPlayerState(
-	state: GameState,
-	key: string,
-	value: boolean | string | number,
-): GameState {
+export function setPlayerState(state: GameState, key: string, value: boolean | string | number): GameState {
 	return {
 		...state,
 		player: {

@@ -21,10 +21,7 @@ import type { GameState, ObjectState, RoomState } from "./types";
  *   "library_door.open == true"
  *   "study_door.locked == false"
  */
-export function evaluateCondition(
-	condition: string,
-	state: GameState,
-): boolean {
+export function evaluateCondition(condition: string, state: GameState): boolean {
 	// Pattern: objectId.stateKey operator value
 	const match = condition.match(/^(\w+)\.(\w+)\s*(==|!=|<=|>=|<|>)\s*(.+)$/);
 	if (!match) {
@@ -36,17 +33,13 @@ export function evaluateCondition(
 
 	const objectState = state.objects[objectId];
 	if (!objectState) {
-		console.warn(
-			`[evaluateCondition] Unknown object "${objectId}" in condition: "${condition}"`,
-		);
+		console.warn(`[evaluateCondition] Unknown object "${objectId}" in condition: "${condition}"`);
 		return false;
 	}
 
 	const actual = objectState.state[stateKey];
 	if (actual === undefined) {
-		console.warn(
-			`[evaluateCondition] Object "${objectId}" has no state key "${stateKey}"`,
-		);
+		console.warn(`[evaluateCondition] Object "${objectId}" has no state key "${stateKey}"`);
 		return false;
 	}
 
@@ -83,10 +76,7 @@ export function evaluateCondition(
  * To add state-driven descriptions, add keys matching state flag names
  * to the room's descriptions map, e.g. { "dark": "You can't see much." }
  */
-export function resolveRoomDescription(
-	room: Room,
-	roomState: RoomState,
-): string {
+export function resolveRoomDescription(room: Room, roomState: RoomState): string {
 	const state = roomState.state;
 
 	// State-driven flags (e.g. dark) take priority over generic "visited"
@@ -109,10 +99,7 @@ export function resolveRoomDescription(
  * Resolves which description variant to use based on current object state.
  * First matching true flag with a description key wins, then falls back to "default".
  */
-export function resolveObjectDescription(
-	obj: GameObject,
-	objState: ObjectState,
-): string {
+export function resolveObjectDescription(obj: GameObject, objState: ObjectState): string {
 	for (const [key, value] of Object.entries(objState.state)) {
 		if (value === true && obj.descriptions[key]) {
 			return obj.descriptions[key];
@@ -154,10 +141,7 @@ export function resolveObjectDescriptionWithPreposition(
  * Objects inside closed containers are intentionally excluded from scope —
  * the player can't interact with them until the container is opened.
  */
-export function buildParserContext(
-	world: World,
-	state: GameState,
-): ParserContext {
+export function buildParserContext(world: World, state: GameState): ParserContext {
 	const currentRoomId = state.player.current_room;
 	const room = world.rooms[currentRoomId];
 	const roomState = state.rooms[currentRoomId];
@@ -166,9 +150,7 @@ export function buildParserContext(
 		throw new Error(`[buildParserContext] Unknown room "${currentRoomId}"`);
 	}
 	if (!roomState) {
-		throw new Error(
-			`[buildParserContext] No state found for room "${currentRoomId}"`,
-		);
+		throw new Error(`[buildParserContext] No state found for room "${currentRoomId}"`);
 	}
 
 	// ── Resolve exits ──────────────────────────────────────────────────────
@@ -198,15 +180,11 @@ export function buildParserContext(
 		const objState = state.objects[objId];
 
 		if (!worldObj) {
-			console.warn(
-				`[buildParserContext] Scoped object "${objId}" not found in world definition`,
-			);
+			console.warn(`[buildParserContext] Scoped object "${objId}" not found in world definition`);
 			continue;
 		}
 		if (!objState) {
-			console.warn(
-				`[buildParserContext] Scoped object "${objId}" has no state entry`,
-			);
+			console.warn(`[buildParserContext] Scoped object "${objId}" has no state entry`);
 			continue;
 		}
 
@@ -225,15 +203,11 @@ export function buildParserContext(
 		const objState = state.objects[objId];
 
 		if (!worldObj) {
-			console.warn(
-				`[buildParserContext] Scoped object "${objId}" not found in world definition`,
-			);
+			console.warn(`[buildParserContext] Scoped object "${objId}" not found in world definition`);
 			continue;
 		}
 		if (!objState) {
-			console.warn(
-				`[buildParserContext] Scoped object "${objId}" has no state entry`,
-			);
+			console.warn(`[buildParserContext] Scoped object "${objId}" has no state entry`);
 			continue;
 		}
 
@@ -261,10 +235,7 @@ export function buildParserContext(
 	const result = ParserContextSchema.safeParse(context);
 	if (!result.success) {
 		throw new Error(
-			`[buildParserContext] Context validation failed:\n` +
-				result.error.issues
-					.map((i) => `  [${i.path.join(".")}] ${i.message}`)
-					.join("\n"),
+			`[buildParserContext] Context validation failed:\n${result.error.issues.map((i) => `  [${i.path.join(".")}] ${i.message}`).join("\n")}`,
 		);
 	}
 
