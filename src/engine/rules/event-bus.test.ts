@@ -117,6 +117,40 @@ describe("EventBus", () => {
 		expect(order).toEqual([50, 100, 200]);
 	});
 
+	it("same-priority listeners run in registration order", () => {
+		const bus = new EventBus();
+		const order: string[] = [];
+
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push("first");
+				return state;
+			},
+			{ priority: 100 },
+		);
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push("second");
+				return state;
+			},
+			{ priority: 100 },
+		);
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push("third");
+				return state;
+			},
+			{ priority: 100 },
+		);
+
+		const event = new GameEvent("tick", {} as Record<string, never>);
+		bus.emit(event, world, freshState());
+		expect(order).toEqual(["first", "second", "third"]);
+	});
+
 	it("once: true listener fires exactly once then is removed", () => {
 		const bus = new EventBus();
 		let count = 0;
@@ -167,6 +201,43 @@ describe("EventBus", () => {
 		expect(order).toEqual(["guard"]);
 		expect(result.cancelled).toBe(true);
 		expect(result.feedback).toContain("Nope.");
+	});
+
+	it("cancellation stops remaining listeners at same priority", () => {
+		const bus = new EventBus();
+		const order: string[] = [];
+
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push("first");
+				return state;
+			},
+			{ priority: 100 },
+		);
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push("second");
+				return { state, cancel: "Stop" };
+			},
+			{ priority: 100 },
+		);
+		bus.on(
+			"tick",
+			(_e, state, _w) => {
+				order.push("third");
+				return state;
+			},
+			{ priority: 100 },
+		);
+
+		const event = new GameEvent("tick", {} as Record<string, never>);
+		const result = bus.emit(event, world, freshState());
+
+		expect(order).toEqual(["first", "second"]);
+		expect(result.cancelled).toBe(true);
+		expect(result.feedback).toContain("Stop");
 	});
 
 	it("cancel reason appears in feedback", () => {
