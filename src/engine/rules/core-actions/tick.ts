@@ -1,7 +1,7 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { setPlayerState } from "../../mutators";
-import type { ActionDef } from "./types";
 import { emptySchema } from "./schemas";
+import type { ActionDef } from "./types";
 
 export const tick: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,

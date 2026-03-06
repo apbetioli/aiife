@@ -1,6 +1,6 @@
+import type { StructuredOutput } from "../../agent/types";
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
-import type { StructuredOutput } from "../../agent/types";
 import type { CoreEventName } from "./core-actions-types";
 
 // ─── Event Names & Params ────────────────────────────────────────────────────

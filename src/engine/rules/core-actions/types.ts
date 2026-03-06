@@ -1,11 +1,11 @@
-import { z } from "zod";
+import type { z } from "zod";
 import type { World } from "../../../world/types";
+import { isInInventory, isInRoom } from "../../mutators";
 import type { GameState } from "../../types";
 import type { ActionRegistry } from "../action-registry";
-import { executeAction } from "../executor";
 import type { EventBus } from "../event-bus";
-import { getTarget, getInstrument, getObjectIds } from "../param-helpers";
-import { isInInventory, isInRoom } from "../../mutators";
+import { executeAction } from "../executor";
+import { getInstrument, getObjectIds, getTarget } from "../param-helpers";
 
 export type ListenerResult = { state: GameState; feedback?: string[] };
 
@@ -89,7 +89,11 @@ export function normalizeHandlerResult(raw: ListenerResult | GameState): Listene
 	return "player" in raw ? { state: raw as GameState } : (raw as ListenerResult);
 }
 
-export function registerCoreActions(bus: EventBus, registry: ActionRegistry, definitions: Record<string, ActionDef<unknown>>): void {
+export function registerCoreActions(
+	bus: EventBus,
+	registry: ActionRegistry,
+	definitions: Record<string, ActionDef<unknown>>,
+): void {
 	for (const [name, def] of Object.entries(definitions)) {
 		registry.register(name, { schema: def.schema, description: def.description });
 		if (def.handler) {
