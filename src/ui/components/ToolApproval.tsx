@@ -29,14 +29,7 @@ function getArgsSummary(args: unknown): string {
 
 	const obj = args as Record<string, unknown>;
 	// Try to find a meaningful key to show inline
-	const meaningfulKeys = [
-		"path",
-		"filePath",
-		"command",
-		"query",
-		"code",
-		"content",
-	];
+	const meaningfulKeys = ["path", "filePath", "command", "query", "code", "content"];
 	for (const key of meaningfulKeys) {
 		if (key in obj && typeof obj[key] === "string") {
 			const value = obj[key] as string;
@@ -96,18 +89,12 @@ export function ToolApproval({ toolName, args, onResolve }: ToolApprovalProps) {
 				</Text>
 				<Box marginLeft={2} flexDirection="column">
 					<Text dimColor>{preview}</Text>
-					{extraLines > 0 && (
-						<Text color="gray">... +{extraLines} more lines</Text>
-					)}
+					{extraLines > 0 && <Text color="gray">... +{extraLines} more lines</Text>}
 				</Box>
 			</Box>
 			<Box marginTop={1} marginLeft={2} flexDirection="row" gap={2}>
 				{options.map((option, index) => (
-					<Text
-						key={option}
-						color={selectedIndex === index ? "green" : "gray"}
-						bold={selectedIndex === index}
-					>
+					<Text key={option} color={selectedIndex === index ? "green" : "gray"} bold={selectedIndex === index}>
 						{selectedIndex === index ? "› " : "  "}
 						{option}
 					</Text>

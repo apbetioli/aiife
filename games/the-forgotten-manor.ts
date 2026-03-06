@@ -144,8 +144,7 @@ const world: World = {
 			type: "key",
 			state: { carriable: true },
 			descriptions: {
-				default:
-					"A small brass key, tarnished with age. A label tied to it reads 'Library'.",
+				default: "A small brass key, tarnished with age. A label tied to it reads 'Library'.",
 			},
 		},
 
@@ -186,8 +185,7 @@ const world: World = {
 			type: "key",
 			state: { carriable: true },
 			descriptions: {
-				default:
-					"A small iron key hidden inside the back cover of the journal. A faint engraving reads 'Study'.",
+				default: "A small iron key hidden inside the back cover of the journal. A faint engraving reads 'Study'.",
 			},
 		},
 
@@ -199,8 +197,7 @@ const world: World = {
 			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "study_key" },
 			descriptions: {
-				default:
-					"A narrow wooden door set into the east wall. It has a small iron lock.",
+				default: "A narrow wooden door set into the east wall. It has a small iron lock.",
 				unlocked: "The narrow door is unlocked but still closed.",
 				open: "The narrow door is open, revealing a dark study beyond.",
 			},
@@ -253,8 +250,7 @@ const world: World = {
 			type: "fixture",
 			state: { examined: false, carriable: false },
 			descriptions: {
-				default:
-					"A large oak desk covered in scattered papers and dust. Something glints beneath the papers.",
+				default: "A large oak desk covered in scattered papers and dust. Something glints beneath the papers.",
 				examined:
 					"You push aside the papers to reveal a sealed envelope addressed 'To whoever finds this'. Inside is a confession from Lord Ashford. You've uncovered the manor's secret. You win.",
 			},

@@ -1,6 +1,6 @@
-import { useMemo } from "react";
 import { Text } from "ink";
 import InkSpinner from "ink-spinner";
+import { useMemo } from "react";
 
 const DUNGEON_LABELS = [
 	"You wait...",
@@ -25,11 +25,7 @@ interface SpinnerProps {
 }
 
 export function Spinner({ label }: SpinnerProps) {
-	const randomLabel = useMemo(
-		() =>
-			DUNGEON_LABELS[Math.floor(Math.random() * DUNGEON_LABELS.length)],
-		[],
-	);
+	const randomLabel = useMemo(() => DUNGEON_LABELS[Math.floor(Math.random() * DUNGEON_LABELS.length)], []);
 	const resolvedLabel = label ?? randomLabel;
 	return (
 		<Text>

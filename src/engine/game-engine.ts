@@ -19,10 +19,7 @@ const MAX_UNDO_HISTORY = 50;
 function toEventParams(intent: StructuredOutput): Record<string, unknown> {
 	return Object.fromEntries(
 		Object.entries(intent).filter(
-			([key, value]) =>
-				!INTENT_PARAM_KEYS_TO_SKIP.has(key) &&
-				value !== null &&
-				value !== undefined,
+			([key, value]) => !INTENT_PARAM_KEYS_TO_SKIP.has(key) && value !== null && value !== undefined,
 		),
 	);
 }
@@ -83,31 +80,15 @@ export class GameEngine {
 		this.pushHistory();
 
 		const params = toEventParams(intent);
-		const result = executeUntrustedAction(
-			this.bus,
-			this.registry,
-			this.world,
-			this.state,
-			action,
-			params,
-		);
+		const result = executeUntrustedAction(this.bus, this.registry, this.world, this.state, action, params);
 		this.state = result.state;
 
 		// Fire tick after every action
-		const tickResult = executeAction(
-			this.bus,
-			this.world,
-			this.state,
-			"tick",
-			{},
-		);
+		const tickResult = executeAction(this.bus, this.world, this.state, "tick", {});
 		this.state = tickResult.state;
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
-		const message =
-			allFeedback.length > 0
-				? allFeedback.join(" ")
-				: (intent.message ?? "Done.");
+		const message = allFeedback.length > 0 ? allFeedback.join(" ") : (intent.message ?? "Done.");
 
 		return {
 			message,

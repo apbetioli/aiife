@@ -15,9 +15,7 @@ export function validateAllObjectsOwned(world: World): string[] {
 	for (const [roomId, room] of Object.entries(world.rooms)) {
 		for (const objId of room.contains) {
 			if (placement.has(objId)) {
-				errors.push(
-					`Object "${objId}" is in room "${roomId}" but also in "${placement.get(objId)}"`,
-				);
+				errors.push(`Object "${objId}" is in room "${roomId}" but also in "${placement.get(objId)}"`);
 			} else {
 				placement.set(objId, `room:${roomId}`);
 			}
@@ -28,9 +26,7 @@ export function validateAllObjectsOwned(world: World): string[] {
 		if (obj.contains) {
 			for (const childId of obj.contains) {
 				if (placement.has(childId)) {
-					errors.push(
-						`Object "${childId}" is in container "${objId}" but also in "${placement.get(childId)}"`,
-					);
+					errors.push(`Object "${childId}" is in container "${objId}" but also in "${placement.get(childId)}"`);
 				} else {
 					placement.set(childId, `container:${objId}`);
 				}
@@ -40,9 +36,7 @@ export function validateAllObjectsOwned(world: World): string[] {
 
 	for (const objId of world.player.inventory) {
 		if (placement.has(objId)) {
-			errors.push(
-				`Object "${objId}" is in player inventory but also in "${placement.get(objId)}"`,
-			);
+			errors.push(`Object "${objId}" is in player inventory but also in "${placement.get(objId)}"`);
 		} else {
 			placement.set(objId, "inventory");
 		}
@@ -50,9 +44,7 @@ export function validateAllObjectsOwned(world: World): string[] {
 
 	for (const objId of Object.keys(world.objects)) {
 		if (!placement.has(objId)) {
-			errors.push(
-				`Object "${objId}" is not in any room, container, or player inventory`,
-			);
+			errors.push(`Object "${objId}" is not in any room, container, or player inventory`);
 		}
 	}
 
@@ -106,23 +98,17 @@ export function validateExitConditions(world: World): string[] {
 
 			const match = exit.condition.match(conditionPattern);
 			if (!match) {
-				errors.push(
-					`Room "${roomId}" exit "${dir}" has unparseable condition: "${exit.condition}"`,
-				);
+				errors.push(`Room "${roomId}" exit "${dir}" has unparseable condition: "${exit.condition}"`);
 				continue;
 			}
 
 			const referencedObjectId = match[1];
 			if (!world.objects[referencedObjectId]) {
-				errors.push(
-					`Room "${roomId}" exit "${dir}" condition references unknown object "${referencedObjectId}"`,
-				);
+				errors.push(`Room "${roomId}" exit "${dir}" condition references unknown object "${referencedObjectId}"`);
 			}
 
 			if (!world.rooms[exit.leads_to]) {
-				errors.push(
-					`Room "${roomId}" exit "${dir}" leads_to unknown room "${exit.leads_to}"`,
-				);
+				errors.push(`Room "${roomId}" exit "${dir}" leads_to unknown room "${exit.leads_to}"`);
 			}
 		}
 	}
@@ -143,9 +129,7 @@ export function buildInitialState(world: World): GameState {
 	// ── 1. Validate world integrity before building state ──────────────────
 	const worldResult = WorldSchema.safeParse(world);
 	if (!worldResult.success) {
-		const issues = worldResult.error.issues
-			.map((i) => `  [${i.path.join(".")}] ${i.message}`)
-			.join("\n");
+		const issues = worldResult.error.issues.map((i) => `  [${i.path.join(".")}] ${i.message}`).join("\n");
 		throw new Error(`World schema validation failed:\n${issues}`);
 	}
 
@@ -156,9 +140,7 @@ export function buildInitialState(world: World): GameState {
 	const allErrors = [...locationErrors, ...containmentErrors, ...exitErrors];
 
 	if (allErrors.length > 0) {
-		throw new Error(
-			`World integrity validation failed:\n${allErrors.map((e) => `  - ${e}`).join("\n")}`,
-		);
+		throw new Error(`World integrity validation failed:\n${allErrors.map((e) => `  - ${e}`).join("\n")}`);
 	}
 
 	// ── 2. Build room states ───────────────────────────────────────────────
@@ -200,9 +182,7 @@ export function buildInitialState(world: World): GameState {
 
 	const stateResult = GameStateSchema.safeParse(gameState);
 	if (!stateResult.success) {
-		const issues = stateResult.error.issues
-			.map((i) => `  [${i.path.join(".")}] ${i.message}`)
-			.join("\n");
+		const issues = stateResult.error.issues.map((i) => `  [${i.path.join(".")}] ${i.message}`).join("\n");
 		throw new Error(`Game state schema validation failed:\n${issues}`);
 	}
 

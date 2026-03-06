@@ -1,10 +1,5 @@
 import { isInInventory, setObjectState } from "../src/engine/mutators";
-import {
-	executeAction,
-	type GameSetup,
-	PRIORITY,
-	registerDaemon,
-} from "../src/engine/rules";
+import { executeAction, type GameSetup, PRIORITY, registerDaemon } from "../src/engine/rules";
 import type { GameState } from "../src/engine/types";
 import type { World } from "../src/world/types";
 
@@ -18,8 +13,7 @@ const world: World = {
 			id: "cellar",
 			name: "Cellar",
 			descriptions: {
-				default:
-					"You are in a dark, musty cellar. A narrow passage leads east into darkness.",
+				default: "You are in a dark, musty cellar. A narrow passage leads east into darkness.",
 			},
 			state: {},
 			exits: { east: { leads_to: "troll_cave" } },
@@ -38,8 +32,7 @@ const world: World = {
 				north: {
 					leads_to: "treasure_room",
 					condition: "troll.knocked_out == true",
-					locked_message:
-						"The troll blocks your way north with a menacing snarl!",
+					locked_message: "The troll blocks your way north with a menacing snarl!",
 				},
 			},
 			contains: ["troll"],
@@ -61,10 +54,8 @@ const world: World = {
 			id: "troll",
 			name: "troll",
 			descriptions: {
-				default:
-					"A large, nasty-looking troll stands before you, brandishing a bloody axe. He snarls menacingly.",
-				"knocked_out == true":
-					"The troll lies unconscious on the ground, drooling slightly.",
+				default: "A large, nasty-looking troll stands before you, brandishing a bloody axe. He snarls menacingly.",
+				"knocked_out == true": "The troll lies unconscious on the ground, drooling slightly.",
 			},
 			type: "actor",
 			state: { alive: true, knocked_out: false, carriable: false },
@@ -77,8 +68,7 @@ const world: World = {
 			type: "weapon",
 			state: { carriable: true },
 			descriptions: {
-				default:
-					"A well-forged metal sword. Its edge gleams dangerously in the light.",
+				default: "A well-forged metal sword. Its edge gleams dangerously in the light.",
 			},
 		},
 		wooden_sword: {
@@ -88,8 +78,7 @@ const world: World = {
 			type: "weapon",
 			state: { carriable: true },
 			descriptions: {
-				default:
-					"A blunt training sword made of wood. It would barely bruise an apple.",
+				default: "A blunt training sword made of wood. It would barely bruise an apple.",
 			},
 		},
 		gold_coins: {
@@ -99,8 +88,7 @@ const world: World = {
 			type: "item",
 			state: { carriable: true },
 			descriptions: {
-				default:
-					"A glittering pile of gold coins, each stamped with a strange rune.",
+				default: "A glittering pile of gold coins, each stamped with a strange rune.",
 			},
 		},
 	},
@@ -135,8 +123,7 @@ export const setup: GameSetup = (bus) => {
 		if (troll?.state.knocked_out === true) {
 			return {
 				state,
-				cancel:
-					"The troll is already unconscious. No need for further violence.",
+				cancel: "The troll is already unconscious. No need for further violence.",
 			};
 		}
 
@@ -224,8 +211,7 @@ export const setup: GameSetup = (bus) => {
 			state.player.current_room === "troll_cave" &&
 			state.objects.troll?.state.knocked_out !== true,
 		effect: (_, state) => state,
-		feedback: () =>
-			"\nThe troll swings his axe at you! You barely dodge in time.",
+		feedback: () => "\nThe troll swings his axe at you! You barely dodge in time.",
 		priority: PRIORITY.POST_MUTATION,
 	});
 

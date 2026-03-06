@@ -36,8 +36,7 @@ const world: World = {
 			type: "door",
 			state: { open: false, carriable: false },
 			descriptions: {
-				default:
-					"The front door of the white house. It is firmly boarded shut and cannot be opened.",
+				default: "The front door of the white house. It is firmly boarded shut and cannot be opened.",
 				open: "The front door stands open.",
 			},
 		},

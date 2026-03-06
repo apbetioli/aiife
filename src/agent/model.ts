@@ -12,8 +12,7 @@ interface ModelConfig {
 function resolveConfig(prefix: string): ModelConfig {
 	return {
 		provider: process.env[`${prefix}_PROVIDER`] ?? "anthropic",
-		anthropicModel:
-			process.env[`${prefix}_ANTHROPIC_MODEL`] ?? "claude-haiku-4-5-20251001",
+		anthropicModel: process.env[`${prefix}_ANTHROPIC_MODEL`] ?? "claude-haiku-4-5-20251001",
 		openaiModel: process.env[`${prefix}_OPENAI_MODEL`] ?? "gpt-4o-mini",
 		ollamaModel: process.env[`${prefix}_OLLAMA_MODEL`] ?? "llama3.1",
 	};
@@ -24,9 +23,7 @@ function createModelFromConfig(config: ModelConfig): LanguageModel {
 		case "anthropic":
 			return anthropic(config.anthropicModel);
 		case "openai":
-			return createOpenAI({ apiKey: process.env.OPENAI_API_KEY })(
-				config.openaiModel,
-			);
+			return createOpenAI({ apiKey: process.env.OPENAI_API_KEY })(config.openaiModel);
 		case "ollama":
 			return createOpenAI({
 				baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1",
@@ -58,7 +55,7 @@ function getModelId(config: ModelConfig): string {
 /** Parser model — fast/cheap, used for intent recognition. Env: INTENT_PROVIDER, ANTHROPIC_MODEL, etc. */
 export function createParserModel(): LanguageModel {
 	return createModelFromConfig(resolveConfig("INTENT"));
-}	
+}
 
 /** Narrator model — used for translation only. Env: NARRATOR_PROVIDER, NARRATOR_ANTHROPIC_MODEL, etc. Falls back to parser model config. */
 export function createNarratorModel(): LanguageModel {

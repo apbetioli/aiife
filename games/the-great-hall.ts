@@ -108,8 +108,7 @@ const world: World = {
 			type: "container",
 			state: { revealed: false, carriable: false },
 			descriptions: {
-				default:
-					"A shadowy alcove set into the wall. You might look more closely.",
+				default: "A shadowy alcove set into the wall. You might look more closely.",
 			},
 			contains: ["rusty_key"],
 		},
@@ -120,8 +119,7 @@ const world: World = {
 			type: "key",
 			state: { carriable: true },
 			descriptions: {
-				default:
-					"A rusty iron key, cold to the touch. It looks like it might fit a heavy lock.",
+				default: "A rusty iron key, cold to the touch. It looks like it might fit a heavy lock.",
 			},
 		},
 		wooden_chest: {

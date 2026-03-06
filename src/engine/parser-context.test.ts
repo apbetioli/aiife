@@ -15,17 +15,12 @@ import type { GameState, ObjectState, RoomState } from "./types";
 // ─── evaluateCondition ───────────────────────────────────────────────────────
 
 describe("evaluateCondition", () => {
-	function stateWith(
-		objectId: string,
-		flags: Record<string, boolean | string | number>,
-	): GameState {
+	function stateWith(objectId: string, flags: Record<string, boolean | string | number>): GameState {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 		const current = state.objects[objectId];
 		state.objects[objectId] = {
-			...(current && "contains" in current && current.contains
-				? { contains: current.contains }
-				: {}),
+			...(current && "contains" in current && current.contains ? { contains: current.contains } : {}),
 			state: { ...(current?.state ?? {}), ...flags },
 		};
 		return state;
@@ -102,16 +97,12 @@ describe("resolveRoomDescription", () => {
 
 	it("returns default description for unvisited room with no state flags", () => {
 		const roomState: RoomState = { contains: [], state: { visited: false } };
-		expect(resolveRoomDescription(room, roomState)).toBe(
-			"Default description.",
-		);
+		expect(resolveRoomDescription(room, roomState)).toBe("Default description.");
 	});
 
 	it("returns visited description for visited room", () => {
 		const roomState: RoomState = { contains: [], state: { visited: true } };
-		expect(resolveRoomDescription(room, roomState)).toBe(
-			"Visited description.",
-		);
+		expect(resolveRoomDescription(room, roomState)).toBe("Visited description.");
 	});
 
 	it("returns state-driven description when a matching state flag is true", () => {
@@ -135,9 +126,7 @@ describe("resolveRoomDescription", () => {
 			contains: [],
 			state: { visited: false, dark: false },
 		};
-		expect(resolveRoomDescription(room, roomState)).toBe(
-			"Default description.",
-		);
+		expect(resolveRoomDescription(room, roomState)).toBe("Default description.");
 	});
 });
 
@@ -163,9 +152,7 @@ describe("resolveObjectDescription", () => {
 
 	it("returns state-driven description when matching flag is true", () => {
 		const objState: ObjectState = { state: { lit: true } };
-		expect(resolveObjectDescription(obj, objState)).toBe(
-			"The lamp glows brightly.",
-		);
+		expect(resolveObjectDescription(obj, objState)).toBe("The lamp glows brightly.");
 	});
 
 	it("returns default when flag is true but no matching description", () => {
@@ -275,9 +262,7 @@ describe("buildParserContext", () => {
 		const state = buildInitialState(world);
 		state.player.current_room = "void";
 
-		expect(() => buildParserContext(world, state)).toThrow(
-			'Unknown room "void"',
-		);
+		expect(() => buildParserContext(world, state)).toThrow('Unknown room "void"');
 	});
 
 	it("uses visited description for visited rooms", () => {

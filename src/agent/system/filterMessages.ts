@@ -5,9 +5,7 @@ import type { ModelMessage } from "ai";
  * Provider tools (like webSearch) may return messages with formats that
  * cause issues when passed back to subsequent API calls.
  */
-export const filterCompatibleMessages = (
-	messages: ModelMessage[],
-): ModelMessage[] => {
+export const filterCompatibleMessages = (messages: ModelMessage[]): ModelMessage[] => {
 	return messages.filter((msg) => {
 		// Keep user and system messages
 		if (msg.role === "user" || msg.role === "system") {

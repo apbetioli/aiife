@@ -7,11 +7,7 @@ interface InputProps {
 	color?: string;
 }
 
-export function Input({
-	onSubmit,
-	disabled = false,
-	color = "gray",
-}: InputProps) {
+export function Input({ onSubmit, disabled = false, color = "gray" }: InputProps) {
 	const [value, setValue] = useState("");
 
 	useInput((input, key) => {

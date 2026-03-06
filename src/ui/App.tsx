@@ -32,17 +32,12 @@ export function App({ world, setup }: AppProps) {
 		const a = new GameAgent(createParserModel(), e, createNarratorModel());
 		return { agent: a, introMessage: intro.message };
 	}, [world, setup]);
-	const [messages, setMessages] = useState<Message[]>([
-		{ role: "assistant", content: introMessage },
-	]);
-	const [conversationHistory, setConversationHistory] = useState<
-		ModelMessage[]
-	>([]);
+	const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: introMessage }]);
+	const [conversationHistory, setConversationHistory] = useState<ModelMessage[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [streamingText, setStreamingText] = useState("");
 	const [activeToolCalls, setActiveToolCalls] = useState<ActiveToolCall[]>([]);
-	const [pendingApproval, setPendingApproval] =
-		useState<ToolApprovalRequest | null>(null);
+	const [pendingApproval, setPendingApproval] = useState<ToolApprovalRequest | null>(null);
 	const [tokenUsage, setTokenUsage] = useState<TokenUsageInfo | null>(null);
 
 	const isDebug = process.env.DEBUG === "true";
@@ -78,18 +73,13 @@ export function App({ world, setup }: AppProps) {
 					onToolCallEnd: (name, result) => {
 						setActiveToolCalls((prev) =>
 							prev.map((tc) =>
-								tc.name === name && tc.status === "pending"
-									? { ...tc, status: "complete", result }
-									: tc,
+								tc.name === name && tc.status === "pending" ? { ...tc, status: "complete", result } : tc,
 							),
 						);
 					},
 					onComplete: (response) => {
 						if (response) {
-							setMessages((prev) => [
-								...prev,
-								{ role: "assistant", content: response },
-							]);
+							setMessages((prev) => [...prev, { role: "assistant", content: response }]);
 						}
 						setStreamingText("");
 						setActiveToolCalls([]);
@@ -106,10 +96,7 @@ export function App({ world, setup }: AppProps) {
 
 				setConversationHistory(newHistory);
 			} catch (error) {
-				setMessages((prev) => [
-					...prev,
-					{ role: "assistant", content: `Oops! ${getErrorMessage(error)}` },
-				]);
+				setMessages((prev) => [...prev, { role: "assistant", content: `Oops! ${getErrorMessage(error)}` }]);
 			} finally {
 				setIsLoading(false);
 			}
@@ -139,25 +126,16 @@ export function App({ world, setup }: AppProps) {
 				{isDebug && activeToolCalls.length > 0 && !pendingApproval && (
 					<Box flexDirection="column" marginTop={1}>
 						{activeToolCalls.map((tc) => (
-							<ToolCall
-								key={tc.id}
-								name={tc.name}
-								args={tc.args}
-								status={tc.status}
-								result={tc.result}
-							/>
+							<ToolCall key={tc.id} name={tc.name} args={tc.args} status={tc.status} result={tc.result} />
 						))}
 					</Box>
 				)}
 
-				{isLoading &&
-					!streamingText &&
-					activeToolCalls.length === 0 &&
-					!pendingApproval && (
-						<Box marginTop={1}>
-							<Spinner />
-						</Box>
-					)}
+				{isLoading && !streamingText && activeToolCalls.length === 0 && !pendingApproval && (
+					<Box marginTop={1}>
+						<Spinner />
+					</Box>
+				)}
 
 				{pendingApproval && (
 					<ToolApproval
@@ -171,9 +149,7 @@ export function App({ world, setup }: AppProps) {
 				)}
 			</Box>
 
-			{!pendingApproval && (
-				<Input onSubmit={handleSubmit} disabled={isLoading} color="blue" />
-			)}
+			{!pendingApproval && <Input onSubmit={handleSubmit} disabled={isLoading} color="blue" />}
 
 			{isDebug && <TokenUsage usage={tokenUsage} />}
 		</Box>

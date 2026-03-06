@@ -7,22 +7,11 @@ import { z } from "zod";
  * inherently open-ended — different objects and rooms need different state flags.
  * This keeps the schema flexible without requiring you to anticipate every flag upfront.
  */
-const StateSchema = z.record(
-	z.string(),
-	z.union([z.boolean(), z.string(), z.number()]),
-);
+const StateSchema = z.record(z.string(), z.union([z.boolean(), z.string(), z.number()]));
 
 // ─── Object ───────────────────────────────────────────────────────────────────
 
-const ObjectTypeSchema = z.enum([
-	"item",
-	"fixture",
-	"container",
-	"door",
-	"actor",
-	"weapon",
-	"key",
-]);
+const ObjectTypeSchema = z.enum(["item", "fixture", "container", "door", "actor", "weapon", "key"]);
 
 const RequiresInstrumentSchema = z.record(
 	z.string(), // verb e.g. "unlock"

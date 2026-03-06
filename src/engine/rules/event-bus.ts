@@ -2,13 +2,7 @@ import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import { getTarget } from "./param-helpers";
 import { PRIORITY } from "./priorities";
-import type {
-	EventListener,
-	EventName,
-	GameEvent,
-	ListenerRegistration,
-	ListenerResult,
-} from "./types";
+import type { EventListener, EventName, GameEvent, ListenerRegistration, ListenerResult } from "./types";
 
 interface ListenerOptions {
 	priority?: number;
@@ -53,18 +47,9 @@ export class EventBus {
 	}
 
 	// Global: on(event, listener, opts?)
-	on<N extends EventName>(
-		event: N,
-		listener: EventListener<N>,
-		options?: ListenerOptions,
-	): () => void;
+	on<N extends EventName>(event: N, listener: EventListener<N>, options?: ListenerOptions): () => void;
 	// Scoped: on(event, scopeId, listener, opts?)
-	on<N extends EventName>(
-		event: N,
-		scopeId: string,
-		listener: EventListener<N>,
-		options?: ListenerOptions,
-	): () => void;
+	on<N extends EventName>(event: N, scopeId: string, listener: EventListener<N>, options?: ListenerOptions): () => void;
 	on<N extends EventName>(
 		event: N,
 		listenerOrScopeId: EventListener<N> | string,
@@ -115,15 +100,8 @@ export class EventBus {
 	 * - Returning `{ cancel }` stops all subsequent listeners, independent of
 	 *   their priority (same priority and all lower priorities).
 	 */
-	emit<N extends EventName>(
-		event: GameEvent<N>,
-		world: World,
-		state: GameState,
-	): EmitResult {
-		const listenersByPriority = groupListenersByPriority(
-			this.listeners,
-			event.name,
-		);
+	emit<N extends EventName>(event: GameEvent<N>, world: World, state: GameState): EmitResult {
+		const listenersByPriority = groupListenersByPriority(this.listeners, event.name);
 		const priorities = [...listenersByPriority.keys()].sort((a, b) => a - b);
 
 		let currentState = state;
@@ -139,24 +117,16 @@ export class EventBus {
 
 			// Find scoped listener that matches current context
 			const scopedMatch = group.find(
-				(registration) =>
-					registration.scope === "scoped" &&
-					this.matchesScope(registration, event, currentState),
+				(registration) => registration.scope === "scoped" && this.matchesScope(registration, event, currentState),
 			);
 
 			// Run either the single scoped match or all global listeners at this priority
-			const toRun = scopedMatch
-				? [scopedMatch]
-				: group.filter((r) => r.scope === "global");
+			const toRun = scopedMatch ? [scopedMatch] : group.filter((r) => r.scope === "global");
 
 			for (const chosen of toRun) {
 				if (cancelled) break;
 
-				const raw = (chosen.listener as EventListener<N>)(
-					event,
-					currentState,
-					world,
-				);
+				const raw = (chosen.listener as EventListener<N>)(event, currentState, world);
 				const result = this.normalizeResult(raw);
 
 				currentState = result.state;
@@ -179,17 +149,11 @@ export class EventBus {
 		return { state: currentState, feedback, cancelled };
 	}
 
-	private matchesScope<N extends EventName>(
-		reg: ListenerRegistration,
-		event: GameEvent<N>,
-		state: GameState,
-	): boolean {
+	private matchesScope<N extends EventName>(reg: ListenerRegistration, event: GameEvent<N>, state: GameState): boolean {
 		if (reg.scope !== "scoped" || !reg.scopeId) return false;
 		// Match by room or by object target
 		if (reg.scopeId === state.player.current_room) return true;
-		return (
-			getTarget(event.params as Parameters<typeof getTarget>[0]) === reg.scopeId
-		);
+		return getTarget(event.params as Parameters<typeof getTarget>[0]) === reg.scopeId;
 	}
 
 	private normalizeResult(raw: ListenerResult | GameState): ListenerResult {

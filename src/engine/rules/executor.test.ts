@@ -255,9 +255,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.cancelled).toBe(true);
-		expect(result.feedback).toContain(
-			"You don't have anything to unlock it with.",
-		);
+		expect(result.feedback).toContain("You don't have anything to unlock it with.");
 	});
 
 	// ── go ────────────────────────────────────────────────────────────────
@@ -317,9 +315,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.cancelled).toBe(false);
-		expect(result.feedback).toContain(
-			"A small key is hidden behind the chest.",
-		);
+		expect(result.feedback).toContain("A small key is hidden behind the chest.");
 		expect(result.state.objects.chest?.state.examined).toBe(true);
 	});
 
@@ -339,13 +335,7 @@ describe("executeAction", () => {
 		const { world, bus, state } = setup();
 		const movesBefore = (state.player.state.moves as number) ?? 0;
 
-		const result = executeAction(
-			bus,
-			world,
-			state,
-			"tick",
-			{} as Record<string, never>,
-		);
+		const result = executeAction(bus, world, state, "tick", {} as Record<string, never>);
 
 		expect(result.state.player.state.moves).toBe(movesBefore + 1);
 	});
@@ -386,9 +376,7 @@ describe("executeAction", () => {
 
 		const result = executeAction(bus, world, state, "inventory", {});
 
-		expect(result.feedback.join(" ")).toContain(
-			"You aren't carrying anything.",
-		);
+		expect(result.feedback.join(" ")).toContain("You aren't carrying anything.");
 	});
 
 	// ── quit ──────────────────────────────────────────────────────────────
