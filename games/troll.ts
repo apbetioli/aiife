@@ -1,5 +1,6 @@
 import { isInInventory, setObjectState } from "../src/engine/mutators";
 import { type GameSetup, PRIORITY, registerDaemon } from "../src/engine/rules";
+import type { GameState } from "../src/engine/types";
 import type { World } from "../src/world/types";
 
 const world: World = {
@@ -107,6 +108,21 @@ const world: World = {
 
 export default world;
 
+function isTrollNearby(state: GameState, world: World): boolean {
+	const currentRoom = state.player.current_room;
+	const troll = world.objects.troll;
+
+	return (
+		world.rooms[currentRoom].contains?.includes(troll.id) ||
+		Object.values(world.rooms[currentRoom].exits).some((exit) => {
+			if (world.rooms[exit.leads_to].contains?.includes(troll.id)) {
+				return true;
+			}
+			return false;
+		})
+	);
+}
+
 export const setup: GameSetup = (bus) => {
 	// ── attack troll ──────────────────────────────────────────────────────
 	bus.on("attack", "troll", (event, state, world) => {
@@ -190,6 +206,19 @@ export const setup: GameSetup = (bus) => {
 		effect: (_, state) => state,
 		feedback: () =>
 			"\nThe troll swings his axe at you! You barely dodge in time.",
+		priority: PRIORITY.POST_MUTATION,
+	});
+
+	registerDaemon(bus, "sword-glow-effect", {
+		condition: (world, state) => {
+			const hasMetalSword = isInInventory(state, "metal_sword");
+			const _isTrollNearby = isTrollNearby(state, world);
+			console.error("hasMetalSword", hasMetalSword);
+			console.error("isTrollNearby", _isTrollNearby);
+			return hasMetalSword && _isTrollNearby;
+		},
+		effect: (_, state) => state,
+		feedback: () => "The sword glows with a green light.",
 		priority: PRIORITY.POST_MUTATION,
 	});
 };

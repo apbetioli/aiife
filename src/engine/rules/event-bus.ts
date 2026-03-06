@@ -105,6 +105,16 @@ export class EventBus {
 		};
 	}
 
+	/**
+	 * Emit an event to all registered listeners.
+	 *
+	 * - Listeners run by ascending priority (lower runs first).
+	 * - Within a priority, global listeners run in registration order. When a
+	 *   scoped listener matches the current context, only that listener runs
+	 *   (no other listeners at that priority).
+	 * - Returning `{ cancel }` stops all subsequent listeners, independent of
+	 *   their priority (same priority and all lower priorities).
+	 */
 	emit<N extends EventName>(
 		event: GameEvent<N>,
 		world: World,
@@ -134,28 +144,31 @@ export class EventBus {
 					this.matchesScope(registration, event, currentState),
 			);
 
-			// Pick scoped if it exists, otherwise global
-			const chosen =
-				scopedMatch ?? group.find((registration) => registration.scope === "global");
+			// Run either the single scoped match or all global listeners at this priority
+			const toRun = scopedMatch
+				? [scopedMatch]
+				: group.filter((r) => r.scope === "global");
 
-			if (!chosen) continue;
+			for (const chosen of toRun) {
+				if (cancelled) break;
 
-			const raw = (chosen.listener as EventListener<N>)(
-				event,
-				currentState,
-				world,
-			);
-			const result = this.normalizeResult(raw);
+				const raw = (chosen.listener as EventListener<N>)(
+					event,
+					currentState,
+					world,
+				);
+				const result = this.normalizeResult(raw);
 
-			currentState = result.state;
-			if (result.feedback) feedback.push(...result.feedback);
+				currentState = result.state;
+				if (result.feedback) feedback.push(...result.feedback);
 
-			if (result.cancel) {
-				cancelled = true;
-				feedback.push(result.cancel);
+				if (result.cancel) {
+					cancelled = true;
+					feedback.push(result.cancel);
+				}
+
+				if (chosen.once) toRemove.push(chosen);
 			}
-
-			if (chosen.once) toRemove.push(chosen);
 		}
 
 		for (const reg of toRemove) {
