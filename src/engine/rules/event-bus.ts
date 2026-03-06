@@ -23,7 +23,7 @@ export interface EmitResult {
 }
 
 function groupListenersByPriority(
-	listeners: ListenerRegistration[],
+	listeners: Iterable<ListenerRegistration>,
 	eventName: EventName,
 ): Map<number, ListenerRegistration[]> {
 	const byPriority = new Map<number, ListenerRegistration[]>();
@@ -44,14 +44,7 @@ function groupListenersByPriority(
 }
 
 export class EventBus {
-	private listeners: ListenerRegistration[] = [];
-
-	private unregister(registration: ListenerRegistration): void {
-		const index = this.listeners.indexOf(registration);
-		if (index >= 0) {
-			this.listeners.splice(index, 1);
-		}
-	}
+	private listeners = new Set<ListenerRegistration>();
 
 	// Global: on(event, listener, opts?)
 	on<N extends EventName>(event: N, listener: EventListener<N>, options?: ListenerOptions): () => void;
@@ -91,9 +84,9 @@ export class EventBus {
 		};
 
 		const storedRegistration = registration as unknown as ListenerRegistration;
-		this.listeners.push(storedRegistration);
+		this.listeners.add(storedRegistration);
 		return () => {
-			this.unregister(storedRegistration);
+			this.listeners.delete(storedRegistration);
 		};
 	}
 
@@ -152,8 +145,7 @@ export class EventBus {
 		}
 
 		for (const reg of toRemove) {
-			const idx = this.listeners.indexOf(reg);
-			if (idx >= 0) this.listeners.splice(idx, 1);
+			this.listeners.delete(reg);
 		}
 
 		return { state: currentState, feedback, stopped };
