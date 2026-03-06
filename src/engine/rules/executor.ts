@@ -2,7 +2,7 @@ import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import type { ActionRegistry } from "./action-registry";
 import type { EmitResult, EventBus } from "./event-bus";
-import { type EventName, type EventParamsFor, GameEvent } from "./types";
+import { type EventName, type EventParams, GameEvent } from "./types";
 
 type ExecuteResult = EmitResult;
 
@@ -11,7 +11,7 @@ export function executeAction<N extends EventName>(
 	world: World,
 	state: GameState,
 	action: N,
-	params: EventParamsFor<N & string>,
+	params: EventParams,
 ): ExecuteResult {
 	return bus.emit(new GameEvent(action, params), world, state);
 }

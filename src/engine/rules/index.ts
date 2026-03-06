@@ -1,15 +1,12 @@
 import type { World } from "../../world/types";
 import { ActionRegistry } from "./action-registry";
-import type { CoreActionContext } from "./core-actions";
 import { registerCoreActions } from "./core-actions";
 import { EventBus } from "./event-bus";
-import { executeAction } from "./executor";
 import { registerContainer } from "./factories";
 
 export { ActionRegistry } from "./action-registry";
 export { EventBus } from "./event-bus";
 export { executeAction, executeUntrustedAction } from "./executor";
-
 
 /** Optional setup function that game modules can export to register custom actions/listeners. */
 export type GameSetup = (bus: EventBus, registry: ActionRegistry) => void;
@@ -28,7 +25,7 @@ export function createRules(
 	const bus = new EventBus();
 	const registry = new ActionRegistry();
 
-	registerCoreActions(bus, registry, { bus, executeAction } as CoreActionContext);
+	registerCoreActions(bus, registry);
 
 	// Auto-register containers
 	for (const [id, obj] of Object.entries(world.objects)) {

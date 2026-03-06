@@ -1,23 +1,22 @@
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
-import type { CoreEventName, CoreEventParamsMap } from "./core-actions";
+import type { StructuredOutput } from "../../agent/types";
+import type { CoreEventName } from "./core-actions-types";
 
 // ─── Event Names & Params ────────────────────────────────────────────────────
 
 /** Core names get autocomplete; custom names accepted via `(string & {})`. */
 export type EventName = CoreEventName | (string & {});
 
-/** Resolves params for core events; custom events get `Record<string, unknown>`. */
-export type EventParamsFor<N extends string> = N extends CoreEventName
-	? CoreEventParamsMap[N]
-	: Record<string, unknown>;
+/** Same shape as LLM structured output minus the action name (each action uses a subset); validated at runtime. */
+export type EventParams = Partial<Omit<StructuredOutput, "action">>;
 
 // ─── Event ───────────────────────────────────────────────────────────────────
 
 export class GameEvent<N extends EventName = EventName> {
 	constructor(
 		readonly name: N,
-		readonly params: EventParamsFor<N & string>,
+		readonly params: EventParams,
 	) {}
 }
 
