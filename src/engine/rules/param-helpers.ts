@@ -2,7 +2,7 @@
  * All player-facing actions use `objects: string[]` for entity references.
  * Positional convention: objects[0] = target, objects[1] = instrument/indirect.
  */
-export interface IntentParams {
+interface IntentParams {
 	objects?: string[];
 	[key: string]: unknown;
 }

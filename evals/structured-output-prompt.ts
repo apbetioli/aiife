@@ -5,7 +5,7 @@ const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
 	Object.entries(coreActions).map(([name, action]) => [name, action.description]),
 );
 
-export function buildAvailableActionsPrompt(
+function buildAvailableActionsPrompt(
 	actionNames: string[],
 	descriptions: Record<string, string> = ACTION_DESCRIPTIONS_MAP,
 ): string {
@@ -39,7 +39,7 @@ function joinOrNone(items: string[]): string {
 	return items.length > 0 ? items.join(", ") : "none";
 }
 
-export function buildGameStateSnapshotPrompt(context: ParserContext): string {
+function buildGameStateSnapshotPrompt(context: ParserContext): string {
 	const exits = joinOrNone(context.available_exits);
 	const blockedExits = joinOrNone(context.blocked_exits.map((e) => e.direction));
 	const roomObjects = formatObjectsInScope(context.in_scope_objects, "room");
@@ -61,7 +61,7 @@ Rules:
 - For object references (target, objects, actor): use the object's id (in square brackets in the game state), not the display name.
 - If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.`;
 
-export function buildStructuredOutputSystemPrompt(
+export function buildIntentSystemPrompt(
 	context: ParserContext,
 	actions: string[],
 	descriptions?: Record<string, string>,

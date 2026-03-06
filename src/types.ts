@@ -13,13 +13,13 @@ export interface ToolApprovalRequest {
 	resolve: (approved: boolean) => void;
 }
 
-export interface ToolCallInfo {
+interface ToolCallInfo {
 	toolCallId: string;
 	toolName: string;
 	args: Record<string, unknown>;
 }
 
-export interface ModelLimits {
+interface ModelLimits {
 	inputLimit: number;
 	outputLimit: number;
 	contextWindow: number;

@@ -1,5 +1,5 @@
 import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
-import { buildStructuredOutputSystemPrompt } from "../../evals/structured-output-prompt";
+import { buildIntentSystemPrompt } from "../../evals/structured-output-prompt";
 import type { GameEngine } from "../engine/game-engine";
 import type { AgentCallbacks } from "../types";
 import { NARRATION_SYSTEM_PROMPT } from "./prompt";
@@ -15,11 +15,6 @@ export function getErrorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
 }
 
-/** Returns true if input contains non-ASCII characters (likely non-English). */
-function needsTranslation(input: string): boolean {
-	return !/^[\x20-\x7E]*$/.test(input);
-}
-
 export class GameAgent {
 	constructor(
 		private model: LanguageModel,
@@ -30,34 +25,28 @@ export class GameAgent {
 	async run(input: string, conversationHistory: ModelMessage[], callbacks: AgentCallbacks): Promise<ModelMessage[]> {
 		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
 
-		const system = buildStructuredOutputSystemPrompt(
+		const system = buildIntentSystemPrompt(
 			this.engine.getParserContext(),
 			Object.keys(this.engine.getDescriptions()),
 			this.engine.getDescriptions(),
 		);
 
-		const intentResult = await generateText({
+		const { output: intent } = await generateText({
 			model: this.model,
 			output: Output.object({ schema: StructuredOutputSchema }),
 			messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
 			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 		});
 
-		const intent = intentResult.output;
 		const { action, ...params } = intent;
+
 		callbacks.onToolCallStart(action, params);
 
 		const result = this.engine.runAction(intent);
+
 		callbacks.onToolCallEnd(action, result.message);
 
-		let outputText: string;
-
-		if (needsTranslation(input)) {
-			outputText = await this.narrate(result, input, callbacks);
-		} else {
-			outputText = result.message || "Done.";
-			callbacks.onToken(outputText);
-		}
+		const outputText = await this.narrate(result, input, callbacks);
 
 		callbacks.onComplete(outputText);
 
@@ -67,8 +56,10 @@ export class GameAgent {
 
 	private async narrate(result: ActionResult, playerInput: string, callbacks: AgentCallbacks): Promise<string> {
 		const fallback = result.message || "Done.";
+
 		try {
 			const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${result.message}\nPlayer language (match this): "${playerInput}"`;
+
 			const stream = streamText({
 				model: this.narratorModel,
 				prompt,

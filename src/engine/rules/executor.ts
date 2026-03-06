@@ -4,7 +4,7 @@ import type { ActionRegistry } from "./action-registry";
 import type { EmitResult, EventBus } from "./event-bus";
 import { type EventName, type EventParamsFor, GameEvent } from "./types";
 
-export type ExecuteResult = EmitResult;
+type ExecuteResult = EmitResult;
 
 export function executeAction<N extends EventName>(
 	bus: EventBus,
