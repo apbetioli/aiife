@@ -37,13 +37,7 @@ export class GameAgent {
 			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 		});
 
-		const { action, ...params } = intent;
-
-		callbacks.onToolCallStart(action, params);
-
 		const result = this.engine.runAction(intent);
-
-		callbacks.onToolCallEnd(action, result);
 
 		const outputText = await this.narrate(result, input, callbacks);
 

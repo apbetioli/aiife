@@ -4,7 +4,7 @@ import type { GameSetup } from "../engine/rules/index.ts";
 import { type World, WorldSchema } from "./types.ts";
 
 const DEFAULT_GAME = "the-great-hall";
-const GAMES_DIR = resolve(import.meta.dirname, "..", "games");
+const GAMES_DIR = resolve(import.meta.dirname, "..", "..", "games");
 
 async function loadGame(path: string): Promise<{ world: unknown; setup?: GameSetup } | null> {
 	if (path.endsWith(".json")) {
