@@ -71,16 +71,16 @@ export interface MockToolConfig {
 	mockReturn: string;
 }
 
-// --- Structured Output Intent Recognition ---
+// --- Intent Recognition ---
 
-export interface StructuredOutputEvalData {
+export interface IntentRecognitionEvalData {
 	prompt: string;
 	context: ParserContext;
 	availableActions: string[];
 	config?: { model?: string; temperature?: number };
 }
 
-export interface StructuredOutputEvalTarget {
+export interface IntentRecognitionEvalTarget {
 	expectedAction: string;
 	expectedParams: Record<string, unknown>;
 	category: "golden" | "secondary" | "negative";
@@ -89,13 +89,13 @@ export interface StructuredOutputEvalTarget {
 	/** For negative: actions that must NOT be selected */
 	forbiddenActions?: string[];
 }
-export interface StructuredOutputDatasetEntry {
-	data: StructuredOutputEvalData;
-	target: StructuredOutputEvalTarget;
+export interface IntentRecognitionDatasetEntry {
+	data: IntentRecognitionEvalData;
+	target: IntentRecognitionEvalTarget;
 	metadata?: { description?: string };
 }
 
-export type StructuredOutputResult = {
+export type IntentRecognitionResult = {
 	action: string;
 	params: Record<string, unknown>;
 };

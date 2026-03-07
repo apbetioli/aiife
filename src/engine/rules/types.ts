@@ -1,4 +1,4 @@
-import type { StructuredOutput } from "../../agent/types";
+import type { RecognizedIntent } from "../../agent/types";
 import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import type { CoreEventName } from "./core-actions";
@@ -10,8 +10,8 @@ export type { GameState };
 /** Core names get autocomplete; custom names accepted via `(string & {})`. */
 export type EventName = CoreEventName | (string & {});
 
-/** Same shape as LLM structured output minus the action name (each action uses a subset); validated at runtime. */
-export type EventParams = Partial<Omit<StructuredOutput, "action">>;
+/** Same shape as LLM intent recognition output minus the action name (each action uses a subset); validated at runtime. */
+export type EventParams = Partial<Omit<RecognizedIntent, "action">>;
 
 // ─── Event ───────────────────────────────────────────────────────────────────
 

@@ -230,7 +230,7 @@ Reusable functions that register listener patterns for common object types:
 
 ## Phase 4 — Parser Layer
 
-> **Goal:** Natural language input → validated `ParsedCommand` using an LLM with structured output.
+> **Goal:** Natural language input → validated `ParsedCommand` using an LLM with intent recognition.
 > **Deliverable:** A reliable parser that handles synonyms, ambiguity, out-of-scope, and compound phrasing.
 
 ### 4.1 Command Schema
@@ -261,7 +261,7 @@ Reusable functions that register listener patterns for common object types:
 
 - [ ] `parse(world, state, input): Promise<ParsedCommand>`
   - builds context snapshot
-  - calls LLM with structured output / JSON mode
+  - calls LLM with intent recognition / JSON mode
   - validates response with `ParsedCommandSchema`
   - falls back to `clarify` on parse failure
 

@@ -1,10 +1,10 @@
 import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
-import { buildIntentSystemPrompt } from "../../evals/structured-output-prompt";
+import { buildIntentSystemPrompt as buildIntentRecognitionSystemPrompt } from "../../evals/intent-recognition/intent-recognition-prompt";
 import type { GameEngine } from "../engine/game-engine";
 import type { AgentCallbacks } from "../types";
 import { NARRATION_SYSTEM_PROMPT } from "./prompt";
 import { filterCompatibleMessages } from "./system/filterMessages";
-import { StructuredOutputSchema } from "./types";
+import { IntentRecognitionSchema } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 
@@ -24,7 +24,7 @@ export class GameAgent {
 	async run(input: string, conversationHistory: ModelMessage[], callbacks: AgentCallbacks): Promise<ModelMessage[]> {
 		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
 
-		const system = buildIntentSystemPrompt(
+		const system = buildIntentRecognitionSystemPrompt(
 			this.engine.getParserContext(),
 			Object.keys(this.engine.getDescriptions()),
 			this.engine.getDescriptions(),
@@ -32,7 +32,7 @@ export class GameAgent {
 
 		const { output: intent } = await generateText({
 			model: this.model,
-			output: Output.object({ schema: StructuredOutputSchema }),
+			output: Output.object({ schema: IntentRecognitionSchema }),
 			messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
 			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 		});

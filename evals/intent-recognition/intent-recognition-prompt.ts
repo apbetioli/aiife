@@ -1,5 +1,5 @@
-import { coreActionDefinitions } from "../src/engine/rules/core-actions";
-import type { ParserContext, ScopedObject } from "../src/world/types";
+import { coreActionDefinitions } from "../../src/engine/rules/core-actions";
+import type { ParserContext, ScopedObject } from "../../src/world/types";
 
 const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
 	Object.entries(coreActionDefinitions).map(([name, action]) => [name, action.description]),
@@ -53,7 +53,7 @@ function buildGameStateSnapshotPrompt(context: ParserContext): string {
   - Carrying: ${inventory}`;
 }
 
-const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the conversation history and the player's latest input, determine which single game action the player intends.
+const INTENT_RECOGNITION_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the conversation history and the player's latest input, determine which single game action the player intends.
 
 Rules:
 - Choose exactly ONE action from the available actions list.
@@ -67,7 +67,7 @@ export function buildIntentSystemPrompt(
 	descriptions?: Record<string, string>,
 ): string {
 	return [
-		STRUCTURED_OUTPUT_SYSTEM_PROMPT,
+		INTENT_RECOGNITION_SYSTEM_PROMPT,
 		"",
 		buildGameStateSnapshotPrompt(context),
 		"",
