@@ -8,6 +8,7 @@ import type { Observer } from "./rules/types";
 import { load, type SaveFile, save } from "./save";
 import type { GameState } from "./types";
 
+const DEFAULT_FEEDBACK = "Done.";
 const INTENT_PARAM_KEYS_TO_SKIP = new Set(["action", "message"]);
 const MAX_UNDO_HISTORY = 50;
 
@@ -69,19 +70,16 @@ export class GameEngine {
 			return intent.message ?? "I don't understand that.";
 		}
 
-		// Save state before mutation for undo
 		this.pushHistory();
-
 		const params = toEventParams(intent);
 		const result = executeUntrustedAction(this.bus, this.registry, this.world, this.state, action, params);
 		this.state = result.state;
 
-		// Fire tick after every action
 		const tickResult = executeAction(this.bus, this.world, this.state, "tick", {});
 		this.state = tickResult.state;
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
-		return allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? "Done.");
+		return allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
 	}
 
 	undo(): string {
