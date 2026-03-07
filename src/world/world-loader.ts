@@ -16,14 +16,20 @@ async function loadGame(path: string): Promise<{ world: unknown; setup?: GameSet
 	return { world: mod.default, setup };
 }
 
+function getGamePathsToTry(gameName: string): string[] {
+	const base = gameName.replace(/\.(tsx?|json)$/, "");
+	if (gameName.endsWith(".json")) {
+		return [resolve(GAMES_DIR, gameName)];
+	}
+	if (gameName.endsWith(".ts") || gameName.endsWith(".tsx")) {
+		return [resolve(GAMES_DIR, gameName), resolve(GAMES_DIR, `${base}.json`)];
+	}
+	return [resolve(GAMES_DIR, `${gameName}.ts`), resolve(GAMES_DIR, `${gameName}.json`)];
+}
+
 export async function loadWorld(): Promise<{ world: World; setup?: GameSetup }> {
 	const gameName = process.argv.slice(2).find((a) => a !== "--") ?? DEFAULT_GAME;
-	const base = gameName.replace(/\.(tsx?|json)$/, "");
-	const pathsToTry = gameName.endsWith(".json")
-		? [resolve(GAMES_DIR, gameName)]
-		: gameName.endsWith(".ts") || gameName.endsWith(".tsx")
-			? [resolve(GAMES_DIR, gameName), resolve(GAMES_DIR, `${base}.json`)]
-			: [resolve(GAMES_DIR, `${gameName}.ts`), resolve(GAMES_DIR, `${gameName}.json`)];
+	const pathsToTry = getGamePathsToTry(gameName);
 
 	let result: { world: unknown; setup?: GameSetup } | null = null;
 	for (const path of pathsToTry) {

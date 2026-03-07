@@ -43,7 +43,6 @@ export class GameAgent {
 
 		callbacks.onComplete(outputText);
 
-		// Return only the bounded history window for next call
 		return [...recentHistory, { role: "user", content: input }, { role: "assistant", content: outputText }];
 	}
 
@@ -68,7 +67,6 @@ export class GameAgent {
 			}
 			return text || fallback;
 		} catch {
-			// Narrator failed (timeout, connection, etc.) — use game output as-is
 			return fallback;
 		}
 	}

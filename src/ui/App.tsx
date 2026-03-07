@@ -16,6 +16,19 @@ import { TokenUsage } from "./components/TokenUsage.tsx";
 
 const isDebug = process.env.DEBUG === "true";
 
+function getErrorDisplayMessage(error: unknown): string {
+	if (!isDebug) {
+		return "The dungeon master had some urgent business to attend to.";
+	}
+	if (error instanceof Error && error.stack) {
+		return error.stack;
+	}
+	if (error instanceof Error) {
+		return error.message;
+	}
+	return String(error);
+}
+
 interface AppProps {
 	world: World;
 	setup?: GameSetup;
@@ -96,13 +109,7 @@ function useGameSession(world: World, setup?: GameSetup) {
 
 			setConversationHistory(newHistory);
 		} catch (error) {
-			const message = isDebug
-				? error instanceof Error
-					? (error.stack ?? String(error))
-					: String(error)
-				: "The dungeon master had some urgent business to attend to.";
-
-			addMessage({ role: "assistant", content: `Oops! ${message}` });
+			addMessage({ role: "assistant", content: `Oops! ${getErrorDisplayMessage(error)}` });
 		} finally {
 			setIsLoading(false);
 		}
