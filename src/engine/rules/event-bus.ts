@@ -1,15 +1,9 @@
 import type { World } from "../../world/types";
+import { immutable } from "../mutators";
 import type { GameState } from "../types";
 import { getTarget } from "./param-helpers";
 import { PRIORITY } from "./priorities";
-import type {
-	EventListener,
-	EventName,
-	GameEvent,
-	ListenerRegistration,
-	ListenerResult,
-	StoppableEvent,
-} from "./types";
+import type { EventListener, EventName, GameEvent, ListenerRegistration, StoppableEvent } from "./types";
 
 interface ListenerOptions {
 	priority?: number;
@@ -103,17 +97,14 @@ export class EventBus {
 		const listenersByPriority = groupListenersByPriority(this.listeners, event.name);
 		const priorities = [...listenersByPriority.keys()].sort((a, b) => a - b);
 
-		let currentState = state;
+		let updatedState = state;
 		const feedback: string[] = [];
 		let stopped = false;
 		const toRemove: ListenerRegistration[] = [];
 
 		const stoppable: StoppableEvent<N> = Object.assign(Object.create(event), {
-			stop(message?: string | string[]) {
+			stop() {
 				stopped = true;
-				if (message !== undefined) {
-					feedback.push(...(Array.isArray(message) ? message : [message]));
-				}
 			},
 		});
 
@@ -125,7 +116,7 @@ export class EventBus {
 
 			// Find scoped listener that matches current context
 			const scopedMatch = group.find(
-				(registration) => registration.scope === "scoped" && this.matchesScope(registration, event, currentState),
+				(registration) => registration.scope === "scoped" && this.matchesScope(registration, event, updatedState),
 			);
 
 			// Run either the single scoped match or all global listeners at this priority
@@ -134,11 +125,16 @@ export class EventBus {
 			for (const chosen of toRun) {
 				if (stopped) break;
 
-				const raw = (chosen.listener as EventListener<N>)(stoppable, currentState, world);
-				const result = this.normalizeResult(raw);
-
-				currentState = result.state;
-				if (result.feedback) feedback.push(...result.feedback);
+				updatedState = immutable(updatedState, (state) => {
+					const result = (chosen.listener as EventListener<N>)(stoppable, state, world);
+					if (result !== undefined) {
+						if (typeof result === "string") {
+							feedback.push(result);
+						} else if (Array.isArray(result)) {
+							feedback.push(...result);
+						}
+					}
+				});
 
 				if (chosen.once) toRemove.push(chosen);
 			}
@@ -148,7 +144,7 @@ export class EventBus {
 			this.listeners.delete(reg);
 		}
 
-		return { state: currentState, feedback, stopped };
+		return { state: updatedState, feedback, stopped };
 	}
 
 	private matchesScope<N extends EventName>(reg: ListenerRegistration, event: GameEvent<N>, state: GameState): boolean {
@@ -156,11 +152,5 @@ export class EventBus {
 		// Match by room or by object target
 		if (reg.scopeId === state.player.current_room) return true;
 		return getTarget(event.params as Parameters<typeof getTarget>[0]) === reg.scopeId;
-	}
-
-	private normalizeResult(raw: ListenerResult | GameState): ListenerResult {
-		// GameState always has `player`; ListenerResult never does
-		if ("player" in raw) return { state: raw as GameState };
-		return raw as ListenerResult;
 	}
 }

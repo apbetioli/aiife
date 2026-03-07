@@ -98,9 +98,7 @@ describe("mutators", () => {
 
 		it("throws if object not in inventory", () => {
 			const state = freshState();
-			expect(() => moveObjectFromInventoryToRoom(state, "lamp", "room_a")).toThrow(
-				'Object "lamp" is not in inventory',
-			);
+			expect(() => moveObjectFromInventoryToRoom(state, "lamp", "room_a")).toThrow('Object "lamp" is not in inventory');
 		});
 
 		it("does not mutate original state", () => {

@@ -3,9 +3,9 @@ import type { World } from "../../world/types";
 import { makeTestWorld } from "../__fixtures__/test-world";
 import { buildInitialState } from "../initial-state";
 import { immutable, setObjectState } from "../mutators";
+import { registerCoreActions } from "./core-actions";
 import { executeAction } from "./executor";
 import { ActionRegistry, EventBus } from "./index";
-import { registerCoreActions } from "./core-actions";
 
 function setup(overrides?: Partial<World>) {
 	const world = makeTestWorld(overrides);
