@@ -1,7 +1,7 @@
 import type { ModelMessage } from "ai";
 import { Box, useApp } from "ink";
 import { useCallback, useMemo, useState } from "react";
-import { GameAgent, getErrorMessage } from "../agent/game-agent.ts";
+import { GameAgent } from "../agent/game-agent.ts";
 import { createNarratorModel, createParserModel } from "../agent/model.ts";
 import { GameEngine } from "../engine/game-engine.ts";
 import type { GameSetup } from "../engine/rules/index.ts";
@@ -96,7 +96,13 @@ export function App({ world, setup }: AppProps) {
 
 				setConversationHistory(newHistory);
 			} catch (error) {
-				setMessages((prev) => [...prev, { role: "assistant", content: `Oops! ${getErrorMessage(error)}` }]);
+				const stack =
+					process.env.DEBUG === "true"
+						? error instanceof Error
+							? error.stack
+							: String(error)
+						: "The dungeon master had some urgent business to attend to.";
+				setMessages((prev) => [...prev, { role: "assistant", content: `Oops! ${stack}` }]);
 			} finally {
 				setIsLoading(false);
 			}

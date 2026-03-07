@@ -1,7 +1,7 @@
 import type { z } from "zod";
 import { isInInventory, setObjectState } from "../../mutators";
-import { objectsSchema } from "./schemas";
 import { getInstrument, getTarget } from "./helpers";
+import { objectsSchema } from "./schemas";
 import type { ActionDef } from "./types";
 
 export const unlock: ActionDef<z.infer<typeof objectsSchema>> = {
@@ -11,15 +11,15 @@ export const unlock: ActionDef<z.infer<typeof objectsSchema>> = {
 		const target = getTarget(event.params as { objects?: string[] });
 		const instrument = getInstrument(event.params as { objects?: string[] });
 		if (!instrument || !isInInventory(state, instrument)) {
-			event.stop("You don't have anything to unlock it with.");
-			return state;
+			event.stop();
+			return "You don't have anything to unlock it with.";
 		}
 		const obj = world.objects[target];
 		const requiredKey = obj?.requires_instrument?.unlock;
 		if (requiredKey && instrument !== requiredKey) {
-			event.stop("That doesn't fit the lock.");
-			return state;
+			event.stop();
+			return "That doesn't fit the lock.";
 		}
-		return { state: setObjectState(state, target, "locked", false) };
+		setObjectState(state, target, "locked", false);
 	},
 };

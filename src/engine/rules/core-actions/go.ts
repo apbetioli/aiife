@@ -1,8 +1,8 @@
 import type { z } from "zod";
 import { ensureVisited, movePlayer } from "../../mutators";
 import { evaluateCondition } from "../../parser-context";
-import { directionSchema } from "./schemas";
 import { runAction } from "./helpers";
+import { directionSchema } from "./schemas";
 import type { ActionDef } from "./types";
 
 const description =
@@ -18,24 +18,20 @@ export const go: ActionDef<z.infer<typeof directionSchema>> = {
 			? (room.exits as Record<string, { leads_to: string; condition?: string; locked_message?: string }>)[direction]
 			: undefined;
 		if (!exit) {
-			event.stop("You can't go that way.");
-			return state;
+			event.stop();
+			return "You can't go that way.";
 		}
 		if (exit.condition && !evaluateCondition(exit.condition, state)) {
-			event.stop(exit.locked_message ?? "The way is blocked.");
-			return state;
+			event.stop();
+			return exit.locked_message ?? "The way is blocked.";
 		}
 		const from = state.player.current_room;
 		const to = exit.leads_to;
-		let nextState = movePlayer(state, to);
-		nextState = ensureVisited(nextState, to);
-		const exitResult = runAction(bus, world, nextState, "exit", { room: from });
-		nextState = exitResult.state;
-		const enterResult = runAction(bus, world, nextState, "enter", { room: to });
-		nextState = enterResult.state;
-		const lookResult = runAction(bus, world, nextState, "look", {});
-		nextState = lookResult.state;
-		const feedback = [...exitResult.feedback, ...enterResult.feedback, ...lookResult.feedback];
-		return { state: nextState, feedback };
+		movePlayer(state, to);
+		ensureVisited(state, to);
+		const exitFeedback = runAction(bus, world, state, "exit", { room: from });
+		const enterFeedback = runAction(bus, world, state, "enter", { room: to });
+		const lookFeedback = runAction(bus, world, state, "look", {});
+		return [...exitFeedback, ...enterFeedback, ...lookFeedback];
 	},
 };

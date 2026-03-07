@@ -6,8 +6,8 @@ import {
 	moveObjectFromContainerToInventory,
 	moveObjectFromRoomToInventory,
 } from "../../mutators";
-import { objectsSchema } from "./schemas";
 import { getObjectIds } from "./helpers";
+import { objectsSchema } from "./schemas";
 import type { ActionDef } from "./types";
 
 export const take: ActionDef<z.infer<typeof objectsSchema>> = {
@@ -17,12 +17,12 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 	handler: (event, state, _world) => {
 		const ids = getObjectIds(event.params);
 		if (ids.length === 0) {
-			event.stop("Take what?");
-			return state;
+			event.stop();
+			return "Take what?";
 		}
 		if (state.player.state.dead) {
-			event.stop("Your hand passes through its object.");
-			return state;
+			event.stop();
+			return "Your hand passes through its object.";
 		}
 		const canTake = (id: string) => state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
 		const fromRoom = ids.filter((id) => isInRoom(state, id) && canTake(id));
@@ -34,20 +34,14 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 			if (cid) fromContainer.push({ id, containerId: cid });
 		}
 		if (fromRoom.length === 0 && fromContainer.length === 0) {
-			if (ids.some((id) => isInInventory(state, id))) {
-				event.stop("You're already carrying that.");
-				return state;
-			}
-			event.stop("You can't take that.");
-			return state;
+			event.stop();
+			return ids.some((id) => isInInventory(state, id)) ? "You're already carrying that." : "You can't take that.";
 		}
-		let nextState = state;
 		for (const id of fromRoom) {
-			nextState = moveObjectFromRoomToInventory(nextState, id);
+			moveObjectFromRoomToInventory(state, id);
 		}
 		for (const { id, containerId } of fromContainer) {
-			nextState = moveObjectFromContainerToInventory(nextState, id, containerId);
+			moveObjectFromContainerToInventory(state, id, containerId);
 		}
-		return { state: nextState };
 	},
 };

@@ -2,14 +2,8 @@ import type { StructuredOutput } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
-import {
-	type ActionRegistry,
-	createRules,
-	type EventBus,
-	executeAction,
-	executeUntrustedAction,
-	type GameSetup,
-} from "./rules";
+import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
+import { registerCoreActions } from "./rules/core-actions";
 import { load, type SaveFile, save } from "./save";
 import type { GameState } from "./types";
 
@@ -34,10 +28,11 @@ export class GameEngine {
 		private world: World,
 		setup?: GameSetup,
 	) {
-		const { bus, registry } = createRules(world, setup);
-		this.bus = bus;
-		this.registry = registry;
+		this.bus = new EventBus();
+		this.registry = new ActionRegistry();
 		this.state = buildInitialState(world);
+		registerCoreActions(this.bus, this.registry);
+		setup?.(this.bus, this.registry);
 	}
 
 	start(): string {
