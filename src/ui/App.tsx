@@ -138,7 +138,7 @@ export function App({ world, setup }: AppProps) {
 				<Text dimColor> (type "quit" to quit)</Text>
 			</Box>
 
-			<Box flexDirection="column" marginBottom={1} gap={2}>
+			<Box flexDirection="column" marginBottom={1} gap={1}>
 				<MessageList messages={messages} />
 
 				{streamingText && (

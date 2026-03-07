@@ -1,4 +1,4 @@
-import type { StructuredOutput } from "../agent/types";
+import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
@@ -12,7 +12,7 @@ const DEFAULT_FEEDBACK = "Done.";
 const INTENT_PARAM_KEYS_TO_SKIP = new Set(["action", "message"]);
 const MAX_UNDO_HISTORY = 50;
 
-function toEventParams(intent: StructuredOutput): Record<string, unknown> {
+function toEventParams(intent: RecognizedIntent): Record<string, unknown> {
 	return Object.fromEntries(
 		Object.entries(intent).filter(
 			([key, value]) => !INTENT_PARAM_KEYS_TO_SKIP.has(key) && value !== null && value !== undefined,
@@ -59,7 +59,7 @@ export class GameEngine {
 		return this.registry.getDescriptions();
 	}
 
-	runAction(intent: StructuredOutput): string {
+	runAction(intent: RecognizedIntent): string {
 		// Conversational response — no game action
 		if (intent.action === "respond") {
 			return intent.message ?? "";

@@ -2,7 +2,7 @@ import z from "zod";
 
 // All param fields from player-facing core actions, made nullable.
 // If you add a param field to a core action, add it here too so the LLM can output it.
-export const StructuredOutputSchema = z.object({
+export const IntentRecognitionSchema = z.object({
 	action: z.string(),
 	direction: z.string().nullable(),
 	objects: z.array(z.string()).nullable(),
@@ -10,4 +10,4 @@ export const StructuredOutputSchema = z.object({
 	message: z.string().nullable(),
 });
 
-export type StructuredOutput = z.infer<typeof StructuredOutputSchema>;
+export type RecognizedIntent = z.infer<typeof IntentRecognitionSchema>;
