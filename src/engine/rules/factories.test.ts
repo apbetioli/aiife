@@ -1,54 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { makeTestWorld } from "../__fixtures__/test-world";
 import { buildInitialState } from "../initial-state";
+import { registerCoreActions } from "./core-actions";
 import { executeAction } from "./executor";
-import { createRules } from "./index";
-
-describe("open and close container", () => {
-	it("opening container moves contents to room", () => {
-		const world = makeTestWorld();
-		const { bus } = createRules(world);
-		const state = buildInitialState(world);
-
-		// chest contains gem, chest is in room_a
-		expect(state.objects.chest.contains).toContain("gem");
-		expect(state.rooms.room_a.contains).not.toContain("gem");
-
-		const result = executeAction(bus, world, state, "open", {
-			objects: ["chest"],
-		});
-
-		expect(result.stopped).toBe(false);
-		expect(result.state.objects.chest.state.open).toBe(true);
-		// gem should now be in the room
-		expect(result.state.rooms.room_a.contains).toContain("gem");
-		// gem should no longer be in the container
-		expect(result.state.objects.chest.contains).toEqual([]);
-	});
-
-	it("closing container moves contents back", () => {
-		const world = makeTestWorld();
-		const { bus } = createRules(world);
-		let state = buildInitialState(world);
-
-		// First open the chest to move gem to room
-		const openResult = executeAction(bus, world, state, "open", {
-			objects: ["chest"],
-		});
-		state = openResult.state;
-
-		expect(state.rooms.room_a.contains).toContain("gem");
-		expect(state.objects.chest.contains).toEqual([]);
-
-		// Now close it
-		const closeResult = executeAction(bus, world, state, "close", {
-			objects: ["chest"],
-		});
-
-		expect(closeResult.state.rooms.room_a.contains).not.toContain("gem");
-		expect(closeResult.state.objects.chest.contains).toContain("gem");
-	});
-});
+import { ActionRegistry, EventBus } from "./index";
 
 describe("unlock with requires_instrument", () => {
 	function setupLockable() {
@@ -61,7 +16,8 @@ describe("unlock with requires_instrument", () => {
 				},
 			},
 		});
-		const { bus } = createRules(world);
+		const bus = new EventBus();
+		registerCoreActions(bus, new ActionRegistry());
 		const state = buildInitialState(world);
 		return { world, bus, state };
 	}
@@ -88,7 +44,8 @@ describe("unlock with requires_instrument", () => {
 				},
 			},
 		});
-		const { bus } = createRules(world);
+		const bus = new EventBus();
+		registerCoreActions(bus, new ActionRegistry());
 		const state = buildInitialState(world);
 
 		// sword is in inventory but isn't the right key

@@ -2,13 +2,15 @@ import { describe, expect, it } from "vitest";
 import type { World } from "../../world/types";
 import { makeTestWorld } from "../__fixtures__/test-world";
 import { buildInitialState } from "../initial-state";
-import { setObjectState } from "../mutators";
+import { immutable, setObjectState } from "../mutators";
 import { executeAction } from "./executor";
-import { createRules } from "./index";
+import { ActionRegistry, EventBus } from "./index";
+import { registerCoreActions } from "./core-actions";
 
 function setup(overrides?: Partial<World>) {
 	const world = makeTestWorld(overrides);
-	const { bus } = createRules(world);
+	const bus = new EventBus();
+	registerCoreActions(bus, new ActionRegistry());
 	const state = buildInitialState(world);
 	return { world, bus, state };
 }
@@ -170,7 +172,7 @@ describe("executeAction", () => {
 		const { world, bus } = setup();
 		let { state } = setup();
 		// Manually open the chest
-		state = setObjectState(state, "chest", "open", true);
+		state = immutable(state, (s) => setObjectState(s, "chest", "open", true));
 
 		const result = executeAction(bus, world, state, "open", {
 			objects: ["chest"],
@@ -186,7 +188,7 @@ describe("executeAction", () => {
 		const { world, bus } = setup();
 		let { state } = setup();
 		// First open the chest
-		state = setObjectState(state, "chest", "open", true);
+		state = immutable(state, (s) => setObjectState(s, "chest", "open", true));
 
 		const result = executeAction(bus, world, state, "close", {
 			objects: ["chest"],
@@ -377,6 +379,18 @@ describe("executeAction", () => {
 		const result = executeAction(bus, world, state, "inventory", {});
 
 		expect(result.feedback.join(" ")).toContain("You aren't carrying anything.");
+	});
+
+	// ── attack ────────────────────────────────────────────────────────────
+
+	it("attack with target gives default message", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "attack", {
+			objects: ["lamp"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback.join(" ")).toContain("has no effect");
 	});
 
 	// ── quit ──────────────────────────────────────────────────────────────

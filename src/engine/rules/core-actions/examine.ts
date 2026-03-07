@@ -1,8 +1,8 @@
 import type { z } from "zod";
 import { setObjectState } from "../../mutators";
 import { resolveObjectDescriptionWithPreposition } from "../../parser-context";
-import { objectsWithPrepositionSchema } from "./schemas";
 import { resolveTarget } from "./helpers";
+import { objectsWithPrepositionSchema } from "./schemas";
 import type { ActionDef } from "./types";
 
 export const examine: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
@@ -10,12 +10,15 @@ export const examine: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = 
 	description:
 		"examine(objects, preposition?): Look closely at an item, actor, or feature. objects: [target_id]. Shorthand: x. Use for 'look at X', 'look under X', 'look behind X', 'look in X', look inside X — add preposition when examining a specific aspect. Omit preposition for plain 'look at' or 'examine'.",
 	handler: (event, state, world) => {
-		const target = resolveTarget(event, state, world, { missingMessage: "Examine what?" });
-		if (!target) return state;
+		const target = resolveTarget(event, state, world);
+		if (!target) {
+			event.stop();
+			return "Examine what?";
+		}
 		const { targetId, obj, objState } = target;
 		const preposition = event.params.preposition?.trim();
 		const description = resolveObjectDescriptionWithPreposition(obj, objState, preposition || undefined);
-		const nextState = setObjectState(state, targetId, "examined", true);
-		return { state: nextState, feedback: [description] };
+		setObjectState(state, targetId, "examined", true);
+		return description;
 	},
 };

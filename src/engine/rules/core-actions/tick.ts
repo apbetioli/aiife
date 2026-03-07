@@ -8,6 +8,6 @@ export const tick: ActionDef<z.infer<typeof emptySchema>> = {
 	description: "",
 	handler: (_event, state, _world) => {
 		const moves = (state.player.state.moves as number) ?? 0;
-		return { state: setPlayerState(state, "moves", moves + 1) };
+		setPlayerState(state, "moves", moves + 1);
 	},
 };

@@ -34,6 +34,6 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 		if (exits.length > 0) {
 			lines.push(`Exits: ${exits.join(", ")}.`);
 		}
-		return { state, feedback: [lines.join("\n")] };
+		return lines.join("\n");
 	},
 };

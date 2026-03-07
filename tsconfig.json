@@ -17,6 +17,6 @@
 		"noEmit": true,
 		"allowImportingTsExtensions": true
 	},
-	"include": ["src/**/*", "evals/**/*"],
+	"include": ["src/**/*", "evals/**/*", "games/**/*"],
 	"exclude": ["node_modules", "dist"]
 }

@@ -15,9 +15,8 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		const calls: string[] = [];
 
-		bus.on("examine", (event, state, _w) => {
+		bus.on("examine", (event, _state, _w) => {
 			calls.push((event.params.objects as string[])[0]);
-			return state;
 		});
 
 		const event = new GameEvent("examine", { objects: ["lamp"] });
@@ -29,13 +28,11 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		const calls: string[] = [];
 
-		bus.on("examine", "room_a", (_event, state, _w) => {
+		bus.on("examine", "room_a", (_event, _state, _w) => {
 			calls.push("room_a");
-			return state;
 		});
-		bus.on("examine", "room_b", (_event, state, _w) => {
+		bus.on("examine", "room_b", (_event, _state, _w) => {
 			calls.push("room_b");
-			return state;
 		});
 
 		const event = new GameEvent("examine", { objects: ["lamp"] });
@@ -48,13 +45,11 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		const calls: string[] = [];
 
-		bus.on("examine", (_event, state, _w) => {
+		bus.on("examine", (_event, _state, _w) => {
 			calls.push("global");
-			return state;
 		});
-		bus.on("examine", "lamp", (_event, state, _w) => {
+		bus.on("examine", "lamp", (_event, _state, _w) => {
 			calls.push("scoped");
-			return state;
 		});
 
 		const event = new GameEvent("examine", { objects: ["lamp"] });
@@ -67,13 +62,11 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		const calls: string[] = [];
 
-		bus.on("examine", (_event, state, _w) => {
+		bus.on("examine", (_event, _state, _w) => {
 			calls.push("global");
-			return state;
 		});
-		bus.on("examine", "nonexistent", (_event, state, _w) => {
+		bus.on("examine", "nonexistent", (_event, _state, _w) => {
 			calls.push("scoped");
-			return state;
 		});
 
 		const event = new GameEvent("examine", { objects: ["lamp"] });
@@ -87,27 +80,24 @@ describe("EventBus", () => {
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push(200);
-				return state;
 			},
 			{ priority: 200 },
 		);
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push(50);
-				return state;
 			},
 			{ priority: 50 },
 		);
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push(100);
-				return state;
 			},
 			{ priority: 100 },
 		);
@@ -123,25 +113,22 @@ describe("EventBus", () => {
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push("first");
-				return state;
 			},
 			{ priority: 100 },
 		);
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push("second");
-				return state;
 			},
 			{ priority: 100 },
 		);
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push("third");
-				return state;
 			},
 			{ priority: 100 },
 		);
@@ -157,9 +144,8 @@ describe("EventBus", () => {
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				count++;
-				return state;
 			},
 			{ once: true },
 		);
@@ -179,19 +165,18 @@ describe("EventBus", () => {
 
 		bus.on(
 			"take",
-			(event, state, _w) => {
+			(event, _state, _w) => {
 				order.push("guard");
-				event.stop("Nope.");
-				return state;
+				event.stop();
+				return "A valiant attempt.";
 			},
 			{ priority: 50 },
 		);
 
 		bus.on(
 			"take",
-			(_event, state, _w) => {
+			(_event, _state, _w) => {
 				order.push("mutation");
-				return state;
 			},
 			{ priority: 100 },
 		);
@@ -201,7 +186,7 @@ describe("EventBus", () => {
 
 		expect(order).toEqual(["guard"]);
 		expect(result.stopped).toBe(true);
-		expect(result.feedback).toContain("Nope.");
+		expect(result.feedback).toEqual(["A valiant attempt."]);
 	});
 
 	it("cancellation stops remaining listeners at same priority", () => {
@@ -210,26 +195,24 @@ describe("EventBus", () => {
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push("first");
-				return state;
 			},
 			{ priority: 100 },
 		);
 		bus.on(
 			"tick",
-			(event, state, _w) => {
+			(event, _state, _w) => {
 				order.push("second");
-				event.stop("Stop");
-				return state;
+				event.stop();
+				return "Stop";
 			},
 			{ priority: 100 },
 		);
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
+			(_e, _state, _w) => {
 				order.push("third");
-				return state;
 			},
 			{ priority: 100 },
 		);
@@ -247,9 +230,9 @@ describe("EventBus", () => {
 
 		bus.on(
 			"take",
-			(event, state, _w) => {
-				event.stop("You can't take that.");
-				return state;
+			(event, _state, _w) => {
+				event.stop();
+				return "You can't take that.";
 			},
 			{ priority: 50 },
 		);
@@ -266,19 +249,17 @@ describe("EventBus", () => {
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => ({
-				...state,
-				turn: state.turn + 1,
-			}),
+			(_e, state, _w) => {
+				state.turn += 1;
+			},
 			{ priority: 100 },
 		);
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => ({
-				...state,
-				turn: state.turn + 10,
-			}),
+			(_e, state, _w) => {
+				state.turn += 10;
+			},
 			{ priority: 200 },
 		);
 
@@ -293,9 +274,8 @@ describe("EventBus", () => {
 		const bus = new EventBus();
 		let count = 0;
 
-		const unsub = bus.on("tick", (_e, state, _w) => {
+		const unsub = bus.on("tick", (_e, _state, _w) => {
 			count++;
-			return state;
 		});
 
 		const makeEvent = () => new GameEvent("tick", {} as Record<string, never>);
@@ -313,16 +293,16 @@ describe("EventBus", () => {
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
-				return { state, feedback: ["First"] };
+			(_e, _state, _w) => {
+				return ["First"];
 			},
 			{ priority: 100 },
 		);
 
 		bus.on(
 			"tick",
-			(_e, state, _w) => {
-				return { state, feedback: ["Second"] };
+			(_e, _state, _w) => {
+				return ["Second"];
 			},
 			{ priority: 200 },
 		);

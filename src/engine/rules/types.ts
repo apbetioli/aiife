@@ -3,6 +3,8 @@ import type { World } from "../../world/types";
 import type { GameState } from "../types";
 import type { CoreEventName } from "./core-actions";
 
+export type { GameState };
+
 // ─── Event Names & Params ────────────────────────────────────────────────────
 
 /** Core names get autocomplete; custom names accepted via `(string & {})`. */
@@ -24,19 +26,16 @@ export class GameEvent<N extends EventName = EventName> {
 
 /** Event passed to listeners; call stop() to cancel propagation (message goes to feedback). */
 export type StoppableEvent<N extends EventName> = GameEvent<N> & {
-	stop(message?: string | string[]): void;
+	stop(): void;
 };
 
-export type ListenerResult = {
-	state: GameState;
-	feedback?: string[];
-};
-
+/** Listeners receive state (mutate in place inside produce). Return optional feedback (string or string[]). */
 export type EventListener<N extends EventName> = (
 	event: StoppableEvent<N>,
 	state: GameState,
 	world: World,
-) => ListenerResult | GameState;
+	// biome-ignore lint/suspicious/noConfusingVoidType: void return type is valid
+) => string | string[] | undefined | void;
 
 export type ListenerScope = "global" | "scoped";
 

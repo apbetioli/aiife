@@ -5,7 +5,7 @@ import type { ActionDef } from "./types";
 export const help: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,
 	description: "help(): Show the list of available commands. No parameters. Shorthand: h.",
-	handler: (_event, state, _world) => {
+	handler: () => {
 		const lines = [
 			"Available commands:",
 			"  go <direction>     - Move in a direction (n, s, e, w, up, down, ...)",
@@ -22,6 +22,6 @@ export const help: ActionDef<z.infer<typeof emptySchema>> = {
 			"  help (h)           - Show this list",
 			"  quit (q)          - End the game",
 		];
-		return { state, feedback: [lines.join("\n")] };
+		return lines.join("\n");
 	},
 };
