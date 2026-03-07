@@ -2,7 +2,7 @@ import { produce } from "immer";
 import type { GameState } from "./types";
 
 /**
- * State helpers and mutators. 
+ * State helpers and mutators.
  * All mutators modify state in place — use inside immer's `produce` (e.g. event bus listeners)
  */
 
