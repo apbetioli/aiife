@@ -4,6 +4,7 @@ import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
+import type { Observer } from "./rules/types";
 import { load, type SaveFile, save } from "./save";
 import type { GameState } from "./types";
 
@@ -33,6 +34,10 @@ export class GameEngine {
 		this.state = buildInitialState(world);
 		registerCoreActions(this.bus, this.registry);
 		setup?.(this.bus, this.registry);
+	}
+
+	addObserver(observer: Observer): void {
+		this.bus.addObserver(observer);
 	}
 
 	start(): string {

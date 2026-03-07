@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type { World } from "../../../world/types";
 import type { GameState } from "../../types";
 import type { EventBus } from "../event-bus";
+import type { EventListenerResult } from "../types";
 
 /** Event passed to handlers; params are typed per action from the action's schema. */
 export type StoppableEventLike<TParams = Record<string, unknown>> = {
@@ -13,13 +14,7 @@ export type StoppableEventLike<TParams = Record<string, unknown>> = {
 export type ActionDef<TParams = Record<string, unknown>> = {
 	schema: z.ZodType<TParams>;
 	description: string;
-	handler?: (
-		event: StoppableEventLike<TParams>,
-		state: GameState,
-		world: World,
-		bus: EventBus,
-		// biome-ignore lint/suspicious/noConfusingVoidType: void return type is valid
-	) => string | string[] | undefined | void;
+	handler?: (event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult;
 };
 
 /** Schema-only (no handler), e.g. enter/exit. */

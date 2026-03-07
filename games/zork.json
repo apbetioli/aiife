@@ -3,6 +3,7 @@
 	"name": "Zork One",
 	"version": "1.0.0",
 	"start_room": "west_of_house",
+	"welcome": "**ZORK**\n\nWelcome to ZORK.\nRelease 13 / Serial number 040826 / Inform v6.14 Library 6/7",
 	"rooms": {
 		"west_of_house": {
 			"id": "west_of_house",
@@ -12,7 +13,7 @@
 			},
 			"state": {},
 			"exits": {},
-			"contains": ["small_mailbox", "front_door"]
+			"contains": ["small_mailbox", "front_door", "welcome_mat"]
 		}
 	},
 	"objects": {
@@ -23,7 +24,17 @@
 			"type": "container",
 			"state": { "carriable": false },
 			"descriptions": {
-				"default": "A small mailbox, barely large enough for a few letters."
+				"default": "There is a small mailbox here."
+			}
+		},
+		"welcome_mat": {
+			"id": "welcome_mat",
+			"name": "welcome mat",
+			"synonyms": ["mat", "carpet", "rug"],
+			"type": "item",
+			"state": { "carriable": true },
+			"descriptions": {
+				"default": "A rubber mat saying 'Welcome to Zork!' lies by the door."
 			}
 		},
 		"front_door": {

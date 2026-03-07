@@ -3,7 +3,15 @@ import { immutable } from "../mutators";
 import type { GameState } from "../types";
 import { getTarget } from "./param-helpers";
 import { PRIORITY } from "./priorities";
-import type { EventListener, EventName, GameEvent, ListenerRegistration, StoppableEvent } from "./types";
+import type {
+	EventListener,
+	EventListenerResult,
+	EventName,
+	GameEvent,
+	ListenerRegistration,
+	Observer,
+	StoppableEvent,
+} from "./types";
 
 interface ListenerOptions {
 	priority?: number;
@@ -39,6 +47,17 @@ function groupListenersByPriority(
 
 export class EventBus {
 	private listeners = new Set<ListenerRegistration>();
+	private observers = new Set<Observer>();
+
+	addObserver(observer: Observer): void {
+		this.observers.add(observer);
+	}
+
+	private notifyObservers(event: GameEvent, result?: EventListenerResult): void {
+		for (const observer of this.observers) {
+			observer(event, result);
+		}
+	}
 
 	// Global: on(event, listener, opts?)
 	on<N extends EventName>(event: N, listener: EventListener<N>, options?: ListenerOptions): () => void;
@@ -93,13 +112,9 @@ export class EventBus {
 	 *   (no other listeners at that priority).
 	 * - Call event.stop(message) to stop propagation; the message is added to feedback.
 	 */
-	emit<N extends EventName>(event: GameEvent<N>, world: World, state: GameState): EmitResult {
+	emit<N extends EventName>(event: GameEvent<N>, world: World, currentState: GameState): EmitResult {
 		const listenersByPriority = groupListenersByPriority(this.listeners, event.name);
 		const priorities = [...listenersByPriority.keys()].sort((a, b) => a - b);
-
-		let updatedState = state;
-		const feedback: string[] = [];
-		let stopped = false;
 		const toRemove: ListenerRegistration[] = [];
 
 		const stoppable: StoppableEvent<N> = Object.assign(Object.create(event), {
@@ -108,25 +123,29 @@ export class EventBus {
 			},
 		});
 
-		for (const priority of priorities) {
-			if (stopped) break;
+		const feedback: string[] = [];
+		let stopped = false;
 
-			const group = listenersByPriority.get(priority);
-			if (!group) continue;
-
-			// Find scoped listener that matches current context
-			const scopedMatch = group.find(
-				(registration) => registration.scope === "scoped" && this.matchesScope(registration, event, updatedState),
-			);
-
-			// Run either the single scoped match or all global listeners at this priority
-			const toRun = scopedMatch ? [scopedMatch] : group.filter((r) => r.scope === "global");
-
-			for (const chosen of toRun) {
+		const nextState = immutable(currentState, (state) => {
+			for (const priority of priorities) {
 				if (stopped) break;
 
-				updatedState = immutable(updatedState, (state) => {
+				const group = listenersByPriority.get(priority);
+				if (!group) continue;
+
+				// Find scoped listener that matches current context
+				const scopedMatch = group.find(
+					(registration) => registration.scope === "scoped" && this.matchesScope(registration, event, state),
+				);
+
+				// Run either the single scoped match or all global listeners at this priority
+				const toRun = scopedMatch ? [scopedMatch] : group.filter((r) => r.scope === "global");
+
+				for (const chosen of toRun) {
+					if (stopped) break;
+
 					const result = (chosen.listener as EventListener<N>)(stoppable, state, world);
+
 					if (result !== undefined) {
 						if (typeof result === "string") {
 							feedback.push(result);
@@ -134,17 +153,15 @@ export class EventBus {
 							feedback.push(...result);
 						}
 					}
-				});
 
-				if (chosen.once) toRemove.push(chosen);
+					this.notifyObservers(stoppable, result);
+
+					if (chosen.once) toRemove.push(chosen);
+				}
 			}
-		}
+		});
 
-		for (const reg of toRemove) {
-			this.listeners.delete(reg);
-		}
-
-		return { state: updatedState, feedback, stopped };
+		return { state: nextState, feedback, stopped };
 	}
 
 	private matchesScope<N extends EventName>(reg: ListenerRegistration, event: GameEvent<N>, state: GameState): boolean {

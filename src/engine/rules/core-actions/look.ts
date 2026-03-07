@@ -17,7 +17,7 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 			const obj = world.objects[id];
 			if (!obj) continue;
 			const objState = state.objects[id];
-			lines.push(`There is a ${obj.name} here.`);
+			lines.push(obj.descriptions.default || `There is a ${obj.name} here.`);
 			if (obj.type === "container" && objState?.state.open) {
 				const contentNames = (objState.contains ?? []).map((cid) => world.objects[cid]?.name).filter(Boolean);
 				if (contentNames.length > 0) {

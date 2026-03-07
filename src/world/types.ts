@@ -84,6 +84,7 @@ const WorldSchema = z.object({
 	name: z.string(),
 	version: z.string().default("1.0.0"),
 	start_room: z.string(),
+	welcome: z.string().optional(),
 	rooms: z.record(z.string(), RoomSchema),
 	objects: z.record(z.string(), GameObjectSchema),
 	player: PlayerSchema,

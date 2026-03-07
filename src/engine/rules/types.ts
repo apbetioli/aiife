@@ -29,13 +29,17 @@ export type StoppableEvent<N extends EventName> = GameEvent<N> & {
 	stop(): void;
 };
 
+// biome-ignore lint/suspicious/noConfusingVoidType: void return type is valid
+export type EventListenerResult = string | string[] | undefined | void;
+
 /** Listeners receive state (mutate in place inside produce). Return optional feedback (string or string[]). */
 export type EventListener<N extends EventName> = (
 	event: StoppableEvent<N>,
 	state: GameState,
 	world: World,
-	// biome-ignore lint/suspicious/noConfusingVoidType: void return type is valid
-) => string | string[] | undefined | void;
+) => EventListenerResult;
+
+export type Observer = (event: GameEvent, result?: EventListenerResult) => void;
 
 export type ListenerScope = "global" | "scoped";
 
