@@ -123,6 +123,8 @@ export class EventBus {
 			},
 		});
 
+		this.notifyObservers(stoppable);
+
 		const feedback: string[] = [];
 		let stopped = false;
 
@@ -162,9 +164,6 @@ export class EventBus {
 		for (const reg of toRemove) {
 			this.listeners.delete(reg);
 		}
-
-		// Notify observers once per event emission, not per listener
-		this.notifyObservers(stoppable);
 
 		return { state: nextState, feedback, stopped };
 	}
