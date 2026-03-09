@@ -34,11 +34,7 @@ function renderMessageContent(message: Message): ReactNode {
 export function MessageList({ messages }: MessageListProps) {
 	return (
 		<Box flexDirection="column" gap={1}>
-			{messages.map((message) => (
-				<Box key={message.id} flexDirection="column">
-					{renderMessageContent(message)}
-				</Box>
-			))}
+			{messages.map((message) => renderMessageContent(message))}
 		</Box>
 	);
 }

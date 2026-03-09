@@ -30,7 +30,7 @@ export class GameAgent {
 			this.engine.getDescriptions(),
 		);
 
-		const { output: intent } = await generateText({
+		const { output: intent, usage: intentUsage } = await generateText({
 			model: this.model,
 			output: Output.object({ schema: IntentRecognitionSchema }),
 			messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
@@ -39,6 +39,9 @@ export class GameAgent {
 
 		const result = this.engine.runAction(intent);
 
+		if (intentUsage) {
+			callbacks.onTokenUsage?.(intentUsage);
+		}
 		const outputText = await this.narrate(result, input, callbacks);
 
 		callbacks.onComplete(outputText);
@@ -63,6 +66,9 @@ export class GameAgent {
 				if (chunk.type === "text-delta") {
 					text += chunk.text;
 					callbacks.onToken(chunk.text);
+				}
+				if (chunk.type === "finish" && chunk.totalUsage) {
+					callbacks.onTokenUsage?.(chunk.totalUsage);
 				}
 			}
 			return text || fallback;
