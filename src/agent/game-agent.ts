@@ -1,3 +1,4 @@
+import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
 import { buildIntentSystemPrompt as buildIntentRecognitionSystemPrompt } from "../../evals/intent-recognition/intent-recognition-prompt";
 import type { GameEngine } from "../engine/game-engine";
@@ -35,6 +36,10 @@ export class GameAgent {
 			output: Output.object({ schema: IntentRecognitionSchema }),
 			messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
 			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
+			experimental_telemetry: {
+				isEnabled: true,
+				tracer: getTracer(),
+			},
 		});
 
 		const result = this.engine.runAction(intent);
@@ -59,6 +64,10 @@ export class GameAgent {
 				model: this.narratorModel,
 				prompt,
 				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
+				experimental_telemetry: {
+					isEnabled: true,
+					tracer: getTracer(),
+				},
 			});
 
 			let text = "";
