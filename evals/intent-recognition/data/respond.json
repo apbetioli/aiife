@@ -191,5 +191,53 @@
 		"metadata": {
 			"description": "Gibberish input — should fall through to respond"
 		}
+	},
+	{
+		"data": {
+			"prompt": "take sword",
+			"context": {
+				"room": "The Cellar",
+				"description": "You are in a dark, musty cellar. A narrow passage leads east into darkness.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "metal_sword",
+						"name": "metal sword",
+						"type": "weapon",
+						"state": {},
+						"source": "room"
+					},
+					{
+						"id": "wooden_sword",
+						"name": "wooden sword",
+						"type": "weapon",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "respond",
+			"expectedParams": {},
+			"category": "secondary"
+		},
+		"metadata": {
+			"description": "Take with multiple matches — should respond to ambiguous input"
+		}
 	}
 ]
