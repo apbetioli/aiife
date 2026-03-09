@@ -1,35 +1,24 @@
+import type { LanguageModelUsage } from "ai";
 import { Box, Text } from "ink";
-import type { TokenUsageInfo } from "../../types";
 
 interface TokenUsageProps {
-	usage: TokenUsageInfo | null;
+	turnUsage: LanguageModelUsage | null;
+	sessionUsage: LanguageModelUsage | null;
 }
 
-export function TokenUsage({ usage }: TokenUsageProps) {
-	if (!usage) {
+export function TokenUsage({ turnUsage, sessionUsage }: TokenUsageProps) {
+	if (!turnUsage && !sessionUsage) {
 		return null;
 	}
 
-	const thresholdPercent = Math.round(usage.threshold * 100);
-	const usagePercent = usage.percentage.toFixed(1);
-
-	// Determine color based on usage
-	let color: string = "green";
-	if (usage.percentage >= usage.threshold * 100) {
-		color = "red";
-	} else if (usage.percentage >= usage.threshold * 100 * 0.75) {
-		color = "yellow";
-	}
+	const turnTokens = turnUsage?.totalTokens ?? 0;
+	const sessionTokens = sessionUsage?.totalTokens ?? 0;
 
 	return (
-		<Box borderStyle="single" borderColor="gray" paddingX={1}>
-			<Text>
-				Tokens:{" "}
-				<Text color={color} bold>
-					{usagePercent}%
-				</Text>
-				<Text dimColor> (threshold: {thresholdPercent}%)</Text>
-			</Text>
+		<Box borderStyle="single" borderColor="gray" paddingX={1} marginTop={1}>
+			<Text dimColor>Turn: </Text>
+			<Text>{turnTokens} tokens</Text>
+			<Text dimColor> ({sessionTokens} session total)</Text>
 		</Box>
 	);
 }
