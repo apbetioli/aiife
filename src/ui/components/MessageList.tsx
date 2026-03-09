@@ -1,5 +1,6 @@
 import { Box } from "ink";
 import type { ReactNode } from "react";
+import { IS_DEBUG } from "../helpers";
 import Text from "./Text";
 
 export interface Message {
@@ -34,7 +35,11 @@ function renderMessageContent(message: Message): ReactNode {
 export function MessageList({ messages }: MessageListProps) {
 	return (
 		<Box flexDirection="column" gap={1}>
-			{messages.map((message) => renderMessageContent(message))}
+			{messages
+				.filter((message) => message.role !== "tool" || IS_DEBUG)
+				.map((message) => (
+					<Box key={message.id}>{renderMessageContent(message)}</Box>
+				))}
 		</Box>
 	);
 }
