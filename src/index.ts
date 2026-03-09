@@ -1,9 +1,14 @@
+import { Laminar } from "@lmnr-ai/lmnr";
 import { render } from "ink";
 import React from "react";
 import { getModelsDebugInfo } from "./agent/model";
 import { App } from "./ui";
 import { IS_DEBUG } from "./ui/helpers";
 import { loadWorld } from "./world/world-loader";
+
+Laminar.initialize({
+	projectApiKey: process.env.LMNR_PROJECT_API_KEY,
+});
 
 async function main() {
 	if (IS_DEBUG) {
