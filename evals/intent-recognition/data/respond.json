@@ -47,6 +47,52 @@
 	},
 	{
 		"data": {
+			"prompt": "exit",
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
+				],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "respond",
+			"expectedParams": {},
+			"category": "secondary"
+		},
+		"metadata": {
+			"description": "Ambiguous input — exit with no direction should trigger respond"
+		}
+	},
+	{
+		"data": {
 			"prompt": "drop",
 			"context": {
 				"room": "The Great Hall",

@@ -276,5 +276,101 @@
 		"metadata": {
 			"description": "Bare direction word as go command with multiple exits"
 		}
+	},
+	{
+		"data": {
+			"prompt": "exit north",
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
+				"available_exits": ["north", "west", "up"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
+				],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "go",
+			"expectedParams": {
+				"direction": "north"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Exit command with direction"
+		}
+	},
+	{
+		"data": {
+			"prompt": "exit",
+			"context": {
+				"room": "The Great Hall",
+				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
+				"available_exits": ["south"],
+				"blocked_exits": [
+					{
+						"direction": "down",
+						"message": "The way down is blocked."
+					}
+				],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"type": "item",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "go",
+			"expectedParams": {
+				"direction": "south"
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Exit command with only one direction possible"
+		}
 	}
 ]

@@ -84,5 +84,55 @@
 		"metadata": {
 			"description": "Pronoun reference — only openable item in room is the chest"
 		}
+	},
+	{
+		"data": {
+			"prompt": "open box",
+			"context": {
+				"room": "West of House",
+				"description": "You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.",
+				"available_exits": ["east"],
+				"blocked_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "small_mailbox",
+						"name": "small mailbox",
+						"type": "container",
+						"state": {},
+						"source": "room"
+					},
+					{
+						"id": "front_door",
+						"name": "front door",
+						"type": "door",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"talk",
+				"inventory",
+				"help",
+				"respond"
+			]
+		},
+		"target": {
+			"expectedAction": "open",
+			"expectedParams": {
+				"objects": ["small_mailbox"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Open a container - partial name match"
+		}
 	}
 ]
