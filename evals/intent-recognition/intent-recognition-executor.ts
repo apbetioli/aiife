@@ -1,4 +1,3 @@
-import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, Output } from "ai";
 import { createEvalModel } from "../../src/agent/model";
 import type { RecognizedIntent } from "../../src/agent/types";
@@ -15,10 +14,6 @@ export async function intentRecognitionExecutor(data: IntentRecognitionEvalData)
 		system: systemPrompt,
 		prompt: data.prompt,
 		temperature: data.config?.temperature,
-		experimental_telemetry: {
-			isEnabled: true,
-			tracer: getTracer(),
-		},
 	});
 
 	const { action, ...output }: RecognizedIntent = result.output;
