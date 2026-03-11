@@ -1,9 +1,9 @@
 import { generateText, Output } from "ai";
 import { createEvalModel } from "../../src/agent/model";
+import { buildIntentSystemPrompt } from "../../src/agent/system/intent-recognition-prompt";
 import type { RecognizedIntent } from "../../src/agent/types";
 import { IntentRecognitionSchema } from "../../src/agent/types";
 import type { IntentRecognitionEvalData, IntentRecognitionResult } from "../types";
-import { buildIntentSystemPrompt } from "./intent-recognition-prompt";
 
 export async function intentRecognitionExecutor(data: IntentRecognitionEvalData): Promise<IntentRecognitionResult> {
 	const systemPrompt = buildIntentSystemPrompt(data.context, data.availableActions);
