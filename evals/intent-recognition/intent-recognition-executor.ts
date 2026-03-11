@@ -1,3 +1,4 @@
+import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, Output } from "ai";
 import { createEvalModel } from "../../src/agent/model";
 import { buildIntentSystemPrompt } from "../../src/agent/system/intent-recognition-prompt";
@@ -14,6 +15,10 @@ export async function intentRecognitionExecutor(data: IntentRecognitionEvalData)
 		system: systemPrompt,
 		prompt: data.prompt,
 		temperature: data.config?.temperature,
+		experimental_telemetry: {
+			isEnabled: true,
+			tracer: getTracer(),
+		},
 	});
 
 	const { action, ...output }: RecognizedIntent = result.output;
@@ -24,10 +29,6 @@ export async function intentRecognitionExecutor(data: IntentRecognitionEvalData)
 	};
 }
 
-function stripNullValues(output: Omit<RecognizedIntent, "action">): Record<string, unknown> {
-	const params: Record<string, unknown> = {};
-	for (const [key, value] of Object.entries(output)) {
-		if (value !== null) params[key] = value;
-	}
-	return params;
+function stripNullValues(output: Omit<RecognizedIntent, "action">) {
+	return Object.fromEntries(Object.entries(output).filter(([_, value]) => value !== null));
 }
