@@ -1,35 +1,5 @@
 import type { IntentRecognitionEvalTarget, IntentRecognitionResult } from "../types";
 
-function isActionAcceptable(action: string, target: IntentRecognitionEvalTarget): boolean {
-	const acceptable = target.acceptableActions ?? [target.expectedAction];
-	return acceptable.includes(action);
-}
-
-function isActionForbidden(action: string, target: IntentRecognitionEvalTarget): boolean {
-	return (target.forbiddenActions ?? []).includes(action);
-}
-
-function normalizeString(value: unknown): string {
-	return String(value).trim().toLowerCase();
-}
-
-function arraysMatch(expected: unknown[], produced: unknown[]): boolean {
-	const a = expected.map(normalizeString).sort();
-	const b = produced.map(normalizeString).sort();
-	return a.length === b.length && a.every((v, i) => v === b[i]);
-}
-
-function paramValuesMatch(expected: unknown, produced: unknown): boolean {
-	if (expected === undefined || produced === undefined) return false;
-	if (Array.isArray(expected) && Array.isArray(produced)) {
-		return arraysMatch(expected, produced);
-	}
-	if (!Array.isArray(expected) && !Array.isArray(produced)) {
-		return normalizeString(expected) === normalizeString(produced);
-	}
-	return false;
-}
-
 /**
  * Binary score: 1.0 if the correct action was selected, 0.0 otherwise.
  * Golden: exact match to expectedAction.
@@ -89,4 +59,34 @@ export function combinedIntentScore(output: IntentRecognitionResult, target?: In
 
 	const paramScore = parameterAccuracyScore(output, target);
 	return 0.6 * actionScore + 0.4 * paramScore;
+}
+
+function isActionAcceptable(action: string, target: IntentRecognitionEvalTarget): boolean {
+	const acceptable = target.acceptableActions ?? [target.expectedAction];
+	return acceptable.includes(action);
+}
+
+function isActionForbidden(action: string, target: IntentRecognitionEvalTarget): boolean {
+	return (target.forbiddenActions ?? []).includes(action);
+}
+
+function normalizeString(value: unknown): string {
+	return String(value).trim().toLowerCase();
+}
+
+function arraysMatch(expected: unknown[], produced: unknown[]): boolean {
+	const a = expected.map(normalizeString).sort();
+	const b = produced.map(normalizeString).sort();
+	return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+function paramValuesMatch(expected: unknown, produced: unknown): boolean {
+	if (expected === undefined || produced === undefined) return false;
+	if (Array.isArray(expected) && Array.isArray(produced)) {
+		return arraysMatch(expected, produced);
+	}
+	if (!Array.isArray(expected) && !Array.isArray(produced)) {
+		return normalizeString(expected) === normalizeString(produced);
+	}
+	return false;
 }

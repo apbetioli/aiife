@@ -35,7 +35,7 @@ function createModelFromConfig(config: ModelConfig): LanguageModel {
 }
 
 function createOptionalModel(configPrefix: string): LanguageModel {
-	if (!process.env[`${configPrefix}PROVIDER`]) return createParserModel();
+	if (!process.env[`${configPrefix}_PROVIDER`]) return createParserModel();
 	return createModelFromConfig(resolveConfig(configPrefix));
 }
 
@@ -59,16 +59,16 @@ export function createParserModel(): LanguageModel {
 
 /** Narrator model — used for translation only. Env: NARRATOR_PROVIDER, NARRATOR_ANTHROPIC_MODEL, etc. Falls back to parser model config. */
 export function createNarratorModel(): LanguageModel {
-	return createOptionalModel("NARRATOR_");
+	return createOptionalModel("NARRATOR");
 }
 
 /** Eval model. Env: EVAL_PROVIDER, EVAL_ANTHROPIC_MODEL, etc. */
 export function createEvalModel(): LanguageModel {
-	return createOptionalModel("EVAL_");
+	return createOptionalModel("EVAL");
 }
 
 export function getEvalModelId(): string {
-	return getModelId(resolveConfig("EVAL_"));
+	return getModelId(resolveConfig("EVAL"));
 }
 
 /** Human-readable summary of which models are configured. For DEBUG logging. */

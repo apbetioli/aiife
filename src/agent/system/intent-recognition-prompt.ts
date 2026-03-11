@@ -1,5 +1,5 @@
-import { coreActionDefinitions } from "../../src/engine/rules/core-actions";
-import type { ParserContext, ScopedObject } from "../../src/world/types";
+import { coreActionDefinitions } from "../../engine/rules/core-actions";
+import type { ParserContext, ScopedObject } from "../../world/types";
 
 const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
 	Object.entries(coreActionDefinitions).map(([name, action]) => [name, action.description]),
