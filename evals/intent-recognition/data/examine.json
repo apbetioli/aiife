@@ -355,10 +355,10 @@
 				"objects": ["wooden_chest"],
 				"preposition": "inside"
 			},
-			"category": "golden"
+			"category": "secondary"
 		},
 		"metadata": {
-			"description": "Look inside container — examine with preposition inside (alias 'box' → wooden chest)"
+			"description": "Look inside container — examine with preposition inside/in"
 		}
 	},
 	{
