@@ -114,7 +114,6 @@ const ParserContextSchema = z.object({
 	room: z.string(),
 	description: z.string(),
 	available_exits: z.array(DirectionSchema),
-	blocked_exits: z.array(BlockedExitSchema),
 	in_scope_objects: z.array(ScopedObjectSchema),
 });
 

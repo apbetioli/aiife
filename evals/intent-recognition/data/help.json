@@ -5,12 +5,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{

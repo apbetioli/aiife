@@ -193,10 +193,6 @@ describe("buildParserContext", () => {
 		const ctx = buildParserContext(world, state);
 
 		expect(ctx.available_exits).not.toContain("north");
-		expect(ctx.blocked_exits).toContainEqual({
-			direction: "north",
-			message: "The door is locked.",
-		});
 	});
 
 	it("opens conditional exits when condition is true", () => {
@@ -207,7 +203,6 @@ describe("buildParserContext", () => {
 		const ctx = buildParserContext(world, state);
 
 		expect(ctx.available_exits).toContain("north");
-		expect(ctx.blocked_exits.map((e) => e.direction)).not.toContain("north");
 	});
 
 	it("includes room objects and inventory in scope", () => {
@@ -308,10 +303,6 @@ describe("buildParserContext (The Great Hall)", () => {
 		const ctx = buildParserContext(theGreatHall, state);
 
 		expect(ctx.available_exits).not.toContain("down");
-		expect(ctx.blocked_exits).toContainEqual({
-			direction: "down",
-			message: "The heavy iron door in the floor is locked.",
-		});
 	});
 
 	it("opens cellar exit when cellar_door is open", () => {
@@ -320,7 +311,6 @@ describe("buildParserContext (The Great Hall)", () => {
 		const ctx = buildParserContext(theGreatHall, state);
 
 		expect(ctx.available_exits).toContain("down");
-		expect(ctx.blocked_exits.map((e) => e.direction)).not.toContain("down");
 	});
 
 	it("includes great_hall objects and excludes contained items", () => {
@@ -374,10 +364,6 @@ describe("buildParserContext (The Forgotten Manor)", () => {
 		const ctx = buildParserContext(theForgottenManor, state);
 
 		expect(ctx.available_exits).not.toContain("north");
-		expect(ctx.blocked_exits).toContainEqual({
-			direction: "north",
-			message: "The heavy oak door to the north is firmly locked.",
-		});
 	});
 
 	it("opens north exit when library_door is open", () => {
@@ -407,10 +393,6 @@ describe("buildParserContext (The Forgotten Manor)", () => {
 		expect(ctx.room).toBe("The Library");
 		expect(ctx.available_exits).toContain("south");
 		expect(ctx.available_exits).not.toContain("east");
-		expect(ctx.blocked_exits).toContainEqual({
-			direction: "east",
-			message: "A narrow door to the east is locked tight.",
-		});
 	});
 
 	it("opens east exit when study_door is open", () => {

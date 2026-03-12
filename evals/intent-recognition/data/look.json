@@ -5,8 +5,9 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": ["south"],
-				"blocked_exits": [],
+				"available_exits": [
+					"south"
+				],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -46,8 +47,9 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"available_exits": ["up"],
-				"blocked_exits": [],
+				"available_exits": [
+					"up"
+				],
 				"in_scope_objects": [
 					{
 						"id": "stone_pedestal",
@@ -94,8 +96,9 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"available_exits": ["up"],
-				"blocked_exits": [],
+				"available_exits": [
+					"up"
+				],
 				"in_scope_objects": [
 					{
 						"id": "stone_pedestal",

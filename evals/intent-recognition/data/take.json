@@ -5,12 +5,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -39,7 +37,9 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["brass_lantern"]
+				"objects": [
+					"brass_lantern"
+				]
 			},
 			"category": "golden"
 		},
@@ -53,8 +53,9 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": ["south"],
-				"blocked_exits": [],
+				"available_exits": [
+					"south"
+				],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -82,7 +83,9 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["old_book"]
+				"objects": [
+					"old_book"
+				]
 			},
 			"category": "golden"
 		},
@@ -96,8 +99,9 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": ["south"],
-				"blocked_exits": [],
+				"available_exits": [
+					"south"
+				],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -132,7 +136,9 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["rusty_key"]
+				"objects": [
+					"rusty_key"
+				]
 			},
 			"category": "golden"
 		},
@@ -146,8 +152,9 @@
 			"context": {
 				"room": "The Tower Room",
 				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall, open and empty.",
-				"available_exits": ["down"],
-				"blocked_exits": [],
+				"available_exits": [
+					"down"
+				],
 				"in_scope_objects": [
 					{
 						"id": "wooden_chest",
@@ -182,7 +189,9 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["gold_amulet"]
+				"objects": [
+					"gold_amulet"
+				]
 			},
 			"category": "golden"
 		},
@@ -196,8 +205,9 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": ["south"],
-				"blocked_exits": [],
+				"available_exits": [
+					"south"
+				],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -232,7 +242,10 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["brass_lantern", "old_book"]
+				"objects": [
+					"brass_lantern",
+					"old_book"
+				]
 			},
 			"category": "golden"
 		},
@@ -246,8 +259,9 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": ["south"],
-				"blocked_exits": [],
+				"available_exits": [
+					"south"
+				],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -282,7 +296,10 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["old_book", "rusty_key"]
+				"objects": [
+					"old_book",
+					"rusty_key"
+				]
 			},
 			"category": "golden"
 		},
@@ -296,8 +313,9 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north"],
-				"blocked_exits": [],
+				"available_exits": [
+					"north"
+				],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -325,7 +343,9 @@
 		"target": {
 			"expectedAction": "take",
 			"expectedParams": {
-				"objects": ["brass_lantern"]
+				"objects": [
+					"brass_lantern"
+				]
 			},
 			"category": "golden"
 		},
