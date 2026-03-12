@@ -5,12 +5,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -53,12 +51,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -101,12 +97,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. A grand staircase spirals upward.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -149,12 +143,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. Faded tapestries line the walls. Passages lead north and west.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -197,8 +189,9 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
-				"available_exits": ["east"],
-				"blocked_exits": [],
+				"available_exits": [
+					"east"
+				],
 				"in_scope_objects": [
 					{
 						"id": "old_gardener",
@@ -240,8 +233,10 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful. The Great Hall lies to the east.",
-				"available_exits": ["northwest", "north"],
-				"blocked_exits": [],
+				"available_exits": [
+					"northwest",
+					"north"
+				],
 				"in_scope_objects": [
 					{
 						"id": "old_gardener",
@@ -283,12 +278,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -331,12 +324,8 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"available_exits": ["south"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"south"
 				],
 				"in_scope_objects": [
 					{

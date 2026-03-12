@@ -25,10 +25,17 @@ export async function intentRecognitionExecutor(data: IntentRecognitionEvalData)
 
 	return {
 		action,
-		params: stripNullValues(output),
+		params: stripEmptyValues(output),
 	};
 }
 
-function stripNullValues(output: Omit<RecognizedIntent, "action">) {
-	return Object.fromEntries(Object.entries(output).filter(([_, value]) => value !== null));
+function isEmptyValue(value: unknown): boolean {
+	if (value === null || value === undefined) return true;
+	if (value === "null") return true;
+	if (Array.isArray(value) && value.length === 0) return true;
+	return false;
+}
+
+function stripEmptyValues(output: Omit<RecognizedIntent, "action">) {
+	return Object.fromEntries(Object.entries(output).filter(([_, value]) => !isEmptyValue(value)));
 }

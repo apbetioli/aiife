@@ -155,18 +155,12 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 
 	// ── Resolve exits ──────────────────────────────────────────────────────
 	const available_exits: Direction[] = [];
-	const blocked_exits: BlockedExit[] = [];
 
 	for (const [dir, exit] of Object.entries(room.exits) as [Direction, Exit][]) {
 		const isOpen = !exit.condition || evaluateCondition(exit.condition, state);
 
 		if (isOpen) {
 			available_exits.push(dir);
-		} else {
-			blocked_exits.push({
-				direction: dir,
-				message: exit.locked_message ?? `The way ${dir} is blocked.`,
-			});
 		}
 	}
 
@@ -228,7 +222,6 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 		room: room.name,
 		description,
 		available_exits,
-		blocked_exits,
 		in_scope_objects,
 	};
 

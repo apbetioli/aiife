@@ -5,12 +5,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -51,12 +49,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -97,8 +93,9 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north"],
-				"blocked_exits": [],
+				"available_exits": [
+					"north"
+				],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -152,12 +149,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -198,12 +193,10 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": ["north", "west", "up"],
-				"blocked_exits": [
-					{
-						"direction": "down",
-						"message": "The way down is blocked."
-					}
+				"available_exits": [
+					"north",
+					"west",
+					"up"
 				],
 				"in_scope_objects": [
 					{
@@ -244,8 +237,9 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "You are in a dark, musty cellar. A narrow passage leads east into darkness.",
-				"available_exits": ["east"],
-				"blocked_exits": [],
+				"available_exits": [
+					"east"
+				],
 				"in_scope_objects": [
 					{
 						"id": "metal_sword",

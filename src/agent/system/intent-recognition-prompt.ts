@@ -41,14 +41,12 @@ function joinOrNone(items: string[]): string {
 
 function buildGameStateSnapshotPrompt(context: ParserContext): string {
 	const exits = joinOrNone(context.available_exits);
-	const blockedExits = joinOrNone(context.blocked_exits.map((e) => e.direction));
 	const roomObjects = formatObjectsInScope(context.in_scope_objects, "room");
 	const inventory = formatObjectsInScope(context.in_scope_objects, "inventory");
 
 	return `Current state:
   - Room: ${context.room} — ${context.description}
   - Exits: ${exits}
-  - Blocked exits: ${blockedExits}
   - Objects in room: ${roomObjects}
   - Carrying: ${inventory}`;
 }
