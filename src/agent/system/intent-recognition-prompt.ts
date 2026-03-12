@@ -56,8 +56,11 @@ const INTENT_RECOGNITION_SYSTEM_PROMPT = `You are an intent parser for a text ad
 Rules:
 - Choose exactly ONE action from the available actions list.
 - Return the action name and its parameters as structured JSON.
-- For object references (target, objects, actor): use only the object's exact id inside the brackets in the game state (e.g. wooden_chest), with no extra characters or prefixes.
-- If there is a single direction, target, object, or actor in the game state, use it as the respective parameter.
+- For entity references (direction, target, objects, actor): use only the entity's exact id inside the brackets in the game state (e.g. wooden_chest), with no extra characters or prefixes. DO NOT invent an id that is not in the game state.
+- If the player's phrase only includes an action and there is a single matching entity in the game state, use it as the respective parameter.
+- If the player's phrase is a substring of exactly one entity's name or id (e.g. "mail" → "small mailbox", "box" → "small mailbox"), use that object. Only match against the text of names and ids, not object types. Only do this when exactly one entity in scope matches.
+- If the player's phrase says <action> ALL, include all matching entities as parameters.
+- If the player's phrase matches more than one entity in scope, except when it says ALL, you must use respond to ask a clarification question. Do not guess or pick one. This applies regardless of the action — e.g. "take sword" with two swords in scope must produce respond, not take.
 - If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.`;
 
 export function buildIntentSystemPrompt(
