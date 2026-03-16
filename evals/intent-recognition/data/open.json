@@ -14,7 +14,11 @@
 						"name": "wooden chest",
 						"type": "container",
 						"state": {},
-						"source": "room"
+						"source": "room",
+						"aliases": [
+							"box",
+							"chest"
+						]
 					}
 				]
 			},
@@ -60,7 +64,11 @@
 						"name": "wooden chest",
 						"type": "container",
 						"state": {},
-						"source": "room"
+						"source": "room",
+						"aliases": [
+							"box",
+							"chest"
+						]
 					}
 				]
 			},

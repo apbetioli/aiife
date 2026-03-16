@@ -122,7 +122,10 @@
 						"name": "brass lantern",
 						"type": "item",
 						"state": {},
-						"source": "inventory"
+						"source": "inventory",
+						"aliases": [
+							"lamp"
+						]
 					},
 					{
 						"id": "old_book",

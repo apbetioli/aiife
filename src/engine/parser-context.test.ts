@@ -136,7 +136,7 @@ describe("resolveObjectDescription", () => {
 	const obj: GameObject = {
 		id: "lamp",
 		name: "brass lamp",
-		synonyms: ["lamp"],
+		aliases: ["lamp"],
 		type: "item",
 		state: { carriable: true },
 		descriptions: {

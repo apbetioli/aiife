@@ -21,7 +21,7 @@ const RequiresInstrumentSchema = z.record(
 const GameObjectSchema = z.object({
 	id: z.string(),
 	name: z.string(),
-	synonyms: z.array(z.string()).default([]),
+	aliases: z.array(z.string()).default([]),
 	type: ObjectTypeSchema,
 	state: StateSchema.default({}),
 	descriptions: z.record(z.string(), z.string()).refine((d) => "default" in d, {
@@ -95,6 +95,7 @@ const WorldSchema = z.object({
 const ScopedObjectSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	aliases: z.array(z.string()).default([]),
 	type: ObjectTypeSchema,
 	state: StateSchema,
 	/** "room" = in current room, "inventory" = in player's inventory */

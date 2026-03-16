@@ -83,7 +83,7 @@ const world: World = {
 		brass_lantern: {
 			id: "brass_lantern",
 			name: "brass lantern",
-			synonyms: ["lantern", "lamp", "light"],
+			aliases: ["lantern", "lamp", "light"],
 			type: "item",
 			state: { carriable: true },
 			descriptions: {
@@ -93,7 +93,7 @@ const world: World = {
 		old_book: {
 			id: "old_book",
 			name: "old book",
-			synonyms: ["book", "leather book", "volume"],
+			aliases: ["book", "leather book", "volume"],
 			type: "item",
 			state: { carriable: true },
 			descriptions: {
@@ -104,7 +104,7 @@ const world: World = {
 		alcove: {
 			id: "alcove",
 			name: "alcove",
-			synonyms: ["shadowy alcove", "wall alcove", "recess"],
+			aliases: ["shadowy alcove", "wall alcove", "recess"],
 			type: "container",
 			state: { revealed: false, carriable: false },
 			descriptions: {
@@ -115,7 +115,7 @@ const world: World = {
 		rusty_key: {
 			id: "rusty_key",
 			name: "rusty key",
-			synonyms: ["key", "iron key", "old key"],
+			aliases: ["key", "iron key", "old key"],
 			type: "key",
 			state: { carriable: true },
 			descriptions: {
@@ -125,7 +125,7 @@ const world: World = {
 		wooden_chest: {
 			id: "wooden_chest",
 			name: "wooden chest",
-			synonyms: ["chest", "ornate chest", "box"],
+			aliases: ["chest", "ornate chest", "box"],
 			type: "container",
 			state: { open: false, carriable: false },
 			descriptions: {
@@ -137,7 +137,7 @@ const world: World = {
 		gold_amulet: {
 			id: "gold_amulet",
 			name: "gold amulet",
-			synonyms: ["amulet", "golden amulet", "necklace"],
+			aliases: ["amulet", "golden amulet", "necklace"],
 			type: "item",
 			state: { carriable: true },
 			descriptions: {
@@ -148,7 +148,7 @@ const world: World = {
 		stone_pedestal: {
 			id: "stone_pedestal",
 			name: "stone pedestal",
-			synonyms: ["pedestal", "altar", "runes"],
+			aliases: ["pedestal", "altar", "runes"],
 			type: "fixture",
 			state: { carriable: false },
 			descriptions: {
@@ -159,7 +159,7 @@ const world: World = {
 		cellar_door: {
 			id: "cellar_door",
 			name: "heavy iron door",
-			synonyms: ["iron door", "door", "floor door", "trapdoor"],
+			aliases: ["iron door", "door", "floor door", "trapdoor"],
 			type: "door",
 			state: { locked: true, open: false, carriable: false },
 			descriptions: {
@@ -172,7 +172,7 @@ const world: World = {
 		gardener: {
 			id: "gardener",
 			name: "old gardener",
-			synonyms: ["gardener", "old man", "man"],
+			aliases: ["gardener", "old man", "man"],
 			type: "actor",
 			state: { carriable: false },
 			descriptions: {
