@@ -54,7 +54,12 @@ export function registerCoreActions(
 	definitions: Record<string, ActionDef<unknown>>,
 ): void {
 	for (const [name, def] of Object.entries(definitions)) {
-		registry.register(name, { schema: def.schema, description: def.description });
+		registry.register(name, {
+			schema: def.schema,
+			description: def.description,
+			aliases: def.aliases,
+			hint: def.hint,
+		});
 		if (def.handler) {
 			const handler = def.handler;
 			bus.on(name, (event, state, world) => handler(event as StoppableEventLike<unknown>, state, world, bus));

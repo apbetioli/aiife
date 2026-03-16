@@ -4,6 +4,7 @@ import type { ActionDef } from "./types";
 
 export const help: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,
+	aliases: ["h"],
 	description: "help(): Show the list of available commands. No parameters. Shorthand: h.",
 	handler: () => {
 		const lines = [

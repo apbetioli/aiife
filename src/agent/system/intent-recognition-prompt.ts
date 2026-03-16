@@ -1,31 +1,20 @@
-import { coreActionDefinitions } from "../../engine/rules/core-actions";
+import { coreActionDefinitions, type IntentMeta } from "../../engine/rules/core-actions";
 import type { ParserContext, ScopedObject } from "../../world/types";
 
-const ACTION_DESCRIPTIONS_MAP = Object.fromEntries(
-	Object.entries(coreActionDefinitions).map(([name, action]) => [name, action.description]),
+const DEFAULT_META: Record<string, IntentMeta> = Object.fromEntries(
+	Object.entries(coreActionDefinitions)
+		.filter(([, a]) => a.description)
+		.map(([name, a]) => [name, { description: a.description, aliases: a.aliases, hint: a.hint }]),
 );
 
-function buildAvailableActionsPrompt(
-	actionNames: string[],
-	descriptions: Record<string, string> = ACTION_DESCRIPTIONS_MAP,
-): string {
-	const lines = actionNames
-		.filter((name) => name in descriptions && descriptions[name] !== "")
-		.map((name) => `- ${descriptions[name]}`);
-
-	return `Available actions:\n${lines.join("\n")}`;
-}
-
 function formatScopedObject(o: ScopedObject): string {
-	const stateParts = o.state
-		? Object.entries(o.state)
-				.map(([k, v]) => {
-					if (v === true) return k;
-					if (v === false) return null;
-					return `${k}: ${v}`;
-				})
-				.filter((x): x is string => x != null)
-		: [];
+	const stateParts = Object.entries(o.state ?? {})
+		.map(([k, v]) => {
+			if (v === true) return k;
+			if (v === false) return null;
+			return `${k}: ${v}`;
+		})
+		.filter((x): x is string => x != null);
 	const tag = [o.type, ...stateParts].join(", ");
 	return `${o.name} (${tag}) [${o.id}]`;
 }
@@ -35,23 +24,40 @@ function formatObjectsInScope(objects: ScopedObject[], source: "room" | "invento
 	return filtered.length > 0 ? filtered.map(formatScopedObject).join(", ") : "none";
 }
 
-function joinOrNone(items: string[]): string {
-	return items.length > 0 ? items.join(", ") : "none";
-}
-
-function buildGameStateSnapshotPrompt(context: ParserContext): string {
-	const exits = joinOrNone(context.available_exits);
-	const roomObjects = formatObjectsInScope(context.in_scope_objects, "room");
-	const inventory = formatObjectsInScope(context.in_scope_objects, "inventory");
+function buildGameStatePrompt(context: ParserContext): string {
+	const exits = context.available_exits.length > 0 ? context.available_exits.join(", ") : "none";
 
 	return `Current state:
   - Room: ${context.room} — ${context.description}
   - Exits: ${exits}
-  - Objects in room: ${roomObjects}
-  - Carrying: ${inventory}`;
+  - Objects in room: ${formatObjectsInScope(context.in_scope_objects, "room")}
+  - Carrying: ${formatObjectsInScope(context.in_scope_objects, "inventory")}`;
 }
 
-const INTENT_RECOGNITION_SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the conversation history and the player's latest input, determine which single game action the player intends.
+function buildAliasTable(actions: string[], meta: Record<string, IntentMeta>): string {
+	const lines = actions
+		.filter((name) => meta[name]?.aliases?.length || meta[name]?.hint)
+		.map((name) => {
+			const { aliases, hint } = meta[name];
+			const parts: string[] = [];
+			if (aliases?.length) parts.push(aliases.join(", "));
+			if (hint) parts.push(hint);
+			return `  ${name}: ${parts.join(". ")}`;
+		});
+
+	if (lines.length === 0) return "";
+	return `Input aliases (if the player's verb matches an alias, use that action):\n${lines.join("\n")}`;
+}
+
+function buildAvailableActionsPrompt(actions: string[], meta: Record<string, IntentMeta>): string {
+	const lines = actions
+		.filter((name) => meta[name]?.description)
+		.map((name) => `- ${meta[name].description}`);
+
+	return `Available actions:\n${lines.join("\n")}`;
+}
+
+const SYSTEM_PROMPT = `You are an intent parser for a text adventure game. Given the conversation history and the player's latest input, determine which single game action the player intends.
 
 Rules:
 - Choose exactly ONE action from the available actions list.
@@ -66,13 +72,17 @@ Rules:
 export function buildIntentSystemPrompt(
 	context: ParserContext,
 	actions: string[],
-	descriptions?: Record<string, string>,
+	meta?: Record<string, IntentMeta>,
 ): string {
+	const resolved = meta ?? DEFAULT_META;
+	const aliasTable = buildAliasTable(actions, resolved);
+
 	return [
-		INTENT_RECOGNITION_SYSTEM_PROMPT,
+		SYSTEM_PROMPT,
 		"",
-		buildGameStateSnapshotPrompt(context),
+		...(aliasTable ? [aliasTable, ""] : []),
+		buildGameStatePrompt(context),
 		"",
-		buildAvailableActionsPrompt(actions, descriptions),
+		buildAvailableActionsPrompt(actions, resolved),
 	].join("\n");
 }

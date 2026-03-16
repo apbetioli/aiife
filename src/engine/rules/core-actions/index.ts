@@ -58,4 +58,4 @@ export function registerCoreActions(bus: EventBus, registry: ActionRegistry): vo
 	register(bus, registry, coreActionDefinitions as unknown as Record<string, ActionDef<unknown>>);
 }
 
-export type { ActionDef, StoppableEventLike } from "./types";
+export type { ActionDef, IntentMeta, StoppableEventLike } from "./types";

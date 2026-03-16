@@ -59,6 +59,10 @@ export class GameEngine {
 		return this.registry.getDescriptions();
 	}
 
+	getIntentMeta() {
+		return this.registry.getIntentMeta();
+	}
+
 	runAction(intent: RecognizedIntent): string {
 		// Conversational response — no game action
 		if (intent.action === "respond") {
