@@ -25,10 +25,11 @@ export class GameAgent {
 	async run(input: string, conversationHistory: ModelMessage[], callbacks: AgentCallbacks): Promise<ModelMessage[]> {
 		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
 
+		const meta = this.engine.getIntentMeta();
 		const system = buildIntentRecognitionSystemPrompt(
 			this.engine.getParserContext(),
-			Object.keys(this.engine.getDescriptions()),
-			this.engine.getDescriptions(),
+			Object.keys(meta),
+			meta,
 		);
 
 		const { output: intent, usage: intentUsage } = await generateText({

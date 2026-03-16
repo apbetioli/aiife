@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { IntentMeta } from "./core-actions/types";
 
 function unknownActionError(actionName: string): z.ZodError {
 	return new z.ZodError([{ code: "custom", message: `Unknown action: ${actionName}`, path: [] }]);
@@ -7,12 +8,14 @@ function unknownActionError(actionName: string): z.ZodError {
 interface ActionEntry {
 	schema: z.ZodType;
 	description: string;
+	aliases?: string[];
+	hint?: string;
 }
 
 export class ActionRegistry {
 	private actions = new Map<string, ActionEntry>();
 
-	register(name: string, entry: { schema: z.ZodType; description: string }): void {
+	register(name: string, entry: ActionEntry): void {
 		this.actions.set(name, entry);
 	}
 
@@ -43,6 +46,22 @@ export class ActionRegistry {
 	getDescriptions(): Record<string, string> {
 		return Object.fromEntries(
 			[...this.actions].filter(([, entry]) => entry.description).map(([name, entry]) => [name, entry.description]),
+		);
+	}
+
+	/** Returns name → intent metadata for entries with non-empty description. */
+	getIntentMeta(): Record<string, IntentMeta> {
+		return Object.fromEntries(
+			[...this.actions]
+				.filter(([, entry]) => entry.description)
+				.map(([name, entry]) => [
+					name,
+					{
+						description: entry.description,
+						aliases: entry.aliases,
+						hint: entry.hint,
+					},
+				]),
 		);
 	}
 }

@@ -5,6 +5,8 @@ import type { ActionDef } from "./types";
 
 export const look: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,
+	aliases: ["l"],
+	hint: "Only for bare 'look' with no target. 'look at <something>' is examine.",
 	description:
 		"look(): Look around the current room. No parameters. Shorthand: l. Use for 'look' with no target; for 'look at <something>' use examine instead.",
 	handler: (_event, state, world) => {

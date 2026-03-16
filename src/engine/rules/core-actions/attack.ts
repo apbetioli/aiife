@@ -5,6 +5,7 @@ import type { ActionDef } from "./types";
 
 export const attack: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,
+	aliases: ["hit", "strike", "fight", "kill"],
 	description: "attack(objects): Attack something. objects: [target_id] or [target_id, weapon_id].",
 	handler: (event, state, world) => {
 		const target = resolveTarget(event, state, world);
