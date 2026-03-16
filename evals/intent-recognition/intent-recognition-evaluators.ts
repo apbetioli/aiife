@@ -29,22 +29,18 @@ export function parameterAccuracyScore(output: IntentRecognitionResult, target?:
 	if (target.category === "secondary" && !isActionAcceptable(output.action, target)) return 0;
 
 	const expectedKeys = Object.keys(target.expectedParams);
-	const producedKeys = Object.keys(output.params);
-	const allKeys = Array.from(new Set([...expectedKeys, ...producedKeys]));
 
 	// No expected params → don't penalize whatever the model produced (e.g. respond+message)
-	if (expectedKeys.length === 0 && target.category === "secondary") return 1;
-
-	if (allKeys.length === 0) return 1;
+	if (expectedKeys.length === 0) return 1;
 
 	let matches = 0;
-	for (const key of allKeys) {
+	for (const key of expectedKeys) {
 		if (paramValuesMatch(target.expectedParams[key], output.params[key])) {
 			matches++;
 		}
 	}
 
-	return matches / allKeys.length;
+	return matches / expectedKeys.length;
 }
 
 /**
