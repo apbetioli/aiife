@@ -112,7 +112,7 @@ const world: World = {
 		painting: {
 			id: "painting",
 			name: "faded painting",
-			aliases: ["painting", "portrait", "picture", "stern man"],
+			aliases: ["stern man"],
 			type: "fixture",
 			state: { examined: false, carriable: false },
 			descriptions: {
@@ -126,7 +126,7 @@ const world: World = {
 		compartment: {
 			id: "compartment",
 			name: "hidden compartment",
-			aliases: ["compartment", "hidden compartment", "niche", "hole"],
+			aliases: ["niche", "hole"],
 			type: "container",
 			state: { open: false, discovered: false, carriable: false },
 			contains: ["brass_key"],
@@ -140,7 +140,7 @@ const world: World = {
 		brass_key: {
 			id: "brass_key",
 			name: "brass key",
-			aliases: ["key", "brass key", "small key"],
+			aliases: [],
 			type: "key",
 			state: { carriable: true },
 			descriptions: {
@@ -151,7 +151,7 @@ const world: World = {
 		library_door: {
 			id: "library_door",
 			name: "oak door",
-			aliases: ["door", "oak door", "north door", "library door"],
+			aliases: ["north door", "library door"],
 			type: "door",
 			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "brass_key" },
@@ -167,7 +167,7 @@ const world: World = {
 		journal: {
 			id: "journal",
 			name: "leather journal",
-			aliases: ["journal", "book", "diary", "leather journal"],
+			aliases: [],
 			type: "item",
 			state: { read: false, carriable: true },
 			contains: ["study_key"],
@@ -181,7 +181,7 @@ const world: World = {
 		study_key: {
 			id: "study_key",
 			name: "iron key",
-			aliases: ["key", "iron key", "study key"],
+			aliases: ["study key"],
 			type: "key",
 			state: { carriable: true },
 			descriptions: {
@@ -192,7 +192,7 @@ const world: World = {
 		study_door: {
 			id: "study_door",
 			name: "narrow door",
-			aliases: ["door", "narrow door", "east door", "study door"],
+			aliases: ["east door", "study door"],
 			type: "door",
 			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "study_key" },
@@ -206,7 +206,7 @@ const world: World = {
 		bookshelf: {
 			id: "bookshelf",
 			name: "bookshelf",
-			aliases: ["bookshelf", "shelves", "bookcase", "books"],
+			aliases: [],
 			type: "fixture",
 			state: { carriable: false },
 			descriptions: {
@@ -220,7 +220,7 @@ const world: World = {
 		stone_bench: {
 			id: "stone_bench",
 			name: "stone bench",
-			aliases: ["bench", "stone bench", "seat"],
+			aliases: [],
 			type: "fixture",
 			state: { carriable: false },
 			descriptions: {
@@ -232,7 +232,7 @@ const world: World = {
 		fountain: {
 			id: "fountain",
 			name: "stone fountain",
-			aliases: ["fountain", "stone fountain", "basin"],
+			aliases: ["basin"],
 			type: "fixture",
 			state: { carriable: false },
 			descriptions: {
@@ -246,7 +246,7 @@ const world: World = {
 		oak_desk: {
 			id: "oak_desk",
 			name: "oak desk",
-			aliases: ["desk", "oak desk", "table"],
+			aliases: [],
 			type: "fixture",
 			state: { examined: false, carriable: false },
 			descriptions: {
@@ -259,7 +259,7 @@ const world: World = {
 		candle: {
 			id: "candle",
 			name: "unlit candle",
-			aliases: ["candle", "unlit candle", "taper"],
+			aliases: ["taper"],
 			type: "item",
 			state: { lit: false, carriable: true },
 			descriptions: {
