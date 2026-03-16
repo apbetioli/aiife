@@ -21,11 +21,11 @@ export async function intentRecognitionExecutor(data: IntentRecognitionEvalData)
 		},
 	});
 
-	const { action, ...output }: RecognizedIntent = result.output;
+	const { action, message, ...output }: RecognizedIntent = result.output;
 
 	return {
 		action,
-		params: stripEmptyValues(output),
+		params: stripEmptyValues(action === "respond" ? { message, ...output } : output),
 	};
 }
 
@@ -36,6 +36,6 @@ function isEmptyValue(value: unknown): boolean {
 	return false;
 }
 
-function stripEmptyValues(output: Omit<RecognizedIntent, "action">) {
+function stripEmptyValues(output: Record<string, unknown>) {
 	return Object.fromEntries(Object.entries(output).filter(([_, value]) => !isEmptyValue(value)));
 }
