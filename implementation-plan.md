@@ -39,7 +39,7 @@ A layered, event-driven text adventure engine with an LLM parser and narrator.
 ### 1.1 Define Schemas
 
 - [ ] `StateSchema` — generic key/value state flags
-- [ ] `GameObjectSchema` — id, name, synonyms, type, carriable, state, descriptions (no location — ownership is derived from room/player contains lists)
+- [ ] `GameObjectSchema` — id, name, aliases, type, carriable, state, descriptions (no location — ownership is derived from room/player contains lists)
 - [ ] `RoomSchema` — id, name, descriptions, state, exits, contains
 - [ ] `ExitSchema` — leads_to, condition, locked_message
 - [ ] `PlayerSchema` — current_room, inventory, state

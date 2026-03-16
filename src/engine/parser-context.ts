@@ -186,6 +186,7 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 		in_scope_objects.push({
 			id: objId,
 			name: worldObj.name,
+			aliases: worldObj.aliases,
 			type: worldObj.type,
 			state: objState.state,
 			source: "room",
@@ -208,6 +209,7 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 		in_scope_objects.push({
 			id: objId,
 			name: worldObj.name,
+			aliases: worldObj.aliases,
 			type: worldObj.type,
 			state: objState.state,
 			source: "inventory",

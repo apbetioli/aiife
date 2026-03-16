@@ -22,7 +22,7 @@ const world: World = {
 		small_mailbox: {
 			id: "small_mailbox",
 			name: "small mailbox",
-			synonyms: ["mailbox", "box", "letter box"],
+			aliases: ["mailbox", "box", "letter box"],
 			type: "container",
 			state: { carriable: false },
 			descriptions: {
@@ -32,7 +32,7 @@ const world: World = {
 		front_door: {
 			id: "front_door",
 			name: "front door",
-			synonyms: ["door", "boarded door", "house door"],
+			aliases: ["door", "boarded door", "house door"],
 			type: "door",
 			state: { open: false, carriable: false },
 			descriptions: {

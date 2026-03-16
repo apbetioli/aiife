@@ -23,7 +23,7 @@ describe("buildInitialState", () => {
 					ghost: {
 						id: "ghost",
 						name: "ghost",
-						synonyms: [],
+						aliases: [],
 						type: "actor",
 						state: { carriable: false },
 						descriptions: { default: "A ghost." },
@@ -166,7 +166,7 @@ describe("buildInitialState", () => {
 				ghost: {
 					id: "ghost",
 					name: "ghost",
-					synonyms: [],
+					aliases: [],
 					type: "actor",
 					state: { carriable: false },
 					descriptions: { default: "A ghost." },

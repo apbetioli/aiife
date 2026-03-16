@@ -62,12 +62,12 @@ const world: World = {
 			},
 			type: "actor",
 			state: { alive: true, knocked_out: false, carriable: false },
-			synonyms: ["troll", "monster", "creature"],
+			aliases: ["troll", "monster", "creature"],
 		},
 		metal_sword: {
 			id: "metal_sword",
 			name: "metal sword",
-			synonyms: ["sword", "weapon", "blade", "sharp sword"],
+			aliases: ["sword", "weapon", "blade", "sharp sword"],
 			type: "weapon",
 			state: { carriable: true },
 			descriptions: {
@@ -77,7 +77,7 @@ const world: World = {
 		wooden_sword: {
 			id: "wooden_sword",
 			name: "wooden sword",
-			synonyms: ["weapon", "blade", "training sword", "practice sword"],
+			aliases: ["weapon", "blade", "training sword", "practice sword"],
 			type: "weapon",
 			state: { carriable: true },
 			descriptions: {
@@ -87,7 +87,7 @@ const world: World = {
 		gold_coins: {
 			id: "gold_coins",
 			name: "pile of gold coins",
-			synonyms: ["gold", "coins", "treasure", "pile"],
+			aliases: ["gold", "coins", "treasure", "pile"],
 			type: "item",
 			state: { carriable: true },
 			descriptions: {

@@ -16,7 +16,8 @@ function formatScopedObject(o: ScopedObject): string {
 		})
 		.filter((x): x is string => x != null);
 	const tag = [o.type, ...stateParts].join(", ");
-	return `${o.name} (${tag}) [${o.id}]`;
+	const aliases = o.aliases?.length ? ` aka ${o.aliases.join("/")}` : "";
+	return `${o.name}${aliases} (${tag}) [${o.id}]`;
 }
 
 function formatObjectsInScope(objects: ScopedObject[], source: "room" | "inventory"): string {
@@ -67,6 +68,7 @@ Rules:
 - If the player's phrase is a substring of exactly one entity's name or id (e.g. "mail" → "small mailbox", "box" → "small mailbox"), use that object. Only match against the text of names and ids, not object types. Only do this when exactly one entity in scope matches.
 - If the player's phrase says <action> ALL, include all matching entities as parameters.
 - If the player's phrase matches more than one entity in scope, except when it says ALL, you must use respond to ask a clarification question. Do not guess or pick one. This applies regardless of the action — e.g. "take sword" with two swords in scope must produce respond, not take.
+- When using respond, never expose internal IDs (like wooden_chest) in the message — use the entity's display name instead.
 - If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.`;
 
 export function buildIntentSystemPrompt(
