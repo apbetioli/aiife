@@ -55,7 +55,7 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 			door: {
 				id: "door",
 				name: "wooden door",
-				aliases: ["door"],
+				aliases: [],
 				type: "door",
 				state: { locked: true, open: false, carriable: false },
 				descriptions: { default: "A wooden door." },
@@ -64,7 +64,7 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 			lamp: {
 				id: "lamp",
 				name: "brass lamp",
-				aliases: ["lamp"],
+				aliases: [],
 				type: "item",
 				state: { lit: false, carriable: true },
 				descriptions: { default: "A brass lamp." },
@@ -73,7 +73,7 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 			chest: {
 				id: "chest",
 				name: "wooden chest",
-				aliases: ["chest"],
+				aliases: [],
 				type: "container",
 				state: { open: false, carriable: false },
 				contains: ["gem"],
@@ -83,7 +83,7 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 			gem: {
 				id: "gem",
 				name: "red gem",
-				aliases: ["gem"],
+				aliases: [],
 				type: "item",
 				state: { carriable: true },
 				descriptions: { default: "A red gem." },
@@ -92,7 +92,7 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 			table: {
 				id: "table",
 				name: "oak table",
-				aliases: ["table"],
+				aliases: [],
 				type: "fixture",
 				state: { carriable: false },
 				descriptions: { default: "An oak table." },
@@ -101,7 +101,7 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 			sword: {
 				id: "sword",
 				name: "iron sword",
-				aliases: ["sword"],
+				aliases: [],
 				type: "weapon",
 				state: { sharp: true, carriable: true },
 				descriptions: { default: "An iron sword." },

@@ -65,7 +65,8 @@ Rules:
 - Return the action name and its parameters as structured JSON.
 - For entity references (direction, target, objects, actor): use only the entity's exact id inside the brackets in the game state (e.g. wooden_chest), with no extra characters or prefixes. DO NOT invent an id that is not in the game state.
 - If the player's phrase only includes an action and there is a single matching entity in the game state, use it as the respective parameter.
-- If the player's phrase is a substring of exactly one entity's name or id (e.g. "mail" → "small mailbox", "box" → "small mailbox"), use that object. Only match against the text of names and ids, not object types. Only do this when exactly one entity in scope matches.
+- If the player's phrase is a substring of exactly one entity's name, id, or alias (e.g. "mail" → "small mailbox"), use that object. Only do this when exactly one entity in scope matches.
+- If no exact or substring match, consider common synonyms and semantic equivalents (e.g. "lamp" for a lantern, "box" for a chest). If exactly one entity is a plausible match, use it. If multiple could match, use respond.
 - If the player's phrase says <action> ALL, include all matching entities as parameters.
 - If the player's phrase matches more than one entity in scope, except when it says ALL, you must use respond to ask a clarification question. Do not guess or pick one. This applies regardless of the action — e.g. "take sword" with two swords in scope must produce respond, not take.
 - When using respond, never expose internal IDs (like wooden_chest) in the message — use the entity's display name instead.

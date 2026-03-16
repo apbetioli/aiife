@@ -15,10 +15,7 @@
 						"type": "container",
 						"state": {},
 						"source": "room",
-						"aliases": [
-							"box",
-							"chest"
-						]
+						"aliases": []
 					}
 				]
 			},
@@ -65,10 +62,7 @@
 						"type": "container",
 						"state": {},
 						"source": "room",
-						"aliases": [
-							"box",
-							"chest"
-						]
+						"aliases": []
 					}
 				]
 			},

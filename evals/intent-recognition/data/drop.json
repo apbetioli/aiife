@@ -123,9 +123,7 @@
 						"type": "item",
 						"state": {},
 						"source": "inventory",
-						"aliases": [
-							"lamp"
-						]
+						"aliases": []
 					},
 					{
 						"id": "old_book",
