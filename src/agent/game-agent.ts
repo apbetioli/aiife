@@ -59,11 +59,10 @@ export class GameAgent {
 		const fallback = message || "Done.";
 
 		try {
-			const prompt = `${NARRATION_SYSTEM_PROMPT}\n\nGame output:\n${message}\nPlayer language (match this): "${playerInput}"`;
-
 			const stream = streamText({
 				model: this.narratorModel,
-				prompt,
+				system: NARRATION_SYSTEM_PROMPT,
+				prompt: `Game output:\n${message}\n\nMatch the language of this player input (do not include it in your response): "${playerInput}"`,
 				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 				experimental_telemetry: {
 					isEnabled: true,
