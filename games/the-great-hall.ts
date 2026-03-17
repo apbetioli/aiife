@@ -130,7 +130,7 @@ const world: World = {
 			state: { open: false, carriable: false },
 			descriptions: {
 				default: "An ornate wooden chest with iron bindings. It is closed.",
-				open: "An ornate wooden chest with iron bindings. It is open and empty.",
+				open: "An ornate wooden chest with iron bindings. It is open.",
 			},
 			contains: ["gold_amulet"],
 		},

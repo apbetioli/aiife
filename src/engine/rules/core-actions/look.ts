@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { evaluateCondition, resolveRoomDescription } from "../../parser-context";
+import { evaluateCondition, resolveObjectDescription, resolveRoomDescription } from "../../parser-context";
 import { emptySchema } from "./schemas";
 import type { ActionDef } from "./types";
 
@@ -19,7 +19,8 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 			const obj = world.objects[id];
 			if (!obj) continue;
 			const objState = state.objects[id];
-			lines.push(obj.descriptions.default || `There is a ${obj.name} here.`);
+			const desc = objState ? resolveObjectDescription(obj, objState) : obj.descriptions.default;
+			lines.push(desc || `There is a ${obj.name} here.`);
 			if (obj.type === "container" && objState?.state.open) {
 				const contentNames = (objState.contains ?? []).map((cid) => world.objects[cid]?.name).filter(Boolean);
 				if (contentNames.length > 0) {
