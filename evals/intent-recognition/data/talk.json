@@ -5,9 +5,7 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "old_gardener",
@@ -35,9 +33,7 @@
 		"target": {
 			"expectedAction": "talk",
 			"expectedParams": {
-				"objects": [
-					"old_gardener"
-				]
+				"objects": ["old_gardener"]
 			},
 			"category": "golden"
 		},
@@ -51,9 +47,7 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "old_gardener",
@@ -81,9 +75,7 @@
 		"target": {
 			"expectedAction": "talk",
 			"expectedParams": {
-				"objects": [
-					"old_gardener"
-				]
+				"objects": ["old_gardener"]
 			},
 			"category": "golden"
 		},
@@ -97,9 +89,7 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -134,9 +124,7 @@
 		"target": {
 			"expectedAction": "talk",
 			"expectedParams": {
-				"objects": [
-					"old_gardener"
-				]
+				"objects": ["old_gardener"]
 			},
 			"category": "golden"
 		},

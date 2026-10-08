@@ -29,6 +29,11 @@ export function findOpenContainerInRoom(state: GameState, objectId: string): str
 	return undefined;
 }
 
+/** True if the object is visible/accessible: in current room, in inventory, or inside an open container here. */
+export function isInScope(state: GameState, objectId: string): boolean {
+	return isInRoom(state, objectId) || isInInventory(state, objectId) || !!findOpenContainerInRoom(state, objectId);
+}
+
 // ─── Immutable wrapper ───────────────────────────────────────────────────────
 
 /** Apply an in-place mutator to a frozen state, returning a new state via immer. */

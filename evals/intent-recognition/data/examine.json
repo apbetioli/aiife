@@ -5,9 +5,7 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -35,9 +33,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"old_book"
-				]
+				"objects": ["old_book"]
 			},
 			"category": "golden"
 		},
@@ -51,9 +47,7 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room. A curious alcove is set into the far wall.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -88,9 +82,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"alcove"
-				]
+				"objects": ["alcove"]
 			},
 			"category": "golden"
 		},
@@ -104,9 +96,7 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"available_exits": [
-					"up"
-				],
+				"available_exits": ["up"],
 				"in_scope_objects": [
 					{
 						"id": "stone_pedestal",
@@ -141,9 +131,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"stone_pedestal"
-				]
+				"objects": ["stone_pedestal"]
 			},
 			"category": "golden"
 		},
@@ -157,9 +145,7 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -187,9 +173,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"old_book"
-				]
+				"objects": ["old_book"]
 			},
 			"category": "golden"
 		},
@@ -203,10 +187,7 @@
 			"context": {
 				"room": "Living Room",
 				"description": "A comfortable living room. A large oriental rug lies in the center of the floor.",
-				"available_exits": [
-					"east",
-					"west"
-				],
+				"available_exits": ["east", "west"],
 				"in_scope_objects": [
 					{
 						"id": "oriental_rug",
@@ -234,9 +215,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"oriental_rug"
-				],
+				"objects": ["oriental_rug"],
 				"preposition": "under"
 			},
 			"category": "golden"
@@ -251,10 +230,7 @@
 			"context": {
 				"room": "The Gallery",
 				"description": "A narrow gallery. A dusty painting hangs on the wall.",
-				"available_exits": [
-					"north",
-					"south"
-				],
+				"available_exits": ["north", "south"],
 				"in_scope_objects": [
 					{
 						"id": "dusty_painting",
@@ -282,9 +258,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"dusty_painting"
-				],
+				"objects": ["dusty_painting"],
 				"preposition": "behind"
 			},
 			"category": "golden"
@@ -299,9 +273,7 @@
 			"context": {
 				"room": "The Bedchamber",
 				"description": "A bedchamber with a tall mirror against the wall.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "tall_mirror",
@@ -329,9 +301,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"tall_mirror"
-				],
+				"objects": ["tall_mirror"],
 				"preposition": "in"
 			},
 			"category": "golden"
@@ -346,9 +316,7 @@
 			"context": {
 				"room": "The Tower Room",
 				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-				"available_exits": [
-					"down"
-				],
+				"available_exits": ["down"],
 				"in_scope_objects": [
 					{
 						"id": "wooden_chest",
@@ -377,9 +345,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"wooden_chest"
-				],
+				"objects": ["wooden_chest"],
 				"preposition": "inside"
 			},
 			"category": "secondary"
@@ -394,9 +360,7 @@
 			"context": {
 				"room": "The Bedroom",
 				"description": "A dusty bedroom with an old dresser against the wall.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "dresser",
@@ -424,9 +388,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"dresser"
-				],
+				"objects": ["dresser"],
 				"preposition": "behind"
 			},
 			"category": "golden"
@@ -441,9 +403,7 @@
 			"context": {
 				"room": "The Bedroom",
 				"description": "A dusty bedroom with a large bed.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "bed",
@@ -471,9 +431,7 @@
 		"target": {
 			"expectedAction": "examine",
 			"expectedParams": {
-				"objects": [
-					"bed"
-				],
+				"objects": ["bed"],
 				"preposition": "under"
 			},
 			"category": "golden"

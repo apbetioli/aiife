@@ -1,5 +1,4 @@
 import {
-	type BlockedExit,
 	type Direction,
 	type Exit,
 	type GameObject,

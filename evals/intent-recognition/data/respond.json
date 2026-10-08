@@ -5,11 +5,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -49,11 +45,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -93,9 +85,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north"
-				],
+				"available_exits": ["north"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -149,11 +139,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -193,11 +179,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -237,9 +219,7 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "You are in a dark, musty cellar. A narrow passage leads east into darkness.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "metal_sword",

@@ -5,11 +5,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. A heavy iron door is set into the floor.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -51,10 +47,7 @@
 		"target": {
 			"expectedAction": "use",
 			"expectedParams": {
-				"objects": [
-					"rusty_key",
-					"cellar_door"
-				]
+				"objects": ["rusty_key", "cellar_door"]
 			},
 			"category": "golden"
 		},
@@ -68,9 +61,7 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "A cold, damp cellar. A stone pedestal rises from the floor, covered in strange runes.",
-				"available_exits": [
-					"up"
-				],
+				"available_exits": ["up"],
 				"in_scope_objects": [
 					{
 						"id": "stone_pedestal",
@@ -105,10 +96,7 @@
 		"target": {
 			"expectedAction": "use",
 			"expectedParams": {
-				"objects": [
-					"gold_amulet",
-					"stone_pedestal"
-				]
+				"objects": ["gold_amulet", "stone_pedestal"]
 			},
 			"category": "golden"
 		},
@@ -122,9 +110,7 @@
 			"context": {
 				"room": "The Cellar",
 				"description": "A cold, damp cellar. Water drips from the low ceiling. It is very dark.",
-				"available_exits": [
-					"up"
-				],
+				"available_exits": ["up"],
 				"in_scope_objects": [
 					{
 						"id": "stone_pedestal",
@@ -159,9 +145,7 @@
 		"target": {
 			"expectedAction": "use",
 			"expectedParams": {
-				"objects": [
-					"brass_lantern"
-				]
+				"objects": ["brass_lantern"]
 			},
 			"category": "golden"
 		},

@@ -65,9 +65,7 @@ function buildGameStatePrompt(context: ParserContext): string {
 }
 
 function buildAvailableActionsPrompt(actions: string[], meta: Record<string, IntentMeta>): string {
-	const lines = actions
-		.filter((name) => meta[name]?.description)
-		.map((name) => `- ${meta[name].description}`);
+	const lines = actions.filter((name) => meta[name]?.description).map((name) => `- ${meta[name].description}`);
 
 	return `Available actions:\n${lines.join("\n")}`;
 }

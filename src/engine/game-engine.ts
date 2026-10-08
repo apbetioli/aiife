@@ -1,6 +1,7 @@
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
+import { isInScope } from "./mutators";
 import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
@@ -18,6 +19,20 @@ function toEventParams(intent: RecognizedIntent): Record<string, unknown> {
 			([key, value]) => !INTENT_PARAM_KEYS_TO_SKIP.has(key) && value !== null && value !== undefined,
 		),
 	);
+}
+
+/** Object IDs that must be in current room or inventory for the action to be valid. */
+const OBJECT_PARAM_KEYS = ["objects"] as const;
+
+function allTargetsInScope(state: GameState, params: Record<string, unknown>): boolean {
+	for (const key of OBJECT_PARAM_KEYS) {
+		const ids = Array.isArray(params[key]) ? (params[key] as string[]) : [];
+		for (const id of ids) {
+			if (typeof id !== "string" || !id) continue;
+			if (!isInScope(state, id)) return false;
+		}
+	}
+	return true;
 }
 
 export class GameEngine {
@@ -74,8 +89,12 @@ export class GameEngine {
 			return intent.message ?? "I don't understand that.";
 		}
 
-		this.pushHistory();
 		const params = toEventParams(intent);
+		if (!allTargetsInScope(this.state, params)) {
+			return "You don't see that here.";
+		}
+
+		this.pushHistory();
 		const result = executeUntrustedAction(this.bus, this.registry, this.world, this.state, action, params);
 		this.state = result.state;
 

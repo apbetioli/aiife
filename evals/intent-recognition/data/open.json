@@ -5,9 +5,7 @@
 			"context": {
 				"room": "The Tower Room",
 				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-				"available_exits": [
-					"down"
-				],
+				"available_exits": ["down"],
 				"in_scope_objects": [
 					{
 						"id": "wooden_chest",
@@ -36,9 +34,7 @@
 		"target": {
 			"expectedAction": "open",
 			"expectedParams": {
-				"objects": [
-					"wooden_chest"
-				]
+				"objects": ["wooden_chest"]
 			},
 			"category": "golden"
 		},
@@ -52,9 +48,7 @@
 			"context": {
 				"room": "The Tower Room",
 				"description": "A circular room at the top of the spiral staircase. An ornate wooden chest sits against the wall.",
-				"available_exits": [
-					"down"
-				],
+				"available_exits": ["down"],
 				"in_scope_objects": [
 					{
 						"id": "wooden_chest",
@@ -83,9 +77,7 @@
 		"target": {
 			"expectedAction": "open",
 			"expectedParams": {
-				"objects": [
-					"wooden_chest"
-				]
+				"objects": ["wooden_chest"]
 			},
 			"category": "golden"
 		},
@@ -99,9 +91,7 @@
 			"context": {
 				"room": "West of House",
 				"description": "You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "small_mailbox",
@@ -136,9 +126,7 @@
 		"target": {
 			"expectedAction": "open",
 			"expectedParams": {
-				"objects": [
-					"small_mailbox"
-				]
+				"objects": ["small_mailbox"]
 			},
 			"category": "golden"
 		},

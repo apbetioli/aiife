@@ -5,11 +5,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -63,9 +59,7 @@
 			"context": {
 				"room": "The Library",
 				"description": "Floor-to-ceiling bookshelves crowd this dusty room.",
-				"available_exits": [
-					"south"
-				],
+				"available_exits": ["south"],
 				"in_scope_objects": [
 					{
 						"id": "old_book",
@@ -112,9 +106,7 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
