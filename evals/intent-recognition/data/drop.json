@@ -5,9 +5,7 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -42,9 +40,7 @@
 		"target": {
 			"expectedAction": "drop",
 			"expectedParams": {
-				"objects": [
-					"brass_lantern"
-				]
+				"objects": ["brass_lantern"]
 			},
 			"category": "golden"
 		},
@@ -58,11 +54,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall. Faded tapestries line the walls.",
-				"available_exits": [
-					"north",
-					"west",
-					"up"
-				],
+				"available_exits": ["north", "west", "up"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -97,9 +89,7 @@
 		"target": {
 			"expectedAction": "drop",
 			"expectedParams": {
-				"objects": [
-					"old_book"
-				]
+				"objects": ["old_book"]
 			},
 			"category": "golden"
 		},
@@ -113,9 +103,7 @@
 			"context": {
 				"room": "The Great Hall",
 				"description": "You stand in a vast stone hall.",
-				"available_exits": [
-					"north"
-				],
+				"available_exits": ["north"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -158,10 +146,7 @@
 		"target": {
 			"expectedAction": "drop",
 			"expectedParams": {
-				"objects": [
-					"old_book",
-					"rusty_key"
-				]
+				"objects": ["old_book", "rusty_key"]
 			},
 			"category": "golden"
 		},
@@ -175,9 +160,7 @@
 			"context": {
 				"room": "The Garden",
 				"description": "A walled garden, overgrown but still beautiful.",
-				"available_exits": [
-					"east"
-				],
+				"available_exits": ["east"],
 				"in_scope_objects": [
 					{
 						"id": "brass_lantern",
@@ -212,10 +195,7 @@
 		"target": {
 			"expectedAction": "drop",
 			"expectedParams": {
-				"objects": [
-					"brass_lantern",
-					"old_book"
-				]
+				"objects": ["brass_lantern", "old_book"]
 			},
 			"category": "golden"
 		},

@@ -26,11 +26,7 @@ export class GameAgent {
 		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
 
 		const meta = this.engine.getIntentMeta();
-		const system = buildIntentRecognitionSystemPrompt(
-			this.engine.getParserContext(),
-			Object.keys(meta),
-			meta,
-		);
+		const system = buildIntentRecognitionSystemPrompt(this.engine.getParserContext(), Object.keys(meta), meta);
 
 		const { output: intent, usage: intentUsage } = await generateText({
 			model: this.model,
