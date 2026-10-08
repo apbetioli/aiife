@@ -2,6 +2,15 @@
 
 AIIFE is a terminal-based interactive fiction engine. You describe what you want to do in plain language; an LLM maps that input to a game action, the rules engine updates the world, and an LLM narrates the result. Game state and action rules are handled by the engine, so the model does not directly decide whether an action succeeds.
 
+## How it works
+
+1. The engine builds a parser context from the current room, visible objects, inventory, and available exits.
+2. The intent model converts the player's input into a structured action and parameters.
+3. The engine validates targets and runs the action through its event-driven rules.
+4. The narrator turns the engine's feedback into a conversational response.
+
+The engine includes core actions, extensible listeners, state validation, and save/load support. See `src/engine/` and `src/world/` for implementation details.
+
 ## Requirements
 
 - Node.js 20 or newer
@@ -114,12 +123,3 @@ npm run eval      # Run the Laminar evaluation suite
 ```
 
 The evaluation suite and model comparison instructions are in [`evals/README.md`](evals/README.md). Set `LMNR_PROJECT_API_KEY` when using Laminar tracing or evaluations.
-
-## How it works
-
-1. The engine builds a parser context from the current room, visible objects, inventory, and available exits.
-2. The intent model converts the player's input into a structured action and parameters.
-3. The engine validates targets and runs the action through its event-driven rules.
-4. The narrator turns the engine's feedback into a conversational response.
-
-The engine includes core actions, extensible listeners, state validation, and save/load support. See `src/engine/` and `src/world/` for implementation details.
