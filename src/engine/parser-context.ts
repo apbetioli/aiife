@@ -8,6 +8,7 @@ import {
 	type ScopedObject,
 	type World,
 } from "../world/types";
+import { findOpenContainerInRoom } from "./mutators";
 import type { GameState, ObjectState, RoomState } from "./types";
 
 // ─── Condition Evaluator ──────────────────────────────────────────────────────
@@ -169,7 +170,9 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 	const in_scope_objects: ScopedObject[] = [];
 
 	for (const [objId, objState] of Object.entries(state.objects)) {
-		if (objState.location !== currentRoomId) continue;
+		const inRoom = objState.location === currentRoomId;
+		const inOpenContainer = Boolean(findOpenContainerInRoom(state, objId));
+		if (!inRoom && !inOpenContainer) continue;
 		const worldObj = world.objects[objId];
 
 		if (!worldObj) {

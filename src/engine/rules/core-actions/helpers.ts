@@ -1,5 +1,5 @@
 import type { World } from "../../../world/types";
-import { isInInventory, isInRoom } from "../../mutators";
+import { findOpenContainerInRoom, isInRoom, isInScope } from "../../mutators";
 import type { GameState } from "../../types";
 import type { ActionRegistry } from "../action-registry";
 import type { EventBus } from "../event-bus";
@@ -29,10 +29,14 @@ export function resolveTarget<TParams extends { objects?: string[] }>(
 	if (!obj || !objState) {
 		return null;
 	}
-	if (presence === "inRoom" && !isInRoom(state, targetId)) {
-		return null;
+	if (presence === "inRoom") {
+		const containerId = findOpenContainerInRoom(state, targetId);
+		const inRoom = isInRoom(state, targetId) || (containerId ? isInRoom(state, containerId) : false);
+		if (!inRoom) {
+			return null;
+		}
 	}
-	if (presence === "roomOrInventory" && !isInRoom(state, targetId) && !isInInventory(state, targetId)) {
+	if (presence === "roomOrInventory" && !isInScope(state, targetId)) {
 		return null;
 	}
 	return { targetId, obj, objState };

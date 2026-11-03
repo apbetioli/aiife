@@ -175,6 +175,18 @@ describe("executeAction", () => {
 		expect(result.feedback).toContain("It's already open.");
 	});
 
+	it("open returns cannot_open_message for non-openable objects with custom message", () => {
+		const { world, bus, state } = setup();
+		state.objects.table.location = "room_a";
+		state.objects.table.state.cannot_open_message = "The table cannot be opened.";
+		const result = executeAction(bus, world, state, "open", {
+			objects: ["table"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("The table cannot be opened.");
+	});
+
 	// ── close ─────────────────────────────────────────────────────────────
 
 	it("close sets open=false", () => {
@@ -347,6 +359,17 @@ describe("executeAction", () => {
 		expect(text).toContain("Room A");
 		expect(text).toContain("A brass lamp");
 		expect(text).toContain("Exits:");
+	});
+
+	it("look excludes scenery objects from room listing", () => {
+		const { world, bus, state } = setup();
+		state.objects.lamp.state.scenery = true;
+		const result = executeAction(bus, world, state, "look", {});
+
+		expect(result.stopped).toBe(false);
+		const text = result.feedback.join(" ");
+		expect(text).toContain("Room A");
+		expect(text).not.toContain("A brass lamp");
 	});
 
 	// ── inventory ─────────────────────────────────────────────────────────

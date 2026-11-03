@@ -15,7 +15,12 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 		const roomState = state.rooms[roomId];
 		const description = resolveRoomDescription(room, roomState);
 		const lines: string[] = [`**${room.name}**`, description];
-		const roomObjIds = Object.keys(world.objects).filter((id) => state.objects[id]?.location === roomId);
+		const roomObjIds = Object.keys(world.objects).filter((id) => {
+			if (state.objects[id]?.location !== roomId) return false;
+			const objState = state.objects[id];
+			if (objState?.state.scenery === true || world.objects[id]?.state?.scenery === true) return false;
+			return true;
+		});
 		for (const id of roomObjIds) {
 			const obj = world.objects[id];
 			if (!obj) continue;

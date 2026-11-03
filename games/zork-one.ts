@@ -13,31 +13,54 @@ const world: World = {
 				default: "You are standing in an open field west of a white house, with a boarded front door.",
 			},
 			state: {},
-			exits: {},
+			exits: {
+				east: {
+					leads_to: "west_of_house",
+					condition: "front_door.open == true",
+					locked_message: "The door is boarded and you can't remove the boards.",
+				},
+			},
 		},
 	},
 	objects: {
 		small_mailbox: {
 			id: "small_mailbox",
 			name: "small mailbox",
-			aliases: [],
+			aliases: ["mailbox", "box"],
 			type: "container",
 			location: "west_of_house",
-			state: { carriable: false },
+			state: { open: false, carriable: false },
 			descriptions: {
-				default: "A small mailbox, barely large enough for a few letters.",
+				default: "There is a small mailbox here.",
+				open: "A small mailbox is here. It is open.",
+			},
+		},
+		leaflet: {
+			id: "leaflet",
+			name: "leaflet",
+			aliases: ["mail", "paper", "booklet", "pamphlet"],
+			type: "item",
+			location: "small_mailbox",
+			state: { carriable: true },
+			descriptions: {
+				default:
+					'"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!"',
 			},
 		},
 		front_door: {
 			id: "front_door",
 			name: "front door",
-			aliases: [],
-			type: "door",
+			aliases: ["door", "boarded door", "boards", "board"],
+			type: "fixture",
 			location: "west_of_house",
-			state: { open: false, carriable: false },
+			state: {
+				scenery: true,
+				open: false,
+				carriable: false,
+				cannot_open_message: "The door cannot be opened.",
+			},
 			descriptions: {
 				default: "The front door of the white house. It is firmly boarded shut and cannot be opened.",
-				open: "The front door stands open.",
 			},
 		},
 	},

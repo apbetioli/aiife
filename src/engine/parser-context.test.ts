@@ -235,6 +235,16 @@ describe("buildParserContext", () => {
 		expect(ids).not.toContain("gem");
 	});
 
+	it("includes items inside open containers in room scope", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.objects.chest.state.open = true;
+		const ctx = buildParserContext(world, state);
+
+		const ids = ctx.in_scope_objects.map((o) => o.id);
+		expect(ids).toContain("gem");
+	});
+
 	it("excludes location from scoped object state", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
