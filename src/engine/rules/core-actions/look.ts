@@ -15,14 +15,18 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 		const roomState = state.rooms[roomId];
 		const description = resolveRoomDescription(room, roomState);
 		const lines: string[] = [`**${room.name}**`, description];
-		for (const id of roomState.contains) {
+		const roomObjIds = Object.keys(world.objects).filter((id) => state.objects[id]?.location === roomId);
+		for (const id of roomObjIds) {
 			const obj = world.objects[id];
 			if (!obj) continue;
 			const objState = state.objects[id];
 			const desc = objState ? resolveObjectDescription(obj, objState) : obj.descriptions.default;
 			lines.push(desc || `There is a ${obj.name} here.`);
 			if (obj.type === "container" && objState?.state.open) {
-				const contentNames = (objState.contains ?? []).map((cid) => world.objects[cid]?.name).filter(Boolean);
+				const contentNames = Object.keys(world.objects)
+					.filter((cid) => state.objects[cid]?.location === id)
+					.map((cid) => world.objects[cid]?.name)
+					.filter(Boolean);
 				if (contentNames.length > 0) {
 					lines.push(`The ${obj.name} contains:`);
 					for (const name of contentNames) {

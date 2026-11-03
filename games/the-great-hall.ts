@@ -24,7 +24,6 @@ const world: World = {
 					locked_message: "The heavy iron door in the floor is locked.",
 				},
 			},
-			contains: ["brass_lantern", "cellar_door"],
 		},
 		garden: {
 			id: "garden",
@@ -37,7 +36,6 @@ const world: World = {
 			exits: {
 				east: { leads_to: "great_hall" },
 			},
-			contains: ["gardener"],
 		},
 		library: {
 			id: "library",
@@ -50,7 +48,6 @@ const world: World = {
 			exits: {
 				south: { leads_to: "great_hall" },
 			},
-			contains: ["old_book", "alcove"],
 		},
 		tower_room: {
 			id: "tower_room",
@@ -63,7 +60,6 @@ const world: World = {
 			exits: {
 				down: { leads_to: "great_hall" },
 			},
-			contains: ["wooden_chest"],
 		},
 		cellar: {
 			id: "cellar",
@@ -76,7 +72,6 @@ const world: World = {
 			exits: {
 				up: { leads_to: "great_hall" },
 			},
-			contains: ["stone_pedestal"],
 		},
 	},
 	objects: {
@@ -85,6 +80,7 @@ const world: World = {
 			name: "brass lantern",
 			aliases: [],
 			type: "item",
+			location: "great_hall",
 			state: { carriable: true },
 			descriptions: {
 				default: "A sturdy brass lantern. It casts a warm, steady glow.",
@@ -95,6 +91,7 @@ const world: World = {
 			name: "old book",
 			aliases: [],
 			type: "item",
+			location: "library",
 			state: { carriable: true },
 			descriptions: {
 				default:
@@ -106,17 +103,18 @@ const world: World = {
 			name: "alcove",
 			aliases: [],
 			type: "container",
+			location: "library",
 			state: { revealed: false, carriable: false },
 			descriptions: {
 				default: "A shadowy alcove set into the wall. You might look more closely.",
 			},
-			contains: ["rusty_key"],
 		},
 		rusty_key: {
 			id: "rusty_key",
 			name: "rusty key",
 			aliases: [],
 			type: "key",
+			location: "alcove",
 			state: { carriable: true },
 			descriptions: {
 				default: "A rusty iron key, cold to the touch. It looks like it might fit a heavy lock.",
@@ -127,18 +125,19 @@ const world: World = {
 			name: "wooden chest",
 			aliases: [],
 			type: "container",
+			location: "tower_room",
 			state: { open: false, carriable: false },
 			descriptions: {
 				default: "An ornate wooden chest with iron bindings. It is closed.",
 				open: "An ornate wooden chest with iron bindings. It is open.",
 			},
-			contains: ["gold_amulet"],
 		},
 		gold_amulet: {
 			id: "gold_amulet",
 			name: "gold amulet",
 			aliases: [],
 			type: "item",
+			location: "wooden_chest",
 			state: { carriable: true },
 			descriptions: {
 				default:
@@ -150,6 +149,7 @@ const world: World = {
 			name: "stone pedestal",
 			aliases: ["altar", "runes"],
 			type: "fixture",
+			location: "cellar",
 			state: { carriable: false },
 			descriptions: {
 				default:
@@ -161,6 +161,7 @@ const world: World = {
 			name: "heavy iron door",
 			aliases: ["floor door", "trapdoor"],
 			type: "door",
+			location: "great_hall",
 			state: { locked: true, open: false, carriable: false },
 			descriptions: {
 				default: "A heavy iron door set into the floor. It is locked.",
@@ -174,6 +175,7 @@ const world: World = {
 			name: "old gardener",
 			aliases: [],
 			type: "actor",
+			location: "garden",
 			state: { carriable: false },
 			descriptions: {
 				default:

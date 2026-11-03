@@ -23,12 +23,12 @@ const GameObjectSchema = z.object({
 	name: z.string(),
 	aliases: z.array(z.string()).default([]),
 	type: ObjectTypeSchema,
+	location: z.string(), // room id, container object id, or "inventory"
 	state: StateSchema.default({}),
 	descriptions: z.record(z.string(), z.string()).refine((d) => "default" in d, {
 		message: "descriptions must include a 'default' entry",
 	}),
 	requires_instrument: RequiresInstrumentSchema.optional(),
-	contains: z.array(z.string()).optional(), // only for containers
 });
 
 // ─── Exit ─────────────────────────────────────────────────────────────────────
@@ -66,7 +66,6 @@ const RoomSchema = z.object({
 	}),
 	state: StateSchema.default({}),
 	exits: ExitsSchema,
-	contains: z.array(z.string()).default([]), // object ids
 });
 
 // ─── Player ───────────────────────────────────────────────────────────────────
@@ -133,13 +132,13 @@ export type ScopedObject = z.infer<typeof ScopedObjectSchema>;
 export type Direction = z.infer<typeof DirectionSchema>;
 
 export {
-	StateSchema,
-	ObjectTypeSchema,
-	GameObjectSchema,
-	RoomSchema,
-	PlayerSchema,
-	WorldSchema,
-	ParserContextSchema,
 	DirectionSchema,
 	ExitSchema,
+	GameObjectSchema,
+	ObjectTypeSchema,
+	ParserContextSchema,
+	PlayerSchema,
+	RoomSchema,
+	StateSchema,
+	WorldSchema,
 };

@@ -64,11 +64,11 @@ describe("mutators", () => {
 	// ─── Move Functions ──────────────────────────────────────────────────────
 
 	describe("moveObjectFromRoomToInventory", () => {
-		it("removes from room contains and adds to inventory", () => {
+		it("updates object location to inventory and adds to inventory array", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromRoomToInventory(s, "lamp"));
 
-			expect(next.rooms.room_a.contains).not.toContain("lamp");
+			expect(next.objects.lamp.location).toBe("inventory");
 			expect(next.player.inventory).toContain("lamp");
 		});
 
@@ -81,19 +81,19 @@ describe("mutators", () => {
 			const state = deepFreeze(freshState());
 			const next = immutable(state, (s) => moveObjectFromRoomToInventory(s, "lamp"));
 
-			expect(state.rooms.room_a.contains).toContain("lamp");
+			expect(state.objects.lamp.location).toBe("room_a");
 			expect(state.player.inventory).not.toContain("lamp");
 			expect(next).not.toBe(state);
 		});
 	});
 
 	describe("moveObjectFromInventoryToRoom", () => {
-		it("removes from inventory and adds to room contains", () => {
+		it("removes from inventory and updates object location to room", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromInventoryToRoom(s, "sword", "room_b"));
 
 			expect(next.player.inventory).not.toContain("sword");
-			expect(next.rooms.room_b.contains).toContain("sword");
+			expect(next.objects.sword.location).toBe("room_b");
 		});
 
 		it("throws if object not in inventory", () => {
@@ -106,17 +106,17 @@ describe("mutators", () => {
 			const next = immutable(state, (s) => moveObjectFromInventoryToRoom(s, "sword", "room_a"));
 
 			expect(state.player.inventory).toContain("sword");
-			expect(state.rooms.room_a.contains).not.toContain("sword");
+			expect(state.objects.sword.location).toBe("inventory");
 			expect(next).not.toBe(state);
 		});
 	});
 
 	describe("moveObjectFromContainerToInventory", () => {
-		it("removes from container contains and adds to inventory", () => {
+		it("updates object location from container to inventory and adds to inventory", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromContainerToInventory(s, "gem", "chest"));
 
-			expect(next.objects.chest.contains).not.toContain("gem");
+			expect(next.objects.gem.location).toBe("inventory");
 			expect(next.player.inventory).toContain("gem");
 		});
 
@@ -131,19 +131,19 @@ describe("mutators", () => {
 			const state = deepFreeze(freshState());
 			const next = immutable(state, (s) => moveObjectFromContainerToInventory(s, "gem", "chest"));
 
-			expect(state.objects.chest.contains).toContain("gem");
+			expect(state.objects.gem.location).toBe("chest");
 			expect(state.player.inventory).not.toContain("gem");
 			expect(next).not.toBe(state);
 		});
 	});
 
 	describe("moveObjectFromInventoryToContainer", () => {
-		it("removes from inventory and adds to container contains", () => {
+		it("removes from inventory and updates object location to container", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromInventoryToContainer(s, "sword", "chest"));
 
 			expect(next.player.inventory).not.toContain("sword");
-			expect(next.objects.chest.contains).toContain("sword");
+			expect(next.objects.sword.location).toBe("chest");
 		});
 
 		it("throws if object not in inventory", () => {
@@ -158,7 +158,7 @@ describe("mutators", () => {
 			const next = immutable(state, (s) => moveObjectFromInventoryToContainer(s, "sword", "chest"));
 
 			expect(state.player.inventory).toContain("sword");
-			expect(state.objects.chest.contains).not.toContain("sword");
+			expect(state.objects.sword.location).not.toBe("chest");
 			expect(next).not.toBe(state);
 		});
 	});
@@ -168,39 +168,21 @@ describe("mutators", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromRoomToInventory(s, "lamp"));
 
-			const inRooms = Object.values(next.rooms).filter((r: { contains: string[] }) => r.contains.includes("lamp"));
-			const inContainers = Object.values(next.objects).filter((o: { contains?: string[] }) =>
-				o.contains?.includes("lamp"),
-			);
-			const inInventory = next.player.inventory.includes("lamp") ? 1 : 0;
-
-			expect(inRooms.length + inContainers.length + inInventory).toBe(1);
+			expect(next.objects.lamp.location).toBe("inventory");
 		});
 
 		it("sword exists in exactly one location after inventory-to-room", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromInventoryToRoom(s, "sword", "room_a"));
 
-			const inRooms = Object.values(next.rooms).filter((r: { contains: string[] }) => r.contains.includes("sword"));
-			const inContainers = Object.values(next.objects).filter((o: { contains?: string[] }) =>
-				o.contains?.includes("sword"),
-			);
-			const inInventory = next.player.inventory.includes("sword") ? 1 : 0;
-
-			expect(inRooms.length + inContainers.length + inInventory).toBe(1);
+			expect(next.objects.sword.location).toBe("room_a");
 		});
 
 		it("gem exists in exactly one location after container-to-inventory", () => {
 			const state = freshState();
 			const next = immutable(state, (s) => moveObjectFromContainerToInventory(s, "gem", "chest"));
 
-			const inRooms = Object.values(next.rooms).filter((r: { contains: string[] }) => r.contains.includes("gem"));
-			const inContainers = Object.values(next.objects).filter((o: { contains?: string[] }) =>
-				o.contains?.includes("gem"),
-			);
-			const inInventory = next.player.inventory.includes("gem") ? 1 : 0;
-
-			expect(inRooms.length + inContainers.length + inInventory).toBe(1);
+			expect(next.objects.gem.location).toBe("inventory");
 		});
 	});
 

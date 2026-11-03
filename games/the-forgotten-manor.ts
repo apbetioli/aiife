@@ -46,7 +46,6 @@ const world: World = {
 					leads_to: "garden",
 				},
 			},
-			contains: ["painting", "library_door", "compartment"],
 		},
 
 		library: {
@@ -68,7 +67,6 @@ const world: World = {
 					locked_message: "A narrow door to the east is locked tight.",
 				},
 			},
-			contains: ["journal", "study_door", "bookshelf"],
 		},
 
 		garden: {
@@ -85,7 +83,6 @@ const world: World = {
 					leads_to: "entrance_hall",
 				},
 			},
-			contains: ["stone_bench", "fountain"],
 		},
 
 		study: {
@@ -102,7 +99,6 @@ const world: World = {
 					leads_to: "library",
 				},
 			},
-			contains: ["oak_desk", "candle"],
 		},
 	},
 
@@ -114,6 +110,7 @@ const world: World = {
 			name: "faded painting",
 			aliases: ["stern man"],
 			type: "fixture",
+			location: "entrance_hall",
 			state: { examined: false, carriable: false },
 			descriptions: {
 				default:
@@ -128,8 +125,8 @@ const world: World = {
 			name: "hidden compartment",
 			aliases: ["niche", "hole"],
 			type: "container",
+			location: "entrance_hall",
 			state: { open: false, discovered: false, carriable: false },
-			contains: ["brass_key"],
 			descriptions: {
 				default: "A small recess hidden behind the painting. It's closed.",
 				open: "The compartment is open. Inside you can see a brass key.",
@@ -142,6 +139,7 @@ const world: World = {
 			name: "brass key",
 			aliases: [],
 			type: "key",
+			location: "compartment",
 			state: { carriable: true },
 			descriptions: {
 				default: "A small brass key, tarnished with age. A label tied to it reads 'Library'.",
@@ -153,6 +151,7 @@ const world: World = {
 			name: "oak door",
 			aliases: ["north door", "library door"],
 			type: "door",
+			location: "entrance_hall",
 			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "brass_key" },
 			descriptions: {
@@ -169,8 +168,8 @@ const world: World = {
 			name: "leather journal",
 			aliases: [],
 			type: "item",
+			location: "library",
 			state: { read: false, carriable: true },
-			contains: ["study_key"],
 			descriptions: {
 				default:
 					"A leather-bound journal, surprisingly well-preserved. The cover reads 'Private — Lord Ashford'. It looks readable.",
@@ -183,6 +182,7 @@ const world: World = {
 			name: "iron key",
 			aliases: ["study key"],
 			type: "key",
+			location: "journal",
 			state: { carriable: true },
 			descriptions: {
 				default: "A small iron key hidden inside the back cover of the journal. A faint engraving reads 'Study'.",
@@ -194,6 +194,7 @@ const world: World = {
 			name: "narrow door",
 			aliases: ["east door", "study door"],
 			type: "door",
+			location: "library",
 			state: { locked: true, open: false, carriable: false },
 			requires_instrument: { unlock: "study_key" },
 			descriptions: {
@@ -208,6 +209,7 @@ const world: World = {
 			name: "bookshelf",
 			aliases: [],
 			type: "fixture",
+			location: "library",
 			state: { carriable: false },
 			descriptions: {
 				default:
@@ -222,6 +224,7 @@ const world: World = {
 			name: "stone bench",
 			aliases: [],
 			type: "fixture",
+			location: "garden",
 			state: { carriable: false },
 			descriptions: {
 				default:
@@ -234,6 +237,7 @@ const world: World = {
 			name: "stone fountain",
 			aliases: ["basin"],
 			type: "fixture",
+			location: "garden",
 			state: { carriable: false },
 			descriptions: {
 				default:
@@ -248,6 +252,7 @@ const world: World = {
 			name: "oak desk",
 			aliases: [],
 			type: "fixture",
+			location: "study",
 			state: { examined: false, carriable: false },
 			descriptions: {
 				default: "A large oak desk covered in scattered papers and dust. Something glints beneath the papers.",
@@ -261,6 +266,7 @@ const world: World = {
 			name: "unlit candle",
 			aliases: ["taper"],
 			type: "item",
+			location: "study",
 			state: { lit: false, carriable: true },
 			descriptions: {
 				default: "A half-burned candle in a brass holder. It's unlit.",

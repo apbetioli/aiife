@@ -87,21 +87,20 @@ Create a TypeScript module in `games/` that exports a default `World` object. Th
 import type { World } from "../src/world/types";
 
 const world: World = {
-  id: "my_game",
-  name: "My Game",
-  version: "1.0.0",
-  start_room: "start",
-  rooms: {
-    start: {
-      id: "start",
-      name: "Starting Room",
-      descriptions: { default: "You are in a small room." },
-      exits: {},
-      contains: [],
-    },
-  },
-  objects: {},
-  player: { current_room: "start", inventory: [], state: {} },
+	id: "my_game",
+	name: "My Game",
+	version: "1.0.0",
+	start_room: "start",
+	rooms: {
+		start: {
+			id: "start",
+			name: "Starting Room",
+			descriptions: { default: "You are in a small room." },
+			exits: {},
+		},
+	},
+	objects: {},
+	player: { current_room: "start", inventory: [], state: {} },
 };
 
 export default world;

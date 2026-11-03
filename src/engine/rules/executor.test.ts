@@ -26,22 +26,15 @@ describe("executeAction", () => {
 
 		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).toContain("lamp");
-		expect(result.state.rooms.room_a.contains).not.toContain("lamp");
+		expect(result.state.objects.lamp.location).toBe("inventory");
 	});
 
 	it("take with objects array takes multiple (TAKE X and Y)", () => {
 		const base = makeTestWorld();
 		const { world, bus, state } = setup({
-			rooms: {
-				...base.rooms,
-				room_a: {
-					...base.rooms.room_a,
-					contains: ["door", "lamp", "chest", "gem"],
-				},
-			},
 			objects: {
 				...base.objects,
-				chest: { ...base.objects.chest, contains: [] },
+				gem: { ...base.objects.gem, location: "room_a" },
 			},
 		});
 		const result = executeAction(bus, world, state, "take", {
@@ -51,8 +44,8 @@ describe("executeAction", () => {
 		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).toContain("lamp");
 		expect(result.state.player.inventory).toContain("gem");
-		expect(result.state.rooms.room_a.contains).not.toContain("lamp");
-		expect(result.state.rooms.room_a.contains).not.toContain("gem");
+		expect(result.state.objects.lamp.location).toBe("inventory");
+		expect(result.state.objects.gem.location).toBe("inventory");
 	});
 
 	it("take blocked for non-carriable objects", () => {
@@ -87,7 +80,7 @@ describe("executeAction", () => {
 
 		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).not.toContain("sword");
-		expect(result.state.rooms.room_a.contains).toContain("sword");
+		expect(result.state.objects.sword.location).toBe("room_a");
 	});
 
 	it("drop with objects array drops multiple (DROP X and Y)", () => {
@@ -105,8 +98,8 @@ describe("executeAction", () => {
 		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).not.toContain("sword");
 		expect(result.state.player.inventory).not.toContain("lamp");
-		expect(result.state.rooms.room_a.contains).toContain("sword");
-		expect(result.state.rooms.room_a.contains).toContain("lamp");
+		expect(result.state.objects.sword.location).toBe("room_a");
+		expect(result.state.objects.lamp.location).toBe("room_a");
 	});
 
 	it("drop all (objects = full inventory)", () => {
@@ -121,8 +114,8 @@ describe("executeAction", () => {
 
 		expect(result.stopped).toBe(false);
 		expect(result.state.player.inventory).toHaveLength(0);
-		expect(result.state.rooms.room_a.contains).toContain("sword");
-		expect(result.state.rooms.room_a.contains).toContain("lamp");
+		expect(result.state.objects.sword.location).toBe("room_a");
+		expect(result.state.objects.lamp.location).toBe("room_a");
 	});
 
 	it("drop with no target cancels", () => {
@@ -352,7 +345,7 @@ describe("executeAction", () => {
 		expect(result.feedback.length).toBeGreaterThan(0);
 		const text = result.feedback.join(" ");
 		expect(text).toContain("Room A");
-		expect(text).toContain("There is a");
+		expect(text).toContain("A brass lamp");
 		expect(text).toContain("Exits:");
 	});
 

@@ -168,20 +168,15 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 	// Objects inside *closed* containers are out of scope
 	const in_scope_objects: ScopedObject[] = [];
 
-	for (const objId of roomState.contains) {
+	for (const [objId, objState] of Object.entries(state.objects)) {
+		if (objState.location !== currentRoomId) continue;
 		const worldObj = world.objects[objId];
-		const objState = state.objects[objId];
 
 		if (!worldObj) {
 			console.warn(`[buildParserContext] Scoped object "${objId}" not found in world definition`);
 			continue;
 		}
-		if (!objState) {
-			console.warn(`[buildParserContext] Scoped object "${objId}" has no state entry`);
-			continue;
-		}
 
-		// State flags only (contains is internal runtime data)
 		in_scope_objects.push({
 			id: objId,
 			name: worldObj.name,

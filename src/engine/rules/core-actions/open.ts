@@ -28,7 +28,10 @@ export const open: ActionDef<z.infer<typeof objectsSchema>> = {
 			return "It's already open.";
 		}
 		setObjectState(state, targetId, "open", true);
-		const contents = (objState?.contains ?? []).map((id) => world.objects[id]?.name).filter(Boolean);
+		const contents = Object.keys(world.objects)
+			.filter((id) => state.objects[id]?.location === targetId)
+			.map((id) => world.objects[id]?.name)
+			.filter(Boolean);
 		const name = obj?.name ?? targetId;
 		return contents.length > 0
 			? `Opening the ${name} reveals:\n${contents.map((n) => `  ${n}`).join("\n")}`

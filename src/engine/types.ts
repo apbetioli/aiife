@@ -4,12 +4,11 @@ import { PlayerSchema, StateSchema } from "../world/types";
 // ─── Game State Schema ────────────────────────────────────────────────────────
 
 const RoomStateSchema = z.object({
-	contains: z.array(z.string()),
 	state: StateSchema.default({}),
 });
 
 const ObjectStateSchema = z.object({
-	contains: z.array(z.string()).optional(),
+	location: z.string(),
 	state: StateSchema.default({}),
 });
 

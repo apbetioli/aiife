@@ -39,8 +39,8 @@ A layered, event-driven text adventure engine with an LLM parser and narrator.
 ### 1.1 Define Schemas
 
 - [ ] `StateSchema` — generic key/value state flags
-- [ ] `GameObjectSchema` — id, name, aliases, type, carriable, state, descriptions (no location — ownership is derived from room/player contains lists)
-- [ ] `RoomSchema` — id, name, descriptions, state, exits, contains
+- [ ] `GameObjectSchema` — id, name, aliases, type, carriable, location, state, descriptions
+- [ ] `RoomSchema` — id, name, descriptions, state, exits
 - [ ] `ExitSchema` — leads_to, condition, locked_message
 - [ ] `PlayerSchema` — current_room, inventory, state
 - [ ] `WorldSchema` — id, name, version, start_room, rooms, objects, player
@@ -48,15 +48,14 @@ A layered, event-driven text adventure engine with an LLM parser and narrator.
 
 ### 1.2 World Integrity Validators
 
-- [ ] `validateAllObjectsOwned` — every object id in `world.objects` appears in exactly one owner's contains list (room or player inventory) — no orphaned or double-owned objects
-- [ ] `validateContainment` — every id in `room.contains`, `object.contains`, and `player.inventory` references a real object in `world.objects`
+- [ ] `validateAllObjectsOwned` — every object in `world.objects` has a valid location (room ID, container ID, or inventory) — no orphaned or invalid locations
+- [ ] `validateContainment` — every id in `player.inventory` references a real object in `world.objects`, and no container references a nonexistent or circular parent
 - [ ] `validateExitConditions` — exit conditions reference real object ids and valid target rooms
 
 ### 1.3 State Builder
 
 - [ ] `buildInitialState(world)` — derives mutable `GameState` from static world definition
-  - copies all room contains lists
-  - copies all object state flags (no location — position is derived from contains lists)
+  - sets object states with location and state flags
   - copies player inventory and state
   - runs all validators before returning
   - throws with descriptive errors on failure
@@ -71,9 +70,8 @@ A layered, event-driven text adventure engine with an LLM parser and narrator.
 ### 1.5 Tests
 
 - [ ] Valid world builds without errors
-- [ ] Orphaned object (not in any contains list) throws with correct message
-- [ ] Double-owned object (appears in two contains lists) throws with correct message
-- [ ] Contains list referencing unknown object id throws
+- [ ] Orphaned/invalid object location throws with correct message
+- [ ] Inventory referencing unknown object id throws
 - [ ] Invalid exit condition reference throws
 - [ ] Save → load round-trip produces identical state
 
@@ -84,18 +82,18 @@ A layered, event-driven text adventure engine with an LLM parser and narrator.
 > **Goal:** Pure state mutation functions and scope resolution. No side effects, no I/O.
 > **Deliverable:** A set of immutable state transformers and a working `buildParserContext`.
 
-> **Design note — single source of truth:** Object position is owned exclusively by contains lists (rooms, containers, player inventory). There is no `location` field on objects. Because the parser context already scopes everything to the current room and inventory before a command reaches the rules layer, action handlers never need to search globally for an object — they only ever need to know "is this in the room?" or "is this in inventory?". Global search is only needed for Phase 8 concerns like actor scheduling, and even then is scoped to known possible locations.
+> **Design note — single source of truth:** Object position is owned directly by each object's `location` field (room id, container id, or "inventory"). Rooms and containers do not store duplicate `contains` lists. Actions and mutators query and update `object.location` directly.
 
 ### 2.1 State Mutators
 
 All mutators return a new `GameState` — never mutate in place.
 
-- [ ] `isInRoom(state, objectId)` — returns true if objectId is in the current room's contains list
-- [ ] `isInInventory(state, objectId)` — returns true if objectId is in player inventory
-- [ ] `moveObjectFromRoomToInventory(state, objectId)` — removes from current room contains, adds to player inventory
-- [ ] `moveObjectFromInventoryToRoom(state, objectId, roomId)` — removes from player inventory, adds to room contains
-- [ ] `moveObjectFromContainerToInventory(state, objectId, containerId)` — removes from container contains, adds to player inventory
-- [ ] `moveObjectFromInventoryToContainer(state, objectId, containerId)` — removes from player inventory, adds to container contains
+- [ ] `isInRoom(state, objectId)` — returns true if object's location matches the current room
+- [ ] `isInInventory(state, objectId)` — returns true if object's location is "inventory"
+- [ ] `moveObjectFromRoomToInventory(state, objectId)` — updates object location to "inventory" and adds to player inventory
+- [ ] `moveObjectFromInventoryToRoom(state, objectId, roomId)` — updates object location to roomId and removes from player inventory
+- [ ] `moveObjectFromContainerToInventory(state, objectId, containerId)` — updates object location to "inventory" and adds to player inventory
+- [ ] `moveObjectFromInventoryToContainer(state, objectId, containerId)` — updates object location to containerId and removes from player inventory
 - [ ] `setObjectState(state, objectId, key, value)` — sets a single flag on an object
 - [ ] `setRoomState(state, roomId, key, value)` — sets a single flag on a room
 - [ ] `setPlayerState(state, key, value)` — sets a single flag on the player
@@ -118,7 +116,7 @@ All mutators return a new `GameState` — never mutate in place.
 
 - [ ] `buildParserContext(world, state)` — derives `ParserContext` from current state
   - resolves available vs blocked exits using condition evaluator
-  - builds `in_scope_objects` from room contains + inventory, tagged with `source: "room" | "inventory"`
+  - builds `in_scope_objects` by filtering objects by `location`, tagged with `source: "room" | "inventory"`
   - excludes objects inside closed containers
   - validates output with `ParserContextSchema` before returning
 
@@ -126,12 +124,11 @@ All mutators return a new `GameState` — never mutate in place.
 
 - [ ] `isInRoom` returns true for object in current room, false otherwise
 - [ ] `isInInventory` returns true for object in inventory, false otherwise
-- [ ] `moveObjectFromRoomToInventory` removes from room contains and adds to inventory
-- [ ] `moveObjectFromInventoryToRoom` removes from inventory and adds to room contains
-- [ ] `moveObjectFromContainerToInventory` removes from container contains and adds to inventory
-- [ ] `moveObjectFromInventoryToContainer` removes from inventory and adds to container contains
+- [ ] `moveObjectFromRoomToInventory` updates object location and adds to inventory
+- [ ] `moveObjectFromInventoryToRoom` updates object location and removes from inventory
+- [ ] `moveObjectFromContainerToInventory` updates object location and adds to inventory
+- [ ] `moveObjectFromInventoryToContainer` updates object location to container and removes from inventory
 - [ ] Each move mutator throws if the object is not in the expected source
-- [ ] No object appears in more than one contains list after any move
 - [ ] Condition evaluator handles all operators and type coercions
 - [ ] Blocked exit returns correct locked_message
 - [ ] Closed container contents are excluded from scope
@@ -456,7 +453,7 @@ Automated test that plays through the full solution:
 
 - [ ] Objects inside closed containers excluded from scope
 - [ ] Objects inside open containers appear in scope as `source: "container"`
-- [ ] `take` from container removes from container's contains list
+- [ ] `take` from container moves object location from container to inventory
 - [ ] Container weight limits (optional)
 
 ### 8.5 Conversation Trees

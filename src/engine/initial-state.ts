@@ -4,77 +4,53 @@ import { type GameState, GameStateSchema } from "./types";
 // ─── Validation Helpers ───────────────────────────────────────────────────────
 
 /**
- * Validates that every object id in `world.objects` appears in exactly one
- * owner's contains list (room, container, or player inventory).
- * No orphaned or double-owned objects.
+ * Validates that every object in `world.objects` has a valid location
+ * (a real room id, a real container object id, or "inventory").
+ * Also validates that no object is placed both in inventory and in a room/container.
  */
 export function validateAllObjectsOwned(world: World): string[] {
 	const errors: string[] = [];
-	const placement = new Map<string, string>(); // objId -> "room:roomId" | "container:objId" | "inventory"
-
-	for (const [roomId, room] of Object.entries(world.rooms)) {
-		for (const objId of room.contains) {
-			if (placement.has(objId)) {
-				errors.push(`Object "${objId}" is in room "${roomId}" but also in "${placement.get(objId)}"`);
-			} else {
-				placement.set(objId, `room:${roomId}`);
-			}
-		}
-	}
 
 	for (const [objId, obj] of Object.entries(world.objects)) {
-		if (obj.contains) {
-			for (const childId of obj.contains) {
-				if (placement.has(childId)) {
-					errors.push(`Object "${childId}" is in container "${objId}" but also in "${placement.get(childId)}"`);
-				} else {
-					placement.set(childId, `container:${objId}`);
-				}
-			}
-		}
-	}
+		const loc = obj.location;
 
-	for (const objId of world.player.inventory) {
-		if (placement.has(objId)) {
-			errors.push(`Object "${objId}" is in player inventory but also in "${placement.get(objId)}"`);
-		} else {
-			placement.set(objId, "inventory");
-		}
-	}
-
-	for (const objId of Object.keys(world.objects)) {
-		if (!placement.has(objId)) {
+		if (!loc) {
 			errors.push(`Object "${objId}" is not in any room, container, or player inventory`);
+			continue;
 		}
+
+		if (loc === "inventory") {
+			continue;
+		}
+
+		if (world.rooms[loc]) {
+			if (world.player.inventory.includes(objId)) {
+				errors.push(`Object "${objId}" is in player inventory but also in room "${loc}"`);
+			}
+			continue;
+		}
+
+		if (world.objects[loc]) {
+			if (loc === objId) {
+				errors.push(`Object "${objId}" cannot be located inside itself`);
+			}
+			if (world.player.inventory.includes(objId)) {
+				errors.push(`Object "${objId}" is in player inventory but also in container "${loc}"`);
+			}
+			continue;
+		}
+
+		errors.push(`Object "${objId}" is not in any room, container, or player inventory (unknown location: "${loc}")`);
 	}
 
 	return errors;
 }
 
 /**
- * Validates that every id in room.contains, object.contains, and player.inventory
- * references a real object in world.objects.
+ * Validates that player.inventory references real objects in world.objects.
  */
 export function validateContainment(world: World): string[] {
 	const errors: string[] = [];
-
-	for (const [roomId, room] of Object.entries(world.rooms)) {
-		for (const objId of room.contains) {
-			if (!world.objects[objId]) {
-				errors.push(`Room "${roomId}" contains unknown object "${objId}"`);
-			}
-		}
-	}
-
-	for (const [objId, obj] of Object.entries(world.objects)) {
-		if (obj.contains) {
-			for (const childId of obj.contains) {
-				if (!world.objects[childId]) {
-					errors.push(`Object "${objId}" contains unknown object "${childId}"`);
-				}
-			}
-		}
-	}
 
 	for (const objId of world.player.inventory) {
 		if (!world.objects[objId]) {
@@ -148,7 +124,6 @@ export function buildInitialState(world: World): GameState {
 
 	for (const [roomId, room] of Object.entries(world.rooms)) {
 		rooms[roomId] = {
-			contains: [...room.contains],
 			state: { visited: false, ...room.state },
 		};
 	}
@@ -158,15 +133,27 @@ export function buildInitialState(world: World): GameState {
 
 	for (const [objId, obj] of Object.entries(world.objects)) {
 		objects[objId] = {
+			location: obj.location,
 			state: { carriable: true, ...obj.state },
-			...(obj.contains ? { contains: [...obj.contains] } : {}),
 		};
 	}
 
 	// ── 4. Build player state ──────────────────────────────────────────────
+	const inventory = [...world.player.inventory];
+	for (const [objId, obj] of Object.entries(world.objects)) {
+		if (obj.location === "inventory" && !inventory.includes(objId)) {
+			inventory.push(objId);
+		}
+	}
+	for (const invId of inventory) {
+		if (objects[invId]) {
+			objects[invId].location = "inventory";
+		}
+	}
+
 	const player: GameState["player"] = {
 		current_room: world.player.current_room,
-		inventory: [...world.player.inventory],
+		inventory,
 		state: { ...world.player.state },
 	};
 

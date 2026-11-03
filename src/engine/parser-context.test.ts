@@ -20,7 +20,7 @@ describe("evaluateCondition", () => {
 		const state = buildInitialState(world);
 		const current = state.objects[objectId];
 		state.objects[objectId] = {
-			...(current && "contains" in current && current.contains ? { contains: current.contains } : {}),
+			location: current?.location ?? "room_a",
 			state: { ...(current?.state ?? {}), ...flags },
 		};
 		return state;
@@ -45,7 +45,7 @@ describe("evaluateCondition", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 		// counter may not exist in world; add minimal object state
-		state.objects.counter = { state: { value: 5 } };
+		state.objects.counter = { location: "room_a", state: { value: 5 } };
 
 		expect(evaluateCondition("counter.value > 3", state)).toBe(true);
 		expect(evaluateCondition("counter.value < 3", state)).toBe(false);
@@ -57,7 +57,7 @@ describe("evaluateCondition", () => {
 	it("evaluates string comparisons", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-		state.objects.actor = { state: { mood: "angry" } };
+		state.objects.actor = { location: "room_a", state: { mood: "angry" } };
 
 		expect(evaluateCondition("actor.mood == angry", state)).toBe(true);
 		expect(evaluateCondition("actor.mood != happy", state)).toBe(true);
@@ -92,22 +92,20 @@ describe("resolveRoomDescription", () => {
 		},
 		state: {},
 		exits: {},
-		contains: [],
 	};
 
 	it("returns default description for unvisited room with no state flags", () => {
-		const roomState: RoomState = { contains: [], state: { visited: false } };
+		const roomState: RoomState = { state: { visited: false } };
 		expect(resolveRoomDescription(room, roomState)).toBe("Default description.");
 	});
 
 	it("returns visited description for visited room", () => {
-		const roomState: RoomState = { contains: [], state: { visited: true } };
+		const roomState: RoomState = { state: { visited: true } };
 		expect(resolveRoomDescription(room, roomState)).toBe("Visited description.");
 	});
 
 	it("returns state-driven description when a matching state flag is true", () => {
 		const roomState: RoomState = {
-			contains: [],
 			state: { visited: false, dark: true },
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe("Dark description.");
@@ -115,7 +113,6 @@ describe("resolveRoomDescription", () => {
 
 	it("prioritises state-driven descriptions over visited", () => {
 		const roomState: RoomState = {
-			contains: [],
 			state: { visited: true, dark: true },
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe("Dark description.");
@@ -123,7 +120,6 @@ describe("resolveRoomDescription", () => {
 
 	it("falls back to default when state flag is false", () => {
 		const roomState: RoomState = {
-			contains: [],
 			state: { visited: false, dark: false },
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe("Default description.");
@@ -138,6 +134,7 @@ describe("resolveObjectDescription", () => {
 		name: "brass lamp",
 		aliases: ["lamp"],
 		type: "item",
+		location: "room_a",
 		state: { carriable: true },
 		descriptions: {
 			default: "A brass lamp.",
@@ -146,22 +143,22 @@ describe("resolveObjectDescription", () => {
 	};
 
 	it("returns default description when no flags are true", () => {
-		const objState: ObjectState = { state: { lit: false } };
+		const objState: ObjectState = { location: "room_a", state: { lit: false } };
 		expect(resolveObjectDescription(obj, objState)).toBe("A brass lamp.");
 	});
 
 	it("returns state-driven description when matching flag is true", () => {
-		const objState: ObjectState = { state: { lit: true } };
+		const objState: ObjectState = { location: "room_a", state: { lit: true } };
 		expect(resolveObjectDescription(obj, objState)).toBe("The lamp glows brightly.");
 	});
 
 	it("returns default when flag is true but no matching description", () => {
-		const objState: ObjectState = { state: { broken: true } };
+		const objState: ObjectState = { location: "room_a", state: { broken: true } };
 		expect(resolveObjectDescription(obj, objState)).toBe("A brass lamp.");
 	});
 
 	it("returns default for empty flags", () => {
-		const objState: ObjectState = { state: {} };
+		const objState: ObjectState = { location: "room_a", state: {} };
 		expect(resolveObjectDescription(obj, objState)).toBe("A brass lamp.");
 	});
 });
@@ -238,7 +235,7 @@ describe("buildParserContext", () => {
 		expect(ids).not.toContain("gem");
 	});
 
-	it("strips contains from scoped object state", () => {
+	it("excludes location from scoped object state", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 		const ctx = buildParserContext(world, state);

@@ -10,12 +10,10 @@ const world: World = {
 			id: "west_of_house",
 			name: "West of House",
 			descriptions: {
-				default:
-					"You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.",
+				default: "You are standing in an open field west of a white house, with a boarded front door.",
 			},
 			state: {},
 			exits: {},
-			contains: ["small_mailbox", "front_door"],
 		},
 	},
 	objects: {
@@ -24,6 +22,7 @@ const world: World = {
 			name: "small mailbox",
 			aliases: [],
 			type: "container",
+			location: "west_of_house",
 			state: { carriable: false },
 			descriptions: {
 				default: "A small mailbox, barely large enough for a few letters.",
@@ -34,6 +33,7 @@ const world: World = {
 			name: "front door",
 			aliases: [],
 			type: "door",
+			location: "west_of_house",
 			state: { open: false, carriable: false },
 			descriptions: {
 				default: "The front door of the white house. It is firmly boarded shut and cannot be opened.",

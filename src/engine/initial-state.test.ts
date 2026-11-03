@@ -25,6 +25,7 @@ describe("buildInitialState", () => {
 						name: "ghost",
 						aliases: [],
 						type: "actor",
+						location: "nonexistent_room",
 						state: { carriable: false },
 						descriptions: { default: "A ghost." },
 					},
@@ -34,9 +35,9 @@ describe("buildInitialState", () => {
 		});
 		it("returns error for double-owned object", () => {
 			const world = makeTestWorld();
-			world.rooms.room_a.contains = [...world.rooms.room_a.contains, "table"];
+			world.player.inventory.push("table");
 			expect(validateAllObjectsOwned(world)).toContainEqual(
-				expect.stringMatching(/Object "table" is in room.*but also in/),
+				expect.stringMatching(/Object "table" is in player inventory.*but also in/),
 			);
 		});
 	});
@@ -44,16 +45,6 @@ describe("buildInitialState", () => {
 	describe("validateContainment", () => {
 		it("returns empty for valid world", () => {
 			expect(validateContainment(makeTestWorld())).toEqual([]);
-		});
-		it("returns error for room containing unknown object", () => {
-			const world = makeTestWorld();
-			world.rooms.room_a.contains = [...world.rooms.room_a.contains, "nonexistent"];
-			expect(validateContainment(world)).toContainEqual('Room "room_a" contains unknown object "nonexistent"');
-		});
-		it("returns error for container containing unknown object", () => {
-			const world = makeTestWorld();
-			world.objects.chest.contains = ["nonexistent"];
-			expect(validateContainment(world)).toContainEqual('Object "chest" contains unknown object "nonexistent"');
 		});
 		it("returns error for player inventory referencing unknown object", () => {
 			const world = makeTestWorld();
@@ -97,44 +88,38 @@ describe("buildInitialState", () => {
 		expect(state.turn).toBe(0);
 	});
 
-	it("initialises room states with visited state and contains lists", () => {
+	it("initialises room states with visited state", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 
 		expect(state.rooms.room_a).toEqual({
-			contains: ["door", "lamp", "chest"],
 			state: { visited: false },
 		});
 		expect(state.rooms.room_b).toEqual({
-			contains: ["table"],
 			state: { visited: false },
 		});
 	});
 
-	it("initialises object states with state state", () => {
+	it("initialises object states with location and state", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 
 		expect(state.objects.door).toEqual({
+			location: "room_a",
 			state: { locked: true, open: false, carriable: false },
 		});
 		expect(state.objects.lamp).toEqual({
+			location: "room_a",
 			state: { lit: false, carriable: true },
 		});
-	});
-
-	it("includes contains list for container objects", () => {
-		const world = makeTestWorld();
-		const state = buildInitialState(world);
-
-		expect(state.objects.chest.contains).toEqual(["gem"]);
-	});
-
-	it("omits contains for non-container objects", () => {
-		const world = makeTestWorld();
-		const state = buildInitialState(world);
-
-		expect(state.objects.lamp.contains).toBeUndefined();
+		expect(state.objects.chest).toEqual({
+			location: "room_a",
+			state: { open: false, carriable: false },
+		});
+		expect(state.objects.gem).toEqual({
+			location: "chest",
+			state: { carriable: true },
+		});
 	});
 
 	it("initialises player state from world definition", () => {
@@ -149,9 +134,6 @@ describe("buildInitialState", () => {
 	it("copies arrays by value, not by reference", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
-
-		state.rooms.room_a.contains.push("new_item");
-		expect(world.rooms.room_a.contains).not.toContain("new_item");
 
 		state.player.inventory.push("new_weapon");
 		expect(world.player.inventory).not.toContain("new_weapon");
@@ -168,37 +150,13 @@ describe("buildInitialState", () => {
 					name: "ghost",
 					aliases: [],
 					type: "actor",
+					location: "nowhere",
 					state: { carriable: false },
 					descriptions: { default: "A ghost." },
 				},
 			},
 		});
-		// ghost is not in any room.contains, any object.contains, or player.inventory
 		expect(() => buildInitialState(world)).toThrow('Object "ghost" is not in any room, container, or player inventory');
-	});
-
-	// ─── Validation: containment consistency ─────────────────────────────────
-
-	it("rejects room listing object that is already in another room", () => {
-		const world = makeTestWorld();
-		// table is in room_b; also add to room_a
-		world.rooms.room_a.contains = [...world.rooms.room_a.contains, "table"];
-
-		expect(() => buildInitialState(world)).toThrow(/Object "table" is in room.*but also in/);
-	});
-
-	it("rejects containers listing unknown objects", () => {
-		const world = makeTestWorld();
-		world.objects.chest.contains = ["nonexistent"];
-
-		expect(() => buildInitialState(world)).toThrow('Object "chest" contains unknown object "nonexistent"');
-	});
-
-	it("rejects rooms listing unknown objects in contains", () => {
-		const world = makeTestWorld();
-		world.rooms.room_a.contains = [...world.rooms.room_a.contains, "nonexistent"];
-
-		expect(() => buildInitialState(world)).toThrow('Room "room_a" contains unknown object "nonexistent"');
 	});
 
 	// ─── Validation: player inventory ────────────────────────────────────────
@@ -266,40 +224,35 @@ describe("buildInitialState", () => {
 			expect(state.player.inventory).toEqual([]);
 		});
 
-		it("initialises all rooms with visited false and correct contains", () => {
+		it("initialises all rooms with visited false", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.rooms.great_hall).toEqual({
-				contains: ["brass_lantern", "cellar_door"],
 				state: { visited: false },
 			});
-			expect(state.rooms.garden.contains).toEqual(["gardener"]);
-			expect(state.rooms.library.contains).toEqual(["old_book", "alcove"]);
-			expect(state.rooms.tower_room.contains).toEqual(["wooden_chest"]);
-			expect(state.rooms.cellar.contains).toEqual(["stone_pedestal"]);
+			expect(state.rooms.garden).toEqual({ state: { visited: false } });
+			expect(state.rooms.library).toEqual({ state: { visited: false } });
+			expect(state.rooms.tower_room).toEqual({ state: { visited: false } });
+			expect(state.rooms.cellar).toEqual({ state: { visited: false } });
 		});
 
-		it("initialises objects with state", () => {
+		it("initialises objects with location and state", () => {
 			const state = buildInitialState(theGreatHall);
 
 			expect(state.objects.cellar_door).toEqual({
+				location: "great_hall",
 				state: { locked: true, open: false, carriable: false },
 			});
 			expect(state.objects.wooden_chest).toEqual({
+				location: "tower_room",
 				state: { open: false, carriable: false },
-				contains: ["gold_amulet"],
 			});
 			expect(state.objects.alcove).toEqual({
+				location: "library",
 				state: { revealed: false, carriable: false },
-				contains: ["rusty_key"],
 			});
-		});
-
-		it("omits contains for non-container objects", () => {
-			const state = buildInitialState(theGreatHall);
-
-			expect(state.objects.brass_lantern.contains).toBeUndefined();
-			expect(state.objects.gardener.contains).toBeUndefined();
+			expect(state.objects.gold_amulet.location).toBe("wooden_chest");
+			expect(state.objects.rusty_key.location).toBe("alcove");
 		});
 	});
 
@@ -317,41 +270,42 @@ describe("buildInitialState", () => {
 			expect(state.player.state).toEqual({ moves: 0, won: false });
 		});
 
-		it("initialises all rooms with visited false and correct contains", () => {
+		it("initialises all rooms with visited false", () => {
 			const state = buildInitialState(theForgottenManor);
 
 			expect(state.rooms.entrance_hall).toEqual({
-				contains: ["painting", "library_door", "compartment"],
 				state: { visited: false },
 			});
-			expect(state.rooms.library.contains).toEqual(["journal", "study_door", "bookshelf"]);
-			expect(state.rooms.garden.contains).toEqual(["stone_bench", "fountain"]);
-			expect(state.rooms.study.contains).toEqual(["oak_desk", "candle"]);
+			expect(state.rooms.library).toEqual({ state: { visited: false } });
+			expect(state.rooms.garden).toEqual({ state: { visited: false } });
+			expect(state.rooms.study).toEqual({ state: { visited: false } });
 		});
 
-		it("initialises objects with state", () => {
+		it("initialises objects with location and state", () => {
 			const state = buildInitialState(theForgottenManor);
 
 			expect(state.objects.library_door).toEqual({
+				location: "entrance_hall",
 				state: { locked: true, open: false, carriable: false },
 			});
 			expect(state.objects.compartment).toEqual({
+				location: "entrance_hall",
 				state: { open: false, discovered: false, carriable: false },
-				contains: ["brass_key"],
 			});
 			expect(state.objects.journal).toEqual({
+				location: "library",
 				state: { read: false, carriable: true },
-				contains: ["study_key"],
 			});
 			expect(state.objects.oak_desk).toEqual({
+				location: "study",
 				state: { examined: false, carriable: false },
 			});
 		});
 
-		it("study_key is in journal contains", () => {
+		it("study_key has location journal", () => {
 			const state = buildInitialState(theForgottenManor);
 
-			expect(state.objects.journal.contains).toEqual(["study_key"]);
+			expect(state.objects.study_key.location).toBe("journal");
 		});
 	});
 });

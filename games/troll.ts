@@ -20,7 +20,6 @@ const world: World = {
 			},
 			state: {},
 			exits: { east: { leads_to: "troll_cave" } },
-			contains: ["metal_sword", "wooden_sword"],
 		},
 		troll_cave: {
 			id: "troll_cave",
@@ -38,7 +37,6 @@ const world: World = {
 					locked_message: "The troll blocks your way north with a menacing snarl!",
 				},
 			},
-			contains: ["troll"],
 		},
 		treasure_room: {
 			id: "treasure_room",
@@ -49,7 +47,6 @@ const world: World = {
 			},
 			state: {},
 			exits: { south: { leads_to: "troll_cave" } },
-			contains: ["gold_coins"],
 		},
 	},
 	objects: {
@@ -61,6 +58,7 @@ const world: World = {
 				"knocked_out == true": "The troll lies unconscious on the ground, drooling slightly.",
 			},
 			type: "actor",
+			location: "troll_cave",
 			state: { alive: true, knocked_out: false, carriable: false },
 			aliases: [],
 		},
@@ -69,6 +67,7 @@ const world: World = {
 			name: "metal sword",
 			aliases: [],
 			type: "weapon",
+			location: "cellar",
 			state: { carriable: true },
 			descriptions: {
 				default: "A well-forged metal sword. Its edge gleams dangerously in the light.",
@@ -79,6 +78,7 @@ const world: World = {
 			name: "wooden sword",
 			aliases: ["training sword", "practice sword"],
 			type: "weapon",
+			location: "cellar",
 			state: { carriable: true },
 			descriptions: {
 				default: "A blunt training sword made of wood. It would barely bruise an apple.",
@@ -89,6 +89,7 @@ const world: World = {
 			name: "pile of gold coins",
 			aliases: ["treasure"],
 			type: "item",
+			location: "treasure_room",
 			state: { carriable: true },
 			descriptions: {
 				default: "A glittering pile of gold coins, each stamped with a strange rune.",
@@ -106,16 +107,11 @@ export default world;
 
 function isTrollNearby(state: GameState, world: World): boolean {
 	const currentRoom = state.player.current_room;
-	const troll = world.objects.troll;
+	const trollLocation = state.objects.troll?.location ?? world.objects.troll.location;
 
 	return (
-		world.rooms[currentRoom].contains?.includes(troll.id) ||
-		Object.values(world.rooms[currentRoom].exits).some((exit) => {
-			if (world.rooms[exit.leads_to].contains?.includes(troll.id)) {
-				return true;
-			}
-			return false;
-		})
+		trollLocation === currentRoom ||
+		Object.values(world.rooms[currentRoom].exits).some((exit) => exit.leads_to === trollLocation)
 	);
 }
 

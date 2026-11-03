@@ -9,11 +9,10 @@
 			"id": "west_of_house",
 			"name": "West of House",
 			"descriptions": {
-				"default": "You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here."
+				"default": "You are standing in an open field west of a white house, with a boarded front door."
 			},
 			"state": {},
-			"exits": {},
-			"contains": ["small_mailbox", "front_door", "welcome_mat"]
+			"exits": {}
 		}
 	},
 	"objects": {
@@ -22,6 +21,7 @@
 			"name": "small mailbox",
 			"aliases": [],
 			"type": "container",
+			"location": "west_of_house",
 			"state": { "carriable": false },
 			"descriptions": {
 				"default": "There is a small mailbox here."
@@ -32,6 +32,7 @@
 			"name": "welcome mat",
 			"aliases": [],
 			"type": "item",
+			"location": "west_of_house",
 			"state": { "carriable": true },
 			"descriptions": {
 				"default": "A rubber mat saying 'Welcome to Zork!' lies by the door."
@@ -42,6 +43,7 @@
 			"name": "front door",
 			"aliases": [],
 			"type": "door",
+			"location": "west_of_house",
 			"state": { "open": false, "carriable": false },
 			"descriptions": {
 				"default": "The front door of the white house. It is firmly boarded shut and cannot be opened.",
