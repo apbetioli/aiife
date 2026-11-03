@@ -7,6 +7,7 @@ interface ModelConfig {
 	anthropicModel: string;
 	openaiModel: string;
 	ollamaModel: string;
+	googleModel: string;
 }
 
 function resolveConfig(prefix: string): ModelConfig {
@@ -15,6 +16,7 @@ function resolveConfig(prefix: string): ModelConfig {
 		anthropicModel: process.env[`${prefix}_ANTHROPIC_MODEL`] ?? "claude-haiku-4-5-20251001",
 		openaiModel: process.env[`${prefix}_OPENAI_MODEL`] ?? "gpt-4o-mini",
 		ollamaModel: process.env[`${prefix}_OLLAMA_MODEL`] ?? "llama3.1",
+		googleModel: process.env[`${prefix}_GOOGLEAI_MODEL`] ?? "gemini-3.8-flash",
 	};
 }
 
@@ -47,6 +49,8 @@ function getModelId(config: ModelConfig): string {
 			return config.openaiModel;
 		case "ollama":
 			return config.ollamaModel;
+		case "google":
+			return config.googleModel;
 		default:
 			return `${config.provider}:unknown`;
 	}
