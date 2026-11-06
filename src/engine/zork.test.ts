@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import world, { setup as zorkSetup } from "../../games/zork-one";
+import { world, setup as zorkSetup } from "../../games/zork-one";
 import { WorldSchema } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
@@ -14,7 +14,7 @@ describe("Zork One world definition and rules", () => {
 		const bus = new EventBus();
 		const registry = new ActionRegistry();
 		registerCoreActions(bus, registry);
-		zorkSetup(bus, registry);
+		zorkSetup?.(bus, registry);
 		const state = buildInitialState(world);
 		return { bus, state };
 	}

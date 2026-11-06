@@ -174,6 +174,6 @@ describe("registerAction", () => {
 		});
 
 		expect(feedback).toBe("A peaceful warmth settles in your chest.");
-		expect(engine.state.player.state.blessed).toBe(true);
+		expect(engine.save().state.player.state.blessed).toBe(true);
 	});
 });

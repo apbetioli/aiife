@@ -1,6 +1,5 @@
-import type { GameSetup } from "../src/engine/rules";
 import { PRIORITY } from "../src/engine/rules/priorities";
-import type { World } from "../src/world/types";
+import { defineGame, type World } from "../src/world";
 
 const world: World = {
 	id: "zork-one",
@@ -73,16 +72,21 @@ const world: World = {
 	},
 };
 
-export default world;
+const game = defineGame({
+	world,
+	setup(bus) {
+		bus.on(
+			"open",
+			"front_door",
+			(event) => {
+				event.stop();
+				return "The door cannot be opened.";
+			},
+			{ priority: PRIORITY.GUARD },
+		);
+	},
+});
 
-export const setup: GameSetup = (bus) => {
-	bus.on(
-		"open",
-		"front_door",
-		(event) => {
-			event.stop();
-			return "The door cannot be opened.";
-		},
-		{ priority: PRIORITY.GUARD },
-	);
-};
+export default game;
+export { world };
+export const setup = game.setup;
