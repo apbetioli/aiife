@@ -1,7 +1,7 @@
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
-import { isInScope } from "./mutators";
+import { ensureVisited, isInScope } from "./mutators";
 import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
@@ -62,6 +62,7 @@ export class GameEngine {
 
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
 		this.state = lookResult.state;
+		ensureVisited(this.state, this.world.start_room);
 
 		return [...startResult.feedback, ...lookResult.feedback].join("\n");
 	}

@@ -30,10 +30,10 @@ export const go: ActionDef<z.infer<typeof directionSchema>> = {
 		const from = state.player.current_room;
 		const to = exit.leads_to;
 		movePlayer(state, to);
-		ensureVisited(state, to);
 		const exitFeedback = runAction(bus, world, state, "exit", { room: from });
 		const enterFeedback = runAction(bus, world, state, "enter", { room: to });
 		const lookFeedback = runAction(bus, world, state, "look", {});
+		ensureVisited(state, to);
 		return [...exitFeedback, ...enterFeedback, ...lookFeedback];
 	},
 };

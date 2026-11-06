@@ -296,7 +296,13 @@ describe("executeAction", () => {
 
 		expect(result.stopped).toBe(false);
 		expect(result.state.player.current_room).toBe("room_b");
+		expect(result.feedback.join("\n")).toContain("You are in room B.");
+		expect(result.feedback.join("\n")).not.toContain("Room B again.");
 		expect(result.state.rooms.room_b.state.visited).toBe(true);
+
+		// Looking after entering now shows the visited description
+		const lookAgain = executeAction(bus, world, result.state, "look", {});
+		expect(lookAgain.feedback.join("\n")).toContain("Room B again.");
 	});
 
 	it("go blocked when exit condition fails", () => {
