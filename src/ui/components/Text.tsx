@@ -1,23 +1,40 @@
-import { Text, type TextProps } from "ink";
+import { Text as InkText, type TextProps } from "ink";
 
-export default function Texto(props: TextProps) {
+export default function Text(props: TextProps) {
 	const { children, ...rest } = props;
 
 	if (typeof children !== "string") {
-		return <Text {...rest}>{children}</Text>;
+		return <InkText {...rest}>{children}</InkText>;
 	}
 
-	const formatted = children.split(/(\*\*(?:.*?)\*\*)/).map((part, index) => {
-		const key = `${index}-${part.slice(0, 10)}`;
-		if (part.startsWith("**")) {
+	// Tokenize markdown formatting: **bold**, *italic*, `code`
+	const tokens = children.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/);
+
+	const formatted = tokens.map((part, index) => {
+		const key = `token-${index}`;
+		if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
 			return (
-				<Text bold key={key} color="white">
-					{part.replaceAll("**", "")}
-				</Text>
+				<InkText bold key={key} color="white">
+					{part.slice(2, -2)}
+				</InkText>
 			);
 		}
-		return <Text key={key}>{part}</Text>;
+		if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+			return (
+				<InkText italic key={key}>
+					{part.slice(1, -1)}
+				</InkText>
+			);
+		}
+		if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+			return (
+				<InkText color="yellow" key={key}>
+					{part.slice(1, -1)}
+				</InkText>
+			);
+		}
+		return <InkText key={key}>{part}</InkText>;
 	});
 
-	return <Text {...rest}>{formatted}</Text>;
+	return <InkText {...rest}>{formatted}</InkText>;
 }
