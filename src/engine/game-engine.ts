@@ -1,3 +1,4 @@
+import * as fs from "node:fs";
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
@@ -83,6 +84,34 @@ export class GameEngine {
 	runAction(intent: RecognizedIntent): string {
 		if (intent.action === "undo") {
 			return this.undo();
+		}
+
+		if (intent.action === "save") {
+			const slot = (intent.slot ?? "default").trim();
+			const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
+			const filename = `.save-${this.world.id}-${sanitizedSlot}.json`;
+			try {
+				fs.writeFileSync(filename, JSON.stringify(this.save(), null, 2), "utf-8");
+				return `Game saved to slot "${sanitizedSlot}".`;
+			} catch (e) {
+				return `Failed to save game: ${e instanceof Error ? e.message : String(e)}`;
+			}
+		}
+
+		if (intent.action === "restore") {
+			const slot = (intent.slot ?? "default").trim();
+			const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
+			const filename = `.save-${this.world.id}-${sanitizedSlot}.json`;
+			try {
+				if (!fs.existsSync(filename)) {
+					return `No save file found for slot "${sanitizedSlot}".`;
+				}
+				const content = fs.readFileSync(filename, "utf-8");
+				const data = JSON.parse(content);
+				return this.restore(data);
+			} catch (e) {
+				return `Failed to restore game: ${e instanceof Error ? e.message : String(e)}`;
+			}
 		}
 
 		// Conversational response — no game action

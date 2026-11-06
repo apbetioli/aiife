@@ -229,4 +229,49 @@ describe("registerAction", () => {
 		expect(undoFeedback).toContain("Room A");
 		expect(engine.save().state.player.current_room).toBe("room_a");
 	});
+
+	it("executes save and restore via runAction to persist state to disk", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		engine.runAction({
+			action: "go",
+			direction: "south",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(engine.save().state.player.current_room).toBe("room_b");
+
+		const saveFeedback = engine.runAction({
+			action: "save",
+			slot: "testslot",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(saveFeedback).toContain('Game saved to slot "testslot".');
+
+		// Move to room_c
+		engine.runAction({
+			action: "go",
+			direction: "east",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+
+		const restoreFeedback = engine.runAction({
+			action: "restore",
+			slot: "testslot",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(restoreFeedback).toContain("Game restored.");
+		expect(engine.save().state.player.current_room).toBe("room_b");
+	});
 });

@@ -21,6 +21,8 @@ export const help: ActionDef<z.infer<typeof emptySchema>> = {
 			"  talk <person>     - Talk to someone",
 			"  inventory (i)     - Check what you're carrying",
 			"  undo               - Revert the previous turn",
+			"  save [slot]        - Save game progress to disk",
+			"  restore [slot]     - Restore saved game progress from disk",
 			"  help (h)           - Show this list",
 			"  quit (q)          - End the game",
 		];

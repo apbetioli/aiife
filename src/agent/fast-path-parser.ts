@@ -111,5 +111,31 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Save
+	const saveMatch = trimmed.match(/^save(?:\s+([a-zA-Z0-9_-]+))?$/);
+	if (saveMatch) {
+		return {
+			action: "save",
+			slot: saveMatch[1] ?? "default",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Restore / Load
+	const restoreMatch = trimmed.match(/^(?:restore|load)(?:\s+([a-zA-Z0-9_-]+))?$/);
+	if (restoreMatch) {
+		return {
+			action: "restore",
+			slot: restoreMatch[1] ?? "default",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	return null;
 }

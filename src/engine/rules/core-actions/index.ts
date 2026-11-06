@@ -19,6 +19,8 @@ import { move } from "./move";
 import { open } from "./open";
 import { quit } from "./quit";
 import { respond } from "./respond";
+import { restoreAction as restore } from "./restore";
+import { saveAction as save } from "./save";
 import { take } from "./take";
 import { talk } from "./talk";
 import { tick } from "./tick";
@@ -46,6 +48,8 @@ export const coreActionDefinitions = {
 	inventory,
 	help,
 	undo,
+	save,
+	restore,
 	quit,
 	respond,
 	tick,

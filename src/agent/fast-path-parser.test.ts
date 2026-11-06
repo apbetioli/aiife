@@ -44,6 +44,24 @@ describe("tryDeterministicIntent", () => {
 		expect(tryDeterministicIntent("h")?.action).toBe("help");
 		expect(tryDeterministicIntent("q")?.action).toBe("quit");
 		expect(tryDeterministicIntent("undo")?.action).toBe("undo");
+		expect(tryDeterministicIntent("save")?.action).toBe("save");
+		expect(tryDeterministicIntent("save slot1")).toEqual({
+			action: "save",
+			slot: "slot1",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("restore")?.action).toBe("restore");
+		expect(tryDeterministicIntent("load slot2")).toEqual({
+			action: "restore",
+			slot: "slot2",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
 	});
 
 	it("returns null for natural language or complex commands", () => {
