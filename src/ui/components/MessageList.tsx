@@ -1,4 +1,4 @@
-import { Box } from "ink";
+import { Box, Static } from "ink";
 import type { ReactNode } from "react";
 import { IS_DEBUG } from "../helpers";
 import Text from "./Text";
@@ -33,13 +33,15 @@ function renderMessageContent(message: Message): ReactNode {
 }
 
 export function MessageList({ messages }: MessageListProps) {
+	const visibleMessages = messages.filter((message) => message.role !== "tool" || IS_DEBUG);
+
 	return (
-		<Box flexDirection="column" gap={1}>
-			{messages
-				.filter((message) => message.role !== "tool" || IS_DEBUG)
-				.map((message) => (
-					<Box key={message.id}>{renderMessageContent(message)}</Box>
-				))}
-		</Box>
+		<Static items={visibleMessages}>
+			{(message) => (
+				<Box key={message.id ?? message.content} marginBottom={1}>
+					{renderMessageContent(message)}
+				</Box>
+			)}
+		</Static>
 	);
 }
