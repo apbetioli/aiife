@@ -5,7 +5,8 @@ import type { AgentCallbacks } from "../types";
 import { filterCompatibleMessages } from "./system/filterMessages";
 import { buildIntentSystemPrompt as buildIntentRecognitionSystemPrompt } from "./system/intent-recognition-prompt";
 import { NARRATION_SYSTEM_PROMPT } from "./system/narration-prompt";
-import { IntentRecognitionSchema } from "./types";
+import { tryDeterministicIntent } from "./fast-path-parser";
+import { IntentRecognitionSchema, type RecognizedIntent } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 
@@ -25,25 +26,34 @@ export class GameAgent {
 	async run(input: string, conversationHistory: ModelMessage[], callbacks: AgentCallbacks): Promise<ModelMessage[]> {
 		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
 
-		const meta = this.engine.getIntentMeta();
-		const system = buildIntentRecognitionSystemPrompt(this.engine.getParserContext(), Object.keys(meta), meta);
+		// Fast-path standard unambiguous commands to bypass LLM intent extraction
+		const fastIntent = tryDeterministicIntent(input);
+		let intent: RecognizedIntent;
 
-		const { output: intent, usage: intentUsage } = await generateText({
-			model: this.model,
-			output: Output.object({ schema: IntentRecognitionSchema }),
-			messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
-			abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
-			experimental_telemetry: {
-				isEnabled: true,
-				tracer: getTracer(),
-			},
-		});
+		if (fastIntent) {
+			intent = fastIntent;
+		} else {
+			const meta = this.engine.getIntentMeta();
+			const system = buildIntentRecognitionSystemPrompt(this.engine.getParserContext(), Object.keys(meta), meta);
+
+			const { output: llmIntent, usage: intentUsage } = await generateText({
+				model: this.model,
+				output: Output.object({ schema: IntentRecognitionSchema }),
+				messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
+				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
+				experimental_telemetry: {
+					isEnabled: true,
+					tracer: getTracer(),
+				},
+			});
+
+			intent = llmIntent;
+			if (intentUsage) {
+				callbacks.onTokenUsage?.(intentUsage);
+			}
+		}
 
 		const result = this.engine.runAction(intent);
-
-		if (intentUsage) {
-			callbacks.onTokenUsage?.(intentUsage);
-		}
 		const outputText = await this.narrate(result, input, callbacks);
 
 		callbacks.onComplete(outputText);
