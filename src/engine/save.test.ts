@@ -27,7 +27,7 @@ describe("save / load", () => {
 		const state = buildInitialState(makeTestWorld());
 		state.turn = 5;
 		state.player.current_room = "room_b";
-		state.player.inventory = ["sword", "gem"];
+		state.objects.gem.location = "inventory";
 		state.objects.door.state.locked = false;
 		state.rooms.room_a.state.visited = true;
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import zorkOne from "../../games/zork-one";
 import { WorldSchema } from "../world/types";
 import { buildInitialState } from "./initial-state";
+import { isInInventory } from "./mutators";
 import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
@@ -86,7 +87,7 @@ describe("Zork One world definition and rules", () => {
 		// Can take the leaflet
 		const takeResult = executeAction(bus, world, openResult.state, "take", { objects: ["leaflet"] });
 		expect(takeResult.stopped).toBe(false);
-		expect(takeResult.state.player.inventory).toContain("leaflet");
+		expect(isInInventory(takeResult.state, "leaflet")).toBe(true);
 
 		// Can examine / read the leaflet
 		const readResult = executeAction(bus, world, takeResult.state, "examine", { objects: ["leaflet"] });

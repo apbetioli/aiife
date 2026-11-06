@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { getInventory } from "../../mutators";
 import { emptySchema } from "./schemas";
 import type { ActionDef } from "./types";
 
@@ -12,11 +13,12 @@ export const inventory: ActionDef<z.infer<typeof emptySchema>> = {
 			event.stop();
 			return "You have no possessions.";
 		}
-		if (state.player.inventory.length === 0) {
+		const items = getInventory(state);
+		if (items.length === 0) {
 			event.stop();
 			return "You aren't carrying anything.";
 		}
-		const names = state.player.inventory.map((id) => world.objects[id]?.name ?? id);
+		const names = items.map((id) => world.objects[id]?.name ?? id);
 		return `You are carrying: ${names.join(", ")}.`;
 	},
 };

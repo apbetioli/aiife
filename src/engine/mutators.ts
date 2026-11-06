@@ -21,17 +21,12 @@ export function isInRoom(state: GameState, objectId: string): boolean {
 }
 
 export function isInInventory(state: GameState, objectId: string): boolean {
-	return state.objects[objectId]?.location === "inventory" || state.player.inventory.includes(objectId);
+	return state.objects[objectId]?.location === "inventory";
 }
 
 /** Returns all object IDs currently in the player's inventory based on object locations. */
 export function getInventory(state: GameState): string[] {
 	return Object.keys(state.objects).filter((id) => state.objects[id]?.location === "inventory");
-}
-
-/** Synchronizes state.player.inventory to strictly match objects whose location is "inventory". */
-export function syncInventory(state: GameState): void {
-	state.player.inventory = getInventory(state);
 }
 
 /**
@@ -57,7 +52,7 @@ export function findOpenContainerInRoom(state: GameState, objectId: string): str
 		}
 
 		const nextLoc: string = curr.location;
-		if (nextLoc === state.player.current_room || nextLoc === "inventory" || state.player.inventory.includes(currId)) {
+		if (nextLoc === state.player.current_room || nextLoc === "inventory") {
 			return immediateContainerId;
 		}
 
@@ -87,7 +82,6 @@ export function moveObjectFromRoomToInventory(state: GameState, objectId: string
 		throw new Error(`Object "${objectId}" is not in room "${roomId}"`);
 	}
 	state.objects[objectId].location = "inventory";
-	syncInventory(state);
 }
 
 export function moveObjectFromInventoryToRoom(state: GameState, objectId: string, roomId: string): void {
@@ -95,7 +89,6 @@ export function moveObjectFromInventoryToRoom(state: GameState, objectId: string
 		throw new Error(`Object "${objectId}" is not in inventory`);
 	}
 	state.objects[objectId].location = roomId;
-	syncInventory(state);
 }
 
 export function moveObjectFromContainerToInventory(state: GameState, objectId: string, containerId: string): void {
@@ -103,7 +96,6 @@ export function moveObjectFromContainerToInventory(state: GameState, objectId: s
 		throw new Error(`Object "${objectId}" is not in container "${containerId}"`);
 	}
 	state.objects[objectId].location = "inventory";
-	syncInventory(state);
 }
 
 export function moveObjectFromInventoryToContainer(state: GameState, objectId: string, containerId: string): void {
@@ -111,7 +103,6 @@ export function moveObjectFromInventoryToContainer(state: GameState, objectId: s
 		throw new Error(`Object "${objectId}" is not in inventory`);
 	}
 	state.objects[objectId].location = containerId;
-	syncInventory(state);
 }
 
 export function setObjectState(

@@ -9,6 +9,7 @@ import {
 	validateContainment,
 	validateExitConditions,
 } from "./initial-state";
+import { getInventory } from "./mutators";
 
 const theForgottenManor = WorldSchema.parse(theForgottenManorRaw);
 const theGreatHall = theGreatHallGame.world;
@@ -131,16 +132,16 @@ describe("buildInitialState", () => {
 		const state = buildInitialState(world);
 
 		expect(state.player.current_room).toBe("room_a");
-		expect(state.player.inventory).toEqual(["sword"]);
+		expect(getInventory(state)).toEqual(["sword"]);
 		expect(state.player.state).toEqual({ moves: 0 });
 	});
 
-	it("copies arrays by value, not by reference", () => {
+	it("copies state by value, not by reference", () => {
 		const world = makeTestWorld();
 		const state = buildInitialState(world);
 
-		state.player.inventory.push("new_weapon");
-		expect(world.player.inventory).not.toContain("new_weapon");
+		state.player.state.moves = 99;
+		expect(world.player.state.moves).toBe(0);
 	});
 
 	// ─── Validation: object placement ────────────────────────────────────────
@@ -225,7 +226,7 @@ describe("buildInitialState", () => {
 			expect(state.version).toBe("1.0.0");
 			expect(state.turn).toBe(0);
 			expect(state.player.current_room).toBe("great_hall");
-			expect(state.player.inventory).toEqual([]);
+			expect(getInventory(state)).toEqual([]);
 		});
 
 		it("initialises all rooms with visited false", () => {
@@ -270,7 +271,7 @@ describe("buildInitialState", () => {
 			expect(state.version).toBe("1.0.0");
 			expect(state.turn).toBe(0);
 			expect(state.player.current_room).toBe("entrance_hall");
-			expect(state.player.inventory).toEqual([]);
+			expect(getInventory(state)).toEqual([]);
 			expect(state.player.state).toEqual({ moves: 0, won: false });
 		});
 

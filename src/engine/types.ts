@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PlayerSchema, StateSchema } from "../world/types";
+import { StateSchema } from "../world/types";
 
 // ─── Game State Schema ────────────────────────────────────────────────────────
 
@@ -12,11 +12,16 @@ const ObjectStateSchema = z.object({
 	state: StateSchema.default({}),
 });
 
+const PlayerStateSchema = z.object({
+	current_room: z.string(),
+	state: StateSchema.default({}),
+});
+
 export const GameStateSchema = z.object({
 	world_id: z.string(),
 	version: z.string(),
 	turn: z.number(),
-	player: PlayerSchema,
+	player: PlayerStateSchema,
 	rooms: z.record(z.string(), RoomStateSchema),
 	objects: z.record(z.string(), ObjectStateSchema),
 });
@@ -26,3 +31,4 @@ export const GameStateSchema = z.object({
 export type GameState = z.infer<typeof GameStateSchema>;
 export type RoomState = z.infer<typeof RoomStateSchema>;
 export type ObjectState = z.infer<typeof ObjectStateSchema>;
+export type PlayerState = z.infer<typeof PlayerStateSchema>;

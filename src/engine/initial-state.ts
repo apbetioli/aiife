@@ -139,21 +139,17 @@ export function buildInitialState(world: World): GameState {
 	}
 
 	// ── 4. Build player state ──────────────────────────────────────────────
-	const inventory = [...world.player.inventory];
-	for (const [objId, obj] of Object.entries(world.objects)) {
-		if (obj.location === "inventory" && !inventory.includes(objId)) {
-			inventory.push(objId);
-		}
-	}
-	for (const invId of inventory) {
-		if (objects[invId]) {
-			objects[invId].location = "inventory";
+	// Ensure any items listed in world.player.inventory have location: "inventory"
+	if (world.player.inventory) {
+		for (const invId of world.player.inventory) {
+			if (objects[invId]) {
+				objects[invId].location = "inventory";
+			}
 		}
 	}
 
 	const player: GameState["player"] = {
 		current_room: world.player.current_room,
-		inventory,
 		state: { ...world.player.state },
 	};
 

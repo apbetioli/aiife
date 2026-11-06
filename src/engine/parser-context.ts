@@ -8,7 +8,7 @@ import {
 	type ScopedObject,
 	type World,
 } from "../world/types";
-import { findOpenContainerInRoom } from "./mutators";
+import { findOpenContainerInRoom, getInventory } from "./mutators";
 import type { GameState, ObjectState, RoomState } from "./types";
 
 // ─── Condition Evaluator ──────────────────────────────────────────────────────
@@ -206,7 +206,7 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 		});
 	}
 
-	for (const objId of state.player.inventory) {
+	for (const objId of getInventory(state)) {
 		const worldObj = world.objects[objId];
 		const objState = state.objects[objId];
 

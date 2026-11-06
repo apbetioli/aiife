@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { World } from "../../world/types";
 import { makeTestWorld } from "../__fixtures__/test-world";
 import { buildInitialState } from "../initial-state";
-import { immutable, setObjectState } from "../mutators";
+import { getInventory, immutable, isInInventory, setObjectState } from "../mutators";
 import { registerCoreActions } from "./core-actions";
 import { executeAction } from "./executor";
 import { ActionRegistry, EventBus } from "./index";
@@ -26,7 +26,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.stopped).toBe(false);
-		expect(result.state.player.inventory).toContain("lamp");
+		expect(isInInventory(result.state, "lamp")).toBe(true);
 		expect(result.state.objects.lamp.location).toBe("inventory");
 	});
 
@@ -43,8 +43,8 @@ describe("executeAction", () => {
 		});
 
 		expect(result.stopped).toBe(false);
-		expect(result.state.player.inventory).toContain("lamp");
-		expect(result.state.player.inventory).toContain("gem");
+		expect(isInInventory(result.state, "lamp")).toBe(true);
+		expect(isInInventory(result.state, "gem")).toBe(true);
 		expect(result.state.objects.lamp.location).toBe("inventory");
 		expect(result.state.objects.gem.location).toBe("inventory");
 	});
@@ -80,7 +80,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.stopped).toBe(false);
-		expect(result.state.player.inventory).not.toContain("sword");
+		expect(isInInventory(result.state, "sword")).toBe(false);
 		expect(result.state.objects.sword.location).toBe("room_a");
 	});
 
@@ -89,16 +89,16 @@ describe("executeAction", () => {
 		// Put sword and lamp in inventory: take lamp first
 		let s = state;
 		s = executeAction(bus, world, s, "take", { objects: ["lamp"] }).state;
-		expect(s.player.inventory).toContain("sword");
-		expect(s.player.inventory).toContain("lamp");
+		expect(isInInventory(s, "sword")).toBe(true);
+		expect(isInInventory(s, "lamp")).toBe(true);
 
 		const result = executeAction(bus, world, s, "drop", {
 			objects: ["sword", "lamp"],
 		});
 
 		expect(result.stopped).toBe(false);
-		expect(result.state.player.inventory).not.toContain("sword");
-		expect(result.state.player.inventory).not.toContain("lamp");
+		expect(isInInventory(result.state, "sword")).toBe(false);
+		expect(isInInventory(result.state, "lamp")).toBe(false);
 		expect(result.state.objects.sword.location).toBe("room_a");
 		expect(result.state.objects.lamp.location).toBe("room_a");
 	});
@@ -114,7 +114,7 @@ describe("executeAction", () => {
 		});
 
 		expect(result.stopped).toBe(false);
-		expect(result.state.player.inventory).toHaveLength(0);
+		expect(getInventory(result.state)).toHaveLength(0);
 		expect(result.state.objects.sword.location).toBe("room_a");
 		expect(result.state.objects.lamp.location).toBe("room_a");
 	});
@@ -415,7 +415,10 @@ describe("executeAction", () => {
 		// Remove sword from inventory
 		state = {
 			...state,
-			player: { ...state.player, inventory: [] },
+			objects: {
+				...state.objects,
+				sword: { ...state.objects.sword, location: "room_b" },
+			},
 		};
 
 		const result = executeAction(bus, world, state, "inventory", {});
