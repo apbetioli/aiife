@@ -1,4 +1,5 @@
 import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 
@@ -31,6 +32,8 @@ function createModelFromConfig(config: ModelConfig): LanguageModel {
 				baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1",
 				apiKey: "ollama",
 			}).chat(config.ollamaModel);
+		case "google":
+			return google(config.googleModel);
 		default:
 			throw new Error(`Unknown provider: ${config.provider}`);
 	}
