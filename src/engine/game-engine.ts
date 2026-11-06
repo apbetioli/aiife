@@ -95,10 +95,15 @@ export class GameEngine {
 			return "You don't see that here.";
 		}
 
-		this.pushHistory();
+		const prevState = this.state;
 		const result = executeUntrustedAction(this.bus, this.registry, this.world, this.state, action, params);
 		this.state = result.state;
 
+		if (result.stopped) {
+			return result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
+		}
+
+		this.pushHistory(prevState);
 		const tickResult = executeAction(this.bus, this.world, this.state, "tick", {});
 		this.state = tickResult.state;
 
@@ -113,6 +118,7 @@ export class GameEngine {
 		}
 		this.state = prev;
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
+		this.state = lookResult.state;
 		return lookResult.feedback.join("\n");
 	}
 
@@ -125,9 +131,10 @@ export class GameEngine {
 		if (restored.world_id !== this.world.id) {
 			return `Save is for "${restored.world_id}", but current game is "${this.world.id}".`;
 		}
-		this.pushHistory();
+		this.pushHistory(this.state);
 		this.state = restored;
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
+		this.state = lookResult.state;
 		return `Game restored.\n${lookResult.feedback.join("\n")}`;
 	}
 
@@ -135,8 +142,8 @@ export class GameEngine {
 		return this.state.player.state.quit === true;
 	}
 
-	private pushHistory(): void {
-		this.history.push(structuredClone(this.state));
+	private pushHistory(stateToSave: GameState = this.state): void {
+		this.history.push(structuredClone(stateToSave));
 		if (this.history.length > MAX_UNDO_HISTORY) {
 			this.history.shift();
 		}

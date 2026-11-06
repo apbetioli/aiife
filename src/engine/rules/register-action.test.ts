@@ -176,4 +176,32 @@ describe("registerAction", () => {
 		expect(feedback).toBe("A peaceful warmth settles in your chest.");
 		expect(engine.save().state.player.state.blessed).toBe(true);
 	});
+
+	it("does not advance tick or moves when action is stopped", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world, (bus) => {
+			bus.on(
+				"open",
+				"door",
+				(event) => {
+					event.stop();
+					return "The door is jammed shut.";
+				},
+				{ priority: 50 },
+			);
+		});
+
+		const movesBefore = (engine.save().state.player.state.moves as number) ?? 0;
+		const feedback = engine.runAction({
+			action: "open",
+			direction: null,
+			objects: ["door"],
+			preposition: null,
+			message: null,
+		});
+
+		expect(feedback).toBe("The door is jammed shut.");
+		const movesAfter = (engine.save().state.player.state.moves as number) ?? 0;
+		expect(movesAfter).toBe(movesBefore);
+	});
 });
