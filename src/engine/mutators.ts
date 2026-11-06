@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import type { GameState } from "./types";
+import type { GameState, ObjectState } from "./types";
 
 /**
  * State helpers and mutators.
@@ -24,17 +24,36 @@ export function isInInventory(state: GameState, objectId: string): boolean {
 	return state.objects[objectId]?.location === "inventory" || state.player.inventory.includes(objectId);
 }
 
-/** Returns the container ID if objectId is inside an open container in the current room or carried in inventory. */
+/**
+ * Returns the immediate container ID if objectId is inside an open container hierarchy
+ * located in the current room or carried in inventory.
+ */
 export function findOpenContainerInRoom(state: GameState, objectId: string): string | undefined {
-	const loc = state.objects[objectId]?.location;
-	if (loc && state.objects[loc]) {
-		const container = state.objects[loc];
-		const inRoom = container.location === state.player.current_room;
-		const inInventory = container.location === "inventory" || state.player.inventory.includes(loc);
-		if (container.state.open && (inRoom || inInventory)) {
-			return loc;
-		}
+	const immediateContainerId = state.objects[objectId]?.location;
+	if (!immediateContainerId || !state.objects[immediateContainerId]) {
+		return undefined;
 	}
+
+	const visited = new Set<string>();
+	let currId: string | undefined = immediateContainerId;
+
+	while (currId && state.objects[currId]) {
+		if (visited.has(currId)) break;
+		visited.add(currId);
+
+		const curr: ObjectState = state.objects[currId];
+		if (curr.state.open !== true) {
+			return undefined;
+		}
+
+		const nextLoc: string = curr.location;
+		if (nextLoc === state.player.current_room || nextLoc === "inventory" || state.player.inventory.includes(currId)) {
+			return immediateContainerId;
+		}
+
+		currId = nextLoc;
+	}
+
 	return undefined;
 }
 

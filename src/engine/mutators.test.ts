@@ -3,9 +3,11 @@ import { makeTestWorld } from "./__fixtures__/test-world";
 import { buildInitialState } from "./initial-state";
 import {
 	ensureVisited,
+	findOpenContainerInRoom,
 	immutable,
 	isInInventory,
 	isInRoom,
+	isInScope,
 	moveObjectFromContainerToInventory,
 	moveObjectFromInventoryToContainer,
 	moveObjectFromInventoryToRoom,
@@ -291,6 +293,37 @@ describe("mutators", () => {
 
 			expect(state.rooms.room_a.state.visited).toBe(false);
 			expect(next.rooms.room_a.state.visited).toBe(true);
+		});
+	});
+
+	// ─── Nested Containers & Scope ───────────────────────────────────────────
+
+	describe("nested containers in scope", () => {
+		it("finds objects inside nested open containers", () => {
+			const state = freshState();
+			// chest is in room_a. Put pouch inside chest, gem inside pouch.
+			state.objects.chest.location = "room_a";
+			state.objects.chest.state.open = true;
+
+			state.objects.pouch = {
+				location: "chest",
+				state: { open: true },
+			};
+			state.objects.gem.location = "pouch";
+
+			expect(findOpenContainerInRoom(state, "gem")).toBe("pouch");
+			expect(isInScope(state, "gem")).toBe(true);
+
+			// If outer chest is closed, gem is out of scope
+			state.objects.chest.state.open = false;
+			expect(findOpenContainerInRoom(state, "gem")).toBeUndefined();
+			expect(isInScope(state, "gem")).toBe(false);
+
+			// If inner pouch is closed, gem is out of scope
+			state.objects.chest.state.open = true;
+			state.objects.pouch.state.open = false;
+			expect(findOpenContainerInRoom(state, "gem")).toBeUndefined();
+			expect(isInScope(state, "gem")).toBe(false);
 		});
 	});
 });
