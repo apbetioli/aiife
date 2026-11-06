@@ -11,7 +11,10 @@ export interface Message {
 
 interface MessageListProps {
 	messages: Message[];
+	header?: ReactNode;
 }
+
+type StaticItem = { id: string; type: "header" } | { id: string; type: "message"; message: Message };
 
 function renderMessageContent(message: Message): ReactNode {
 	switch (message.role) {
@@ -32,14 +35,23 @@ function renderMessageContent(message: Message): ReactNode {
 	}
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({ messages, header }: MessageListProps) {
 	const visibleMessages = messages.filter((message) => message.role !== "tool" || IS_DEBUG);
 
+	const items: StaticItem[] = [
+		...(header ? [{ id: "__header__", type: "header" as const }] : []),
+		...visibleMessages.map((message, index) => ({
+			id: message.id ?? `msg-${index}-${message.content}`,
+			type: "message" as const,
+			message,
+		})),
+	];
+
 	return (
-		<Static items={visibleMessages}>
-			{(message) => (
-				<Box key={message.id ?? message.content} marginBottom={1}>
-					{renderMessageContent(message)}
+		<Static items={items}>
+			{(item) => (
+				<Box key={item.id} marginBottom={1}>
+					{item.type === "header" ? header : renderMessageContent(item.message)}
 				</Box>
 			)}
 		</Static>

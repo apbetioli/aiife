@@ -19,16 +19,18 @@ export function App({ world, setup }: Props) {
 
 	const isThinking = isLoading && !streamingText;
 
+	const header = (
+		<Box>
+			<Text bold color="magenta">
+				🤖 Hi, I'm the Dungeon Master.
+			</Text>
+			<Text dimColor> (type "quit" to quit)</Text>
+		</Box>
+	);
+
 	return (
 		<Box flexDirection="column" gap={1}>
-			<Box>
-				<Text bold color="magenta">
-					🤖 Hi, I'm the Dungeon Master.
-				</Text>
-				<Text dimColor> (type "quit" to quit)</Text>
-			</Box>
-
-			<MessageList messages={messages} />
+			<MessageList messages={messages} header={header} />
 
 			{streamingText && (
 				<Box>
