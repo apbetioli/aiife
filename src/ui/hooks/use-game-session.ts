@@ -1,6 +1,6 @@
 import type { ModelMessage } from "ai";
 import { useApp } from "ink";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GameAgent } from "../../agent/game-agent";
 import { createNarratorModel, createParserModel } from "../../agent/model";
 import { GameEngine } from "../../engine/game-engine";
@@ -20,21 +20,17 @@ export function useGameSession(world: World, setup?: GameSetup) {
 	const [streamingText, setStreamingText] = useState("");
 	const [tokenUsage, onTokenUsage] = useTokenUsage();
 
-	const onEvent = useCallback(
-		(event: GameEvent) => {
-			addMessage({ role: "tool", content: `${event.name} ${JSON.stringify(event.params)}` });
-		},
-		[addMessage],
-	);
+	const onEventRef = useRef<(event: GameEvent) => void>(() => {});
+	onEventRef.current = (event: GameEvent) => {
+		addMessage({ role: "tool", content: `${event.name} ${JSON.stringify(event.params)}` });
+	};
 
-	const onQuit = useCallback(
-		(event: GameEvent) => {
-			if (event.name === "quit") {
-				setTimeout(exit, 1000);
-			}
-		},
-		[exit],
-	);
+	const onQuitRef = useRef<(event: GameEvent) => void>(() => {});
+	onQuitRef.current = (event: GameEvent) => {
+		if (event.name === "quit") {
+			setTimeout(exit, 1000);
+		}
+	};
 
 	const onToken = useCallback((token: string) => {
 		setStreamingText((prev) => prev + token);
@@ -48,15 +44,23 @@ export function useGameSession(world: World, setup?: GameSetup) {
 		[addMessage],
 	);
 
-	const { agent } = useMemo(() => {
+	const engineRef = useRef<GameEngine | null>(null);
+	const agentRef = useRef<GameAgent | null>(null);
+
+	if (!engineRef.current) {
 		const engine = new GameEngine(world, setup);
-		engine.addObserver(onEvent);
-		engine.addObserver(onQuit);
-		const introMessage = engine.start();
-		addMessage({ role: "assistant", content: introMessage });
-		const agent = new GameAgent(createParserModel(), engine, createNarratorModel());
-		return { agent };
-	}, [world, setup, addMessage, onEvent, onQuit]);
+		engine.addObserver((event) => onEventRef.current(event));
+		engine.addObserver((event) => onQuitRef.current(event));
+		engineRef.current = engine;
+		agentRef.current = new GameAgent(createParserModel(), engine, createNarratorModel());
+	}
+
+	useEffect(() => {
+		if (engineRef.current) {
+			const introMessage = engineRef.current.start();
+			addMessage({ role: "assistant", content: introMessage });
+		}
+	}, [addMessage]);
 
 	const handleSubmit = async (userInput: string) => {
 		addMessage({ role: "user", content: userInput });
@@ -65,7 +69,7 @@ export function useGameSession(world: World, setup?: GameSetup) {
 		onTokenUsage(null);
 
 		try {
-			const newHistory = await agent.run(userInput, conversationHistory, {
+			const newHistory = await agentRef.current!.run(userInput, conversationHistory, {
 				onToken,
 				onComplete,
 				onTokenUsage,
