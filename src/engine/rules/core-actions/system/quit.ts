@@ -1,7 +1,7 @@
 import type { z } from "zod";
-import { setPlayerState } from "../../mutators";
-import { emptySchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { setPlayerState } from "../../../mutators";
+import { emptySchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const quit: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,

@@ -1,7 +1,7 @@
 import type { z } from "zod";
-import { evaluateCondition, resolveObjectDescription, resolveRoomDescription } from "../../parser-context";
-import { emptySchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { evaluateCondition, resolveObjectDescription, resolveRoomDescription } from "../../../parser-context";
+import { emptySchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const look: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,

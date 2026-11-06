@@ -1,7 +1,7 @@
 import type { z } from "zod";
-import { resolveTarget } from "./helpers";
-import { objectsSchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { resolveTarget } from "../helpers";
+import { objectsSchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const use: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,

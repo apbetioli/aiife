@@ -1,6 +1,6 @@
 import type { z } from "zod";
-import { messageSchema } from "./schemas";
-import type { ActionDefSchemaOnly } from "./types";
+import { messageSchema } from "../schemas";
+import type { ActionDefSchemaOnly } from "../types";
 
 export const respond: ActionDefSchemaOnly<z.infer<typeof messageSchema>> = {
 	schema: messageSchema,

@@ -1,8 +1,8 @@
 import type { z } from "zod";
-import { findOpenContainerInRoom, isInInventory, isInRoom, moveObject } from "../../mutators";
-import { getObjectIds } from "./helpers";
-import { objectsWithPrepositionSchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { findOpenContainerInRoom, isInInventory, isInRoom, moveObject } from "../../../mutators";
+import { getObjectIds } from "../helpers";
+import { objectsWithPrepositionSchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 	schema: objectsWithPrepositionSchema,

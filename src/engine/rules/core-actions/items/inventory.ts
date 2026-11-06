@@ -1,7 +1,7 @@
 import type { z } from "zod";
-import { getInventory } from "../../mutators";
-import { emptySchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { getInventory } from "../../../mutators";
+import { emptySchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const inventory: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,

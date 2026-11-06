@@ -5,7 +5,19 @@ export { ActionRegistry } from "./action-registry";
 export { EventBus } from "./event-bus";
 export { executeAction, executeUntrustedAction } from "./executor";
 export { registerAction } from "./register-action";
-export type { ActionDef, IntentMeta, StoppableEventLike } from "./types";
+export {
+	type ActionDef,
+	type ActionDefSchemaOnly,
+	type EventListener,
+	type EventListenerResult,
+	type EventName,
+	type EventParams,
+	GameEvent,
+	type IntentMeta,
+	type Observer,
+	type StoppableEvent,
+	type StoppableEventLike,
+} from "./types";
 
 /** Optional setup function that game modules can export to register custom actions/listeners. */
 export type GameSetup = (bus: EventBus, registry: ActionRegistry) => void;

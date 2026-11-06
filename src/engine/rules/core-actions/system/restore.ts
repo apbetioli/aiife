@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ActionDef } from "./types";
+import type { ActionDef } from "../types";
 
 const restoreSchema = z.object({
 	slot: z.string().optional(),

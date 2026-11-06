@@ -1,8 +1,8 @@
 import type { z } from "zod";
-import { isInInventory, moveObjectFromInventoryToRoom } from "../../mutators";
-import { getObjectIds } from "./helpers";
-import { objectsSchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { isInInventory, moveObjectFromInventoryToRoom } from "../../../mutators";
+import { getObjectIds } from "../helpers";
+import { objectsSchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const drop: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import zorkOne from "../../games/zork-one";
-import { WorldSchema } from "../world/types";
-import { buildInitialState } from "./initial-state";
-import { isInInventory } from "./mutators";
-import { buildParserContext } from "./parser-context";
-import { ActionRegistry, EventBus } from "./rules";
-import { registerCoreActions } from "./rules/core-actions";
-import { executeAction } from "./rules/executor";
+import { buildInitialState } from "../src/engine/initial-state";
+import { isInInventory } from "../src/engine/mutators";
+import { buildParserContext } from "../src/engine/parser-context";
+import { ActionRegistry, EventBus } from "../src/engine/rules";
+import { registerCoreActions } from "../src/engine/rules/core-actions";
+import { executeAction } from "../src/engine/rules/executor";
+import { WorldSchema } from "../src/world/types";
+import zorkOne from "./zork-one";
 
 const { world, setup: zorkSetup } = zorkOne;
 

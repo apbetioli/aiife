@@ -1,8 +1,8 @@
 import type { z } from "zod";
-import { setObjectState } from "../../mutators";
-import { resolveTarget } from "./helpers";
-import { objectsSchema } from "./schemas";
-import type { ActionDef } from "./types";
+import { setObjectState } from "../../../mutators";
+import { resolveTarget } from "../helpers";
+import { objectsSchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const open: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,

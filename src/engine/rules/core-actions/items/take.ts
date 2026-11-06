@@ -5,10 +5,10 @@ import {
 	isInRoom,
 	moveObjectFromContainerToInventory,
 	moveObjectFromRoomToInventory,
-} from "../../mutators";
-import { getObjectIds } from "./helpers";
-import { objectsSchema } from "./schemas";
-import type { ActionDef } from "./types";
+} from "../../../mutators";
+import { getObjectIds } from "../helpers";
+import { objectsSchema } from "../schemas";
+import type { ActionDef } from "../types";
 
 export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,
