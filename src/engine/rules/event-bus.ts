@@ -59,9 +59,19 @@ export class EventBus {
 		}
 	}
 
-	// Global: on(event, listener, opts?)
+	/**
+	 * Register a global listener for an event.
+	 */
 	on<N extends EventName>(event: N, listener: EventListener<N>, options?: ListenerOptions): () => void;
-	// Scoped: on(event, scopeId, listener, opts?)
+	/**
+	 * Register a scoped listener for an event matching a specific object or room scopeId.
+	 *
+	 * Note: Within a priority band, a matching scoped listener preempts all global listeners
+	 * at that same priority.
+	 * - Use `priority: PRIORITY.GUARD` (50) for checks and conditional action cancellation.
+	 * - Use `priority: PRIORITY.EFFECT` (150) or `PRIORITY.POST_MUTATION` (110) for custom reactions.
+	 * - Only use default `PRIORITY.MUTATION` (100) if explicitly intending to replace the core mutation.
+	 */
 	on<N extends EventName>(event: N, scopeId: string, listener: EventListener<N>, options?: ListenerOptions): () => void;
 	on<N extends EventName>(
 		event: N,
