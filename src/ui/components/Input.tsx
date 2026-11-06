@@ -85,7 +85,7 @@ export function Input({ onSubmit, disabled = false, color = "gray" }: InputProps
 			return;
 		}
 
-		if (key.backspace) {
+		if (key.backspace || key.delete) {
 			if (cursor > 0) {
 				setValue((prev) => prev.slice(0, cursor - 1) + prev.slice(cursor));
 				setCursor((prev) => prev - 1);
@@ -93,7 +93,7 @@ export function Input({ onSubmit, disabled = false, color = "gray" }: InputProps
 			return;
 		}
 
-		if (key.delete) {
+		if (key.ctrl && input === "d") {
 			if (cursor < value.length) {
 				setValue((prev) => prev.slice(0, cursor) + prev.slice(cursor + 1));
 			}
