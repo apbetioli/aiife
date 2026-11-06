@@ -63,13 +63,15 @@ export function useGameSession(world: World, setup?: GameSetup) {
 	}, [addMessage]);
 
 	const handleSubmit = async (userInput: string) => {
+		if (!agentRef.current) return;
+
 		addMessage({ role: "user", content: userInput });
 		setIsLoading(true);
 		setStreamingText("");
 		onTokenUsage(null);
 
 		try {
-			const newHistory = await agentRef.current!.run(userInput, conversationHistory, {
+			const newHistory = await agentRef.current.run(userInput, conversationHistory, {
 				onToken,
 				onComplete,
 				onTokenUsage,

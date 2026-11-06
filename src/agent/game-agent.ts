@@ -2,10 +2,10 @@ import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
 import type { GameEngine } from "../engine/game-engine";
 import type { AgentCallbacks } from "../types";
+import { tryDeterministicIntent } from "./fast-path-parser";
 import { filterCompatibleMessages } from "./system/filterMessages";
 import { buildIntentSystemPrompt as buildIntentRecognitionSystemPrompt } from "./system/intent-recognition-prompt";
 import { NARRATION_SYSTEM_PROMPT } from "./system/narration-prompt";
-import { tryDeterministicIntent } from "./fast-path-parser";
 import { IntentRecognitionSchema, type RecognizedIntent } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
@@ -65,7 +65,7 @@ export class GameAgent {
 		const fallback = message || "Done.";
 
 		const hasExplicitNarrator = Boolean(process.env.NARRATOR_PROVIDER);
-		const hasNonAscii = /[^\u0000-\u007F]/.test(playerInput);
+		const hasNonAscii = [...playerInput].some((c) => (c.codePointAt(0) ?? 0) > 127);
 		if (!hasExplicitNarrator && !hasNonAscii && fallback !== "Done.") {
 			callbacks.onToken(fallback);
 			return fallback;

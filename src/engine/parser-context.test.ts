@@ -123,12 +123,7 @@ describe("evaluateCondition", () => {
 		expect(evaluateCondition("chest.open == true || door.open == true", state)).toBe(true);
 		expect(evaluateCondition("chest.open == true || door.locked == true", state)).toBe(false);
 		// Combined precedence: || splits terms, && binds tighter
-		expect(
-			evaluateCondition(
-				"chest.open == true || door.open == true && door.locked == false",
-				state,
-			),
-		).toBe(true);
+		expect(evaluateCondition("chest.open == true || door.open == true && door.locked == false", state)).toBe(true);
 	});
 });
 
