@@ -5,6 +5,7 @@ import type { ActionRegistry } from "../action-registry";
 import type { EventBus } from "../event-bus";
 import { executeAction } from "../executor";
 import { getInstrument, getObjectIds, getTarget } from "../param-helpers";
+import { registerAction } from "../register-action";
 import type { ActionDef, ResolveTargetOptions, StoppableEventLike } from "./types";
 
 export { getInstrument, getObjectIds, getTarget };
@@ -58,15 +59,6 @@ export function registerCoreActions(
 	definitions: Record<string, ActionDef<unknown>>,
 ): void {
 	for (const [name, def] of Object.entries(definitions)) {
-		registry.register(name, {
-			schema: def.schema,
-			description: def.description,
-			aliases: def.aliases,
-			hint: def.hint,
-		});
-		if (def.handler) {
-			const handler = def.handler;
-			bus.on(name, (event, state, world) => handler(event as StoppableEventLike<unknown>, state, world, bus));
-		}
+		registerAction(bus, registry, name, def);
 	}
 }

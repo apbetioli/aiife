@@ -19,6 +19,10 @@ export class ActionRegistry {
 		this.actions.set(name, entry);
 	}
 
+	unregister(name: string): boolean {
+		return this.actions.delete(name);
+	}
+
 	has(name: string): boolean {
 		return this.actions.has(name);
 	}

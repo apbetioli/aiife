@@ -1,3 +1,5 @@
+import type { GameSetup } from "../src/engine/rules";
+import { PRIORITY } from "../src/engine/rules/priorities";
 import type { World } from "../src/world/types";
 
 const world: World = {
@@ -5,6 +7,7 @@ const world: World = {
 	name: "Zork One",
 	version: "1.0.0",
 	start_room: "west_of_house",
+	welcome: "**ZORK**\n\nWelcome to ZORK.\nRelease 13 / Serial number 040826 / Inform v6.14 Library 6/7",
 	rooms: {
 		west_of_house: {
 			id: "west_of_house",
@@ -57,7 +60,6 @@ const world: World = {
 				scenery: true,
 				open: false,
 				carriable: false,
-				cannot_open_message: "The door cannot be opened.",
 			},
 			descriptions: {
 				default: "The front door of the white house. It is firmly boarded shut and cannot be opened.",
@@ -72,3 +74,15 @@ const world: World = {
 };
 
 export default world;
+
+export const setup: GameSetup = (bus) => {
+	bus.on(
+		"open",
+		"front_door",
+		(event) => {
+			event.stop();
+			return "The door cannot be opened.";
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+};

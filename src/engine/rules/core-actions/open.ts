@@ -17,8 +17,7 @@ export const open: ActionDef<z.infer<typeof objectsSchema>> = {
 		const { targetId, obj, objState } = target;
 		if (obj.type !== "container" && obj.type !== "door") {
 			event.stop();
-			const cannotOpenMsg = objState.state.cannot_open_message ?? world.objects[targetId]?.state?.cannot_open_message;
-			return (cannotOpenMsg as string) || "You can't open that.";
+			return "You can't open that.";
 		}
 		if (objState.state.locked === true) {
 			event.stop();

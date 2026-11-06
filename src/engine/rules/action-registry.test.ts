@@ -98,6 +98,20 @@ describe("ActionRegistry", () => {
 		expect(result2.success).toBe(true);
 	});
 
+	it("unregister() removes a custom action", () => {
+		const registry = createRegistryWithCoreActions();
+		registry.register("pray", {
+			schema: z.object({}),
+			description: "pray(): Pray.",
+		});
+
+		expect(registry.has("pray")).toBe(true);
+		expect(registry.unregister("pray")).toBe(true);
+		expect(registry.has("pray")).toBe(false);
+		expect(registry.names()).not.toContain("pray");
+		expect(registry.unregister("nonexistent")).toBe(false);
+	});
+
 	it("getDescriptions() excludes empty descriptions (internal events)", () => {
 		const registry = createRegistryWithCoreActions();
 		const descriptions = registry.getDescriptions();

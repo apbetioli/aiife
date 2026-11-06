@@ -26,6 +26,8 @@ export type ActionDef<TParams = Record<string, unknown>> = {
 	aliases?: string[];
 	/** Disambiguation hint shown alongside aliases in the prompt (for patterns that aren't simple verb synonyms). */
 	hint?: string;
+	/** Optional bus listener priority (defaults to PRIORITY.MUTATION = 100). */
+	priority?: number;
 };
 
 /** Schema-only (no handler), e.g. enter/exit. */

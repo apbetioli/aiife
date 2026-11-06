@@ -6,6 +6,7 @@ import { immutable, setObjectState } from "../mutators";
 import { registerCoreActions } from "./core-actions";
 import { executeAction } from "./executor";
 import { ActionRegistry, EventBus } from "./index";
+import { PRIORITY } from "./priorities";
 
 function setup(overrides?: Partial<World>) {
 	const world = makeTestWorld(overrides);
@@ -175,10 +176,29 @@ describe("executeAction", () => {
 		expect(result.feedback).toContain("It's already open.");
 	});
 
-	it("open returns cannot_open_message for non-openable objects with custom message", () => {
+	it("open returns failure for non-openable objects", () => {
 		const { world, bus, state } = setup();
 		state.objects.table.location = "room_a";
-		state.objects.table.state.cannot_open_message = "The table cannot be opened.";
+		const result = executeAction(bus, world, state, "open", {
+			objects: ["table"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("You can't open that.");
+	});
+
+	it("custom guard rule can intercept open for specific object", () => {
+		const { world, bus, state } = setup();
+		state.objects.table.location = "room_a";
+		bus.on(
+			"open",
+			"table",
+			(event) => {
+				event.stop();
+				return "The table cannot be opened.";
+			},
+			{ priority: PRIORITY.GUARD },
+		);
 		const result = executeAction(bus, world, state, "open", {
 			objects: ["table"],
 		});

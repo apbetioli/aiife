@@ -54,8 +54,7 @@
 			"state": {
 				"scenery": true,
 				"open": false,
-				"carriable": false,
-				"cannot_open_message": "The door cannot be opened."
+				"carriable": false
 			},
 			"descriptions": {
 				"default": "The front door of the white house. It is firmly boarded shut and cannot be opened."
