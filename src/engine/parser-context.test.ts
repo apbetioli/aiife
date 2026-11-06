@@ -82,6 +82,54 @@ describe("evaluateCondition", () => {
 		const state = stateWith("door", { open: true });
 		expect(evaluateCondition("not a valid condition", state)).toBe(false);
 	});
+
+	it("evaluates player current_room and state flags", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.player.state = { score: 10, won: false };
+
+		expect(evaluateCondition("player.current_room == room_a", state)).toBe(true);
+		expect(evaluateCondition("player.current_room == room_b", state)).toBe(false);
+		expect(evaluateCondition("player.score >= 10", state)).toBe(true);
+		expect(evaluateCondition("player.won == false", state)).toBe(true);
+	});
+
+	it("evaluates room state flags", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.rooms.room_a = { state: { visited: true, flooded: false } };
+
+		expect(evaluateCondition("room_a.visited == true", state)).toBe(true);
+		expect(evaluateCondition("room_a.flooded == true", state)).toBe(false);
+	});
+
+	it("evaluates game turn", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.turn = 5;
+
+		expect(evaluateCondition("game.turn == 5", state)).toBe(true);
+		expect(evaluateCondition("game.turn > 3", state)).toBe(true);
+	});
+
+	it("evaluates compound conditions with && and ||", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.objects.door = { location: "room_a", state: { open: true, locked: false } };
+		state.objects.chest = { location: "room_a", state: { open: false } };
+
+		expect(evaluateCondition("door.open == true && door.locked == false", state)).toBe(true);
+		expect(evaluateCondition("door.open == true && door.locked == true", state)).toBe(false);
+		expect(evaluateCondition("chest.open == true || door.open == true", state)).toBe(true);
+		expect(evaluateCondition("chest.open == true || door.locked == true", state)).toBe(false);
+		// Combined precedence: || splits terms, && binds tighter
+		expect(
+			evaluateCondition(
+				"chest.open == true || door.open == true && door.locked == false",
+				state,
+			),
+		).toBe(true);
+	});
 });
 
 // ─── resolveRoomDescription ──────────────────────────────────────────────────

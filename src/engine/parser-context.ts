@@ -22,24 +22,39 @@ import type { GameState, ObjectState, RoomState } from "./types";
  *   "study_door.locked == false"
  */
 export function evaluateCondition(condition: string, state: GameState): boolean {
-	// Pattern: objectId.stateKey operator value
+	if (condition.includes("||")) {
+		return condition.split("||").some((part) => evaluateCondition(part.trim(), state));
+	}
+	if (condition.includes("&&")) {
+		return condition.split("&&").every((part) => evaluateCondition(part.trim(), state));
+	}
+
+	// Pattern: targetId.stateKey operator value
 	const match = condition.match(/^(\w+)\.(\w+)\s*(==|!=|<=|>=|<|>)\s*(.+)$/);
 	if (!match) {
 		console.warn(`[evaluateCondition] Unparseable condition: "${condition}"`);
 		return false;
 	}
 
-	const [, objectId, stateKey, operator, rawValue] = match;
+	const [, target, stateKey, operator, rawValue] = match;
 
-	const objectState = state.objects[objectId];
-	if (!objectState) {
-		console.warn(`[evaluateCondition] Unknown object "${objectId}" in condition: "${condition}"`);
+	let actual: boolean | string | number | undefined;
+
+	if (target === "player") {
+		actual = stateKey === "current_room" ? state.player.current_room : state.player.state[stateKey];
+	} else if (target === "game" || target === "state") {
+		actual = stateKey === "turn" ? state.turn : undefined;
+	} else if (state.rooms[target]) {
+		actual = state.rooms[target].state[stateKey];
+	} else if (state.objects[target]) {
+		actual = state.objects[target].state[stateKey];
+	} else {
+		console.warn(`[evaluateCondition] Unknown object "${target}" in condition: "${condition}"`);
 		return false;
 	}
 
-	const actual = objectState.state[stateKey];
 	if (actual === undefined) {
-		console.warn(`[evaluateCondition] Object "${objectId}" has no state key "${stateKey}"`);
+		console.warn(`[evaluateCondition] Target "${target}" has no state key "${stateKey}"`);
 		return false;
 	}
 
@@ -47,7 +62,8 @@ export function evaluateCondition(condition: string, state: GameState): boolean 
 	let expected: boolean | string | number = rawValue.trim();
 	if (expected === "true") expected = true;
 	else if (expected === "false") expected = false;
-	else if (!Number.isNaN(Number(expected))) expected = Number(expected);
+	else if (!Number.isNaN(Number(expected)) && expected !== "") expected = Number(expected);
+	else expected = (expected as string).replace(/^['"]|['"]$/g, "");
 
 	switch (operator) {
 		case "==":
