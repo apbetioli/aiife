@@ -4,6 +4,7 @@ import { buildInitialState } from "./initial-state";
 import {
 	ensureVisited,
 	findOpenContainerInRoom,
+	getInventory,
 	immutable,
 	isInInventory,
 	isInRoom,
@@ -16,6 +17,7 @@ import {
 	setObjectState,
 	setPlayerState,
 	setRoomState,
+	syncInventory,
 } from "./mutators";
 import type { GameState } from "./types";
 
@@ -60,6 +62,21 @@ describe("mutators", () => {
 		it("returns false for object not in inventory", () => {
 			const state = freshState();
 			expect(isInInventory(state, "lamp")).toBe(false);
+		});
+	});
+
+	describe("getInventory and syncInventory", () => {
+		it("derives inventory accurately and syncs player.inventory", () => {
+			const state = freshState();
+			expect(getInventory(state)).toEqual(["sword"]);
+
+			// Desync objects location
+			state.objects.lamp.location = "inventory";
+			expect(getInventory(state)).toContain("sword");
+			expect(getInventory(state)).toContain("lamp");
+
+			syncInventory(state);
+			expect(state.player.inventory).toEqual(expect.arrayContaining(["sword", "lamp"]));
 		});
 	});
 
