@@ -14,6 +14,7 @@ export const help: ActionDef<z.infer<typeof emptySchema>> = {
 			"  examine <thing> (x)- Look closely at something",
 			"  take <thing>       - Pick up an object",
 			"  drop <thing>      - Drop an object from inventory",
+			"  put <thing> in <c> - Put an object into a container",
 			"  open <thing>       - Open a container or door",
 			"  close <thing>     - Close a container or door",
 			"  unlock <thing>    - Unlock something (with key if needed)",

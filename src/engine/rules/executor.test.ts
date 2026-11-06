@@ -138,6 +138,127 @@ describe("executeAction", () => {
 		expect(result.feedback.some((m) => m.includes("not carrying"))).toBe(true);
 	});
 
+	// ── put ───────────────────────────────────────────────────────────────
+
+	it("put moves object from inventory into open container", () => {
+		const { world, bus, state } = setup();
+		const openResult = executeAction(bus, world, state, "open", { objects: ["chest"] });
+		const result = executeAction(bus, world, openResult.state, "put", {
+			objects: ["sword", "chest"],
+		});
+
+		expect(result.stopped).toBe(false);
+		expect(result.state.objects.sword.location).toBe("chest");
+		expect(isInInventory(result.state, "sword")).toBe(false);
+		expect(result.feedback).toContain("You put the iron sword into the wooden chest.");
+	});
+
+	it("put moves object from room into open container", () => {
+		const { world, bus, state } = setup();
+		const openResult = executeAction(bus, world, state, "open", { objects: ["chest"] });
+		const result = executeAction(bus, world, openResult.state, "put", {
+			objects: ["lamp", "chest"],
+		});
+
+		expect(result.stopped).toBe(false);
+		expect(result.state.objects.lamp.location).toBe("chest");
+		expect(result.feedback).toContain("You put the brass lamp into the wooden chest.");
+	});
+
+	it("put blocked when container is closed", () => {
+		const { world, bus, state } = setup();
+		// chest starts closed
+		const result = executeAction(bus, world, state, "put", {
+			objects: ["sword", "chest"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("The wooden chest is closed.");
+		expect(isInInventory(result.state, "sword")).toBe(true);
+	});
+
+	it("put blocked when target is not a container", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "put", {
+			objects: ["sword", "door"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("The wooden door is not a container.");
+	});
+
+	it("put blocked when placing object into itself", () => {
+		const { world, bus, state } = setup();
+		const openResult = executeAction(bus, world, state, "open", { objects: ["chest"] });
+		const result = executeAction(bus, world, openResult.state, "put", {
+			objects: ["chest", "chest"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("You can't put something inside itself.");
+	});
+
+	it("put blocked when placing container into one of its child contents", () => {
+		const base = makeTestWorld();
+		const { world, bus, state } = setup({
+			objects: {
+				...base.objects,
+				pouch: {
+					id: "pouch",
+					name: "leather pouch",
+					aliases: [],
+					type: "container",
+					location: "chest",
+					state: { open: true, carriable: true },
+					descriptions: { default: "A leather pouch." },
+				},
+			},
+		});
+
+		const openResult = executeAction(bus, world, state, "open", { objects: ["chest"] });
+		const result = executeAction(bus, world, openResult.state, "put", {
+			objects: ["chest", "pouch"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("You can't put something inside one of its contents.");
+	});
+
+	it("put blocked when object is already in target container", () => {
+		const { world, bus, state } = setup();
+		const openResult = executeAction(bus, world, state, "open", { objects: ["chest"] });
+		const result = executeAction(bus, world, openResult.state, "put", {
+			objects: ["gem", "chest"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("The red gem is already in the wooden chest.");
+	});
+
+	it("put blocked with missing targets", () => {
+		const { world, bus, state } = setup();
+		const noTargets = executeAction(bus, world, state, "put", { objects: [] });
+		expect(noTargets.stopped).toBe(true);
+		expect(noTargets.feedback).toContain("Put what?");
+
+		const oneTarget = executeAction(bus, world, state, "put", { objects: ["sword"] });
+		expect(oneTarget.stopped).toBe(true);
+		expect(oneTarget.feedback).toContain("Where do you want to put it?");
+	});
+
+	it("put blocked when player is dead", () => {
+		const { world, bus, state } = setup();
+		const deadState = immutable(state, (s) => {
+			s.player.state.dead = true;
+		});
+		const result = executeAction(bus, world, deadState, "put", {
+			objects: ["sword", "chest"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("Your hand passes through its object.");
+	});
+
 	// ── open ──────────────────────────────────────────────────────────────
 
 	it("open sets open=true", () => {

@@ -76,33 +76,74 @@ export function immutable(state: GameState, fn: (state: GameState) => void): Gam
 
 // ─── In-place mutators ──────────────────────────────────────────────────────
 
+/**
+ * Generic object movement mutator.
+ * Moves an object to any target location (a room ID, a container ID, or "inventory").
+ *
+ * @param state - Current game state (inside produce / immutable)
+ * @param objectId - ID of the object to move
+ * @param toLocation - Target destination (room ID, container ID, or "inventory")
+ * @param options.expectedFrom - Optional source location check; throws if object is not currently there
+ */
+export function moveObject(
+	state: GameState,
+	objectId: string,
+	toLocation: string,
+	options?: { expectedFrom?: string },
+): void {
+	const obj = state.objects[objectId];
+	if (!obj) {
+		throw new Error(`Object "${objectId}" does not exist`);
+	}
+	if (options?.expectedFrom !== undefined && obj.location !== options.expectedFrom) {
+		throw new Error(
+			`Object "${objectId}" is not at location "${options.expectedFrom}" (currently at "${obj.location}")`,
+		);
+	}
+	if (objectId === toLocation) {
+		throw new Error(`Cannot move object "${objectId}" inside itself`);
+	}
+	let curr: string | undefined = toLocation;
+	while (curr && curr !== "inventory" && state.objects[curr]) {
+		if (curr === objectId) {
+			throw new Error(`Cannot move object "${objectId}" inside one of its contents ("${toLocation}")`);
+		}
+		curr = state.objects[curr].location;
+	}
+	obj.location = toLocation;
+}
+
+export function moveObjectToContainer(state: GameState, objectId: string, containerId: string): void {
+	moveObject(state, objectId, containerId);
+}
+
 export function moveObjectFromRoomToInventory(state: GameState, objectId: string): void {
 	const roomId = state.player.current_room;
 	if (state.objects[objectId]?.location !== roomId) {
 		throw new Error(`Object "${objectId}" is not in room "${roomId}"`);
 	}
-	state.objects[objectId].location = "inventory";
+	moveObject(state, objectId, "inventory");
 }
 
 export function moveObjectFromInventoryToRoom(state: GameState, objectId: string, roomId: string): void {
 	if (!isInInventory(state, objectId)) {
 		throw new Error(`Object "${objectId}" is not in inventory`);
 	}
-	state.objects[objectId].location = roomId;
+	moveObject(state, objectId, roomId);
 }
 
 export function moveObjectFromContainerToInventory(state: GameState, objectId: string, containerId: string): void {
 	if (state.objects[objectId]?.location !== containerId) {
 		throw new Error(`Object "${objectId}" is not in container "${containerId}"`);
 	}
-	state.objects[objectId].location = "inventory";
+	moveObject(state, objectId, "inventory");
 }
 
 export function moveObjectFromInventoryToContainer(state: GameState, objectId: string, containerId: string): void {
 	if (!isInInventory(state, objectId)) {
 		throw new Error(`Object "${objectId}" is not in inventory`);
 	}
-	state.objects[objectId].location = containerId;
+	moveObject(state, objectId, containerId);
 }
 
 export function setObjectState(

@@ -64,6 +64,44 @@ describe("tryDeterministicIntent", () => {
 		});
 	});
 
+	it("parses put, insert, and place commands", () => {
+		expect(tryDeterministicIntent("put sword in chest")).toEqual({
+			action: "put",
+			objects: ["sword", "chest"],
+			preposition: "in",
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("insert gem into chest")).toEqual({
+			action: "put",
+			objects: ["gem", "chest"],
+			preposition: "into",
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("place lamp on table")).toEqual({
+			action: "put",
+			objects: ["lamp", "table"],
+			preposition: "on",
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("put sword")).toEqual({
+			action: "put",
+			objects: ["sword"],
+			preposition: null,
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("put")).toEqual({
+			action: "put",
+			objects: [],
+			preposition: null,
+			direction: null,
+			message: null,
+		});
+	});
+
 	it("returns null for natural language or complex commands", () => {
 		expect(tryDeterministicIntent("take the brass key from table")).toBeNull();
 		expect(tryDeterministicIntent("examine painting")).toBeNull();

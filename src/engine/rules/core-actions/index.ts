@@ -17,6 +17,7 @@ import { lock } from "./lock";
 import { look } from "./look";
 import { move } from "./move";
 import { open } from "./open";
+import { put } from "./put";
 import { quit } from "./quit";
 import { respond } from "./respond";
 import { restoreAction as restore } from "./restore";
@@ -33,6 +34,7 @@ export const coreActionDefinitions = {
 	go,
 	take,
 	drop,
+	put,
 	open,
 	close,
 	unlock,

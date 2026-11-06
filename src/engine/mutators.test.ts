@@ -9,10 +9,12 @@ import {
 	isInInventory,
 	isInRoom,
 	isInScope,
+	moveObject,
 	moveObjectFromContainerToInventory,
 	moveObjectFromInventoryToContainer,
 	moveObjectFromInventoryToRoom,
 	moveObjectFromRoomToInventory,
+	moveObjectToContainer,
 	movePlayer,
 	setObjectState,
 	setPlayerState,
@@ -77,6 +79,62 @@ describe("mutators", () => {
 	});
 
 	// ─── Move Functions ──────────────────────────────────────────────────────
+
+	describe("moveObject", () => {
+		it("moves object across arbitrary locations (room, container, inventory)", () => {
+			const state = freshState();
+
+			// Move room -> container
+			const s1 = immutable(state, (s) => moveObject(s, "lamp", "chest"));
+			expect(s1.objects.lamp.location).toBe("chest");
+
+			// Move container -> inventory
+			const s2 = immutable(s1, (s) => moveObject(s, "lamp", "inventory"));
+			expect(s2.objects.lamp.location).toBe("inventory");
+			expect(isInInventory(s2, "lamp")).toBe(true);
+
+			// Move inventory -> room
+			const s3 = immutable(s2, (s) => moveObject(s, "lamp", "room_b"));
+			expect(s3.objects.lamp.location).toBe("room_b");
+		});
+
+		it("enforces expectedFrom check when provided", () => {
+			const state = freshState();
+			expect(() => moveObject(state, "lamp", "chest", { expectedFrom: "room_b" })).toThrow(
+				'Object "lamp" is not at location "room_b" (currently at "room_a")',
+			);
+
+			// Passes when expectedFrom matches
+			const next = immutable(state, (s) => moveObject(s, "lamp", "chest", { expectedFrom: "room_a" }));
+			expect(next.objects.lamp.location).toBe("chest");
+		});
+
+		it("throws when moving non-existent object", () => {
+			const state = freshState();
+			expect(() => moveObject(state, "ghost", "room_a")).toThrow('Object "ghost" does not exist');
+		});
+
+		it("throws when moving an object inside itself", () => {
+			const state = freshState();
+			expect(() => moveObject(state, "chest", "chest")).toThrow('Cannot move object "chest" inside itself');
+		});
+
+		it("throws when moving an object inside one of its child contents (cyclic containment)", () => {
+			const state = freshState();
+			// gem is inside chest
+			expect(() => moveObject(state, "chest", "gem")).toThrow(
+				'Cannot move object "chest" inside one of its contents ("gem")',
+			);
+		});
+	});
+
+	describe("moveObjectToContainer", () => {
+		it("delegates to moveObject to place item in container", () => {
+			const state = freshState();
+			const next = immutable(state, (s) => moveObjectToContainer(s, "lamp", "chest"));
+			expect(next.objects.lamp.location).toBe("chest");
+		});
+	});
 
 	describe("moveObjectFromRoomToInventory", () => {
 		it("updates object location to inventory", () => {
