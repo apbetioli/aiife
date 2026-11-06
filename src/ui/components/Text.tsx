@@ -1,6 +1,6 @@
 import { Text as InkText, type TextProps } from "ink";
 
-export default function Text(props: TextProps) {
+export function Text(props: TextProps) {
 	const { children, ...rest } = props;
 
 	if (typeof children !== "string") {
@@ -38,3 +38,5 @@ export default function Text(props: TextProps) {
 
 	return <InkText {...rest}>{formatted}</InkText>;
 }
+
+export default Text;

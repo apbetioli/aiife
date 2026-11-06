@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { GameSetup } from "../engine/rules/index.ts";
-import { type World, WorldSchema } from "./types.ts";
+import type { GameSetup } from "../engine/rules";
+import { type World, WorldSchema } from "./types";
 
 const DEFAULT_GAME = "the-great-hall";
 const GAMES_DIR = resolve(import.meta.dirname, "..", "..", "games");

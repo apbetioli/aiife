@@ -8,8 +8,8 @@ import type { GameSetup } from "../../engine/rules";
 import type { GameEvent } from "../../engine/rules/types";
 import type { World } from "../../world/types";
 import { getErrorDisplayMessage } from "../helpers";
-import { useMessages } from "./use-messages.ts";
-import { useTokenUsage } from "./use-token-usage.ts";
+import { useMessages } from "./use-messages";
+import { useTokenUsage } from "./use-token-usage";
 
 export function useGameSession(world: World, setup?: GameSetup) {
 	const { exit } = useApp();

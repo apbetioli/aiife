@@ -1,13 +1,9 @@
 import { Box } from "ink";
-import type { GameSetup } from "../engine/rules/index.ts";
-import type { World } from "../world/types.ts";
-import { Input } from "./components/Input.tsx";
-import { MessageList } from "./components/MessageList.tsx";
-import { Spinner } from "./components/Spinner.tsx";
-import Text from "./components/Text.tsx";
-import { TokenUsage } from "./components/TokenUsage.tsx";
-import { IS_DEBUG } from "./helpers.ts";
-import { useGameSession } from "./hooks/use-game-session.ts";
+import type { GameSetup } from "../engine/rules";
+import type { World } from "../world/types";
+import { Input, MessageList, Spinner, Text, TokenUsage } from "./components";
+import { IS_DEBUG } from "./helpers";
+import { useGameSession } from "./hooks/use-game-session";
 
 interface Props {
 	world: World;

@@ -1,4 +1,11 @@
+import type { LanguageModelUsage } from "ai";
 import z from "zod";
+
+export interface AgentCallbacks {
+	onToken: (token: string) => void;
+	onComplete: (response: string) => void;
+	onTokenUsage?: (usage: LanguageModelUsage) => void;
+}
 
 // All param fields from player-facing core actions, made nullable.
 // The SDK doesn't accept optional fields.

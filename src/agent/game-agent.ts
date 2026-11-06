@@ -1,12 +1,11 @@
 import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
 import type { GameEngine } from "../engine/game-engine";
-import type { AgentCallbacks } from "../types";
 import { tryDeterministicIntent } from "./fast-path-parser";
-import { filterCompatibleMessages } from "./system/filterMessages";
+import { filterCompatibleMessages } from "./system/filter-messages";
 import { buildIntentSystemPrompt as buildIntentRecognitionSystemPrompt } from "./system/intent-recognition-prompt";
 import { NARRATION_SYSTEM_PROMPT } from "./system/narration-prompt";
-import { IntentRecognitionSchema, type RecognizedIntent } from "./types";
+import { type AgentCallbacks, IntentRecognitionSchema, type RecognizedIntent } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 

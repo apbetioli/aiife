@@ -1,7 +1,7 @@
 import { Box, Static } from "ink";
 import type { ReactNode } from "react";
 import { IS_DEBUG } from "../helpers";
-import Text from "./Text";
+import { Text } from "./Text";
 
 export interface Message {
 	id?: string;

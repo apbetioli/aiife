@@ -13,7 +13,7 @@ interface ModelConfig {
 
 function resolveConfig(prefix: string): ModelConfig {
 	return {
-		provider: process.env[`${prefix}_PROVIDER`] ?? "anthropic",
+		provider: process.env[`${prefix}_PROVIDER`] ?? process.env.LLM_PROVIDER ?? "anthropic",
 		anthropicModel: process.env[`${prefix}_ANTHROPIC_MODEL`] ?? "claude-haiku-4-5-20251001",
 		openaiModel: process.env[`${prefix}_OPENAI_MODEL`] ?? "gpt-4o-mini",
 		ollamaModel: process.env[`${prefix}_OLLAMA_MODEL`] ?? "llama3.1",
