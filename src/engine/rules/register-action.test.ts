@@ -204,4 +204,29 @@ describe("registerAction", () => {
 		const movesAfter = (engine.save().state.player.state.moves as number) ?? 0;
 		expect(movesAfter).toBe(movesBefore);
 	});
+
+	it("executes undo via runAction to roll back moves", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		engine.runAction({
+			action: "go",
+			direction: "south",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(engine.save().state.player.current_room).toBe("room_b");
+
+		const undoFeedback = engine.runAction({
+			action: "undo",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(undoFeedback).toContain("Room A");
+		expect(engine.save().state.player.current_room).toBe("room_a");
+	});
 });

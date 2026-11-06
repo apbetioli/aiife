@@ -23,6 +23,7 @@ import { take } from "./take";
 import { talk } from "./talk";
 import { tick } from "./tick";
 import type { ActionDef } from "./types";
+import { undo } from "./undo";
 import { unlock } from "./unlock";
 import { use } from "./use";
 
@@ -44,6 +45,7 @@ export const coreActionDefinitions = {
 	look,
 	inventory,
 	help,
+	undo,
 	quit,
 	respond,
 	tick,

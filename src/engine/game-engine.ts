@@ -1,7 +1,7 @@
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
-import { ensureVisited, isInScope } from "./mutators";
+import { ensureVisited, immutable, isInScope } from "./mutators";
 import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
@@ -61,8 +61,9 @@ export class GameEngine {
 		this.state = startResult.state;
 
 		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
-		this.state = lookResult.state;
-		ensureVisited(this.state, this.world.start_room);
+		this.state = immutable(lookResult.state, (s) => {
+			ensureVisited(s, this.world.start_room);
+		});
 
 		return [...startResult.feedback, ...lookResult.feedback].join("\n");
 	}
@@ -80,6 +81,10 @@ export class GameEngine {
 	}
 
 	runAction(intent: RecognizedIntent): string {
+		if (intent.action === "undo") {
+			return this.undo();
+		}
+
 		// Conversational response — no game action
 		if (intent.action === "respond") {
 			return intent.message ?? "";
