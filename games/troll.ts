@@ -1,10 +1,9 @@
 import { isInInventory, setObjectState } from "../src/engine/mutators";
-import type { GameSetup } from "../src/engine/rules";
 import { runAction } from "../src/engine/rules/core-actions/helpers";
 import { registerDaemon } from "../src/engine/rules/factories";
 import { PRIORITY } from "../src/engine/rules/priorities";
 import type { GameState } from "../src/engine/types";
-import type { World } from "../src/world/types";
+import { defineGame, type World } from "../src/world";
 
 const world: World = {
 	id: "troll",
@@ -103,8 +102,6 @@ const world: World = {
 	},
 };
 
-export default world;
-
 function isTrollNearby(state: GameState, world: World): boolean {
 	const currentRoom = state.player.current_room;
 	const trollLocation = state.objects.troll?.location ?? world.objects.troll.location;
@@ -115,80 +112,83 @@ function isTrollNearby(state: GameState, world: World): boolean {
 	);
 }
 
-export const setup: GameSetup = (bus) => {
-	// ── attack troll ──────────────────────────────────────────────────────
-	bus.on("attack", "troll", (event, state, world) => {
-		const troll = state.objects.troll;
-		if (troll?.state.knocked_out === true) {
-			event.stop();
-			return "The troll is already unconscious. No need for further violence.";
-		}
-
-		const weapon = (event.params.objects as string[])?.[1];
-		const hasMetalSword = isInInventory(state, "metal_sword");
-		const hasWoodenSword = isInInventory(state, "wooden_sword");
-
-		// No weapon specified
-		if (!weapon) {
-			if (!hasMetalSword && !hasWoodenSword) {
-				const dieFeedback = runAction(bus, world, state, "die", {});
+export default defineGame({
+	world,
+	setup(bus) {
+		// ── attack troll ──────────────────────────────────────────────────────
+		bus.on("attack", "troll", (event, state, world) => {
+			const troll = state.objects.troll;
+			if (troll?.state.knocked_out === true) {
 				event.stop();
-				return ["You swing your fists at the troll. He laughs and shoves you back.", ...dieFeedback];
+				return "The troll is already unconscious. No need for further violence.";
 			}
-			// Auto-pick best weapon
-			if (hasMetalSword) {
+
+			const weapon = (event.params.objects as string[])?.[1];
+			const hasMetalSword = isInInventory(state, "metal_sword");
+			const hasWoodenSword = isInInventory(state, "wooden_sword");
+
+			// No weapon specified
+			if (!weapon) {
+				if (!hasMetalSword && !hasWoodenSword) {
+					const dieFeedback = runAction(bus, world, state, "die", {});
+					event.stop();
+					return ["You swing your fists at the troll. He laughs and shoves you back.", ...dieFeedback];
+				}
+				// Auto-pick best weapon
+				if (hasMetalSword) {
+					setObjectState(state, "troll", "knocked_out", true);
+					event.stop();
+					return "You swing the metal sword in a wide arc. It connects with the troll's head with a satisfying clang! The troll staggers, then collapses to the ground, unconscious.";
+				}
+				event.stop();
+				return "You whack the troll with the wooden sword. It splinters on impact. The troll barely notices and swats you away.";
+			}
+
+			// Specific weapon
+			if (weapon === "metal_sword" && isInInventory(state, "metal_sword")) {
 				setObjectState(state, "troll", "knocked_out", true);
 				event.stop();
 				return "You swing the metal sword in a wide arc. It connects with the troll's head with a satisfying clang! The troll staggers, then collapses to the ground, unconscious.";
 			}
+
+			if (weapon === "wooden_sword" && isInInventory(state, "wooden_sword")) {
+				event.stop();
+				return "You whack the troll with the wooden sword. It splinters on impact. The troll barely notices and swats you away.";
+			}
+
 			event.stop();
-			return "You whack the troll with the wooden sword. It splinters on impact. The troll barely notices and swats you away.";
-		}
+			return "You don't have that weapon.";
+		});
 
-		// Specific weapon
-		if (weapon === "metal_sword" && isInInventory(state, "metal_sword")) {
-			setObjectState(state, "troll", "knocked_out", true);
+		// ── talk to troll ─────────────────────────────────────────────────────
+		bus.on("talk", "troll", (event, state) => {
+			const troll = state.objects.troll;
+			if (troll?.state.knocked_out === true) {
+				event.stop();
+				return "The troll is unconscious. It snores loudly.";
+			}
 			event.stop();
-			return "You swing the metal sword in a wide arc. It connects with the troll's head with a satisfying clang! The troll staggers, then collapses to the ground, unconscious.";
-		}
+			return 'The troll grunts: "Me no talk. Me SMASH!"';
+		});
 
-		if (weapon === "wooden_sword" && isInInventory(state, "wooden_sword")) {
-			event.stop();
-			return "You whack the troll with the wooden sword. It splinters on impact. The troll barely notices and swats you away.";
-		}
+		// ── troll attacks back each turn ──────────────────────────────────────
+		registerDaemon(bus, "troll-counter-attack", {
+			condition: (_, state) =>
+				!state.player.state.dead &&
+				state.player.current_room === "troll_cave" &&
+				state.objects.troll?.state.knocked_out !== true,
+			effect: () => {},
+			feedback: () => "\nThe troll swings his axe at you! You barely dodge in time.",
+			priority: PRIORITY.POST_MUTATION,
+		});
 
-		event.stop();
-		return "You don't have that weapon.";
-	});
-
-	// ── talk to troll ─────────────────────────────────────────────────────
-	bus.on("talk", "troll", (event, state) => {
-		const troll = state.objects.troll;
-		if (troll?.state.knocked_out === true) {
-			event.stop();
-			return "The troll is unconscious. It snores loudly.";
-		}
-		event.stop();
-		return 'The troll grunts: "Me no talk. Me SMASH!"';
-	});
-
-	// ── troll attacks back each turn ──────────────────────────────────────
-	registerDaemon(bus, "troll-counter-attack", {
-		condition: (_, state) =>
-			!state.player.state.dead &&
-			state.player.current_room === "troll_cave" &&
-			state.objects.troll?.state.knocked_out !== true,
-		effect: () => {},
-		feedback: () => "\nThe troll swings his axe at you! You barely dodge in time.",
-		priority: PRIORITY.POST_MUTATION,
-	});
-
-	registerDaemon(bus, "sword-glow-effect", {
-		condition: (world, state) => {
-			return !state.player.state.dead && isInInventory(state, "metal_sword") && isTrollNearby(state, world);
-		},
-		effect: () => {},
-		feedback: () => "The sword glows with a green light.",
-		priority: PRIORITY.POST_MUTATION,
-	});
-};
+		registerDaemon(bus, "sword-glow-effect", {
+			condition: (world, state) => {
+				return !state.player.state.dead && isInInventory(state, "metal_sword") && isTrollNearby(state, world);
+			},
+			effect: () => {},
+			feedback: () => "The sword glows with a green light.",
+			priority: PRIORITY.POST_MUTATION,
+		});
+	},
+});

@@ -1,4 +1,4 @@
-import type { World } from "../src/world/types";
+import { defineGame, type World } from "../src/world";
 
 const world: World = {
 	id: "the_great_hall",
@@ -190,4 +190,6 @@ const world: World = {
 	},
 };
 
-export default world;
+export default defineGame({
+	world,
+});

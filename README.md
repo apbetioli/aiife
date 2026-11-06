@@ -74,17 +74,16 @@ To use a separate narrator model, set `NARRATOR_PROVIDER` and its provider-speci
 Game files live in `games/`. You can run a game by its filename without the extension. Available games include:
 
 - `the-great-hall` (default)
-- `the-forgotten-manor`
+- `the-forgotten-manor` (JSON world)
 - `troll`
 - `zork-one`
-- `zork` (JSON world)
 
 ## Creating a game
 
-Create a TypeScript module in `games/` that exports a default `World` object. The world describes rooms, exits, objects, object state, and starting inventory. `src/world/types.ts` defines the validated schema; `games/the-forgotten-manor.ts` is a compact example.
+Create a TypeScript module in `games/` using `defineGame` (or define a pure JSON file). The world describes rooms, exits, objects, object state, and starting inventory. `src/world/types.ts` defines the validated schema; `games/the-great-hall.ts` is a compact TypeScript example, and `games/the-forgotten-manor.json` is a JSON example.
 
 ```ts
-import type { World } from "../src/world/types";
+import { defineGame, type World } from "../src/world";
 
 const world: World = {
 	id: "my_game",
@@ -103,12 +102,14 @@ const world: World = {
 	player: { current_room: "start", inventory: [], state: {} },
 };
 
-export default world;
+export default defineGame({
+	world,
+});
 ```
 
 Run it with `npm run dev -- my-game`.
 
-For custom action behavior, a TypeScript game module may also export `setup(bus, registry)`. It receives the event bus and action registry so the game can register listeners and actions. See `games/troll.ts` for an example.
+For custom action behavior, provide a `setup(bus, registry)` function inside `defineGame({ world, setup(bus, registry) { ... } })`. It receives the event bus and action registry so the game can register listeners and actions. See `games/troll.ts` or `games/zork-one.ts` for examples.
 
 ## Development commands
 

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import theForgottenManor from "../../games/the-forgotten-manor";
-import theGreatHall from "../../games/the-great-hall";
+import theForgottenManorRaw from "../../games/the-forgotten-manor.json";
+import theGreatHallGame from "../../games/the-great-hall";
 import type { GameObject, Room } from "../world/types";
+import { WorldSchema } from "../world/types";
 import { makeTestWorld } from "./__fixtures__/test-world";
 import { buildInitialState } from "./initial-state";
 import {
@@ -10,6 +11,10 @@ import {
 	resolveObjectDescription,
 	resolveRoomDescription,
 } from "./parser-context";
+
+const theForgottenManor = WorldSchema.parse(theForgottenManorRaw);
+const theGreatHall = theGreatHallGame.world;
+
 import type { GameState, ObjectState, RoomState } from "./types";
 
 // ─── evaluateCondition ───────────────────────────────────────────────────────

@@ -72,7 +72,7 @@ const world: World = {
 	},
 };
 
-const game = defineGame({
+export default defineGame({
 	world,
 	setup(bus) {
 		bus.on(
@@ -86,7 +86,3 @@ const game = defineGame({
 		);
 	},
 });
-
-export default game;
-export { world };
-export const setup = game.setup;

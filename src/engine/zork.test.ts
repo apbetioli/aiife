@@ -1,13 +1,13 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { world, setup as zorkSetup } from "../../games/zork-one";
+import zorkOne from "../../games/zork-one";
 import { WorldSchema } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
 import { executeAction } from "./rules/executor";
+
+const { world, setup: zorkSetup } = zorkOne;
 
 describe("Zork One world definition and rules", () => {
 	function setup() {
@@ -27,16 +27,6 @@ describe("Zork One world definition and rules", () => {
 		expect(state.objects.small_mailbox).toBeDefined();
 		expect(state.objects.leaflet).toBeDefined();
 		expect(state.objects.welcome_mat).toBeUndefined();
-	});
-
-	it("validates that games/zork.json is a valid standalone JSON world definition", () => {
-		const raw = readFileSync(resolve(__dirname, "../../games/zork.json"), "utf-8");
-		const jsonWorld = WorldSchema.parse(JSON.parse(raw));
-		const state = buildInitialState(jsonWorld);
-		expect(state.world_id).toBe("zork-one");
-		expect(state.player.current_room).toBe("west_of_house");
-		expect(state.objects.small_mailbox).toBeDefined();
-		expect(state.objects.front_door).toBeDefined();
 	});
 
 	it("look only describes mailbox and room, hiding scenery front door", () => {
