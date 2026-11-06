@@ -24,5 +24,6 @@ export const close: ActionDef<z.infer<typeof objectsSchema>> = {
 			return "It's already closed.";
 		}
 		setObjectState(state, targetId, "open", false);
+		return "Closed.";
 	},
 };

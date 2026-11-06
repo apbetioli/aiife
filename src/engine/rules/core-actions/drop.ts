@@ -20,5 +20,6 @@ export const drop: ActionDef<z.infer<typeof objectsSchema>> = {
 		for (const id of toDrop) {
 			moveObjectFromInventoryToRoom(state, id, roomId);
 		}
+		return "Dropped.";
 	},
 };

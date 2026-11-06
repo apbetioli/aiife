@@ -54,6 +54,13 @@ export class GameAgent {
 	private async narrate(message: string, playerInput: string, callbacks: AgentCallbacks): Promise<string> {
 		const fallback = message || "Done.";
 
+		const hasExplicitNarrator = Boolean(process.env.NARRATOR_PROVIDER);
+		const hasNonAscii = /[^\u0000-\u007F]/.test(playerInput);
+		if (!hasExplicitNarrator && !hasNonAscii && fallback !== "Done.") {
+			callbacks.onToken(fallback);
+			return fallback;
+		}
+
 		try {
 			const stream = streamText({
 				model: this.narratorModel,

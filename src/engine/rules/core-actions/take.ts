@@ -44,5 +44,6 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 		for (const { id, containerId } of fromContainer) {
 			moveObjectFromContainerToInventory(state, id, containerId);
 		}
+		return "Taken.";
 	},
 };
