@@ -137,9 +137,21 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Put down / Drop
+	const putDownMatch = trimmed.match(/^(?:put\s+down|drop)\s+(?:the\s+)?([a-zA-Z0-9_-]+)$/);
+	if (putDownMatch) {
+		return {
+			action: "drop",
+			objects: [putDownMatch[1]],
+			preposition: null,
+			direction: null,
+			message: null,
+		};
+	}
+
 	// Put / Insert / Place
 	const putMatch = trimmed.match(
-		/^(?:put|insert|place)(?:\s+([a-zA-Z0-9_-]+)(?:\s+(in|into|inside|on)\s+([a-zA-Z0-9_-]+))?)?$/,
+		/^(?:put|insert|place)(?:\s+(?:the\s+)?([a-zA-Z0-9_-]+)(?:\s+(in|into|inside|on|onto)\s+(?:the\s+)?([a-zA-Z0-9_-]+))?)?$/,
 	);
 	if (putMatch) {
 		const item = putMatch[1];

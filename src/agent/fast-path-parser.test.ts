@@ -100,6 +100,41 @@ describe("tryDeterministicIntent", () => {
 			direction: null,
 			message: null,
 		});
+		expect(tryDeterministicIntent("put sword on floor")).toEqual({
+			action: "put",
+			objects: ["sword", "floor"],
+			preposition: "on",
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("put sword on the floor")).toEqual({
+			action: "put",
+			objects: ["sword", "floor"],
+			preposition: "on",
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("place lamp on the ground")).toEqual({
+			action: "put",
+			objects: ["lamp", "ground"],
+			preposition: "on",
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("put down sword")).toEqual({
+			action: "drop",
+			objects: ["sword"],
+			preposition: null,
+			direction: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("drop the sword")).toEqual({
+			action: "drop",
+			objects: ["sword"],
+			preposition: null,
+			direction: null,
+			message: null,
+		});
 	});
 
 	it("returns null for natural language or complex commands", () => {

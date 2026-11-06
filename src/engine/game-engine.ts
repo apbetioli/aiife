@@ -24,12 +24,14 @@ function toEventParams(intent: RecognizedIntent): Record<string, unknown> {
 
 /** Object IDs that must be in current room or inventory for the action to be valid. */
 const OBJECT_PARAM_KEYS = ["objects"] as const;
+const AMBIENT_TARGETS = new Set(["floor", "ground"]);
 
 function allTargetsInScope(state: GameState, params: Record<string, unknown>): boolean {
 	for (const key of OBJECT_PARAM_KEYS) {
 		const ids = Array.isArray(params[key]) ? (params[key] as string[]) : [];
 		for (const id of ids) {
 			if (typeof id !== "string" || !id) continue;
+			if (AMBIENT_TARGETS.has(id) || id === state.player.current_room) continue;
 			if (!isInScope(state, id)) return false;
 		}
 	}

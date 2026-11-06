@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { World } from "../../world/types";
 import { makeTestWorld } from "../__fixtures__/test-world";
+import { GameEngine } from "../game-engine";
 import { buildInitialState } from "../initial-state";
 import { getInventory, immutable, isInInventory, setObjectState } from "../mutators";
 import { registerCoreActions } from "./core-actions";
@@ -257,6 +258,53 @@ describe("executeAction", () => {
 
 		expect(result.stopped).toBe(true);
 		expect(result.feedback).toContain("Your hand passes through its object.");
+	});
+
+	it("put moves object from inventory onto the floor", () => {
+		const { world, bus, state } = setup();
+		const result = executeAction(bus, world, state, "put", {
+			objects: ["sword", "floor"],
+		});
+
+		expect(result.stopped).toBe(false);
+		expect(result.state.objects.sword.location).toBe("room_a");
+		expect(isInInventory(result.state, "sword")).toBe(false);
+		expect(result.feedback).toContain("You put the iron sword on the floor.");
+	});
+
+	it("put moves object from open container onto the ground", () => {
+		const { world, bus, state } = setup();
+		const openResult = executeAction(bus, world, state, "open", { objects: ["chest"] });
+		const result = executeAction(bus, world, openResult.state, "put", {
+			objects: ["gem", "ground"],
+		});
+
+		expect(result.stopped).toBe(false);
+		expect(result.state.objects.gem.location).toBe("room_a");
+		expect(result.feedback).toContain("You put the red gem on the floor.");
+	});
+
+	it("put blocked when object is already on the floor", () => {
+		const { world, bus, state } = setup();
+		// lamp is already in room_a
+		const result = executeAction(bus, world, state, "put", {
+			objects: ["lamp", "floor"],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("The brass lamp is already on the floor.");
+	});
+
+	it("GameEngine allows putting on floor without failing in-scope checks", () => {
+		const engine = new GameEngine(makeTestWorld());
+		const response = engine.runAction({
+			action: "put",
+			objects: ["sword", "floor"],
+			preposition: "on",
+			direction: null,
+			message: null,
+		});
+		expect(response).toContain("You put the iron sword on the floor.");
 	});
 
 	// ── open ──────────────────────────────────────────────────────────────

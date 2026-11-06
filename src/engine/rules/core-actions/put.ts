@@ -8,7 +8,8 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 	schema: objectsWithPrepositionSchema,
 	aliases: ["insert", "place"],
 	description:
-		"put(objects, preposition?): Put an item into a container. objects: [item_id, container_id], preposition: 'in' | 'into' | 'on'.",
+		'put(objects, preposition?): Put an item into a container or onto the floor. objects: [item_id, container_id_or_floor], preposition: "in" | "into" | "on". Use "floor" or "ground" as the second object to put something on the floor.',
+	hint: 'Use "floor" or "ground" as the second object to put something on the floor.',
 	handler: (event, state, world) => {
 		if (state.player.state.dead) {
 			event.stop();
@@ -22,17 +23,39 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 		}
 
 		const itemId = ids[0];
-		const containerId = ids[1];
+		const targetId = ids[1];
 
 		const item = world.objects[itemId];
 		const itemState = state.objects[itemId];
-		const container = world.objects[containerId];
-		const containerState = state.objects[containerId];
 
 		if (!item || !itemState) {
 			event.stop();
 			return "You don't see that here.";
 		}
+
+		// Handle putting on floor / ground / current room
+		const isFloorTarget = targetId === "floor" || targetId === "ground" || targetId === state.player.current_room;
+		if (isFloorTarget) {
+			if (itemState.location === state.player.current_room) {
+				event.stop();
+				return `The ${item.name} is already on the floor.`;
+			}
+			if (itemState.state.carriable === false && !isInInventory(state, itemId)) {
+				event.stop();
+				return `The ${item.name} cannot be moved.`;
+			}
+			if (!isInInventory(state, itemId) && !isInRoom(state, itemId) && !findOpenContainerInRoom(state, itemId)) {
+				event.stop();
+				return `You don't have the ${item.name}.`;
+			}
+
+			moveObject(state, itemId, state.player.current_room);
+			return `You put the ${item.name} on the floor.`;
+		}
+
+		const container = world.objects[targetId];
+		const containerState = state.objects[targetId];
+
 		if (!container || !containerState) {
 			event.stop();
 			return "You don't see that container here.";
@@ -45,13 +68,13 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 			event.stop();
 			return `The ${container.name} is closed.`;
 		}
-		if (itemId === containerId) {
+		if (itemId === targetId) {
 			event.stop();
 			return "You can't put something inside itself.";
 		}
 
 		// Prevent moving into a container that is nested inside the item itself
-		let curr: string | undefined = containerId;
+		let curr: string | undefined = targetId;
 		while (curr && curr !== "inventory" && state.objects[curr]) {
 			if (curr === itemId) {
 				event.stop();
@@ -60,7 +83,7 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 			curr = state.objects[curr].location;
 		}
 
-		if (itemState.location === containerId) {
+		if (itemState.location === targetId) {
 			event.stop();
 			return `The ${item.name} is already in the ${container.name}.`;
 		}
@@ -75,7 +98,7 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 			return `You don't have the ${item.name}.`;
 		}
 
-		moveObject(state, itemId, containerId);
+		moveObject(state, itemId, targetId);
 		return `You put the ${item.name} into the ${container.name}.`;
 	},
 };
