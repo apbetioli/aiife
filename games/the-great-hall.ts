@@ -1,4 +1,4 @@
-import { defineGame, type World } from "../src/world";
+import { defineGame, type World } from "../src/sdk";
 
 const world: World = {
 	id: "the_great_hall",

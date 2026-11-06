@@ -1,9 +1,13 @@
-import { isInInventory, setObjectState } from "../src/engine/mutators";
-import { runAction } from "../src/engine/rules/core-actions/helpers";
-import { registerDaemon } from "../src/engine/rules/factories";
-import { PRIORITY } from "../src/engine/rules/priorities";
-import type { GameState } from "../src/engine/types";
-import { defineGame, type World } from "../src/world";
+import {
+	defineGame,
+	type GameState,
+	isInInventory,
+	PRIORITY,
+	registerDaemon,
+	runAction,
+	setObjectState,
+	type World,
+} from "../src/sdk";
 
 const world: World = {
 	id: "troll",

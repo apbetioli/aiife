@@ -1,4 +1,3 @@
-import * as fs from "node:fs";
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
@@ -8,6 +7,7 @@ import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type G
 import { registerCoreActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
 import { load, type SaveFile, save } from "./save";
+import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
 import type { GameState } from "./types";
 
 const DEFAULT_FEEDBACK = "Done.";
@@ -38,21 +38,33 @@ function allTargetsInScope(state: GameState, params: Record<string, unknown>): b
 	return true;
 }
 
+export interface GameEngineOptions {
+	setup?: GameSetup;
+	storage?: SaveStorageAdapter;
+}
+
 export class GameEngine {
 	private state: GameState;
 	private bus: EventBus;
 	private registry: ActionRegistry;
 	private history: GameState[] = [];
+	private storage: SaveStorageAdapter;
 
 	constructor(
 		private world: World,
-		setup?: GameSetup,
+		setupOrOptions?: GameSetup | GameEngineOptions,
+		storage?: SaveStorageAdapter,
 	) {
+		const options: GameEngineOptions =
+			typeof setupOrOptions === "function" ? { setup: setupOrOptions } : (setupOrOptions ?? {});
+
+		this.storage = storage ?? options.storage ?? (process.env.VITEST ? new MemorySaveStorage() : new FileSaveStorage());
+
 		this.bus = new EventBus();
 		this.registry = new ActionRegistry();
 		this.state = buildInitialState(world);
 		registerCoreActions(this.bus, this.registry);
-		setup?.(this.bus, this.registry);
+		options.setup?.(this.bus, this.registry);
 	}
 
 	addObserver(observer: Observer): void {
@@ -91,9 +103,8 @@ export class GameEngine {
 		if (intent.action === "save") {
 			const slot = (intent.slot ?? "default").trim();
 			const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
-			const filename = `.save-${this.world.id}-${sanitizedSlot}.json`;
 			try {
-				fs.writeFileSync(filename, JSON.stringify(this.save(), null, 2), "utf-8");
+				this.storage.save(this.world.id, sanitizedSlot, this.save());
 				return `Game saved to slot "${sanitizedSlot}".`;
 			} catch (e) {
 				return `Failed to save game: ${e instanceof Error ? e.message : String(e)}`;
@@ -103,13 +114,14 @@ export class GameEngine {
 		if (intent.action === "restore") {
 			const slot = (intent.slot ?? "default").trim();
 			const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
-			const filename = `.save-${this.world.id}-${sanitizedSlot}.json`;
 			try {
-				if (!fs.existsSync(filename)) {
+				if (!this.storage.exists(this.world.id, sanitizedSlot)) {
 					return `No save file found for slot "${sanitizedSlot}".`;
 				}
-				const content = fs.readFileSync(filename, "utf-8");
-				const data = JSON.parse(content);
+				const data = this.storage.load(this.world.id, sanitizedSlot);
+				if (!data) {
+					return `No save file found for slot "${sanitizedSlot}".`;
+				}
 				return this.restore(data);
 			} catch (e) {
 				return `Failed to restore game: ${e instanceof Error ? e.message : String(e)}`;

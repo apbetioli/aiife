@@ -1,5 +1,4 @@
-import { PRIORITY } from "../src/engine/rules/priorities";
-import { defineGame, type World } from "../src/world";
+import { defineGame, PRIORITY, type World } from "../src/sdk";
 
 const world: World = {
 	id: "zork-one",

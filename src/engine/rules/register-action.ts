@@ -1,6 +1,6 @@
 import type { ActionRegistry } from "./action-registry";
-import type { ActionDef, StoppableEventLike } from "./core-actions/types";
 import type { EventBus } from "./event-bus";
+import type { ActionDef, StoppableEventLike } from "./types";
 
 /**
  * Registers an action definition with both the ActionRegistry (for validation and LLM prompts)

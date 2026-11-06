@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { IntentMeta } from "./core-actions/types";
+import type { IntentMeta } from "./types";
 
 function unknownActionError(actionName: string): z.ZodError {
 	return new z.ZodError([{ code: "custom", message: `Unknown action: ${actionName}`, path: [] }]);
