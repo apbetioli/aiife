@@ -1,8 +1,9 @@
 import type { z } from "zod";
 import { victorySchema } from "../schemas";
-import type { ActionDefSchemaOnly } from "../types";
+import type { ActionDef } from "../types";
 
-export const gameEnd: ActionDefSchemaOnly<z.infer<typeof victorySchema>> = {
+export const gameEnd: ActionDef<z.infer<typeof victorySchema>> = {
 	schema: victorySchema,
 	description: "",
+	handler: () => undefined,
 };

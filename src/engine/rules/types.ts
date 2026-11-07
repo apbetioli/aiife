@@ -73,7 +73,7 @@ export type IntentMeta = {
 export type ActionDef<TParams = Record<string, unknown>> = {
 	schema: z.ZodType<TParams>;
 	description: string;
-	handler?: (event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult;
+	handler: (event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult;
 	/** Verb synonyms / shorthands that map player input to this action. */
 	aliases?: string[];
 	/** Disambiguation hint shown alongside aliases in the prompt (for patterns that aren't simple verb synonyms). */
@@ -82,7 +82,7 @@ export type ActionDef<TParams = Record<string, unknown>> = {
 	priority?: number;
 };
 
-/** Schema-only (no handler), e.g. enter/exit. */
+/** @deprecated Use ActionDef with a handler instead. */
 export type ActionDefSchemaOnly<TParams> = {
 	schema: z.ZodType<TParams>;
 	description: string;

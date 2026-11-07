@@ -21,18 +21,15 @@ export function registerAction<TParams = Record<string, unknown>>(
 		hint: def.hint,
 	});
 
-	let unbindBus: (() => void) | undefined;
-	if (def.handler) {
-		const handler = def.handler;
-		unbindBus = bus.on(
-			name,
-			(event, state, world) => handler(event as unknown as StoppableEventLike<TParams>, state, world, bus),
-			def.priority !== undefined ? { priority: def.priority } : undefined,
-		);
-	}
+	const handler = def.handler;
+	const unbindBus = bus.on(
+		name,
+		(event, state, world) => handler(event as unknown as StoppableEventLike<TParams>, state, world, bus),
+		def.priority !== undefined ? { priority: def.priority } : undefined,
+	);
 
 	return () => {
 		registry.unregister(name);
-		unbindBus?.();
+		unbindBus();
 	};
 }

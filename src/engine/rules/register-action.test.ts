@@ -107,17 +107,18 @@ describe("registerAction", () => {
 		expect(order).toEqual(["guard", "mutation"]);
 	});
 
-	it("handles schema-only actions without a handler", () => {
+	it("registers action with minimal handler", () => {
 		const { bus, registry } = setup();
 
-		const cleanup = registerAction(bus, registry, "custom_schema_only", {
+		const cleanup = registerAction(bus, registry, "custom_action", {
 			schema: z.object({ test: z.string() }),
 			description: "custom(): Custom action.",
+			handler: () => undefined,
 		});
 
-		expect(registry.has("custom_schema_only")).toBe(true);
+		expect(registry.has("custom_action")).toBe(true);
 		cleanup();
-		expect(registry.has("custom_schema_only")).toBe(false);
+		expect(registry.has("custom_action")).toBe(false);
 	});
 
 	it("cleanup unregisters the action from both ActionRegistry and EventBus", () => {

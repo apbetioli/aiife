@@ -1,8 +1,9 @@
 import type { z } from "zod";
 import { roomSchema } from "../schemas";
-import type { ActionDefSchemaOnly } from "../types";
+import type { ActionDef } from "../types";
 
-export const enter: ActionDefSchemaOnly<z.infer<typeof roomSchema>> = {
+export const enter: ActionDef<z.infer<typeof roomSchema>> = {
 	schema: roomSchema,
 	description: "",
+	handler: () => undefined,
 };

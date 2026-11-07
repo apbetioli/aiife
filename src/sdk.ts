@@ -28,6 +28,7 @@ export {
 	GameEvent,
 	type GameSetup,
 	type IntentMeta,
+	registerAction,
 	type StoppableEvent,
 	type StoppableEventLike,
 } from "./engine/rules";
