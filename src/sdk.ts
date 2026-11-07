@@ -1,6 +1,7 @@
 // ─── AIIFE Game Authoring SDK ─────────────────────────────────────────────────
 
 export {
+	ensureVisited,
 	findOpenContainerInRoom,
 	getInventory,
 	getObjectsInContainer,

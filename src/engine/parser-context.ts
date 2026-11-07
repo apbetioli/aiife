@@ -44,6 +44,10 @@ export function evaluateCondition(condition: string, state: GameState): boolean 
 		actual = stateKey === "current_room" ? state.player.current_room : state.player.state[stateKey];
 	} else if (target === "game" || target === "state") {
 		actual = stateKey === "turn" ? state.turn : undefined;
+	} else if (state.rooms[target]?.state[stateKey] !== undefined) {
+		actual = state.rooms[target].state[stateKey];
+	} else if (state.objects[target]?.state[stateKey] !== undefined) {
+		actual = state.objects[target].state[stateKey];
 	} else if (state.rooms[target]) {
 		actual = state.rooms[target].state[stateKey];
 	} else if (state.objects[target]) {
