@@ -101,7 +101,6 @@ const world: World = {
 	},
 	player: {
 		current_room: "cellar",
-		inventory: [],
 		state: {},
 	},
 };

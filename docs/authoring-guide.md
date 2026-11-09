@@ -56,7 +56,6 @@ const world: World = {
   },
   player: {
     current_room: "clearing",
-    inventory: [],
     state: {},
   },
 };

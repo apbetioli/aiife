@@ -38,12 +38,10 @@ describe("buildInitialState", () => {
 			});
 			expect(validateAllObjectsOwned(world)).toContainEqual(expect.stringContaining('"ghost" is not in any room'));
 		});
-		it("returns error for double-owned object", () => {
+		it("returns error for object located inside itself", () => {
 			const world = makeTestWorld();
-			world.player.inventory.push("table");
-			expect(validateAllObjectsOwned(world)).toContainEqual(
-				expect.stringMatching(/Object "table" is in player inventory.*but also in/),
-			);
+			world.objects.chest.location = "chest";
+			expect(validateAllObjectsOwned(world)).toContainEqual('Object "chest" cannot be located inside itself');
 		});
 	});
 
@@ -51,10 +49,12 @@ describe("buildInitialState", () => {
 		it("returns empty for valid world", () => {
 			expect(validateContainment(makeTestWorld())).toEqual([]);
 		});
-		it("returns error for player inventory referencing unknown object", () => {
+		it("returns error for circular container hierarchy", () => {
 			const world = makeTestWorld();
-			world.player.inventory = ["nonexistent"];
-			expect(validateContainment(world)).toContainEqual('Player inventory references unknown object "nonexistent"');
+			world.objects.chest.location = "gem";
+			expect(validateContainment(world)).toContainEqual(
+				expect.stringContaining('Circular containment detected: object "chest" is inside a containment cycle'),
+			);
 		});
 	});
 
@@ -164,21 +164,13 @@ describe("buildInitialState", () => {
 		expect(() => buildInitialState(world)).toThrow('Object "ghost" is not in any room, container, or player inventory');
 	});
 
-	// ─── Validation: player inventory ────────────────────────────────────────
+	// ─── Validation: containment ─────────────────────────────────────────────
 
-	it("rejects inventory referencing unknown objects", () => {
+	it("rejects circular containment hierarchy", () => {
 		const world = makeTestWorld();
-		world.player.inventory = ["nonexistent"];
+		world.objects.chest.location = "gem";
 
-		expect(() => buildInitialState(world)).toThrow('Player inventory references unknown object "nonexistent"');
-	});
-
-	it("rejects inventory when object is also in a room", () => {
-		const world = makeTestWorld();
-		// lamp is in room_a; add to inventory too
-		world.player.inventory = ["sword", "lamp"];
-
-		expect(() => buildInitialState(world)).toThrow(/Object "lamp" is in player inventory but also in/);
+		expect(() => buildInitialState(world)).toThrow(/Circular containment detected/);
 	});
 
 	// ─── Validation: exit conditions ─────────────────────────────────────────

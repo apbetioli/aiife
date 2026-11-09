@@ -113,7 +113,6 @@ export function makeTestWorld(overrides?: Partial<World>): World {
 
 		player: {
 			current_room: "room_a",
-			inventory: ["sword"],
 			state: { moves: 0 },
 		},
 

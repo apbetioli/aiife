@@ -13,7 +13,6 @@ const world: World = {
 	objects,
 	player: {
 		current_room: "west_of_house",
-		inventory: [],
 		state: {},
 	},
 };

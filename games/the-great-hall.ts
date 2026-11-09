@@ -185,7 +185,6 @@ const world: World = {
 	},
 	player: {
 		current_room: "great_hall",
-		inventory: [],
 		state: {},
 	},
 };

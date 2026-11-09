@@ -72,7 +72,6 @@ const RoomSchema = z.object({
 
 const PlayerSchema = z.object({
 	current_room: z.string(), // room id
-	inventory: z.array(z.string()), // object ids
 	state: StateSchema.default({}),
 });
 

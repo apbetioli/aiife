@@ -265,7 +265,6 @@
 	},
 	"player": {
 		"current_room": "entrance_hall",
-		"inventory": [],
 		"state": {
 			"moves": 0,
 			"won": false

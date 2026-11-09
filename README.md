@@ -194,7 +194,7 @@ const world: World = {
       descriptions: { default: "A polished silver disc depicting a crescent moon." },
     },
   },
-  player: { current_room: "crypt_entrance", inventory: [], state: {} },
+  player: { current_room: "crypt_entrance", state: {} },
 };
 
 export default defineGame({
