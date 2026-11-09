@@ -1,125 +1,279 @@
-# AI Interactive Fiction Engine
+# AIIFE: AI Interactive Fiction Engine
 
-AIIFE is a terminal-based interactive fiction engine. You describe what you want to do in plain language; an LLM maps that input to a game action, the rules engine updates the world, and an LLM narrates the result. Game state and action rules are handled by the engine, so the model does not directly decide whether an action succeeds.
+[![Tests](https://img.shields.io/badge/tests-239%20passing-brightgreen.svg)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)]()
+[![Node](https://img.shields.io/badge/Node.js-20%2B-green.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-purple.svg)]()
 
-## How it works
+**AIIFE** is a modern, layered interactive fiction engine built in TypeScript. It blends the rock-solid determinism of classic text adventures (like Infocom's *Zork*) with a fast hybrid parser that uses LLMs for natural language intent recognition and seamless multilingual translation.
 
-1. The engine builds a parser context from the current room, visible objects, inventory, and available exits.
-2. The intent model converts the player's input into a structured action and parameters.
-3. The engine validates targets and runs the action through its event-driven rules.
-4. The narrator turns the engine's feedback into a conversational response.
+Unlike pure generative text games where the AI invents inconsistent lore on the fly, AIIFE enforces strict physical scope, state machines, and event-driven priority bands. **The engine is the arbiter of reality; the AI is your interface.**
 
-The engine includes core actions, extensible listeners, state validation, and save/load support. See `src/engine/` and `src/world/` for implementation details.
+---
 
-## Requirements
+## Highlights
 
-- Node.js 20 or newer
-- npm
-- An API key for Anthropic or OpenAI, or a running Ollama server
+- **⚡ Fast-Path Hybrid Parser**: Standard commands (`n`, `s`, `look`, `take lantern`, `i`, `save`, `undo`) execute in **< 1ms** with zero LLM API calls. Complex or conversational inputs are mapped to structured actions via LLM intent recognition.
+- **🛡️ Priority-Banded Event Bus**: Five named priority bands (`GUARD`, `MUTATION`, `POST_MUTATION`, `EFFECT`, `DAEMON`) with scoped object preemption and `event.stop()` cancellation.
+- **🎯 Single Source of Truth**: Entity-component-style object locations eliminate dual-inventory desync bugs.
+- **🌍 Multilingual Narrator**: Handcrafted, deterministic IF prose in English with automatic on-the-fly streaming translation when players interact in another language.
+- **⚔️ Battle-Tested on Zork I**: Ships with a full 110-room, 19-treasure, combat-ready recreation of *Zork I: The Great Underground Empire*, verified by 19 automated walkthrough integration tests.
+- **📦 Authoring SDK**: Author games in clean TypeScript using `import { defineGame, registerAction } from "aiife/sdk"`.
+- **💻 Modern Terminal UI**: Built with React and Ink, featuring interactive command history, arrow navigation, streaming text, animated spinners, and live token usage tracking.
+- **💾 Pluggable Storage**: Multi-slot save/restore persistence (`FileSaveStorage` and `MemorySaveStorage`).
 
-## Quick start
+---
 
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                Terminal UI (React + Ink)                │
+└───────────────────────────┬─────────────────────────────┘
+                            │ Player Input
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                       GameAgent                         │
+│  ┌──────────────────────┐     ┌──────────────────────┐  │
+│  │   Fast-Path Parser   │-no-▶│ Intent Model (LLM)   │  │
+│  │   Sub-ms Regex Match │     │ generateText + Zod   │  │
+│  └──────────┬───────────┘     └──────────┬───────────┘  │
+│             │ Match                      │ Structured   │
+│             └─────────────┬──────────────┘ Intent       │
+└───────────────────────────┼─────────────────────────────┘
+                            │ RecognizedIntent
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                      GameEngine                         │
+│  - Target Scope Validation (isInScope / Ambient)        │
+│  - Priority Event Bus (GUARD -> MUTATION -> EFFECT)     │
+│  - Immutable State Transitions via Immer                │
+│  - 50-turn Undo Stack & Save Slot Persistence           │
+└───────────────────────────┼─────────────────────────────┘
+                            │ Deterministic Feedback
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                    Narrator Layer                       │
+│  - English: Pass-through (zero latency / zero cost)     │
+│  - Multilingual: On-the-fly streamText translation      │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Quick Start
+
+### Requirements
+- **Node.js 20 or newer**
+- **npm**
+- An API key for Anthropic, OpenAI, or Google Gemini (or a local Ollama server)
+
+### Installation
 ```bash
+git clone https://github.com/your-username/aiife.git
+cd aiife
 npm install
 cp .env.example .env
 ```
 
-Edit `.env` to select a model provider and add its API key. Then start the default game:
+Configure your model provider in `.env` (see [Model Configuration](#model-configuration)), then run the default game:
 
 ```bash
 npm run dev
 ```
 
-Pass a game name to play another built-in game:
+### Play Built-In Games
+Pass the name of any game in `games/`:
 
 ```bash
+# Play full 110-room Zork I
+npm run dev -- zork-one
+
+# Play the Troll Cave combat encounter
+npm run dev -- troll
+
+# Play The Great Hall (starter tutorial)
+npm run dev -- the-great-hall
+
+# Play The Forgotten Manor (pure JSON world definition)
 npm run dev -- the-forgotten-manor
-npm run dev -- zork
 ```
 
-The default game is `the-great-hall`. Type commands such as “look around,” “take the key,” or “go north.” Type `quit` to exit.
+---
 
-## Model configuration
+## Model Configuration
 
-The intent parser and narrator use the same model configuration by default. Set `INTENT_PROVIDER` to `anthropic`, `openai`, or `ollama`. The `.env.example` file lists the available provider and model variables.
-
-Example using Anthropic:
+AIIFE supports **Anthropic**, **OpenAI**, **Google Gemini**, and **Ollama**. Configure providers in `.env`:
 
 ```dotenv
+# Provider: anthropic | openai | google | ollama
 INTENT_PROVIDER=anthropic
+
+# Anthropic
 ANTHROPIC_API_KEY=your-key
-ANTHROPIC_MODEL=claude-sonnet-4-20250514
-```
+ANTHROPIC_MODEL=claude-3-5-haiku-20241022
 
-Example using OpenAI:
-
-```dotenv
-INTENT_PROVIDER=openai
+# OpenAI
 OPENAI_API_KEY=your-key
-OPENAI_MODEL=gpt-4o
-```
+OPENAI_MODEL=gpt-4o-mini
 
-Example using Ollama's OpenAI-compatible endpoint:
+# Google Gemini
+GOOGLE_GENERATIVE_AI_API_KEY=your-key
+GOOGLEAI_MODEL=gemini-2.5-flash
 
-```dotenv
-INTENT_PROVIDER=ollama
+# Ollama (Local)
 OLLAMA_BASE_URL=http://localhost:11434/v1
 OLLAMA_MODEL=llama3.1
 ```
 
-To use a separate narrator model, set `NARRATOR_PROVIDER` and its provider-specific model variable, such as `NARRATOR_PROVIDER=anthropic` and `NARRATOR_ANTHROPIC_MODEL=claude-sonnet-4-20250514`. If no narrator provider is set, the parser's model configuration is reused. `LLM_TIMEOUT_MS` controls the request timeout (default: 60 seconds).
+- `INTENT_PROVIDER`: Used for intent classification (fast/cheap models recommended).
+- `NARRATOR_PROVIDER`: (Optional) Separate model used for multilingual translation. If omitted, intent provider config is reused.
+- `LLM_TIMEOUT_MS`: Request timeout in milliseconds (default: 60,000).
 
-## Built-in games
+---
 
-Game files live in `games/`. You can run a game by its filename without the extension. Available games include:
+## Creating Your Own Games
 
-- `the-great-hall` (default)
-- `the-forgotten-manor` (JSON world)
-- `troll`
-- `zork-one`
+AIIFE provides a dedicated Authoring SDK exported from `"aiife/sdk"`.
 
-## Creating a game
-
-Create a TypeScript module in `games/` using `defineGame` (or define a pure JSON file). The world describes rooms, exits, objects, object state, and starting inventory. `src/world/types.ts` defines the validated schema; `games/the-great-hall.ts` is a compact TypeScript example, and `games/the-forgotten-manor.json` is a JSON example.
+Create a TypeScript file in `games/my-adventure.ts`:
 
 ```ts
-import { defineGame, type World } from "../src/world";
+import { defineGame, PRIORITY, registerAction, setObjectState, type World } from "../src/sdk";
+import { z } from "zod";
 
 const world: World = {
-	id: "my_game",
-	name: "My Game",
-	version: "1.0.0",
-	start_room: "start",
-	rooms: {
-		start: {
-			id: "start",
-			name: "Starting Room",
-			descriptions: { default: "You are in a small room." },
-			exits: {},
-		},
-	},
-	objects: {},
-	player: { current_room: "start", inventory: [], state: {} },
+  id: "my_adventure",
+  name: "The Crypt of the Moon",
+  version: "1.0.0",
+  start_room: "crypt_entrance",
+  rooms: {
+    crypt_entrance: {
+      id: "crypt_entrance",
+      name: "Crypt Entrance",
+      descriptions: {
+        default: "Ancient stone walls surround you. A heavy stone gate leads north.",
+      },
+      state: {},
+      exits: {
+        north: {
+          leads_to: "inner_sanctum",
+          condition: "stone_gate.open == true",
+          locked_message: "The stone gate is shut tightly.",
+        },
+      },
+    },
+    inner_sanctum: {
+      id: "inner_sanctum",
+      name: "Inner Sanctum",
+      descriptions: {
+        default: "A grand chamber glowing with moonbeams. You have conquered the crypt!",
+      },
+      state: {},
+      exits: { south: { leads_to: "crypt_entrance" } },
+    },
+  },
+  objects: {
+    stone_gate: {
+      id: "stone_gate",
+      name: "stone gate",
+      aliases: ["gate", "door"],
+      type: "door",
+      location: "crypt_entrance",
+      state: { carriable: false, open: false, locked: true },
+      descriptions: { default: "A massive slab of granite." },
+      requires_instrument: { unlock: "silver_sigil" },
+    },
+    silver_sigil: {
+      id: "silver_sigil",
+      name: "silver sigil",
+      aliases: ["sigil", "key"],
+      type: "key",
+      location: "crypt_entrance",
+      state: { carriable: true },
+      descriptions: { default: "A polished silver disc depicting a crescent moon." },
+    },
+  },
+  player: { current_room: "crypt_entrance", inventory: [], state: {} },
 };
 
 export default defineGame({
-	world,
+  world,
+  setup(bus, registry) {
+    // Custom verb recognized automatically by the LLM
+    registerAction(bus, registry, "meditate", {
+      schema: z.object({}),
+      description: "meditate(): Meditate peacefully to focus your thoughts.",
+      handler: (event, state) => {
+        return "You close your eyes and breathe deeply. You feel at peace.";
+      },
+    });
+
+    // Guard on gate
+    bus.on("open", "stone_gate", (event, state) => {
+      if (state.objects.stone_gate?.state.locked) {
+        event.stop();
+        return "The stone gate cannot be opened while its silver lock is engaged.";
+      }
+    }, { priority: PRIORITY.GUARD });
+  },
 });
 ```
 
-Run it with `npm run dev -- my-game`.
-
-For custom action behavior, provide a `setup(bus, registry)` function inside `defineGame({ world, setup(bus, registry) { ... } })`. It receives the event bus and action registry so the game can register listeners and actions. See `games/troll.ts` or `games/zork-one.ts` for examples.
-
-## Development commands
-
+Run your new game:
 ```bash
-npm run dev       # Run the default game
-npm run watch     # Restart on source changes
-npm run debug     # Run with model configuration diagnostics
-npm test          # Run unit tests
-npm run build     # Build the TypeScript package
-npm run eval      # Run the Laminar evaluation suite
+npm run dev -- my-adventure
 ```
 
-The evaluation suite and model comparison instructions are in [`evals/README.md`](evals/README.md). Set `LMNR_PROJECT_API_KEY` when using Laminar tracing or evaluations.
+---
+
+## Deep Dive Documentation
+
+Explore the comprehensive technical guides in [`docs/`](docs/):
+
+- 🏛️ [**Architecture Deep Dive**](docs/architecture.md) — Comprehensive breakdown of the 5 layers, state immutability, data lifecycle, and save/load persistence.
+- 🛠️ [**Game Authoring Guide**](docs/authoring-guide.md) — Complete tutorial on rooms, objects, container nesting, locked doors, custom verbs, daemons, and automated testing.
+- ⚡ [**Rules, Priorities & Event Bus**](docs/rules-and-events.md) — Technical reference on priority bands (`GUARD`, `MUTATION`, `POST_MUTATION`, `EFFECT`, `DAEMON`), scoped preemption, and core actions.
+- 🧠 [**Hybrid Parser & Intent Recognition**](docs/parser-and-llm.md) — How the sub-ms fast-path parser, dynamic prompt construction, scope gatekeeping, and Laminar evals work.
+
+---
+
+## Engineering Blog Series
+
+Read about the engineering decisions, failures, and breakthroughs along the way in [`docs/blog/`](docs/blog/):
+
+1. 📝 [**Why We Stopped Letting the LLM Narrate: Lessons in Determinism**](docs/blog/01-why-we-stopped-letting-llms-narrate.md)  
+   *Why freeform generative narration caused state hallucinations and latency, and why deterministic prose won.*
+
+2. ⚙️ [**Rethinking the Event Bus: Why Before/On/After Failed and Priority Bands Won**](docs/blog/02-rethinking-the-event-bus.md)  
+   *How complex puzzle interactions broke the classic 3-phase lifecycle and led to numerical priority bands and scoped preemption.*
+
+3. 🏰 [**Rebuilding Zork I with Modern TypeScript, Priority Events, and LLMs**](docs/blog/03-rebuilding-zork-with-modern-typescript-and-llms.md)  
+   *Porting 110 rooms, 19 treasures, combat, exorcisms, and flood gates to stress-test the AIIFE engine.*
+
+---
+
+## Development & Testing
+
+```bash
+# Run unit and integration tests (239 tests)
+npm test
+
+# Watch tests during development
+npm run test:watch
+
+# Build the CLI and Authoring SDK with tsup
+npm run build
+
+# Check linting and formatting with Biome
+npm run biome
+
+# Run the Laminar intent evaluation suite
+npm run eval
+```
+
+---
+
+## License
+
+MIT © [Your Name / Team]
