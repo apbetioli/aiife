@@ -19,6 +19,7 @@ import talk from "./data/talk.json" with { type: "json" };
 import use from "./data/use.json" with { type: "json" };
 import { actionSelectionScore, combinedIntentScore, parameterAccuracyScore } from "./intent-recognition-evaluators";
 import { intentRecognitionExecutor } from "./intent-recognition-executor";
+import { toolIntentRecognitionExecutor } from "./tool-intent-recognition-executor";
 
 const dataset = [
 	...go,
@@ -34,16 +35,23 @@ const dataset = [
 	...respond,
 ] as IntentRecognitionDatasetEntry[];
 
+const approach = process.env.EVAL_APPROACH ?? "baseline";
+const isTools = approach === "tools" || approach === "scoped-tools";
+
 console.log("Eval model:", getEvalModelId());
+console.log("Eval approach:", isTools ? "scoped-tools" : "prompt-baseline");
 
 evaluate<IntentRecognitionEvalData, IntentRecognitionEvalTarget, IntentRecognitionResult>({
 	data: dataset,
-	executor: intentRecognitionExecutor,
+	executor: isTools ? toolIntentRecognitionExecutor : intentRecognitionExecutor,
 	evaluators: {
 		actionSelection: actionSelectionScore,
 		parameterAccuracy: parameterAccuracyScore,
 		combined: combinedIntentScore,
 	},
 	groupName: "intent-recognition",
-	metadata: { model: getEvalModelId() },
+	metadata: {
+		model: getEvalModelId(),
+		approach: isTools ? "scoped-tools" : "prompt-baseline",
+	},
 });

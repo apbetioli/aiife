@@ -8,6 +8,8 @@ export const close: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,
 	aliases: ["shut"],
 	description: "close(objects): Close a container or door. objects: [target_id].",
+	scope: (ctx) =>
+		ctx.in_scope_objects.some((o) => (o.type === "container" || o.type === "door") && o.state?.open === true),
 	handler: (event, state, world) => {
 		const target = resolveTarget(event, state, world);
 		if (!target) {

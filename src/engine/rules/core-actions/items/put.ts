@@ -10,6 +10,7 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 	description:
 		'put(objects, preposition?): Put an item into a container or onto the floor. objects: [item_id, container_id_or_floor], preposition: "in" | "into" | "on". Use "floor" or "ground" as the second object to put something on the floor.',
 	hint: 'Use "floor" or "ground" as the second object to put something on the floor.',
+	scope: (ctx) => ctx.in_scope_objects.some((o) => o.source === "inventory"),
 	handler: (event, state, world) => {
 		if (state.player.state.dead) {
 			event.stop();

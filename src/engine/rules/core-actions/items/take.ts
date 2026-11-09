@@ -15,6 +15,7 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 	aliases: ["pick up", "get", "grab", "collect"],
 	description:
 		'take(objects): Pick up objects from the current room. For "take all", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',
+	scope: (ctx) => ctx.in_scope_objects.some((o) => o.source === "room" && o.state?.carriable !== false),
 	handler: (event, state, _world) => {
 		const ids = getObjectIds(event.params);
 		if (ids.length === 0) {

@@ -9,6 +9,7 @@ export const drop: ActionDef<z.infer<typeof objectsSchema>> = {
 	aliases: ["put down", "discard"],
 	description:
 		'drop(objects): Drop objects from inventory. For "drop all", list every inventory object id. For "drop all but X", list every inventory object id except X. For "drop X and Y", list [X, Y]. For single "drop X", list [X].',
+	scope: (ctx) => ctx.in_scope_objects.some((o) => o.source === "inventory"),
 	handler: (event, state) => {
 		const ids = getObjectIds(event.params);
 		const toDrop = ids.filter((id) => isInInventory(state, id));

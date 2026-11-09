@@ -21,3 +21,19 @@
 
 3. **Optional: per-case model**  
    Dataset entries can override the model via `data.config.model` (and `data.config.temperature`). The env var `EVAL_MODEL` overrides that when set, so it's ideal for "run everything with this model" comparisons.
+
+## Comparing approaches (Prompt Baseline vs Scoped Tools)
+
+You can compare the baseline prompt-based intent parser against the native scoped-tools executor:
+
+1. **Run the baseline** (dumps all actions in the system prompt + monolithic schema):
+   ```bash
+   npm run eval:baseline
+   ```
+
+2. **Run with Scoped Tools** (dynamically registers active tools based on room & objects):
+   ```bash
+   npm run eval:tools
+   ```
+
+Both runs share the same group (`intent-recognition`) in Laminar, tagged with `approach: "prompt-baseline"` and `approach: "scoped-tools"`, allowing side-by-side comparison of accuracy, latency, and token consumption.

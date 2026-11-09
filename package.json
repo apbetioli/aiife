@@ -31,6 +31,8 @@
 		"format": "biome format --write .",
 		"biome": "npm run format && npm run lint",
 		"eval": "npx lmnr eval",
+		"eval:baseline": "EVAL_APPROACH=baseline npx lmnr eval",
+		"eval:tools": "EVAL_APPROACH=tools npx lmnr eval",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},

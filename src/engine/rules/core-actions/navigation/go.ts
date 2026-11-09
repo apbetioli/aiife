@@ -13,6 +13,7 @@ export const go: ActionDef<z.infer<typeof directionSchema>> = {
 	description,
 	aliases: ["walk", "run", "climb", "head", "exit"],
 	hint: "A bare direction word or abbreviation (n, s, e, w, ne, nw, se, sw, u, d) is also go.",
+	scope: (ctx) => ctx.available_exits.length > 0,
 	handler: (event, state, world, bus) => {
 		const room = world.rooms[state.player.current_room];
 		const direction = event.params.direction;

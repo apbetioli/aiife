@@ -7,6 +7,7 @@ export const talk: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,
 	aliases: ["speak", "speak to", "speak with", "ask", "chat"],
 	description: "talk(objects): Talk to an actor in the current room. objects: [actor_id].",
+	scope: (ctx) => ctx.in_scope_objects.some((o) => o.type === "actor"),
 	handler: (event, state, world) => {
 		const target = resolveTarget(event, state, world);
 		if (!target) {

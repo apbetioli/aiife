@@ -7,6 +7,8 @@ import type { ActionDef } from "../types";
 export const unlock: ActionDef<z.infer<typeof objectsSchema>> = {
 	schema: objectsSchema,
 	description: "unlock(objects): Unlock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
+	scope: (ctx) =>
+		ctx.in_scope_objects.some((o) => (o.type === "container" || o.type === "door") && o.state?.locked === true),
 	handler: (event, state, world) => {
 		const target = getTarget(event.params as { objects?: string[] });
 		const instrument = getInstrument(event.params as { objects?: string[] });
