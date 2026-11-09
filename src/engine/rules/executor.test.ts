@@ -544,7 +544,7 @@ describe("executeAction", () => {
 
 	// ── look ──────────────────────────────────────────────────────────────
 
-	it("look returns room description with objects and exits", () => {
+	it("look returns room description with objects", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "look", {});
 
@@ -553,7 +553,7 @@ describe("executeAction", () => {
 		const text = result.feedback.join(" ");
 		expect(text).toContain("Room A");
 		expect(text).toContain("A brass lamp");
-		expect(text).toContain("Exits:");
+		expect(text).not.toContain("Exits:");
 	});
 
 	it("look excludes scenery objects from room listing", () => {

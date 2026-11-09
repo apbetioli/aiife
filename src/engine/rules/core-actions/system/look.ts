@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { evaluateCondition, resolveObjectDescription, resolveRoomDescription } from "../../../parser-context";
+import { resolveObjectDescription, resolveRoomDescription } from "../../../parser-context";
 import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
@@ -39,12 +39,6 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 					}
 				}
 			}
-		}
-		const exits = Object.entries(room.exits)
-			.filter(([, exit]) => !exit.condition || evaluateCondition(exit.condition, state))
-			.map(([dir]) => dir);
-		if (exits.length > 0) {
-			lines.push(`Exits: ${exits.join(", ")}.`);
 		}
 		return lines.join("\n");
 	},
