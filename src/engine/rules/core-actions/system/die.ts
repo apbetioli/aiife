@@ -7,8 +7,8 @@ import type { ActionDef } from "../types";
 export const die: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,
 	description: "",
-	handler: (event, state, world, bus) => {
-		event.stop();
+	execute: (_params, { state, world, bus, stop }) => {
+		stop();
 		setPlayerState(state, "dead", true);
 		runAction(bus, world, state, "drop", { objects: ["all"] });
 		return "You died!";

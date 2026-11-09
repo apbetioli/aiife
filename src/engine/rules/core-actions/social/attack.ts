@@ -8,13 +8,13 @@ export const attack: ActionDef<z.infer<typeof objectsSchema>> = {
 	aliases: ["hit", "strike", "fight", "kill"],
 	description: "attack(objects): Attack something. objects: [target_id] or [target_id, weapon_id].",
 	scope: (ctx) => ctx.in_scope_objects.some((o) => o.type === "actor"),
-	handler: (event, state, world) => {
-		const target = resolveTarget(event, state, world);
+	execute: (params, { state, world, stop }) => {
+		const target = resolveTarget(params, state, world);
 		if (!target) {
-			event.stop();
+			stop();
 			return "Attack what?";
 		}
-		event.stop();
+		stop();
 		return `Attacking the ${target.obj.name} has no effect.`;
 	},
 };

@@ -16,14 +16,14 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 	description:
 		'take(objects): Pick up objects from the current room. For "take all", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',
 	scope: (ctx) => ctx.in_scope_objects.some((o) => o.source === "room" && o.state?.carriable !== false),
-	handler: (event, state, _world) => {
-		const ids = getObjectIds(event.params);
+	execute: (params, { state, stop }) => {
+		const ids = getObjectIds(params);
 		if (ids.length === 0) {
-			event.stop();
+			stop();
 			return "Take what?";
 		}
 		if (state.player.state.dead) {
-			event.stop();
+			stop();
 			return "Your hand passes through its object.";
 		}
 		const canTake = (id: string) => state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
@@ -36,7 +36,7 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 			if (cid) fromContainer.push({ id, containerId: cid });
 		}
 		if (fromRoom.length === 0 && fromContainer.length === 0) {
-			event.stop();
+			stop();
 			return ids.some((id) => isInInventory(state, id)) ? "You're already carrying that." : "You can't take that.";
 		}
 		for (const id of fromRoom) {

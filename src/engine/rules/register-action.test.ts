@@ -27,7 +27,7 @@ describe("registerAction", () => {
 			description: "pray(objects?): Pray to a deity or at a shrine.",
 			aliases: ["worship", "kneel"],
 			hint: "Use pray when worshiping",
-			handler: (_event, _state, _world) => "You whisper a prayer into the stillness.",
+			execute: () => "You whisper a prayer into the stillness.",
 		});
 
 		// Verified in ActionRegistry
@@ -50,8 +50,8 @@ describe("registerAction", () => {
 		registerAction(bus, registry, "bless", {
 			schema: objectsSchema,
 			description: "bless(objects): Bless an object.",
-			handler: (event, s, _world) => {
-				const target = event.params.objects?.[0];
+			execute: (params, { state: s }) => {
+				const target = params.objects?.[0];
 				if (target && s.objects[target]) {
 					s.objects[target].state.blessed = true;
 					return `The ${target} glows with divine light.`;
@@ -71,8 +71,8 @@ describe("registerAction", () => {
 		registerAction(bus, registry, "shout", {
 			schema: z.object({}),
 			description: "shout(): Shout loudly.",
-			handler: (event) => {
-				event.stop();
+			execute: (_params, { stop }) => {
+				stop();
 				return "Your voice fails you.";
 			},
 		});
@@ -90,7 +90,7 @@ describe("registerAction", () => {
 			schema: z.object({}),
 			description: "dance(): Dance joyfully.",
 			priority: PRIORITY.GUARD,
-			handler: () => {
+			execute: () => {
 				order.push("guard");
 			},
 		});
@@ -113,7 +113,7 @@ describe("registerAction", () => {
 		const cleanup = registerAction(bus, registry, "custom_action", {
 			schema: z.object({ test: z.string() }),
 			description: "custom(): Custom action.",
-			handler: () => undefined,
+			execute: () => undefined,
 		});
 
 		expect(registry.has("custom_action")).toBe(true);
@@ -127,7 +127,7 @@ describe("registerAction", () => {
 		const cleanup = registerAction(bus, registry, "jump", {
 			schema: z.object({}),
 			description: "jump(): Jump in place.",
-			handler: () => "You jump!",
+			execute: () => "You jump!",
 		});
 
 		expect(registry.has("jump")).toBe(true);
@@ -152,7 +152,7 @@ describe("registerAction", () => {
 				schema: z.object({ objects: z.array(z.string()).optional() }),
 				description: "pray(objects?): Pray at a shrine or altar.",
 				aliases: ["worship"],
-				handler: (_event, s) => {
+				execute: (_params, { state: s }) => {
 					s.player.state.blessed = true;
 					return "A peaceful warmth settles in your chest.";
 				},

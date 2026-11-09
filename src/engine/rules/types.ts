@@ -113,11 +113,9 @@ export type ActionDef<TParams = Record<string, unknown>> = BaseActionDef & {
 
 	/** AI SDK standard executor: `(params, context) => result`. */
 	execute?: (params: TParams, context: ActionExecutionContext) => EventListenerResult;
-	/** Event-based execution handler: `(event, state, world, bus) => result`. */
-	handler?: (event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult;
 };
 
-/** @deprecated Use ActionDef with an execute or handler function instead. */
+/** @deprecated Use ActionDef with an execute function instead. */
 export type ActionDefSchemaOnly<TParams> = {
 	schema: z.ZodType<TParams>;
 	description: string;

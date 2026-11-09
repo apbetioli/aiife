@@ -5,5 +5,5 @@ import type { ActionDef } from "../types";
 export const gameStart: ActionDef<z.infer<typeof emptySchema>> = {
 	schema: emptySchema,
 	description: "",
-	handler: () => undefined,
+	execute: () => undefined,
 };

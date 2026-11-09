@@ -10,11 +10,11 @@ export const drop: ActionDef<z.infer<typeof objectsSchema>> = {
 	description:
 		'drop(objects): Drop objects from inventory. For "drop all", list every inventory object id. For "drop all but X", list every inventory object id except X. For "drop X and Y", list [X, Y]. For single "drop X", list [X].',
 	scope: (ctx) => ctx.in_scope_objects.some((o) => o.source === "inventory"),
-	handler: (event, state) => {
-		const ids = getObjectIds(event.params);
+	execute: (params, { state, stop }) => {
+		const ids = getObjectIds(params);
 		const toDrop = ids.filter((id) => isInInventory(state, id));
 		if (toDrop.length === 0) {
-			event.stop();
+			stop();
 			return ids.length === 0 ? "Drop what?" : "You're not carrying any of those.";
 		}
 		const roomId = state.player.current_room;

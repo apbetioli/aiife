@@ -5,5 +5,5 @@ import type { ActionDef } from "../types";
 export const exit: ActionDef<z.infer<typeof roomSchema>> = {
 	schema: roomSchema,
 	description: "",
-	handler: () => undefined,
+	execute: () => undefined,
 };

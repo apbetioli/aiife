@@ -1,14 +1,12 @@
-import type { World } from "../../world/types";
-import type { GameState } from "../types";
 import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
-import type { ActionDef, EventListenerResult, StoppableEventLike } from "./types";
+import type { ActionDef } from "./types";
 
 /**
  * Registers an action definition with both the ActionRegistry (for validation, scoping, and LLM tools)
  * and the EventBus (for execution).
  *
- * Supports both modern AI SDK tool style (`inputSchema`, `execute`) and classic style (`schema`, `handler`).
+ * Uses AI SDK tool style: `inputSchema` (or `schema`) and `execute`.
  *
  * Returns an unregister cleanup function.
  */
@@ -32,23 +30,16 @@ export function registerAction<TParams = Record<string, unknown>>(
 		scope: def.scope,
 	});
 
-	const hasExecute = typeof def.execute === "function";
-	const handler:
-		| ((event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult)
-		| undefined = hasExecute
-		? (event, state, world, b) =>
-				def.execute?.(event.params, {
-					state,
-					world,
-					bus: b,
-					stop: () => event.stop(),
-				})
-		: def.handler;
-
-	const unbindBus = handler
+	const unbindBus = def.execute
 		? bus.on(
 				name,
-				(event, state, world) => handler(event as unknown as StoppableEventLike<TParams>, state, world, bus),
+				(event, state, world) =>
+					def.execute?.(event.params as TParams, {
+						state,
+						world,
+						bus,
+						stop: () => event.stop(),
+					}),
 				def.priority !== undefined ? { priority: def.priority } : undefined,
 			)
 		: () => {};

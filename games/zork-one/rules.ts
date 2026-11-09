@@ -72,7 +72,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: emptySchema,
 		description: "score(): Display current score and rank.",
 		aliases: ["points"],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			const score = calculateScore(state);
 			return `Your score is ${score} of a possible 350 points, in ${state.turn || 0} moves.`;
 		},
@@ -83,8 +83,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "turn_on(objects): Turn on or light a light source, e.g. 'turn on lamp'.",
 		aliases: ["light", "switch on", "activate"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "brass_lantern" || target === "lamp") {
 				setObjectState(state, "brass_lantern", "lit", true);
 				return "The brass lantern is now on.";
@@ -105,8 +105,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "turn_off(objects): Turn off or extinguish a light source, e.g. 'turn off lamp'.",
 		aliases: ["extinguish", "switch off", "deactivate"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "brass_lantern" || target === "lamp") {
 				setObjectState(state, "brass_lantern", "lit", false);
 				return "The brass lantern is now off.";
@@ -124,8 +124,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "tie(objects): Tie an object to a target, e.g. 'tie rope to railing'.",
 		aliases: ["fasten", "attach"],
-		handler: (event, state) => {
-			const ids = getObjectIds(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const ids = getObjectIds(params as Record<string, unknown>);
 			if (ids.includes("rope") && (ids.includes("railing") || state.player.current_room === "dome_room")) {
 				if (!isInInventory(state, "rope") && !isInRoom(state, "rope")) {
 					return "You don't have the rope.";
@@ -143,7 +143,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: emptySchema,
 		description: "pray(): Offer a prayer at a holy altar.",
 		aliases: ["worship"],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			if (state.player.current_room === "altar") {
 				movePlayer(state, "forest_1");
 				ensureVisited(state, "forest_1");
@@ -158,8 +158,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "wave(objects): Wave an item, e.g. 'wave sceptre'.",
 		aliases: ["brandish"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "sceptre") {
 				const room = state.player.current_room;
 				if (room === "end_of_rainbow" || room === "aragain_falls" || room === "canyon_view") {
@@ -179,8 +179,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "ring(objects): Ring a bell, e.g. 'ring bell'.",
 		aliases: ["chime", "toll"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "brass_bell" || target === "bell") {
 				if (state.player.current_room === "entrance_to_hades") {
 					setObjectState(state, "brass_bell", "hot", true);
@@ -200,8 +200,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "rub(objects): Rub an object, e.g. 'rub mirror'.",
 		aliases: ["touch", "polish"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target.includes("mirror")) {
 				if (state.player.current_room === "mirror_room_south") {
 					movePlayer(state, "mirror_room_north");
@@ -224,8 +224,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "inflate(objects): Inflate an inflatable item using a pump, e.g. 'inflate plastic with pump'.",
 		aliases: ["pump", "blow up"],
-		handler: (event, state) => {
-			const ids = getObjectIds(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const ids = getObjectIds(params as Record<string, unknown>);
 			if (
 				ids.includes("pile_of_plastic") ||
 				ids.includes("plastic") ||
@@ -249,7 +249,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: emptySchema,
 		description: "launch(): Launch a boat into the water.",
 		aliases: ["embark", "set sail"],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			setObjectState(state, "inflatable_boat", "launched", true);
 			return "The boat slips smoothly into the river and begins to float with the current.";
 		},
@@ -260,7 +260,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: emptySchema,
 		description: "wait(): Wait for time to pass.",
 		aliases: ["z"],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			const room = state.player.current_room;
 			if (state.objects.inflatable_boat?.state.launched) {
 				if (room === "dam_base" || room === "river_1") {
@@ -288,7 +288,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "dig(objects): Dig with a shovel in soft ground or sand.",
 		aliases: ["excavate"],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			if (!isInInventory(state, "shovel") && !isInRoom(state, "shovel")) {
 				return "You have nothing to dig with.";
 			}
@@ -311,8 +311,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "wind(objects): Wind up a mechanical clockwork device, e.g. 'wind up canary'.",
 		aliases: ["wind up"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "golden_clockwork_canary" || target === "canary") {
 				const room = state.player.current_room;
 				if (room === "up_a_tree" || room.startsWith("forest")) {
@@ -331,7 +331,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: emptySchema,
 		description: "ulysses(): Say the name Ulysses or Odysseus.",
 		aliases: ["odysseus"],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			if (state.player.current_room === "cyclops_room" && !state.objects.cyclops?.state.fled) {
 				setObjectState(state, "cyclops", "fled", true);
 				return "The cyclops is visibly shaken, and stumbles backward through the broken wall into the dark!";
@@ -345,7 +345,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: emptySchema,
 		description: "echo(): Shout an echo in an acoustic chamber.",
 		aliases: [],
-		handler: (_event, state) => {
+		execute: (_params, { state }) => {
 			if (state.player.current_room === "loud_room") {
 				setObjectState(state, "loud_room_acoustics", "echoed", true);
 				return "The acoustics of the room change subtly.";
@@ -359,8 +359,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "lower(objects): Lower an object with a winch or rope, e.g. 'lower basket'.",
 		aliases: [],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "basket") {
 				setObjectState(state, "basket", "lowered", true);
 				moveObject(state, "basket", "drafty_room");
@@ -374,8 +374,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		schema: objectsSchema,
 		description: "raise(objects): Raise an object with a winch, e.g. 'raise basket'.",
 		aliases: ["pull up", "hoist"],
-		handler: (event, state) => {
-			const target = getTarget(event.params as Record<string, unknown>);
+		execute: (params, { state }) => {
+			const target = getTarget(params as Record<string, unknown>);
 			if (target === "basket") {
 				setObjectState(state, "basket", "lowered", false);
 				moveObject(state, "basket", "shaft_room");

@@ -10,19 +10,19 @@ export const close: ActionDef<z.infer<typeof objectsSchema>> = {
 	description: "close(objects): Close a container or door. objects: [target_id].",
 	scope: (ctx) =>
 		ctx.in_scope_objects.some((o) => (o.type === "container" || o.type === "door") && o.state?.open === true),
-	handler: (event, state, world) => {
-		const target = resolveTarget(event, state, world);
+	execute: (params, { state, world, stop }) => {
+		const target = resolveTarget(params, state, world);
 		if (!target) {
-			event.stop();
+			stop();
 			return "Close what?";
 		}
 		const { targetId, obj, objState } = target;
 		if (obj.type !== "container" && obj.type !== "door") {
-			event.stop();
+			stop();
 			return "You can't close that.";
 		}
 		if (objState.state.open === false) {
-			event.stop();
+			stop();
 			return "It's already closed.";
 		}
 		setObjectState(state, targetId, "open", false);

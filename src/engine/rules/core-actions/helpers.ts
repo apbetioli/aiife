@@ -11,7 +11,7 @@ import type { ActionDef, ResolveTargetOptions, StoppableEventLike } from "./type
 export { getInstrument, getObjectIds, getTarget };
 
 export function resolveTarget<TParams extends { objects?: string[] }>(
-	event: StoppableEventLike<TParams>,
+	eventOrParams: StoppableEventLike<TParams> | TParams,
 	state: GameState,
 	world: World,
 	options: ResolveTargetOptions = {},
@@ -21,7 +21,10 @@ export function resolveTarget<TParams extends { objects?: string[] }>(
 	objState: NonNullable<GameState["objects"][string]>;
 } | null {
 	const { presence = "roomOrInventory" } = options;
-	const targetId = getTarget(event.params as { objects?: string[] });
+	const params = (eventOrParams && "params" in eventOrParams ? eventOrParams.params : eventOrParams) as {
+		objects?: string[];
+	};
+	const targetId = getTarget(params);
 	if (!targetId) {
 		return null;
 	}

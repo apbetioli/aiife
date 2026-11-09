@@ -14,18 +14,17 @@ export const go: ActionDef<z.infer<typeof directionSchema>> = {
 	aliases: ["walk", "run", "climb", "head", "exit"],
 	hint: "A bare direction word or abbreviation (n, s, e, w, ne, nw, se, sw, u, d) is also go.",
 	scope: (ctx) => ctx.available_exits.length > 0,
-	handler: (event, state, world, bus) => {
+	execute: ({ direction }, { state, world, bus, stop }) => {
 		const room = world.rooms[state.player.current_room];
-		const direction = event.params.direction;
 		const exit = room?.exits
 			? (room.exits as Record<string, { leads_to: string; condition?: string; locked_message?: string }>)[direction]
 			: undefined;
 		if (!exit) {
-			event.stop();
+			stop();
 			return "You can't go that way.";
 		}
 		if (exit.condition && !evaluateCondition(exit.condition, state)) {
-			event.stop();
+			stop();
 			return exit.locked_message ?? "The way is blocked.";
 		}
 		const from = state.player.current_room;

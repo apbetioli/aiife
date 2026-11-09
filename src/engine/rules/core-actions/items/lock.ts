@@ -9,7 +9,7 @@ export const lock: ActionDef<z.infer<typeof objectsSchema>> = {
 	description: "lock(objects): Lock something. objects: [target_id] or [target_id, key_id] if a key is specified.",
 	scope: (ctx) =>
 		ctx.in_scope_objects.some((o) => (o.type === "container" || o.type === "door") && o.state?.locked === false),
-	handler: (event, state) => {
-		setObjectState(state, getTarget(event.params as { objects?: string[] }), "locked", true);
+	execute: (params, { state }) => {
+		setObjectState(state, getTarget(params as { objects?: string[] }), "locked", true);
 	},
 };
