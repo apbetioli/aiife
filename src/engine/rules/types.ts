@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { RecognizedIntent } from "../../agent/types";
-import type { World } from "../../world/types";
+import type { ObjectType, ParserContext, World } from "../../world/types";
 import type { GameState } from "../types";
 import type { CoreEventName } from "./core-actions";
 import type { EventBus } from "./event-bus";
@@ -69,20 +69,55 @@ export type IntentMeta = {
 	hint?: string;
 };
 
-/** One action definition: schema infers params type for the handler. Handler mutates state; returns optional feedback. */
-export type ActionDef<TParams = Record<string, unknown>> = {
-	schema: z.ZodType<TParams>;
+/** Declarative scoping conditions for when an action/tool should be available. */
+export type ActionScopeCondition = {
+	/** Available only if the player is in one of these room IDs */
+	rooms?: string[];
+	/** Available only if at least one of these object IDs is in scope */
+	objects?: string[];
+	/** Available only if an object of this type is in scope (e.g. "actor", "container") */
+	types?: ObjectType[];
+	/** Custom condition predicate */
+	when?: (context: ParserContext, state: GameState) => boolean;
+};
+
+/** When an action/tool is in scope. Defaults to "always". */
+export type ActionScopeRule = "always" | ActionScopeCondition | ((context: ParserContext, state: GameState) => boolean);
+
+/** Execution context passed to action `execute` handlers, matching AI SDK style. */
+export type ActionExecutionContext = {
+	state: GameState;
+	world: World;
+	bus: EventBus;
+	stop: () => void;
+};
+
+type BaseActionDef = {
 	description: string;
-	handler: (event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult;
 	/** Verb synonyms / shorthands that map player input to this action. */
 	aliases?: string[];
 	/** Disambiguation hint shown alongside aliases in the prompt (for patterns that aren't simple verb synonyms). */
 	hint?: string;
+	/** When this action is in scope / available as a tool. Defaults to "always". */
+	scope?: ActionScopeRule;
 	/** Optional bus listener priority (defaults to PRIORITY.MUTATION = 100). */
 	priority?: number;
 };
 
-/** @deprecated Use ActionDef with a handler instead. */
+/** One action definition: schema infers params type. Execute mutates state; returns optional feedback. */
+export type ActionDef<TParams = Record<string, unknown>> = BaseActionDef & {
+	/** AI SDK standard parameter schema. (Fallback: `schema`) */
+	inputSchema?: z.ZodType<TParams>;
+	/** Parameter schema. */
+	schema?: z.ZodType<TParams>;
+
+	/** AI SDK standard executor: `(params, context) => result`. */
+	execute?: (params: TParams, context: ActionExecutionContext) => EventListenerResult;
+	/** Event-based execution handler: `(event, state, world, bus) => result`. */
+	handler?: (event: StoppableEventLike<TParams>, state: GameState, world: World, bus: EventBus) => EventListenerResult;
+};
+
+/** @deprecated Use ActionDef with an execute or handler function instead. */
 export type ActionDefSchemaOnly<TParams> = {
 	schema: z.ZodType<TParams>;
 	description: string;

@@ -95,6 +95,10 @@ export class GameEngine {
 		return this.registry.getIntentMeta();
 	}
 
+	getActiveActions(): string[] {
+		return this.registry.getActiveActions(this.getParserContext(), this.state);
+	}
+
 	runAction(intent: RecognizedIntent): string {
 		if (intent.action === "undo") {
 			return this.undo();

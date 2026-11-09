@@ -1,13 +1,16 @@
 import type { ActionRegistry } from "./action-registry";
 import type { EventBus } from "./event-bus";
 
-export { ActionRegistry } from "./action-registry";
+export { type ActionEntry, ActionRegistry, evaluateActionScope } from "./action-registry";
 export { EventBus } from "./event-bus";
 export { executeAction, executeUntrustedAction } from "./executor";
 export { registerAction } from "./register-action";
 export {
 	type ActionDef,
 	type ActionDefSchemaOnly,
+	type ActionExecutionContext,
+	type ActionScopeCondition,
+	type ActionScopeRule,
 	type EventListener,
 	type EventListenerResult,
 	type EventName,

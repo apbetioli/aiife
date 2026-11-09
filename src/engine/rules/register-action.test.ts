@@ -275,4 +275,121 @@ describe("registerAction", () => {
 		expect(restoreFeedback).toContain("Game restored.");
 		expect(engine.save().state.player.current_room).toBe("room_b");
 	});
+
+	it("supports modern AI SDK tool style: inputSchema and execute", () => {
+		const { bus, registry, world, state } = setup();
+
+		registerAction(bus, registry, "heal", {
+			description: "heal(amount): Heal player by an amount.",
+			inputSchema: z.object({ amount: z.number() }),
+			execute: ({ amount }, { state: s }) => {
+				s.player.state.health = ((s.player.state.health as number) ?? 10) + amount;
+				return `Healed for ${amount}.`;
+			},
+		});
+
+		expect(registry.has("heal")).toBe(true);
+		expect(registry.get("heal")?.inputSchema).toBeDefined();
+
+		const result = executeUntrustedAction(bus, registry, world, state, "heal", { amount: 5 });
+		expect(result.stopped).toBe(false);
+		expect(result.feedback).toEqual(["Healed for 5."]);
+		expect(result.state.player.state.health).toBe(15);
+	});
+
+	it("can stop action using context.stop() in execute", () => {
+		const { bus, registry, world, state } = setup();
+
+		registerAction(bus, registry, "curse", {
+			description: "curse(): Cast a forbidden curse.",
+			inputSchema: z.object({}),
+			execute: (_params, { stop }) => {
+				stop();
+				return "A protective aura prevents the curse.";
+			},
+		});
+
+		const result = executeUntrustedAction(bus, registry, world, state, "curse", {});
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toEqual(["A protective aura prevents the curse."]);
+	});
+
+	it("filters active actions via ActionRegistry.getActiveActions and scope rules", () => {
+		const { bus, registry, state } = setup();
+		const context = {
+			room: "room_a",
+			description: "A plain test room.",
+			available_exits: ["south" as const],
+			in_scope_objects: [
+				{
+					id: "lamp",
+					name: "brass lamp",
+					aliases: [],
+					type: "item" as const,
+					state: {},
+					source: "room" as const,
+				},
+			],
+		};
+
+		// 1. Global action (default)
+		registerAction(bus, registry, "score", {
+			inputSchema: z.object({}),
+			description: "score(): Show score.",
+			execute: () => "0 points",
+		});
+
+		// 2. Action scoped by room (not in room_b, so inactive)
+		registerAction(bus, registry, "echo", {
+			inputSchema: z.object({}),
+			description: "echo(): Echo in room_b.",
+			scope: { rooms: ["room_b"] },
+			execute: () => "Echo!",
+		});
+
+		// 3. Action scoped by object (lamp is in scope, so active)
+		registerAction(bus, registry, "turn_on", {
+			inputSchema: z.object({}),
+			description: "turn_on(): Turn on light.",
+			scope: { objects: ["lamp"] },
+			execute: () => "Lit.",
+		});
+
+		// 4. Action scoped by object type (actor not in scope, so inactive)
+		registerAction(bus, registry, "talk", {
+			inputSchema: z.object({}),
+			description: "talk(): Talk to actor.",
+			scope: { types: ["actor"] },
+			execute: () => "Hello.",
+		});
+
+		// 5. Action scoped by dynamic predicate
+		registerAction(bus, registry, "custom_predicate", {
+			inputSchema: z.object({}),
+			description: "custom(): Custom predicate.",
+			scope: (ctx) => ctx.available_exits.length > 0,
+			execute: () => "Ok",
+		});
+
+		const active = registry.getActiveActions(context, state);
+		expect(active).toContain("score");
+		expect(active).toContain("turn_on");
+		expect(active).toContain("custom_predicate");
+		expect(active).not.toContain("echo");
+		expect(active).not.toContain("talk");
+	});
+
+	it("exposes getActiveActions on GameEngine", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world, (bus, registry) => {
+			registerAction(bus, registry, "special", {
+				inputSchema: z.object({}),
+				description: "special(): Special action in room_a.",
+				scope: { rooms: ["room_a"] },
+				execute: () => "Special!",
+			});
+		});
+
+		expect(engine.getActiveActions()).toContain("special");
+	});
 });

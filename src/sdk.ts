@@ -23,8 +23,12 @@ export {
 } from "./engine/mutators";
 export {
 	type ActionDef,
+	type ActionExecutionContext,
 	ActionRegistry,
+	type ActionScopeCondition,
+	type ActionScopeRule,
 	EventBus,
+	evaluateActionScope,
 	GameEvent,
 	type GameSetup,
 	type IntentMeta,
