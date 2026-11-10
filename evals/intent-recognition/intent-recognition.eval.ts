@@ -37,11 +37,16 @@ const dataset = [
 
 const approach = process.env.EVAL_APPROACH ?? "baseline";
 const isTools = approach === "tools" || approach === "scoped-tools";
+const approachLabel = isTools ? "scoped-tools" : "prompt-baseline";
+const modelId = getEvalModelId();
+const runName = process.env.EVAL_RUN_NAME ?? `${approachLabel} (${modelId})`;
 
-console.log("Eval model:", getEvalModelId());
-console.log("Eval approach:", isTools ? "scoped-tools" : "prompt-baseline");
+console.log("Eval model:", modelId);
+console.log("Eval approach:", approachLabel);
+console.log("Eval run name:", runName);
 
 evaluate<IntentRecognitionEvalData, IntentRecognitionEvalTarget, IntentRecognitionResult>({
+	name: runName,
 	data: dataset,
 	executor: isTools ? toolIntentRecognitionExecutor : intentRecognitionExecutor,
 	evaluators: {
@@ -51,7 +56,7 @@ evaluate<IntentRecognitionEvalData, IntentRecognitionEvalTarget, IntentRecogniti
 	},
 	groupName: "intent-recognition",
 	metadata: {
-		model: getEvalModelId(),
-		approach: isTools ? "scoped-tools" : "prompt-baseline",
+		model: modelId,
+		approach: approachLabel,
 	},
 });
