@@ -34,7 +34,6 @@ export {
 	type IntentMeta,
 	registerAction,
 	type StoppableEvent,
-	type StoppableEventLike,
 } from "./engine/rules";
 export { getInstrument, getObjectIds, getTarget, runAction } from "./engine/rules/core-actions/helpers";
 export { registerDaemon } from "./engine/rules/factories";

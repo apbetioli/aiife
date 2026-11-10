@@ -4,7 +4,7 @@ import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const tick: ActionDef<z.infer<typeof emptySchema>> = {
-	schema: emptySchema,
+	inputSchema: emptySchema,
 	description: "",
 	execute: (_params, { state }) => {
 		const moves = (state.player.state.moves as number) ?? 0;

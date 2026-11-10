@@ -5,7 +5,7 @@ import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const close: ActionDef<z.infer<typeof objectsSchema>> = {
-	schema: objectsSchema,
+	inputSchema: objectsSchema,
 	aliases: ["shut"],
 	description: "close(objects): Close a container or door. objects: [target_id].",
 	scope: (ctx) =>

@@ -6,7 +6,7 @@ const restoreSchema = z.object({
 });
 
 export const restoreAction: ActionDef<z.infer<typeof restoreSchema>> = {
-	schema: restoreSchema,
+	inputSchema: restoreSchema,
 	aliases: ["load"],
 	description: "restore(slot): Restore a previously saved game state from disk. Optional slot name.",
 };

@@ -66,7 +66,7 @@ export function buildScopedTools(context: ParserContext, options: BuildScopedToo
 			continue;
 		}
 
-		const schema = def.inputSchema ?? def.schema;
+		const schema = def.inputSchema;
 		if (!schema) continue;
 
 		const aliasText = def.aliases?.length ? ` (Synonyms: ${def.aliases.join(", ")})` : "";
@@ -82,7 +82,7 @@ export function buildScopedTools(context: ParserContext, options: BuildScopedToo
 	// Always ensure `respond` fallback is available if present in definitions
 	if (!tools.respond && definitions.respond) {
 		const respondDef = definitions.respond;
-		const schema = respondDef.inputSchema ?? respondDef.schema;
+		const schema = respondDef.inputSchema;
 		if (schema) {
 			tools.respond = tool({
 				description: respondDef.description,

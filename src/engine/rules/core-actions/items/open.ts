@@ -5,7 +5,7 @@ import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const open: ActionDef<z.infer<typeof objectsSchema>> = {
-	schema: objectsSchema,
+	inputSchema: objectsSchema,
 	description:
 		"open(objects): Open a container or door. objects: [target_id]. Use only when the player explicitly asks to open (e.g. 'open the box').",
 	scope: (ctx) =>

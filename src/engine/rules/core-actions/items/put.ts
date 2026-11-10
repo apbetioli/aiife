@@ -5,7 +5,7 @@ import { objectsWithPrepositionSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
-	schema: objectsWithPrepositionSchema,
+	inputSchema: objectsWithPrepositionSchema,
 	aliases: ["insert", "place"],
 	description:
 		'put(objects, preposition?): Put an item into a container or onto the floor. objects: [item_id, container_id_or_floor], preposition: "in" | "into" | "on". Use "floor" or "ground" as the second object to put something on the floor.',

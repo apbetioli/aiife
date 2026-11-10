@@ -4,7 +4,7 @@ import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const look: ActionDef<z.infer<typeof emptySchema>> = {
-	schema: emptySchema,
+	inputSchema: emptySchema,
 	aliases: ["l"],
 	hint: "Only for bare 'look' with no target. 'look at <something>' is examine.",
 	description:

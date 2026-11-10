@@ -7,7 +7,6 @@ export { executeAction, executeUntrustedAction } from "./executor";
 export { registerAction } from "./register-action";
 export {
 	type ActionDef,
-	type ActionDefSchemaOnly,
 	type ActionExecutionContext,
 	type ActionScopeCondition,
 	type ActionScopeRule,
@@ -19,7 +18,6 @@ export {
 	type IntentMeta,
 	type Observer,
 	type StoppableEvent,
-	type StoppableEventLike,
 } from "./types";
 
 /** Optional setup function that game modules can export to register custom actions/listeners. */

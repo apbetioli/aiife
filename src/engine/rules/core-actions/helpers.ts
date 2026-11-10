@@ -6,12 +6,12 @@ import type { EventBus } from "../event-bus";
 import { executeAction } from "../executor";
 import { getInstrument, getObjectIds, getTarget } from "../param-helpers";
 import { registerAction } from "../register-action";
-import type { ActionDef, ResolveTargetOptions, StoppableEventLike } from "./types";
+import type { ActionDef, ResolveTargetOptions } from "./types";
 
 export { getInstrument, getObjectIds, getTarget };
 
 export function resolveTarget<TParams extends { objects?: string[] }>(
-	eventOrParams: StoppableEventLike<TParams> | TParams,
+	params: TParams,
 	state: GameState,
 	world: World,
 	options: ResolveTargetOptions = {},
@@ -21,10 +21,7 @@ export function resolveTarget<TParams extends { objects?: string[] }>(
 	objState: NonNullable<GameState["objects"][string]>;
 } | null {
 	const { presence = "roomOrInventory" } = options;
-	const params = (eventOrParams && "params" in eventOrParams ? eventOrParams.params : eventOrParams) as {
-		objects?: string[];
-	};
-	const targetId = getTarget(params);
+	const targetId = getTarget(params as { objects?: string[] });
 	if (!targetId) {
 		return null;
 	}

@@ -5,7 +5,7 @@ import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const die: ActionDef<z.infer<typeof emptySchema>> = {
-	schema: emptySchema,
+	inputSchema: emptySchema,
 	description: "",
 	execute: (_params, { state, world, bus, stop }) => {
 		stop();

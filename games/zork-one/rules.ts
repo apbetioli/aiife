@@ -69,7 +69,7 @@ function calculateScore(state: GameState): number {
 export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	// ── Score Action ────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "score", {
-		schema: emptySchema,
+		inputSchema: emptySchema,
 		description: "score(): Display current score and rank.",
 		aliases: ["points"],
 		execute: (_params, { state }) => {
@@ -80,7 +80,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Turn On / Light Action ──────────────────────────────────────────────────
 	registerAction(bus, registry, "turn_on", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "turn_on(objects): Turn on or light a light source, e.g. 'turn on lamp'.",
 		aliases: ["light", "switch on", "activate"],
 		execute: (params, { state }) => {
@@ -102,7 +102,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Turn Off / Extinguish Action ────────────────────────────────────────────
 	registerAction(bus, registry, "turn_off", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "turn_off(objects): Turn off or extinguish a light source, e.g. 'turn off lamp'.",
 		aliases: ["extinguish", "switch off", "deactivate"],
 		execute: (params, { state }) => {
@@ -121,7 +121,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Tie Action ──────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "tie", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "tie(objects): Tie an object to a target, e.g. 'tie rope to railing'.",
 		aliases: ["fasten", "attach"],
 		execute: (params, { state }) => {
@@ -140,7 +140,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Pray Action ─────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "pray", {
-		schema: emptySchema,
+		inputSchema: emptySchema,
 		description: "pray(): Offer a prayer at a holy altar.",
 		aliases: ["worship"],
 		execute: (_params, { state }) => {
@@ -155,7 +155,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Wave Action ─────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "wave", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "wave(objects): Wave an item, e.g. 'wave sceptre'.",
 		aliases: ["brandish"],
 		execute: (params, { state }) => {
@@ -176,7 +176,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Ring Action ─────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "ring", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "ring(objects): Ring a bell, e.g. 'ring bell'.",
 		aliases: ["chime", "toll"],
 		execute: (params, { state }) => {
@@ -197,7 +197,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Rub Action ──────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "rub", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "rub(objects): Rub an object, e.g. 'rub mirror'.",
 		aliases: ["touch", "polish"],
 		execute: (params, { state }) => {
@@ -221,7 +221,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Inflate Action ──────────────────────────────────────────────────────────
 	registerAction(bus, registry, "inflate", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "inflate(objects): Inflate an inflatable item using a pump, e.g. 'inflate plastic with pump'.",
 		aliases: ["pump", "blow up"],
 		execute: (params, { state }) => {
@@ -246,7 +246,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Launch Action ───────────────────────────────────────────────────────────
 	registerAction(bus, registry, "launch", {
-		schema: emptySchema,
+		inputSchema: emptySchema,
 		description: "launch(): Launch a boat into the water.",
 		aliases: ["embark", "set sail"],
 		execute: (_params, { state }) => {
@@ -257,7 +257,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Wait Action ─────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "wait", {
-		schema: emptySchema,
+		inputSchema: emptySchema,
 		description: "wait(): Wait for time to pass.",
 		aliases: ["z"],
 		execute: (_params, { state }) => {
@@ -285,7 +285,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Dig Action ──────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "dig", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "dig(objects): Dig with a shovel in soft ground or sand.",
 		aliases: ["excavate"],
 		execute: (_params, { state }) => {
@@ -308,7 +308,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Wind Action ─────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "wind", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "wind(objects): Wind up a mechanical clockwork device, e.g. 'wind up canary'.",
 		aliases: ["wind up"],
 		execute: (params, { state }) => {
@@ -328,7 +328,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Ulysses / Odysseus Action ───────────────────────────────────────────────
 	registerAction(bus, registry, "ulysses", {
-		schema: emptySchema,
+		inputSchema: emptySchema,
 		description: "ulysses(): Say the name Ulysses or Odysseus.",
 		aliases: ["odysseus"],
 		execute: (_params, { state }) => {
@@ -342,7 +342,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Echo Action ─────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "echo", {
-		schema: emptySchema,
+		inputSchema: emptySchema,
 		description: "echo(): Shout an echo in an acoustic chamber.",
 		aliases: [],
 		execute: (_params, { state }) => {
@@ -356,7 +356,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 
 	// ── Basket Winch Actions ────────────────────────────────────────────────────
 	registerAction(bus, registry, "lower", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "lower(objects): Lower an object with a winch or rope, e.g. 'lower basket'.",
 		aliases: [],
 		execute: (params, { state }) => {
@@ -371,7 +371,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	});
 
 	registerAction(bus, registry, "raise", {
-		schema: objectsSchema,
+		inputSchema: objectsSchema,
 		description: "raise(objects): Raise an object with a winch, e.g. 'raise basket'.",
 		aliases: ["pull up", "hoist"],
 		execute: (params, { state }) => {

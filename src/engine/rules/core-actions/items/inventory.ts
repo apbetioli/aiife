@@ -4,7 +4,7 @@ import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const inventory: ActionDef<z.infer<typeof emptySchema>> = {
-	schema: emptySchema,
+	inputSchema: emptySchema,
 	aliases: ["i"],
 	description:
 		"inventory(): Check what the player is carrying. No parameters. Shorthand: i. Use for queries like 'what am I carrying?'.",

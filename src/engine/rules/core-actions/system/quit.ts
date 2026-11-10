@@ -4,7 +4,7 @@ import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const quit: ActionDef<z.infer<typeof emptySchema>> = {
-	schema: emptySchema,
+	inputSchema: emptySchema,
 	aliases: ["q"],
 	description: "quit(): End the game. Shorthand: q.",
 	execute: (_params, { state }) => {

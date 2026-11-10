@@ -5,7 +5,7 @@ import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const drop: ActionDef<z.infer<typeof objectsSchema>> = {
-	schema: objectsSchema,
+	inputSchema: objectsSchema,
 	aliases: ["put down", "discard"],
 	description:
 		'drop(objects): Drop objects from inventory. For "drop all", list every inventory object id. For "drop all but X", list every inventory object id except X. For "drop X and Y", list [X, Y]. For single "drop X", list [X].',

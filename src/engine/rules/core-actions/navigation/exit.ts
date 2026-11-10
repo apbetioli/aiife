@@ -3,7 +3,7 @@ import { roomSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const exit: ActionDef<z.infer<typeof roomSchema>> = {
-	schema: roomSchema,
+	inputSchema: roomSchema,
 	description: "",
 	execute: () => undefined,
 };

@@ -23,7 +23,7 @@ describe("registerAction", () => {
 		const { bus, registry, world, state } = setup();
 
 		registerAction(bus, registry, "pray", {
-			schema: objectsSchema,
+			inputSchema: objectsSchema,
 			description: "pray(objects?): Pray to a deity or at a shrine.",
 			aliases: ["worship", "kneel"],
 			hint: "Use pray when worshiping",
@@ -48,7 +48,7 @@ describe("registerAction", () => {
 		const { bus, registry, world, state } = setup();
 
 		registerAction(bus, registry, "bless", {
-			schema: objectsSchema,
+			inputSchema: objectsSchema,
 			description: "bless(objects): Bless an object.",
 			execute: (params, { state: s }) => {
 				const target = params.objects?.[0];
@@ -69,7 +69,7 @@ describe("registerAction", () => {
 		const { bus, registry, world, state } = setup();
 
 		registerAction(bus, registry, "shout", {
-			schema: z.object({}),
+			inputSchema: z.object({}),
 			description: "shout(): Shout loudly.",
 			execute: (_params, { stop }) => {
 				stop();
@@ -87,7 +87,7 @@ describe("registerAction", () => {
 		const order: string[] = [];
 
 		registerAction(bus, registry, "dance", {
-			schema: z.object({}),
+			inputSchema: z.object({}),
 			description: "dance(): Dance joyfully.",
 			priority: PRIORITY.GUARD,
 			execute: () => {
@@ -111,7 +111,7 @@ describe("registerAction", () => {
 		const { bus, registry } = setup();
 
 		const cleanup = registerAction(bus, registry, "custom_action", {
-			schema: z.object({ test: z.string() }),
+			inputSchema: z.object({ test: z.string() }),
 			description: "custom(): Custom action.",
 			execute: () => undefined,
 		});
@@ -125,7 +125,7 @@ describe("registerAction", () => {
 		const { bus, registry, world, state } = setup();
 
 		const cleanup = registerAction(bus, registry, "jump", {
-			schema: z.object({}),
+			inputSchema: z.object({}),
 			description: "jump(): Jump in place.",
 			execute: () => "You jump!",
 		});
@@ -149,7 +149,7 @@ describe("registerAction", () => {
 
 		const engine = new GameEngine(world, (bus, registry) => {
 			registerAction(bus, registry, "pray", {
-				schema: z.object({ objects: z.array(z.string()).optional() }),
+				inputSchema: z.object({ objects: z.array(z.string()).optional() }),
 				description: "pray(objects?): Pray at a shrine or altar.",
 				aliases: ["worship"],
 				execute: (_params, { state: s }) => {

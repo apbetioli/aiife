@@ -11,7 +11,7 @@ import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const take: ActionDef<z.infer<typeof objectsSchema>> = {
-	schema: objectsSchema,
+	inputSchema: objectsSchema,
 	aliases: ["pick up", "get", "grab", "collect"],
 	description:
 		'take(objects): Pick up objects from the current room. For "take all", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',

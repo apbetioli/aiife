@@ -6,7 +6,7 @@ import { objectsWithPrepositionSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const examine: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
-	schema: objectsWithPrepositionSchema,
+	inputSchema: objectsWithPrepositionSchema,
 	aliases: ["read", "x", "look at", "look in", "look under", "look behind", "look inside"],
 	hint: "'look at/in/under/behind/inside <target>' maps here, not to look.",
 	description:

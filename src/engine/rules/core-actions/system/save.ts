@@ -6,7 +6,7 @@ const saveSchema = z.object({
 });
 
 export const saveAction: ActionDef<z.infer<typeof saveSchema>> = {
-	schema: saveSchema,
+	inputSchema: saveSchema,
 	aliases: [],
 	description: "save(slot): Save the current game state to disk. Optional slot name.",
 };

@@ -9,7 +9,7 @@ const description =
 	"go(direction): Go in a direction. direction must be one of: north, south, east, west, northeast, northwest, southeast, southwest, up, down, in, out. Normalize shorthands to full names: n→north, s→south, e→east, w→west, ne→northeast, nw→northwest, se→southeast, sw→southwest, u→up, d→down (in, out have no common shorthand).";
 
 export const go: ActionDef<z.infer<typeof directionSchema>> = {
-	schema: directionSchema,
+	inputSchema: directionSchema,
 	description,
 	aliases: ["walk", "run", "climb", "head", "exit"],
 	hint: "A bare direction word or abbreviation (n, s, e, w, ne, nw, se, sw, u, d) is also go.",

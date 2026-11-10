@@ -3,7 +3,7 @@ import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const gameStart: ActionDef<z.infer<typeof emptySchema>> = {
-	schema: emptySchema,
+	inputSchema: emptySchema,
 	description: "",
 	execute: () => undefined,
 };

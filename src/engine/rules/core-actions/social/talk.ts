@@ -4,7 +4,7 @@ import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const talk: ActionDef<z.infer<typeof objectsSchema>> = {
-	schema: objectsSchema,
+	inputSchema: objectsSchema,
 	aliases: ["speak", "speak to", "speak with", "ask", "chat"],
 	description: "talk(objects): Talk to an actor in the current room. objects: [actor_id].",
 	scope: (ctx) => ctx.in_scope_objects.some((o) => o.type === "actor"),

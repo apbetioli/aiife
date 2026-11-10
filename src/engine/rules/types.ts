@@ -31,12 +31,6 @@ export type StoppableEvent<N extends EventName> = GameEvent<N> & {
 	stop(): void;
 };
 
-/** Event passed to action handlers; params are typed per action from the action's schema. */
-export type StoppableEventLike<TParams = Record<string, unknown>> = {
-	params: TParams;
-	stop(): void;
-};
-
 // biome-ignore lint/suspicious/noConfusingVoidType: void return type is valid
 export type EventListenerResult = string | string[] | undefined | void;
 
@@ -104,21 +98,11 @@ type BaseActionDef = {
 	priority?: number;
 };
 
-/** One action definition: schema infers params type. Execute mutates state; returns optional feedback. */
+/** One action definition: inputSchema infers params type. Execute mutates state; returns optional feedback. */
 export type ActionDef<TParams = Record<string, unknown>> = BaseActionDef & {
-	/** AI SDK standard parameter schema. (Fallback: `schema`) */
-	inputSchema?: z.ZodType<TParams>;
-	/** Parameter schema. */
-	schema?: z.ZodType<TParams>;
+	/** AI SDK standard parameter schema. */
+	inputSchema: z.ZodType<TParams>;
 
 	/** AI SDK standard executor: `(params, context) => result`. */
 	execute?: (params: TParams, context: ActionExecutionContext) => EventListenerResult;
-};
-
-/** @deprecated Use ActionDef with an execute function instead. */
-export type ActionDefSchemaOnly<TParams> = {
-	schema: z.ZodType<TParams>;
-	description: string;
-	aliases?: string[];
-	hint?: string;
 };

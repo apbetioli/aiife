@@ -84,7 +84,7 @@ describe("ActionRegistry", () => {
 		const praySchema = z.object({ target: z.string().optional() });
 
 		registry.register("pray", {
-			schema: praySchema,
+			inputSchema: praySchema,
 			description: "pray(target?): Pray to a deity or at a shrine.",
 		});
 
@@ -101,7 +101,7 @@ describe("ActionRegistry", () => {
 	it("unregister() removes a custom action", () => {
 		const registry = createRegistryWithCoreActions();
 		registry.register("pray", {
-			schema: z.object({}),
+			inputSchema: z.object({}),
 			description: "pray(): Pray.",
 		});
 
@@ -142,7 +142,7 @@ describe("ActionRegistry", () => {
 	it("getDescriptions() includes custom action descriptions", () => {
 		const registry = createRegistryWithCoreActions();
 		registry.register("pray", {
-			schema: z.object({}),
+			inputSchema: z.object({}),
 			description: "pray(): Pray.",
 		});
 

@@ -4,7 +4,7 @@ import { objectsWithDirectionSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const move: ActionDef<z.infer<typeof objectsWithDirectionSchema>> = {
-	schema: objectsWithDirectionSchema,
+	inputSchema: objectsWithDirectionSchema,
 	aliases: ["push", "pull", "shift", "drag"],
 	description: "move(objects, direction?): Move an object. objects: [target_id]. direction is optional.",
 	execute: (params, { state, world, stop }) => {

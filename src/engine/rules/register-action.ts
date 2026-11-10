@@ -16,14 +16,12 @@ export function registerAction<TParams = Record<string, unknown>>(
 	name: string,
 	def: ActionDef<TParams>,
 ): () => void {
-	const schema = def.inputSchema ?? def.schema;
-	if (!schema) {
-		throw new Error(`Action "${name}" must provide either "inputSchema" or "schema"`);
+	if (!def.inputSchema) {
+		throw new Error(`Action "${name}" must provide "inputSchema"`);
 	}
 
 	registry.register(name, {
-		inputSchema: schema,
-		schema,
+		inputSchema: def.inputSchema,
 		description: def.description,
 		aliases: def.aliases,
 		hint: def.hint,

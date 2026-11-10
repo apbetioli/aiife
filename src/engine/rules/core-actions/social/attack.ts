@@ -4,7 +4,7 @@ import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const attack: ActionDef<z.infer<typeof objectsSchema>> = {
-	schema: objectsSchema,
+	inputSchema: objectsSchema,
 	aliases: ["hit", "strike", "fight", "kill"],
 	description: "attack(objects): Attack something. objects: [target_id] or [target_id, weapon_id].",
 	scope: (ctx) => ctx.in_scope_objects.some((o) => o.type === "actor"),

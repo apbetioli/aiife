@@ -9,8 +9,6 @@ function unknownActionError(actionName: string): z.ZodError {
 
 export interface ActionEntry {
 	inputSchema: z.ZodType;
-	/** @deprecated Use `inputSchema` instead. */
-	schema: z.ZodType;
 	description: string;
 	aliases?: string[];
 	hint?: string;
@@ -83,7 +81,7 @@ export class ActionRegistry {
 	validate(name: string, params: unknown): z.infer<z.ZodType> {
 		const entry = this.actions.get(name);
 		if (!entry) throw new Error(`Unknown action: ${name}`);
-		return entry.schema.parse(params);
+		return entry.inputSchema.parse(params);
 	}
 
 	safeParse(
@@ -92,7 +90,7 @@ export class ActionRegistry {
 	): { success: true; data: Record<string, unknown> } | { success: false; error: z.ZodError } {
 		const entry = this.actions.get(name);
 		if (!entry) return { success: false, error: unknownActionError(name) };
-		return entry.schema.safeParse(params);
+		return entry.inputSchema.safeParse(params);
 	}
 
 	/** Returns name → description for entries with non-empty description (excludes internal events like tick, enter, exit). */
