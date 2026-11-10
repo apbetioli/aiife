@@ -75,7 +75,7 @@ export function buildScopedTools(context: ParserContext, options: BuildScopedToo
 
 		tools[name] = tool({
 			description: fullDescription,
-			parameters: schema,
+			inputSchema: schema,
 		});
 	}
 
@@ -86,7 +86,7 @@ export function buildScopedTools(context: ParserContext, options: BuildScopedToo
 		if (schema) {
 			tools.respond = tool({
 				description: respondDef.description,
-				parameters: schema,
+				inputSchema: schema,
 			});
 		}
 	}

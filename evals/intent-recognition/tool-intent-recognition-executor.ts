@@ -44,7 +44,10 @@ export async function toolIntentRecognitionExecutor(
 	}
 
 	const action = toolCall.toolName;
-	const params = (toolCall.args as Record<string, unknown>) ?? {};
+	const params = ((toolCall as { input?: unknown }).input ?? (toolCall as { args?: unknown }).args ?? {}) as Record<
+		string,
+		unknown
+	>;
 
 	return {
 		action,

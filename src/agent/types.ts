@@ -17,7 +17,7 @@ export const IntentRecognitionSchema = z.object({
 	objects: z.array(z.string()).nullable(),
 	preposition: z.string().nullable(),
 	message: z.string().nullable(),
-	slot: z.string().nullable().optional(),
+	slot: z.string().nullable(),
 });
 
 export type RecognizedIntent = z.infer<typeof IntentRecognitionSchema>;
