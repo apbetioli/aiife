@@ -17,6 +17,7 @@ import respond from "./data/respond.json" with { type: "json" };
 import take from "./data/take.json" with { type: "json" };
 import talk from "./data/talk.json" with { type: "json" };
 import use from "./data/use.json" with { type: "json" };
+import zork from "./data/zork.json" with { type: "json" };
 import { actionSelectionScore, combinedIntentScore, parameterAccuracyScore } from "./intent-recognition-evaluators";
 import { intentRecognitionExecutor } from "./intent-recognition-executor";
 import { toolIntentRecognitionExecutor } from "./tool-intent-recognition-executor";
@@ -33,6 +34,7 @@ const dataset = [
 	...inventory,
 	...help,
 	...respond,
+	...zork,
 ] as IntentRecognitionDatasetEntry[];
 
 const approach = process.env.EVAL_APPROACH ?? "baseline";

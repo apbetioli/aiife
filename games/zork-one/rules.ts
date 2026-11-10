@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { registerCoreActions } from "../../src/engine/rules/core-actions";
 import {
-	type ActionRegistry,
-	type EventBus,
+	ActionRegistry,
+	EventBus,
 	ensureVisited,
 	type GameState,
 	getObjectIds,
@@ -66,12 +67,21 @@ function calculateScore(state: GameState): number {
 	return Math.min(score, 350);
 }
 
+export function createZorkActionRegistry(): ActionRegistry {
+	const bus = new EventBus();
+	const registry = new ActionRegistry();
+	registerCoreActions(bus, registry);
+	setupZorkRules(bus, registry);
+	return registry;
+}
+
 export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	// ── Score Action ────────────────────────────────────────────────────────────
 	registerAction(bus, registry, "score", {
 		inputSchema: emptySchema,
 		description: "score(): Display current score and rank.",
 		aliases: ["points"],
+		scope: "always",
 		execute: (_params, { state }) => {
 			const score = calculateScore(state);
 			return `Your score is ${score} of a possible 350 points, in ${state.turn || 0} moves.`;
@@ -83,6 +93,14 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "turn_on(objects): Turn on or light a light source, e.g. 'turn on lamp'.",
 		aliases: ["light", "switch on", "activate"],
+		scope: (ctx) =>
+			ctx.in_scope_objects.some(
+				(o) =>
+					["brass_lantern", "pair_of_candles", "matchbook", "ivory_torch"].includes(o.id) ||
+					o.id.includes("lamp") ||
+					o.id.includes("candle") ||
+					o.id.includes("torch"),
+			),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "brass_lantern" || target === "lamp") {
@@ -105,6 +123,14 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "turn_off(objects): Turn off or extinguish a light source, e.g. 'turn off lamp'.",
 		aliases: ["extinguish", "switch off", "deactivate"],
+		scope: (ctx) =>
+			ctx.in_scope_objects.some(
+				(o) =>
+					["brass_lantern", "pair_of_candles", "ivory_torch"].includes(o.id) ||
+					o.id.includes("lamp") ||
+					o.id.includes("candle") ||
+					o.id.includes("torch"),
+			),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "brass_lantern" || target === "lamp") {
@@ -124,6 +150,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "tie(objects): Tie an object to a target, e.g. 'tie rope to railing'.",
 		aliases: ["fasten", "attach"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "rope"),
 		execute: (params, { state }) => {
 			const ids = getObjectIds(params as Record<string, unknown>);
 			if (ids.includes("rope") && (ids.includes("railing") || state.player.current_room === "dome_room")) {
@@ -143,6 +170,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: emptySchema,
 		description: "pray(): Offer a prayer at a holy altar.",
 		aliases: ["worship"],
+		scope: (ctx) => ctx.room.toLowerCase().includes("altar") || ctx.in_scope_objects.some((o) => o.id === "altar"),
 		execute: (_params, { state }) => {
 			if (state.player.current_room === "altar") {
 				movePlayer(state, "forest_1");
@@ -158,6 +186,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "wave(objects): Wave an item, e.g. 'wave sceptre'.",
 		aliases: ["brandish"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "sceptre" || o.source === "inventory"),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "sceptre") {
@@ -179,6 +208,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "ring(objects): Ring a bell, e.g. 'ring bell'.",
 		aliases: ["chime", "toll"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "brass_bell" || o.name.toLowerCase().includes("bell")),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "brass_bell" || target === "bell") {
@@ -200,6 +230,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "rub(objects): Rub an object, e.g. 'rub mirror'.",
 		aliases: ["touch", "polish"],
+		scope: (ctx) =>
+			ctx.in_scope_objects.some((o) => o.id.includes("mirror") || o.name.toLowerCase().includes("mirror")),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target.includes("mirror")) {
@@ -224,6 +256,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "inflate(objects): Inflate an inflatable item using a pump, e.g. 'inflate plastic with pump'.",
 		aliases: ["pump", "blow up"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => ["pile_of_plastic", "inflatable_boat"].includes(o.id)),
 		execute: (params, { state }) => {
 			const ids = getObjectIds(params as Record<string, unknown>);
 			if (
@@ -249,6 +282,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: emptySchema,
 		description: "launch(): Launch a boat into the water.",
 		aliases: ["embark", "set sail"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "inflatable_boat"),
 		execute: (_params, { state }) => {
 			setObjectState(state, "inflatable_boat", "launched", true);
 			return "The boat slips smoothly into the river and begins to float with the current.";
@@ -260,6 +294,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: emptySchema,
 		description: "wait(): Wait for time to pass.",
 		aliases: ["z"],
+		scope: "always",
 		execute: (_params, { state }) => {
 			const room = state.player.current_room;
 			if (state.objects.inflatable_boat?.state.launched) {
@@ -288,6 +323,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "dig(objects): Dig with a shovel in soft ground or sand.",
 		aliases: ["excavate"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "shovel" || o.id === "sand"),
 		execute: (_params, { state }) => {
 			if (!isInInventory(state, "shovel") && !isInRoom(state, "shovel")) {
 				return "You have nothing to dig with.";
@@ -311,6 +347,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "wind(objects): Wind up a mechanical clockwork device, e.g. 'wind up canary'.",
 		aliases: ["wind up"],
+		scope: (ctx) =>
+			ctx.in_scope_objects.some((o) => o.id === "golden_clockwork_canary" || o.name.toLowerCase().includes("canary")),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "golden_clockwork_canary" || target === "canary") {
@@ -331,6 +369,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: emptySchema,
 		description: "ulysses(): Say the name Ulysses or Odysseus.",
 		aliases: ["odysseus"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "cyclops") || ctx.room.toLowerCase().includes("cyclops"),
 		execute: (_params, { state }) => {
 			if (state.player.current_room === "cyclops_room" && !state.objects.cyclops?.state.fled) {
 				setObjectState(state, "cyclops", "fled", true);
@@ -345,6 +384,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: emptySchema,
 		description: "echo(): Shout an echo in an acoustic chamber.",
 		aliases: [],
+		scope: (ctx) => ctx.room.toLowerCase().includes("loud") || ctx.room.toLowerCase().includes("echo"),
 		execute: (_params, { state }) => {
 			if (state.player.current_room === "loud_room") {
 				setObjectState(state, "loud_room_acoustics", "echoed", true);
@@ -359,6 +399,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "lower(objects): Lower an object with a winch or rope, e.g. 'lower basket'.",
 		aliases: [],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "basket"),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "basket") {
@@ -374,6 +415,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		inputSchema: objectsSchema,
 		description: "raise(objects): Raise an object with a winch, e.g. 'raise basket'.",
 		aliases: ["pull up", "hoist"],
+		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "basket"),
 		execute: (params, { state }) => {
 			const target = getTarget(params as Record<string, unknown>);
 			if (target === "basket") {

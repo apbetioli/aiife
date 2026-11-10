@@ -100,6 +100,11 @@ export class ActionRegistry {
 		);
 	}
 
+	/** Returns all registered action entries as a record. */
+	getDefinitions(): Record<string, ActionEntry> {
+		return Object.fromEntries(this.actions.entries());
+	}
+
 	/** Returns name → intent metadata for entries with non-empty description. */
 	getIntentMeta(): Record<string, IntentMeta> {
 		return Object.fromEntries(

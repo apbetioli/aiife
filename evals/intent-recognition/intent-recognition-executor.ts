@@ -1,13 +1,16 @@
 import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, Output } from "ai";
+import { createZorkActionRegistry } from "../../games/zork-one/rules";
 import { createEvalModel } from "../../src/agent/model";
 import { buildIntentSystemPrompt } from "../../src/agent/system/intent-recognition-prompt";
 import type { RecognizedIntent } from "../../src/agent/types";
 import { IntentRecognitionSchema } from "../../src/agent/types";
 import type { IntentRecognitionEvalData, IntentRecognitionResult } from "../types";
 
+const defaultRegistry = createZorkActionRegistry();
+
 export async function intentRecognitionExecutor(data: IntentRecognitionEvalData): Promise<IntentRecognitionResult> {
-	const systemPrompt = buildIntentSystemPrompt(data.context, data.availableActions);
+	const systemPrompt = buildIntentSystemPrompt(data.context, data.availableActions, defaultRegistry.getIntentMeta());
 
 	const result = await generateText({
 		model: createEvalModel(),

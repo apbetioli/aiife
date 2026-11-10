@@ -1,5 +1,5 @@
 import { tool } from "ai";
-import { evaluateActionScope } from "../engine/rules/action-registry";
+import { type ActionEntry, type ActionRegistry, evaluateActionScope } from "../engine/rules/action-registry";
 import { coreActionDefinitions } from "../engine/rules/core-actions";
 import type { ActionDef } from "../engine/rules/types";
 import type { ParserContext, ScopedObject } from "../world/types";
@@ -48,12 +48,17 @@ Current state:
 
 export interface BuildScopedToolsOptions {
 	availableActions?: string[];
-	definitions?: Record<string, ActionDef<unknown>>;
+	definitions?: Record<string, ActionDef<unknown> | ActionEntry>;
+	registry?: ActionRegistry;
 	scopeTools?: boolean;
 }
 
 export function buildScopedTools(context: ParserContext, options: BuildScopedToolsOptions = {}) {
-	const definitions = options.definitions ?? (coreActionDefinitions as unknown as Record<string, ActionDef<unknown>>);
+	const registryDefinitions = options.registry?.getDefinitions();
+	const definitions =
+		options.definitions ??
+		registryDefinitions ??
+		(coreActionDefinitions as unknown as Record<string, ActionDef<unknown> | ActionEntry>);
 	const actionNames = options.availableActions ?? Object.keys(definitions);
 	const shouldScope = options.scopeTools ?? true;
 

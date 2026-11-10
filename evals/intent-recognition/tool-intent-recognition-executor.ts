@@ -1,8 +1,11 @@
 import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText } from "ai";
+import { createZorkActionRegistry } from "../../games/zork-one/rules";
 import { createEvalModel } from "../../src/agent/model";
 import { buildScopedTools, buildToolSystemPrompt } from "../../src/agent/tool-builder";
 import type { IntentRecognitionEvalData, IntentRecognitionResult } from "../types";
+
+const defaultRegistry = createZorkActionRegistry();
 
 export interface ToolExecutorOptions {
 	scopeTools?: boolean;
@@ -16,6 +19,7 @@ export async function toolIntentRecognitionExecutor(
 
 	const tools = buildScopedTools(data.context, {
 		availableActions: data.availableActions,
+		registry: defaultRegistry,
 		scopeTools: shouldScope,
 	});
 

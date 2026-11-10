@@ -1,0 +1,2211 @@
+[
+	{
+		"data": {
+			"prompt": "score",
+			"context": {
+				"room": "West of House",
+				"description": "You are standing in an open field west of a white house.",
+				"available_exits": ["north", "south", "east"],
+				"in_scope_objects": []
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "score",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Canonical score command"
+		}
+	},
+	{
+		"data": {
+			"prompt": "points",
+			"context": {
+				"room": "Living Room",
+				"description": "You are in the living room.",
+				"available_exits": ["east", "west"],
+				"in_scope_objects": []
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "score",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Score alias: points"
+		}
+	},
+	{
+		"data": {
+			"prompt": "turn on the lamp",
+			"context": {
+				"room": "Living Room",
+				"description": "A trophy case is mounted on the wall.",
+				"available_exits": ["west"],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"aliases": ["lamp", "lantern"],
+						"type": "item",
+						"state": {
+							"carriable": true,
+							"lit": false
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "turn_on",
+			"expectedParams": {
+				"objects": ["brass_lantern"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Turn on light source in inventory"
+		}
+	},
+	{
+		"data": {
+			"prompt": "light the lantern",
+			"context": {
+				"room": "Cellar",
+				"description": "You are in a dark, damp cellar.",
+				"available_exits": ["north", "south"],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"aliases": ["lamp", "lantern"],
+						"type": "item",
+						"state": {
+							"carriable": true,
+							"lit": false
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "turn_on",
+			"expectedParams": {
+				"objects": ["brass_lantern"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Turn on alias: light"
+		}
+	},
+	{
+		"data": {
+			"prompt": "turn off lamp",
+			"context": {
+				"room": "Living Room",
+				"description": "Sunlight filters into the living room.",
+				"available_exits": ["west"],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"aliases": ["lamp", "lantern"],
+						"type": "item",
+						"state": {
+							"carriable": true,
+							"lit": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "turn_off",
+			"expectedParams": {
+				"objects": ["brass_lantern"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Turn off active light source"
+		}
+	},
+	{
+		"data": {
+			"prompt": "extinguish lantern",
+			"context": {
+				"room": "East of House",
+				"description": "The sun shines brightly here.",
+				"available_exits": ["north", "south"],
+				"in_scope_objects": [
+					{
+						"id": "brass_lantern",
+						"name": "brass lantern",
+						"aliases": ["lamp", "lantern"],
+						"type": "item",
+						"state": {
+							"carriable": true,
+							"lit": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "turn_off",
+			"expectedParams": {
+				"objects": ["brass_lantern"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Turn off alias: extinguish"
+		}
+	},
+	{
+		"data": {
+			"prompt": "tie rope to railing",
+			"context": {
+				"room": "Dome Room",
+				"description": "You are at the perimeter of a large dome. A wooden railing surrounds the deep abyss.",
+				"available_exits": ["west"],
+				"in_scope_objects": [
+					{
+						"id": "railing",
+						"name": "wooden railing",
+						"aliases": ["railing"],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					},
+					{
+						"id": "rope",
+						"name": "rope",
+						"aliases": ["coil of rope"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "tie",
+			"expectedParams": {
+				"objects": ["rope", "railing"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Tie rope to railing"
+		}
+	},
+	{
+		"data": {
+			"prompt": "fasten the rope",
+			"context": {
+				"room": "Dome Room",
+				"description": "A wooden railing surrounds the deep pit.",
+				"available_exits": ["west"],
+				"in_scope_objects": [
+					{
+						"id": "railing",
+						"name": "wooden railing",
+						"aliases": ["railing"],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					},
+					{
+						"id": "rope",
+						"name": "rope",
+						"aliases": ["coil of rope"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "tie",
+			"expectedParams": {
+				"objects": ["rope"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Tie alias: fasten rope"
+		}
+	},
+	{
+		"data": {
+			"prompt": "pray",
+			"context": {
+				"room": "Altar",
+				"description": "In front of you is a large granite altar.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "altar",
+						"name": "granite altar",
+						"aliases": ["altar"],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "pray",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Pray at altar"
+		}
+	},
+	{
+		"data": {
+			"prompt": "worship at the altar",
+			"context": {
+				"room": "Altar",
+				"description": "In front of you is a large granite altar.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "altar",
+						"name": "granite altar",
+						"aliases": ["altar"],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "pray",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Pray alias: worship"
+		}
+	},
+	{
+		"data": {
+			"prompt": "wave sceptre",
+			"context": {
+				"room": "Aragain Falls",
+				"description": "A magnificent rainbow spans the misty chasm.",
+				"available_exits": ["north", "west"],
+				"in_scope_objects": [
+					{
+						"id": "sceptre",
+						"name": "golden sceptre",
+						"aliases": ["sceptre"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					},
+					{
+						"id": "rainbow",
+						"name": "rainbow",
+						"aliases": [],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "wave",
+			"expectedParams": {
+				"objects": ["sceptre"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Wave sceptre at rainbow"
+		}
+	},
+	{
+		"data": {
+			"prompt": "brandish the sceptre",
+			"context": {
+				"room": "End of Rainbow",
+				"description": "The falls roar in the distance.",
+				"available_exits": ["southwest"],
+				"in_scope_objects": [
+					{
+						"id": "sceptre",
+						"name": "golden sceptre",
+						"aliases": ["sceptre"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "wave",
+			"expectedParams": {
+				"objects": ["sceptre"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Wave alias: brandish"
+		}
+	},
+	{
+		"data": {
+			"prompt": "ring bell",
+			"context": {
+				"room": "Entrance to Hades",
+				"description": "Gateway to the Underworld. Ominous spirits bar the gate.",
+				"available_exits": ["south"],
+				"in_scope_objects": [
+					{
+						"id": "brass_bell",
+						"name": "brass bell",
+						"aliases": ["bell"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "ring",
+			"expectedParams": {
+				"objects": ["brass_bell"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Ring brass bell"
+		}
+	},
+	{
+		"data": {
+			"prompt": "toll the brass bell",
+			"context": {
+				"room": "Entrance to Hades",
+				"description": "Spirits moan in the freezing cavern.",
+				"available_exits": ["south"],
+				"in_scope_objects": [
+					{
+						"id": "brass_bell",
+						"name": "brass bell",
+						"aliases": ["bell"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "ring",
+			"expectedParams": {
+				"objects": ["brass_bell"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Ring alias: toll"
+		}
+	},
+	{
+		"data": {
+			"prompt": "rub mirror",
+			"context": {
+				"room": "Mirror Room South",
+				"description": "An enormous full-length mirror covers the wall.",
+				"available_exits": ["north", "west"],
+				"in_scope_objects": [
+					{
+						"id": "mirror",
+						"name": "tall mirror",
+						"aliases": ["mirror"],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "rub",
+			"expectedParams": {
+				"objects": ["mirror"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Rub mirror"
+		}
+	},
+	{
+		"data": {
+			"prompt": "touch the mirror",
+			"context": {
+				"room": "Mirror Room North",
+				"description": "An enormous full-length mirror covers the north wall.",
+				"available_exits": ["south", "east"],
+				"in_scope_objects": [
+					{
+						"id": "mirror",
+						"name": "tall mirror",
+						"aliases": ["mirror"],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "rub",
+			"expectedParams": {
+				"objects": ["mirror"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Rub alias: touch"
+		}
+	},
+	{
+		"data": {
+			"prompt": "inflate plastic with pump",
+			"context": {
+				"room": "Dam Base",
+				"description": "At the base of the massive dam.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "pile_of_plastic",
+						"name": "pile of plastic",
+						"aliases": ["plastic"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "room"
+					},
+					{
+						"id": "air_pump",
+						"name": "hand pump",
+						"aliases": ["pump"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "inflate",
+			"expectedParams": {
+				"objects": ["pile_of_plastic", "air_pump"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Inflate plastic with pump"
+		}
+	},
+	{
+		"data": {
+			"prompt": "pump up the plastic",
+			"context": {
+				"room": "Dam Base",
+				"description": "At the base of the massive dam.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "pile_of_plastic",
+						"name": "pile of plastic",
+						"aliases": ["plastic"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "room"
+					},
+					{
+						"id": "air_pump",
+						"name": "hand pump",
+						"aliases": ["pump"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "inflate",
+			"expectedParams": {
+				"objects": ["pile_of_plastic"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Inflate alias: pump up"
+		}
+	},
+	{
+		"data": {
+			"prompt": "launch boat",
+			"context": {
+				"room": "Dam Base",
+				"description": "At the base of the dam by the water edge.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "inflatable_boat",
+						"name": "inflatable boat",
+						"aliases": ["boat"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "launch",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Launch boat into water"
+		}
+	},
+	{
+		"data": {
+			"prompt": "set sail",
+			"context": {
+				"room": "Dam Base",
+				"description": "At the base of the dam by the water edge.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "inflatable_boat",
+						"name": "inflatable boat",
+						"aliases": ["boat"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "launch",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Launch alias: set sail"
+		}
+	},
+	{
+		"data": {
+			"prompt": "wait",
+			"context": {
+				"room": "Frigid River",
+				"description": "Floating down the swift current.",
+				"available_exits": [],
+				"in_scope_objects": [
+					{
+						"id": "inflatable_boat",
+						"name": "inflatable boat",
+						"aliases": ["boat"],
+						"type": "item",
+						"state": {
+							"carriable": false
+						},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "wait",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Canonical wait command"
+		}
+	},
+	{
+		"data": {
+			"prompt": "z",
+			"context": {
+				"room": "Cellar",
+				"description": "You are in a dark cellar.",
+				"available_exits": ["south", "up"],
+				"in_scope_objects": []
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "wait",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Wait alias: z"
+		}
+	},
+	{
+		"data": {
+			"prompt": "dig in the sand with shovel",
+			"context": {
+				"room": "Sandy Cave",
+				"description": "A subterranean cave with deep, soft sand.",
+				"available_exits": ["northeast"],
+				"in_scope_objects": [
+					{
+						"id": "sand",
+						"name": "sand",
+						"aliases": [],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					},
+					{
+						"id": "shovel",
+						"name": "shovel",
+						"aliases": ["spade"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "dig",
+			"expectedParams": {
+				"objects": ["sand", "shovel"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Dig in sand with shovel"
+		}
+	},
+	{
+		"data": {
+			"prompt": "excavate sand",
+			"context": {
+				"room": "Sandy Cave",
+				"description": "A subterranean cave with deep, soft sand.",
+				"available_exits": ["northeast"],
+				"in_scope_objects": [
+					{
+						"id": "sand",
+						"name": "sand",
+						"aliases": [],
+						"type": "scenery",
+						"state": {},
+						"source": "room"
+					},
+					{
+						"id": "shovel",
+						"name": "shovel",
+						"aliases": ["spade"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "dig",
+			"expectedParams": {
+				"objects": ["sand"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Dig alias: excavate"
+		}
+	},
+	{
+		"data": {
+			"prompt": "wind canary",
+			"context": {
+				"room": "Up a Tree",
+				"description": "You are perched in the high branches of a large tree.",
+				"available_exits": ["down"],
+				"in_scope_objects": [
+					{
+						"id": "golden_clockwork_canary",
+						"name": "golden clockwork canary",
+						"aliases": ["canary"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "wind",
+			"expectedParams": {
+				"objects": ["golden_clockwork_canary"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Wind clockwork canary"
+		}
+	},
+	{
+		"data": {
+			"prompt": "wind up the canary",
+			"context": {
+				"room": "Up a Tree",
+				"description": "You are perched in the high branches of a large tree.",
+				"available_exits": ["down"],
+				"in_scope_objects": [
+					{
+						"id": "golden_clockwork_canary",
+						"name": "golden clockwork canary",
+						"aliases": ["canary"],
+						"type": "item",
+						"state": {
+							"carriable": true
+						},
+						"source": "inventory"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "wind",
+			"expectedParams": {
+				"objects": ["golden_clockwork_canary"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Wind alias: wind up"
+		}
+	},
+	{
+		"data": {
+			"prompt": "ulysses",
+			"context": {
+				"room": "Cyclops Room",
+				"description": "A hulking, one-eyed cyclops glares at you angrily.",
+				"available_exits": ["east", "northwest"],
+				"in_scope_objects": [
+					{
+						"id": "cyclops",
+						"name": "cyclops",
+						"aliases": [],
+						"type": "actor",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "ulysses",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Say Ulysses to cyclops"
+		}
+	},
+	{
+		"data": {
+			"prompt": "odysseus",
+			"context": {
+				"room": "Cyclops Room",
+				"description": "A hulking, one-eyed cyclops glares at you angrily.",
+				"available_exits": ["east", "northwest"],
+				"in_scope_objects": [
+					{
+						"id": "cyclops",
+						"name": "cyclops",
+						"aliases": [],
+						"type": "actor",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "ulysses",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Say Odysseus (alias)"
+		}
+	},
+	{
+		"data": {
+			"prompt": "echo",
+			"context": {
+				"room": "Loud Room",
+				"description": "The acoustics of this stone chamber amplify every whisper into a deafening roar.",
+				"available_exits": ["east", "west"],
+				"in_scope_objects": []
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "echo",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Shout echo in loud room"
+		}
+	},
+	{
+		"data": {
+			"prompt": "shout echo",
+			"context": {
+				"room": "Loud Room",
+				"description": "The acoustics of this stone chamber amplify every whisper.",
+				"available_exits": ["east", "west"],
+				"in_scope_objects": []
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "echo",
+			"expectedParams": {},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Echo natural language variation"
+		}
+	},
+	{
+		"data": {
+			"prompt": "lower basket",
+			"context": {
+				"room": "Shaft Room",
+				"description": "A deep vertical shaft drops through the floor. A wicker basket hangs from a winch.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "basket",
+						"name": "wicker basket",
+						"aliases": ["basket"],
+						"type": "container",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "lower",
+			"expectedParams": {
+				"objects": ["basket"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Lower winch basket"
+		}
+	},
+	{
+		"data": {
+			"prompt": "lower the basket down",
+			"context": {
+				"room": "Shaft Room",
+				"description": "A wicker basket hangs from a winch above the shaft.",
+				"available_exits": ["north"],
+				"in_scope_objects": [
+					{
+						"id": "basket",
+						"name": "wicker basket",
+						"aliases": ["basket"],
+						"type": "container",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "lower",
+			"expectedParams": {
+				"objects": ["basket"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Lower basket natural language"
+		}
+	},
+	{
+		"data": {
+			"prompt": "raise basket",
+			"context": {
+				"room": "Drafty Room",
+				"description": "At the bottom of the shaft. A lowered basket rests on the floor.",
+				"available_exits": ["south"],
+				"in_scope_objects": [
+					{
+						"id": "basket",
+						"name": "wicker basket",
+						"aliases": ["basket"],
+						"type": "container",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "raise",
+			"expectedParams": {
+				"objects": ["basket"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Raise winch basket"
+		}
+	},
+	{
+		"data": {
+			"prompt": "hoist the basket",
+			"context": {
+				"room": "Drafty Room",
+				"description": "A lowered basket rests on the floor.",
+				"available_exits": ["south"],
+				"in_scope_objects": [
+					{
+						"id": "basket",
+						"name": "wicker basket",
+						"aliases": ["basket"],
+						"type": "container",
+						"state": {},
+						"source": "room"
+					}
+				]
+			},
+			"availableActions": [
+				"go",
+				"look",
+				"examine",
+				"take",
+				"drop",
+				"use",
+				"open",
+				"close",
+				"lock",
+				"unlock",
+				"talk",
+				"attack",
+				"inventory",
+				"help",
+				"respond",
+				"score",
+				"turn_on",
+				"turn_off",
+				"tie",
+				"pray",
+				"wave",
+				"ring",
+				"rub",
+				"inflate",
+				"launch",
+				"wait",
+				"dig",
+				"wind",
+				"ulysses",
+				"echo",
+				"lower",
+				"raise"
+			]
+		},
+		"target": {
+			"expectedAction": "raise",
+			"expectedParams": {
+				"objects": ["basket"]
+			},
+			"category": "golden"
+		},
+		"metadata": {
+			"description": "Raise alias: hoist"
+		}
+	}
+]
