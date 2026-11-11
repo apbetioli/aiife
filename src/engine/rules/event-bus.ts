@@ -24,15 +24,10 @@ export interface EmitResult {
 	stopped: boolean;
 }
 
-function groupListenersByPriority(
-	listeners: Iterable<ListenerRegistration>,
-	eventName: EventName,
-): Map<number, ListenerRegistration[]> {
+function groupListenersByPriority(listeners: Iterable<ListenerRegistration>): Map<number, ListenerRegistration[]> {
 	const byPriority = new Map<number, ListenerRegistration[]>();
 
 	for (const registration of listeners) {
-		if (registration.event !== eventName) continue;
-
 		let group = byPriority.get(registration.priority);
 		if (!group) {
 			group = [];
@@ -46,7 +41,7 @@ function groupListenersByPriority(
 }
 
 export class EventBus {
-	private listeners = new Set<ListenerRegistration>();
+	private listeners = new Map<EventName, Set<ListenerRegistration>>();
 	private observers = new Set<Observer>();
 
 	addObserver(observer: Observer): void {
@@ -107,9 +102,18 @@ export class EventBus {
 		};
 
 		const storedRegistration = registration as unknown as ListenerRegistration;
-		this.listeners.add(storedRegistration);
+		let set = this.listeners.get(event);
+		if (!set) {
+			set = new Set();
+			this.listeners.set(event, set);
+		}
+		set.add(storedRegistration);
+
 		return () => {
-			this.listeners.delete(storedRegistration);
+			set.delete(storedRegistration);
+			if (set.size === 0) {
+				this.listeners.delete(event);
+			}
 		};
 	}
 
@@ -123,7 +127,10 @@ export class EventBus {
 	 * - Call event.stop(message) to stop propagation; the message is added to feedback.
 	 */
 	emit<N extends EventName>(event: GameEvent<N>, world: World, currentState: GameState): EmitResult {
-		const listenersByPriority = groupListenersByPriority(this.listeners, event.name);
+		const eventListeners = this.listeners.get(event.name);
+		const listenersByPriority = eventListeners
+			? groupListenersByPriority(eventListeners)
+			: new Map<number, ListenerRegistration[]>();
 		const priorities = [...listenersByPriority.keys()].sort((a, b) => a - b);
 		const toRemove: ListenerRegistration[] = [];
 
@@ -172,7 +179,13 @@ export class EventBus {
 		});
 
 		for (const reg of toRemove) {
-			this.listeners.delete(reg);
+			const set = this.listeners.get(reg.event);
+			if (set) {
+				set.delete(reg);
+				if (set.size === 0) {
+					this.listeners.delete(reg.event);
+				}
+			}
 		}
 
 		return { state: nextState, feedback, stopped };
