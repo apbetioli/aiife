@@ -48,10 +48,6 @@ export function evaluateCondition(condition: string, state: GameState): boolean 
 		actual = state.rooms[target].state[stateKey];
 	} else if (state.objects[target]?.state[stateKey] !== undefined) {
 		actual = state.objects[target].state[stateKey];
-	} else if (state.rooms[target]) {
-		actual = state.rooms[target].state[stateKey];
-	} else if (state.objects[target]) {
-		actual = state.objects[target].state[stateKey];
 	} else {
 		console.warn(`[evaluateCondition] Unknown object "${target}" in condition: "${condition}"`);
 		return false;
