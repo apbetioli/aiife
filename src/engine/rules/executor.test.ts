@@ -617,4 +617,20 @@ describe("executeAction", () => {
 		expect(result.state.player.state.quit).toBe(true);
 		expect(result.feedback.join(" ")).toContain("Goodbye!");
 	});
+
+	// ── die ───────────────────────────────────────────────────────────────
+
+	it("die sets player dead flag and drops inventory into current room", () => {
+		const { world, bus, state } = setup();
+		// Give player an item in inventory
+		state.objects.lamp.location = "inventory";
+
+		const result = executeAction(bus, world, state, "die", {});
+
+		expect(result.stopped).toBe(true);
+		expect(result.state.player.state.dead).toBe(true);
+		expect(result.state.objects.lamp.location).toBe("room_a");
+		expect(getInventory(result.state)).toEqual([]);
+		expect(result.feedback.join(" ")).toContain("You died!");
+	});
 });

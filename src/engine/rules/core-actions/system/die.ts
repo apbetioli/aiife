@@ -1,16 +1,17 @@
 import type { z } from "zod";
-import { setPlayerState } from "../../../mutators";
-import { runAction } from "../helpers";
+import { getInventory, moveObject, setPlayerState } from "../../../mutators";
 import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
 
 export const die: ActionDef<z.infer<typeof emptySchema>> = {
 	inputSchema: emptySchema,
 	description: "",
-	execute: (_params, { state, world, bus, stop }) => {
+	execute: (_params, { state, stop }) => {
 		stop();
 		setPlayerState(state, "dead", true);
-		runAction(bus, world, state, "drop", { objects: ["all"] });
+		for (const id of getInventory(state)) {
+			moveObject(state, id, state.player.current_room);
+		}
 		return "You died!";
 	},
 };
