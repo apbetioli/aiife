@@ -1,14 +1,14 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { SaveFile } from "../save";
+import { sanitizeSlot } from "../save";
 import type { SaveStorageAdapter } from "./types";
 
 export class FileSaveStorage implements SaveStorageAdapter {
 	constructor(private baseDir: string = process.cwd()) {}
 
 	private getFilename(worldId: string, slot: string): string {
-		const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
-		return path.join(this.baseDir, `.save-${worldId}-${sanitizedSlot}.json`);
+		return path.join(this.baseDir, `.save-${worldId}-${sanitizeSlot(slot)}.json`);
 	}
 
 	save(worldId: string, slot: string, data: SaveFile): void {

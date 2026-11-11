@@ -14,6 +14,10 @@ const SaveFileSchema = z.object({
 
 export type SaveFile = z.infer<typeof SaveFileSchema>;
 
+export function sanitizeSlot(slot?: string): string {
+	return (slot ?? "default").trim().replace(/[^a-zA-Z0-9_-]/g, "") || "default";
+}
+
 // ─── Save ────────────────────────────────────────────────────────────────────
 
 export function save(state: GameState): SaveFile {

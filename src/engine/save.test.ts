@@ -1,9 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { makeTestWorld } from "./__fixtures__/test-world";
 import { buildInitialState } from "./initial-state";
-import { load, type SaveFile, save } from "./save";
+import { load, type SaveFile, sanitizeSlot, save } from "./save";
 
 describe("save / load", () => {
+	it("sanitizeSlot normalizes slot names safely", () => {
+		expect(sanitizeSlot()).toBe("default");
+		expect(sanitizeSlot("")).toBe("default");
+		expect(sanitizeSlot("   ")).toBe("default");
+		expect(sanitizeSlot("quick-save_1")).toBe("quick-save_1");
+		expect(sanitizeSlot("../../bad/name")).toBe("badname");
+		expect(sanitizeSlot("!!!")).toBe("default");
+	});
 	it("save produces a valid SaveFile", () => {
 		const state = buildInitialState(makeTestWorld());
 		const file = save(state);

@@ -6,7 +6,7 @@ import { buildParserContext } from "./parser-context";
 import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
 import { registerCoreActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
-import { load, type SaveFile, save } from "./save";
+import { load, type SaveFile, sanitizeSlot, save } from "./save";
 import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
 import type { GameState } from "./types";
 
@@ -105,26 +105,24 @@ export class GameEngine {
 		}
 
 		if (intent.action === "save") {
-			const slot = (intent.slot ?? "default").trim();
-			const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
+			const slot = sanitizeSlot(intent.slot ?? undefined);
 			try {
-				this.storage.save(this.world.id, sanitizedSlot, this.save());
-				return `Game saved to slot "${sanitizedSlot}".`;
+				this.storage.save(this.world.id, slot, this.save());
+				return `Game saved to slot "${slot}".`;
 			} catch (e) {
 				return `Failed to save game: ${e instanceof Error ? e.message : String(e)}`;
 			}
 		}
 
 		if (intent.action === "restore") {
-			const slot = (intent.slot ?? "default").trim();
-			const sanitizedSlot = slot.replace(/[^a-zA-Z0-9_-]/g, "") || "default";
+			const slot = sanitizeSlot(intent.slot ?? undefined);
 			try {
-				if (!this.storage.exists(this.world.id, sanitizedSlot)) {
-					return `No save file found for slot "${sanitizedSlot}".`;
+				if (!this.storage.exists(this.world.id, slot)) {
+					return `No save file found for slot "${slot}".`;
 				}
-				const data = this.storage.load(this.world.id, sanitizedSlot);
+				const data = this.storage.load(this.world.id, slot);
 				if (!data) {
-					return `No save file found for slot "${sanitizedSlot}".`;
+					return `No save file found for slot "${slot}".`;
 				}
 				return this.restore(data);
 			} catch (e) {
