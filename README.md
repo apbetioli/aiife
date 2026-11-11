@@ -251,6 +251,9 @@ Read about the engineering decisions, failures, and breakthroughs along the way 
 3. 🏰 [**Rebuilding Zork I with Modern TypeScript, Priority Events, and LLMs**](docs/blog/03-rebuilding-zork-with-modern-typescript-and-llms.md)  
    *Porting 110 rooms, 19 treasures, combat, exorcisms, and flood gates to stress-test the AIIFE engine.*
 
+4. 🔬 [**Scoped Tools vs. Monolithic Prompts: Slashing Token Costs in LLM Text Parsers**](docs/blog/04-scoped-tools-vs-prompt-baseline.md)  
+   *Refactoring from monolithic action prompts to dynamic AI SDK tool calling, cutting prompt tokens by 18.3% across 85 benchmarked Zork interactions.*
+
 ---
 
 ## Development & Testing
