@@ -113,39 +113,6 @@ export function moveObject(
 	obj.location = toLocation;
 }
 
-export function moveObjectToContainer(state: GameState, objectId: string, containerId: string): void {
-	moveObject(state, objectId, containerId);
-}
-
-export function moveObjectFromRoomToInventory(state: GameState, objectId: string): void {
-	const roomId = state.player.current_room;
-	if (state.objects[objectId]?.location !== roomId) {
-		throw new Error(`Object "${objectId}" is not in room "${roomId}"`);
-	}
-	moveObject(state, objectId, "inventory");
-}
-
-export function moveObjectFromInventoryToRoom(state: GameState, objectId: string, roomId: string): void {
-	if (!isInInventory(state, objectId)) {
-		throw new Error(`Object "${objectId}" is not in inventory`);
-	}
-	moveObject(state, objectId, roomId);
-}
-
-export function moveObjectFromContainerToInventory(state: GameState, objectId: string, containerId: string): void {
-	if (state.objects[objectId]?.location !== containerId) {
-		throw new Error(`Object "${objectId}" is not in container "${containerId}"`);
-	}
-	moveObject(state, objectId, "inventory");
-}
-
-export function moveObjectFromInventoryToContainer(state: GameState, objectId: string, containerId: string): void {
-	if (!isInInventory(state, objectId)) {
-		throw new Error(`Object "${objectId}" is not in inventory`);
-	}
-	moveObject(state, objectId, containerId);
-}
-
 export function setObjectState(
 	state: GameState,
 	objectId: string,

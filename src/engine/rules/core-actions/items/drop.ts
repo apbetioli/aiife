@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { isInInventory, moveObjectFromInventoryToRoom } from "../../../mutators";
+import { isInInventory, moveObject } from "../../../mutators";
 import { getObjectIds } from "../helpers";
 import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
@@ -19,7 +19,7 @@ export const drop: ActionDef<z.infer<typeof objectsSchema>> = {
 		}
 		const roomId = state.player.current_room;
 		for (const id of toDrop) {
-			moveObjectFromInventoryToRoom(state, id, roomId);
+			moveObject(state, id, roomId);
 		}
 		return "Dropped.";
 	},

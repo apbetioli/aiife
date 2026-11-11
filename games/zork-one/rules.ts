@@ -10,7 +10,6 @@ import {
 	isInInventory,
 	isInRoom,
 	moveObject,
-	moveObjectFromInventoryToRoom,
 	movePlayer,
 	PRIORITY,
 	registerAction,
@@ -157,7 +156,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 				if (!isInInventory(state, "rope") && !isInRoom(state, "rope")) {
 					return "You don't have the rope.";
 				}
-				moveObjectFromInventoryToRoom(state, "rope", "dome_room");
+				moveObject(state, "rope", "dome_room");
 				setObjectState(state, "rope", "tied", true);
 				return "The rope is now securely tied to the railing, and drops into the darkness of the pit below.";
 			}
@@ -215,7 +214,7 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 				if (state.player.current_room === "entrance_to_hades") {
 					setObjectState(state, "brass_bell", "hot", true);
 					if (isInInventory(state, "brass_bell")) {
-						moveObjectFromInventoryToRoom(state, "brass_bell", "entrance_to_hades");
+						moveObject(state, "brass_bell", "entrance_to_hades");
 					}
 					return "The bell rings with a piercing, unnatural chime. The spirits cover their ears, wailing in agony! The bell grows searingly hot, and you drop it to the floor.";
 				}

@@ -10,11 +10,6 @@ import {
 	isInRoom,
 	isInScope,
 	moveObject,
-	moveObjectFromContainerToInventory,
-	moveObjectFromInventoryToContainer,
-	moveObjectFromInventoryToRoom,
-	moveObjectFromRoomToInventory,
-	moveObjectToContainer,
 	movePlayer,
 	setObjectState,
 	setPlayerState,
@@ -128,133 +123,24 @@ describe("mutators", () => {
 		});
 	});
 
-	describe("moveObjectToContainer", () => {
-		it("delegates to moveObject to place item in container", () => {
-			const state = freshState();
-			const next = immutable(state, (s) => moveObjectToContainer(s, "lamp", "chest"));
-			expect(next.objects.lamp.location).toBe("chest");
-		});
-	});
-
-	describe("moveObjectFromRoomToInventory", () => {
-		it("updates object location to inventory", () => {
-			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromRoomToInventory(s, "lamp"));
-
-			expect(next.objects.lamp.location).toBe("inventory");
-			expect(isInInventory(next, "lamp")).toBe(true);
-			expect(getInventory(next)).toContain("lamp");
-		});
-
-		it("throws if object not in current room", () => {
-			const state = freshState();
-			expect(() => moveObjectFromRoomToInventory(state, "table")).toThrow('Object "table" is not in room "room_a"');
-		});
-
-		it("does not mutate original state", () => {
-			const state = deepFreeze(freshState());
-			const next = immutable(state, (s) => moveObjectFromRoomToInventory(s, "lamp"));
-
-			expect(state.objects.lamp.location).toBe("room_a");
-			expect(isInInventory(state, "lamp")).toBe(false);
-			expect(next).not.toBe(state);
-		});
-	});
-
-	describe("moveObjectFromInventoryToRoom", () => {
-		it("removes from inventory and updates object location to room", () => {
-			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromInventoryToRoom(s, "sword", "room_b"));
-
-			expect(isInInventory(next, "sword")).toBe(false);
-			expect(next.objects.sword.location).toBe("room_b");
-		});
-
-		it("throws if object not in inventory", () => {
-			const state = freshState();
-			expect(() => moveObjectFromInventoryToRoom(state, "lamp", "room_a")).toThrow('Object "lamp" is not in inventory');
-		});
-
-		it("does not mutate original state", () => {
-			const state = deepFreeze(freshState());
-			const next = immutable(state, (s) => moveObjectFromInventoryToRoom(s, "sword", "room_a"));
-
-			expect(isInInventory(state, "sword")).toBe(true);
-			expect(state.objects.sword.location).toBe("inventory");
-			expect(next).not.toBe(state);
-		});
-	});
-
-	describe("moveObjectFromContainerToInventory", () => {
-		it("updates object location from container to inventory", () => {
-			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromContainerToInventory(s, "gem", "chest"));
-
-			expect(next.objects.gem.location).toBe("inventory");
-			expect(isInInventory(next, "gem")).toBe(true);
-		});
-
-		it("throws if object not in container", () => {
-			const state = freshState();
-			expect(() => moveObjectFromContainerToInventory(state, "lamp", "chest")).toThrow(
-				'Object "lamp" is not in container "chest"',
-			);
-		});
-
-		it("does not mutate original state", () => {
-			const state = deepFreeze(freshState());
-			const next = immutable(state, (s) => moveObjectFromContainerToInventory(s, "gem", "chest"));
-
-			expect(state.objects.gem.location).toBe("chest");
-			expect(isInInventory(state, "gem")).toBe(false);
-			expect(next).not.toBe(state);
-		});
-	});
-
-	describe("moveObjectFromInventoryToContainer", () => {
-		it("removes from inventory and updates object location to container", () => {
-			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromInventoryToContainer(s, "sword", "chest"));
-
-			expect(isInInventory(next, "sword")).toBe(false);
-			expect(next.objects.sword.location).toBe("chest");
-		});
-
-		it("throws if object not in inventory", () => {
-			const state = freshState();
-			expect(() => moveObjectFromInventoryToContainer(state, "lamp", "chest")).toThrow(
-				'Object "lamp" is not in inventory',
-			);
-		});
-
-		it("does not mutate original state", () => {
-			const state = deepFreeze(freshState());
-			const next = immutable(state, (s) => moveObjectFromInventoryToContainer(s, "sword", "chest"));
-
-			expect(isInInventory(state, "sword")).toBe(true);
-			expect(state.objects.sword.location).not.toBe("chest");
-			expect(next).not.toBe(state);
-		});
-	});
-
 	describe("no object appears in more than one location after move", () => {
 		it("lamp exists in exactly one location after room-to-inventory", () => {
 			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromRoomToInventory(s, "lamp"));
+			const next = immutable(state, (s) => moveObject(s, "lamp", "inventory"));
 
 			expect(next.objects.lamp.location).toBe("inventory");
 		});
 
 		it("sword exists in exactly one location after inventory-to-room", () => {
 			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromInventoryToRoom(s, "sword", "room_a"));
+			const next = immutable(state, (s) => moveObject(s, "sword", "room_a"));
 
 			expect(next.objects.sword.location).toBe("room_a");
 		});
 
 		it("gem exists in exactly one location after container-to-inventory", () => {
 			const state = freshState();
-			const next = immutable(state, (s) => moveObjectFromContainerToInventory(s, "gem", "chest"));
+			const next = immutable(state, (s) => moveObject(s, "gem", "inventory"));
 
 			expect(next.objects.gem.location).toBe("inventory");
 		});

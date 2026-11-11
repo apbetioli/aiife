@@ -1,11 +1,5 @@
 import type { z } from "zod";
-import {
-	findOpenContainerInRoom,
-	isInInventory,
-	isInRoom,
-	moveObjectFromContainerToInventory,
-	moveObjectFromRoomToInventory,
-} from "../../../mutators";
+import { findOpenContainerInRoom, isInInventory, isInRoom, moveObject } from "../../../mutators";
 import { getObjectIds } from "../helpers";
 import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
@@ -40,10 +34,10 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 			return ids.some((id) => isInInventory(state, id)) ? "You're already carrying that." : "You can't take that.";
 		}
 		for (const id of fromRoom) {
-			moveObjectFromRoomToInventory(state, id);
+			moveObject(state, id, "inventory");
 		}
-		for (const { id, containerId } of fromContainer) {
-			moveObjectFromContainerToInventory(state, id, containerId);
+		for (const { id } of fromContainer) {
+			moveObject(state, id, "inventory");
 		}
 		return "Taken.";
 	},
