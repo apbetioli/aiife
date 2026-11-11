@@ -3,3 +3,8 @@ node_modules
 dist
 **/*.local.json
 .save-*.json
+
+# Ignore local agent configs and symlinks
+.claude/
+.agents/*
+!.agents/skills/
