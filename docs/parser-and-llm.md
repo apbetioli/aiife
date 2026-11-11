@@ -40,31 +40,20 @@ If the fast-path matches, the turn executes instantly with zero network latency.
 
 ---
 
-### 2.2 Dynamic Intent Prompt Builder
-When the fast-path does not match, the engine delegates to the intent model (`generateText`). The system prompt is constructed at runtime using:
+### 2.2 Scoped Tools Builder (`buildScopedTools`)
+When the fast-path does not match, the engine delegates to the LLM using AI SDK tool calling (`buildScopedTools`). Tools are dynamically scoped to the player's physical context:
 
 1. **Parser Context Snapshot (`buildParserContext`)**:
    - Current room name and description.
    - Available (open) exits.
    - Strictly in-scope objects (room items + inventory items + visible open container contents).
    - Known aliases for objects.
-2. **Action Registry Metadata (`ActionRegistry.getIntentMeta()`)**:
-   - All registered core and custom verbs.
-   - Parameter expectations (e.g. `unlock(objects): [target_id, key_id]`).
-   - Hints and aliases.
+2. **Action Registry Scoping (`evaluateActionScope`)**:
+   - Puzzle verbs and contextual actions are filtered based on their `scope` rules.
+   - Actions outside current room, inventory, or item prerequisites are pruned before calling the LLM.
+   - Each tool exposes its individual `inputSchema` directly to the model.
 
-```ts
-export const IntentRecognitionSchema = z.object({
-  action: z.string(),
-  direction: z.string().nullable(),
-  objects: z.array(z.string()).nullable(),
-  preposition: z.string().nullable(),
-  message: z.string().nullable(),
-  slot: z.string().nullable().optional(),
-});
-```
-
-The model selects the best matching action, maps natural language object descriptions to actual game object IDs, and extracts prepositions and directions.
+The model selects the matching action tool, binds arguments according to the action's validated schema, or invokes `respond` for conversational queries.
 
 ---
 

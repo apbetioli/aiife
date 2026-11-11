@@ -66,4 +66,4 @@ export function registerCoreActions(bus: EventBus, registry: ActionRegistry): vo
 	register(bus, registry, coreActionDefinitions as unknown as Record<string, ActionDef<unknown>>);
 }
 
-export type { ActionDef, IntentMeta } from "./types";
+export type { ActionDef } from "./types";

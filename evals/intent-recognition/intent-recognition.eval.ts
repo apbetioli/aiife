@@ -19,7 +19,6 @@ import talk from "./data/talk.json" with { type: "json" };
 import use from "./data/use.json" with { type: "json" };
 import zork from "./data/zork.json" with { type: "json" };
 import { actionSelectionScore, combinedIntentScore, parameterAccuracyScore } from "./intent-recognition-evaluators";
-import { intentRecognitionExecutor } from "./intent-recognition-executor";
 import { toolIntentRecognitionExecutor } from "./tool-intent-recognition-executor";
 
 const dataset = [
@@ -37,9 +36,8 @@ const dataset = [
 	...zork,
 ] as IntentRecognitionDatasetEntry[];
 
-const approach = process.env.EVAL_APPROACH ?? "baseline";
-const isTools = approach === "tools" || approach === "scoped-tools";
-const approachLabel = isTools ? "scoped-tools" : "prompt-baseline";
+const isScoped = process.env.EVAL_SCOPE_TOOLS !== "false";
+const approachLabel = isScoped ? "scoped-tools" : "unscoped-tools";
 const modelId = getEvalModelId();
 const runName = process.env.EVAL_RUN_NAME ?? `${approachLabel} (${modelId})`;
 
@@ -50,7 +48,7 @@ console.log("Eval run name:", runName);
 evaluate<IntentRecognitionEvalData, IntentRecognitionEvalTarget, IntentRecognitionResult>({
 	name: runName,
 	data: dataset,
-	executor: isTools ? toolIntentRecognitionExecutor : intentRecognitionExecutor,
+	executor: toolIntentRecognitionExecutor,
 	evaluators: {
 		actionSelection: actionSelectionScore,
 		parameterAccuracy: parameterAccuracyScore,

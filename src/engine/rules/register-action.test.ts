@@ -33,10 +33,11 @@ describe("registerAction", () => {
 		// Verified in ActionRegistry
 		expect(registry.has("pray")).toBe(true);
 		expect(registry.getDescriptions().pray).toBe("pray(objects?): Pray to a deity or at a shrine.");
-		const meta = registry.getIntentMeta().pray;
-		expect(meta.description).toBe("pray(objects?): Pray to a deity or at a shrine.");
-		expect(meta.aliases).toEqual(["worship", "kneel"]);
-		expect(meta.hint).toBe("Use pray when worshiping");
+		const entry = registry.get("pray");
+		expect(entry).toBeDefined();
+		expect(entry?.description).toBe("pray(objects?): Pray to a deity or at a shrine.");
+		expect(entry?.aliases).toEqual(["worship", "kneel"]);
+		expect(entry?.hint).toBe("Use pray when worshiping");
 
 		// Verified via execution
 		const result = executeUntrustedAction(bus, registry, world, state, "pray", { objects: [] });
@@ -159,11 +160,11 @@ describe("registerAction", () => {
 			});
 		});
 
-		// Verified in intent metadata (which the LLM agent prompt consumes)
-		const meta = engine.getIntentMeta();
-		expect(meta.pray).toBeDefined();
-		expect(meta.pray.description).toBe("pray(objects?): Pray at a shrine or altar.");
-		expect(meta.pray.aliases).toEqual(["worship"]);
+		// Verified in action registry (which the tool builder consumes)
+		const entry = engine.getActionRegistry().get("pray");
+		expect(entry).toBeDefined();
+		expect(entry?.description).toBe("pray(objects?): Pray at a shrine or altar.");
+		expect(entry?.aliases).toEqual(["worship"]);
 
 		// Verified in runAction execution
 		const feedback = engine.runAction({

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { ParserContext } from "../../world/types";
 import type { GameState } from "../types";
-import type { ActionScopeRule, IntentMeta } from "./types";
+import type { ActionScopeRule } from "./types";
 
 function unknownActionError(actionName: string): z.ZodError {
 	return new z.ZodError([{ code: "custom", message: `Unknown action: ${actionName}`, path: [] }]);
@@ -103,21 +103,5 @@ export class ActionRegistry {
 	/** Returns all registered action entries as a record. */
 	getDefinitions(): Record<string, ActionEntry> {
 		return Object.fromEntries(this.actions.entries());
-	}
-
-	/** Returns name → intent metadata for entries with non-empty description. */
-	getIntentMeta(): Record<string, IntentMeta> {
-		return Object.fromEntries(
-			[...this.actions]
-				.filter(([, entry]) => entry.description)
-				.map(([name, entry]) => [
-					name,
-					{
-						description: entry.description,
-						aliases: entry.aliases,
-						hint: entry.hint,
-					},
-				]),
-		);
 	}
 }

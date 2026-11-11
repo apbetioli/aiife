@@ -15,7 +15,6 @@ export {
 	type EventName,
 	type EventParams,
 	GameEvent,
-	type IntentMeta,
 	type Observer,
 	type StoppableEvent,
 } from "./types";

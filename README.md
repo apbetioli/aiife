@@ -35,11 +35,11 @@ Unlike pure generative text games where the AI invents inconsistent lore on the 
 ┌─────────────────────────────────────────────────────────┐
 │                       GameAgent                         │
 │  ┌──────────────────────┐     ┌──────────────────────┐  │
-│  │   Fast-Path Parser   │-no-▶│ Intent Model (LLM)   │  │
-│  │   Sub-ms Regex Match │     │ generateText + Zod   │  │
+│  │   Fast-Path Parser   │-no-▶│ Scoped Tools (LLM)   │  │
+│  │   Sub-ms Regex Match │     │ generateText + Tools │  │
 │  └──────────┬───────────┘     └──────────┬───────────┘  │
-│             │ Match                      │ Structured   │
-│             └─────────────┬──────────────┘ Intent       │
+│             │ Match                      │ Action       │
+│             └─────────────┬──────────────┘ Tool Call    │
 └───────────────────────────┼─────────────────────────────┘
                             │ RecognizedIntent
                             ▼

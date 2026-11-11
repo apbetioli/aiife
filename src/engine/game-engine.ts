@@ -91,8 +91,8 @@ export class GameEngine {
 		return this.registry.getDescriptions();
 	}
 
-	getIntentMeta() {
-		return this.registry.getIntentMeta();
+	getActionRegistry(): ActionRegistry {
+		return this.registry;
 	}
 
 	getActiveActions(): string[] {

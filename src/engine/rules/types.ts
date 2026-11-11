@@ -56,13 +56,6 @@ export interface ListenerRegistration<N extends EventName = EventName> {
 
 // ─── Action Definitions ──────────────────────────────────────────────────────
 
-/** Metadata the intent-recognition prompt builder uses to generate the alias table and action catalog. */
-export type IntentMeta = {
-	description: string;
-	aliases?: string[];
-	hint?: string;
-};
-
 /** Declarative scoping conditions for when an action/tool should be available. */
 export type ActionScopeCondition = {
 	/** Available only if the player is in one of these room IDs */

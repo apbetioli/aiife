@@ -103,7 +103,7 @@ The event system coordinates game verbs, guards, and consequences:
 ### Layer 4: Hybrid Intent Recognition
 Natural language parsing combines high speed with deep flexibility:
 - **Fast-Path Regex Parser**: Standard IF abbreviations and canonical commands (`n`, `s`, `look`, `i`, `take brass lantern`, `drop sword`, `save`, `undo`) are parsed in sub-millisecond time with zero LLM API calls.
-- **LLM Structured Output**: Complex phrasing, synonyms, or conversational commands are parsed using `@ai-sdk`'s `generateText` into a validated `RecognizedIntent`. The LLM's prompt is dynamically injected with the current room context and available actions from `ActionRegistry.getIntentMeta()`.
+- **Scoped Tool Calling**: Complex phrasing, synonyms, or conversational commands are parsed using `@ai-sdk`'s `generateText` with dynamically scoped tools (`buildScopedTools`). The tools presented to the LLM are filtered based on the player's physical context and room state.
 - **Scope Gatekeeper**: Before any action runs, `allTargetsInScope` verifies that referenced objects are physically accessible. If not, the engine immediately responds with *"You don't see that here."* without mutating state.
 
 ### Layer 5: Narration & Terminal Presentation
@@ -121,10 +121,10 @@ Every player interaction follows a deterministic lifecycle:
 1. Player enters: "unlock the heavy door with the brass key"
 2. Fast-Path Check:
    - Not a simple abbreviation -> forwarded to LLM.
-3. LLM Intent Recognition:
-   - System prompt built with buildParserContext() + registry.getIntentMeta()
-   - Generates structured intent:
-     { action: "unlock", objects: ["cellar_door", "brass_key"] }
+3. LLM Scoped Tool Calling:
+   - System prompt built with buildToolSystemPrompt() + buildScopedTools()
+   - Invokes matching action tool:
+     unlock(objects: ["cellar_door", "brass_key"])
 4. Scope Validation:
    - Verifies "cellar_door" and "brass_key" are in current scope.
 5. Action Execution (executeUntrustedAction):

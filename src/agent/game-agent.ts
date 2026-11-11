@@ -1,11 +1,11 @@
 import { getTracer } from "@lmnr-ai/lmnr";
-import { generateText, type LanguageModel, type ModelMessage, Output, streamText } from "ai";
+import { generateText, type LanguageModel, type ModelMessage, streamText } from "ai";
 import type { GameEngine } from "../engine/game-engine";
 import { tryDeterministicIntent } from "./fast-path-parser";
 import { filterCompatibleMessages } from "./system/filter-messages";
-import { buildIntentSystemPrompt as buildIntentRecognitionSystemPrompt } from "./system/intent-recognition-prompt";
 import { NARRATION_SYSTEM_PROMPT } from "./system/narration-prompt";
-import { type AgentCallbacks, IntentRecognitionSchema, type RecognizedIntent } from "./types";
+import { buildScopedTools, buildToolSystemPrompt } from "./tool-builder";
+import type { AgentCallbacks, RecognizedIntent } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
 
@@ -32,13 +32,22 @@ export class GameAgent {
 		if (fastIntent) {
 			intent = fastIntent;
 		} else {
-			const meta = this.engine.getIntentMeta();
-			const system = buildIntentRecognitionSystemPrompt(this.engine.getParserContext(), Object.keys(meta), meta);
+			const context = this.engine.getParserContext();
+			const tools = buildScopedTools(context, {
+				registry: this.engine.getActionRegistry(),
+			});
+			const system = buildToolSystemPrompt(context);
 
-			const { output: llmIntent, usage: intentUsage } = await generateText({
+			const {
+				toolCalls,
+				text,
+				usage: toolUsage,
+			} = await generateText({
 				model: this.model,
-				output: Output.object({ schema: IntentRecognitionSchema }),
-				messages: [{ role: "system", content: system }, ...recentHistory, { role: "user", content: input }],
+				system,
+				tools,
+				toolChoice: "required",
+				messages: [...recentHistory, { role: "user", content: input }],
 				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
 				experimental_telemetry: {
 					isEnabled: true,
@@ -46,9 +55,19 @@ export class GameAgent {
 				},
 			});
 
-			intent = llmIntent;
-			if (intentUsage) {
-				callbacks.onTokenUsage?.(intentUsage);
+			const toolCall = toolCalls?.[0];
+			if (!toolCall) {
+				intent = { action: "respond", message: text || "I don't understand that." };
+			} else {
+				const action = toolCall.toolName;
+				const params = ((toolCall as { input?: unknown }).input ??
+					(toolCall as { args?: unknown }).args ??
+					{}) as Record<string, unknown>;
+				intent = { action, ...params };
+			}
+
+			if (toolUsage) {
+				callbacks.onTokenUsage?.(toolUsage);
 			}
 		}
 

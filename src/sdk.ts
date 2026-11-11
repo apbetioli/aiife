@@ -31,7 +31,6 @@ export {
 	evaluateActionScope,
 	GameEvent,
 	type GameSetup,
-	type IntentMeta,
 	registerAction,
 	type StoppableEvent,
 } from "./engine/rules";
