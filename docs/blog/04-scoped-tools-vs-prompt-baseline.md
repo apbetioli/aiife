@@ -172,6 +172,14 @@ Having Laminar integrated into our development workflow transformed this from a 
 
 ---
 
+## Conclusion
+
+For the player:
+The game consumes approximately 18% fewer prompt tokens per turn on complex natural language inputs. Response latency is reduced, and tool-driven parameter validation prevents malformed action commands.
+  
+For the maintainer:
+Game authors only define inputSchema once when registering an action. Authors no longer need to update monolithic intent prompts, global intent schemas, or metadata tables when adding verbs.
+
 ## What's Next?
 
 With scoped tools proven and benchmarked, our next phase will connect the dynamic tool builder directly into the runtime `GameAgent` loop, allowing players to play through *Zork I* with faster response times and significantly reduced inference costs.
