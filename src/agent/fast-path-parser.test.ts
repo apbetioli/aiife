@@ -64,81 +64,15 @@ describe("tryDeterministicIntent", () => {
 		});
 	});
 
-	it("parses put, insert, and place commands", () => {
-		expect(tryDeterministicIntent("put sword in chest")).toEqual({
-			action: "put",
-			objects: ["sword", "chest"],
-			preposition: "in",
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("insert gem into chest")).toEqual({
-			action: "put",
-			objects: ["gem", "chest"],
-			preposition: "into",
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("place lamp on table")).toEqual({
-			action: "put",
-			objects: ["lamp", "table"],
-			preposition: "on",
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("put sword")).toEqual({
-			action: "put",
-			objects: ["sword"],
-			preposition: null,
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("put")).toEqual({
-			action: "put",
-			objects: [],
-			preposition: null,
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("put sword on floor")).toEqual({
-			action: "put",
-			objects: ["sword", "floor"],
-			preposition: "on",
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("put sword on the floor")).toEqual({
-			action: "put",
-			objects: ["sword", "floor"],
-			preposition: "on",
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("place lamp on the ground")).toEqual({
-			action: "put",
-			objects: ["lamp", "ground"],
-			preposition: "on",
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("put down sword")).toEqual({
-			action: "drop",
-			objects: ["sword"],
-			preposition: null,
-			direction: null,
-			message: null,
-		});
-		expect(tryDeterministicIntent("drop the sword")).toEqual({
-			action: "drop",
-			objects: ["sword"],
-			preposition: null,
-			direction: null,
-			message: null,
-		});
-	});
-
-	it("returns null for natural language or complex commands", () => {
+	it("returns null for entity commands, delegating all entity resolution to the LLM agent", () => {
+		expect(tryDeterministicIntent("take sword")).toBeNull();
 		expect(tryDeterministicIntent("take the brass key from table")).toBeNull();
+		expect(tryDeterministicIntent("drop sword")).toBeNull();
+		expect(tryDeterministicIntent("drop swords")).toBeNull();
+		expect(tryDeterministicIntent("drop the sword")).toBeNull();
+		expect(tryDeterministicIntent("put sword in chest")).toBeNull();
+		expect(tryDeterministicIntent("insert gem into chest")).toBeNull();
+		expect(tryDeterministicIntent("place lamp on table")).toBeNull();
 		expect(tryDeterministicIntent("examine painting")).toBeNull();
 		expect(tryDeterministicIntent("what should I do now?")).toBeNull();
 	});

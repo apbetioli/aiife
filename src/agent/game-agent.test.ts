@@ -136,4 +136,92 @@ describe("GameAgent", () => {
 
 		expect(completed).toBe("I did not understand that.");
 	});
+
+	it("drops plural objects ('drop swords') via LLM entity resolution", async () => {
+		const baseWorld = makeTestWorld();
+		const world = makeTestWorld({
+			objects: {
+				...baseWorld.objects,
+				metal_sword: {
+					id: "metal_sword",
+					name: "metal sword",
+					aliases: [],
+					type: "item",
+					location: "inventory",
+					state: { carriable: true },
+					descriptions: { default: "A metal sword." },
+				},
+				wooden_sword: {
+					id: "wooden_sword",
+					name: "wooden sword",
+					aliases: [],
+					type: "item",
+					location: "inventory",
+					state: { carriable: true },
+					descriptions: { default: "A wooden sword." },
+				},
+			},
+		});
+		const engine = new GameEngine(world);
+		engine.start();
+
+		const doGenerate = vi.fn().mockResolvedValue({
+			rawCall: { rawPrompt: null, rawSettings: {} },
+			finishReason: "tool-calls",
+			usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+			content: [
+				{
+					type: "tool-call",
+					toolCallId: "call_drop",
+					toolName: "drop",
+					input: JSON.stringify({ objects: ["metal_sword", "wooden_sword"] }),
+				},
+			],
+		});
+		const mockModel = new MockLanguageModelV3({ doGenerate });
+		const agent = new GameAgent(mockModel, engine, mockModel);
+
+		let completed = "";
+		await agent.run("drop swords", [], {
+			onToken: () => {},
+			onComplete: (c) => {
+				completed = c;
+			},
+		});
+
+		expect(doGenerate).toHaveBeenCalled();
+		expect(completed).toBe("Dropped.");
+		const saved = engine.save().state;
+		expect(saved.objects.metal_sword.location).toBe("room_a");
+		expect(saved.objects.wooden_sword.location).toBe("room_a");
+	});
+
+	it("routes entity commands directly to the LLM agent", async () => {
+		const doGenerate = vi.fn().mockResolvedValue({
+			rawCall: { rawPrompt: null, rawSettings: {} },
+			finishReason: "tool-calls",
+			usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+			content: [
+				{
+					type: "tool-call",
+					toolCallId: "call_respond",
+					toolName: "respond",
+					input: JSON.stringify({ message: "You don't have any shields." }),
+				},
+			],
+		});
+		const mockModel = new MockLanguageModelV3({ doGenerate });
+		const { agent } = setup(mockModel);
+
+		let completed = "";
+		await agent.run("drop shield", [], {
+			onToken: () => {},
+			onComplete: (c) => {
+				completed = c;
+			},
+		});
+
+		expect(doGenerate).toHaveBeenCalled();
+		expect(completed).toBe("You don't have any shields.");
+	});
 });

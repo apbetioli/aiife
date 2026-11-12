@@ -33,12 +33,8 @@ The function `tryDeterministicIntent` in `src/agent/fast-path-parser.ts` evaluat
    - `restore [slot]` maps to `{ action: "restore", slot: "..." }`.
    - `q` and `quit` map to `{ action: "quit" }`.
    - `help` maps to `{ action: "help" }`.
-3. **Simple verb-noun patterns.**
-   - `take <target>` and `get <target>` map to `{ action: "take", objects: ["<target>"] }`.
-   - `drop <target>` maps to `{ action: "drop", objects: ["<target>"] }`.
-   - `x <target>` and `examine <target>` map to `{ action: "examine", objects: ["<target>"] }`.
 
-When a pattern matches, the turn executes without network overhead.
+When a zero-entity pattern matches, the turn executes without network overhead. All commands referencing entities (such as `take`, `drop`, `put`, or `examine`) cleanly bypass the fast-path parser and route to scoped tool calling.
 
 ---
 

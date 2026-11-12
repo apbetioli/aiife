@@ -27,7 +27,7 @@ export class GameAgent {
 
 		// Fast-path standard unambiguous commands to bypass LLM intent extraction
 		const fastIntent = tryDeterministicIntent(input);
-		let intent: RecognizedIntent;
+		let intent: RecognizedIntent | null = null;
 
 		if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
 			intent = fastIntent;

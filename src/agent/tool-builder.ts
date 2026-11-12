@@ -33,8 +33,8 @@ Rules:
 - If the player's phrase only includes an action and there is a single matching entity in the game state, use it.
 - If the player's phrase is a substring of an entity's name, ID, or alias (e.g. "mail" or "box" → "small mailbox"), use that entity. Only do this when exactly one entity in scope matches.
 - If no exact or substring match, consider common synonyms and semantic equivalents (e.g. "lamp" for a lantern, "box" for a chest or mailbox). If exactly one entity is a plausible match, use it. If multiple could match, call respond.
-- If the player's phrase says <action> ALL, include all matching entity IDs.
-- If the player's phrase is ambiguous or matches multiple entities (and doesn't say ALL), call respond to ask for clarification.
+- If the player's phrase refers to a plural noun (e.g. "swords", "keys"), lists multiple items (e.g. "sword and lantern"), or says ALL, include all matching entity IDs in the objects array.
+- If the player's phrase is a singular reference that is ambiguous or matches multiple entities, call respond to ask for clarification.
 - If the input is conversational, questions, unfulfillable, or not a recognized command, call respond.
 - When calling respond, never expose internal IDs in the message — use display names instead.
 - If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.

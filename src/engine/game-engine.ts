@@ -108,6 +108,10 @@ export class GameEngine {
 		return this.registry.getActiveActions(this.getParserContext(), this.state);
 	}
 
+	areTargetsInScope(intent: RecognizedIntent): boolean {
+		return allTargetsInScope(this.state, toEventParams(intent));
+	}
+
 	runAction(intent: RecognizedIntent): string {
 		// Conversational response — no game action
 		if (intent.action === "respond") {
