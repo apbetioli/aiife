@@ -16,6 +16,15 @@ describe("defineGame", () => {
 		expect(game.setup).toBe(setup);
 	});
 
+	it("preserves actions in GameDefinition", () => {
+		const world = makeTestWorld();
+		const actions = {};
+		const game = defineGame({ world, actions });
+
+		expect(game.world).toBe(world);
+		expect(game.actions).toBe(actions);
+	});
+
 	it("accepts a bare World object and produces GameDefinition without setup", () => {
 		const world = makeTestWorld();
 		const game = defineGame(world);
@@ -36,6 +45,18 @@ describe("normalizeGameExport (polymorphic loader)", () => {
 		const result = normalizeGameExport(mod);
 		expect(result.world.id).toBe(world.id);
 		expect(result.setup).toBe(setup);
+	});
+
+	it("loads bundled GameDefinition with actions", () => {
+		const world = makeTestWorld();
+		const actions = {};
+		const mod = {
+			default: defineGame({ world, actions }),
+		};
+
+		const result = normalizeGameExport(mod);
+		expect(result.world.id).toBe(world.id);
+		expect(result.actions).toBe(actions);
 	});
 
 	it("loads bare world default export with separate named setup export (legacy pattern)", () => {

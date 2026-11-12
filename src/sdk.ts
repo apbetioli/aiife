@@ -19,6 +19,7 @@ export {
 export {
 	type ActionDef,
 	type ActionExecutionContext,
+	type ActionPack,
 	ActionRegistry,
 	type ActionScopeCondition,
 	type ActionScopeRule,
@@ -27,8 +28,17 @@ export {
 	GameEvent,
 	type GameSetup,
 	registerAction,
+	registerActionPack,
+	registerActionPacks,
 	type StoppableEvent,
 } from "./engine/rules";
+export {
+	itemActions,
+	navigationActions,
+	socialActions,
+	standardAdventureActions,
+	systemActions,
+} from "./engine/rules/core-actions";
 export { getInstrument, getObjectIds, getTarget, runAction } from "./engine/rules/core-actions/helpers";
 export { registerDaemon } from "./engine/rules/factories";
 export { PRIORITY } from "./engine/rules/priorities";

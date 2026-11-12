@@ -6,7 +6,7 @@ import type { EventBus } from "../event-bus";
 import { executeAction } from "../executor";
 import { getInstrument, getObjectIds, getTarget } from "../param-helpers";
 import { registerAction } from "../register-action";
-import type { ActionDef, ResolveTargetOptions } from "./types";
+import type { ActionDef, ActionPack, ResolveTargetOptions } from "./types";
 
 export { getInstrument, getObjectIds, getTarget };
 
@@ -50,15 +50,34 @@ export function runAction(
 	action: string,
 	params: Record<string, unknown>,
 ) {
-	return executeAction(bus, world, state, action, params).feedback;
+	const result = executeAction(bus, world, state, action, params);
+	Object.assign(state, result.state);
+	return result.feedback;
 }
+
+export function registerActionPack(
+	bus: EventBus,
+	registry: ActionRegistry,
+	...packs: (ActionPack | ActionPack[])[]
+): void {
+	for (const pack of packs.flat()) {
+		if (typeof pack === "function") {
+			pack(bus, registry);
+		} else {
+			for (const [name, def] of Object.entries(pack)) {
+				registerAction(bus, registry, name, def);
+			}
+		}
+	}
+}
+
+export const registerActionPacks = registerActionPack;
 
 export function registerCoreActions(
 	bus: EventBus,
 	registry: ActionRegistry,
-	definitions: Record<string, ActionDef<unknown>>,
+	// biome-ignore lint/suspicious/noExplicitAny: action definitions can have any parameter schema
+	definitions: Record<string, ActionDef<any>> = {},
 ): void {
-	for (const [name, def] of Object.entries(definitions)) {
-		registerAction(bus, registry, name, def);
-	}
+	registerActionPack(bus, registry, definitions);
 }

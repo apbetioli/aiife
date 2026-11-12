@@ -3,7 +3,7 @@ import { useApp } from "ink";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GameAgent } from "../../agent/game-agent";
 import { createNarratorModel, createParserModel } from "../../agent/model";
-import { GameEngine } from "../../engine/game-engine";
+import { GameEngine, type GameEngineOptions } from "../../engine/game-engine";
 import type { GameSetup } from "../../engine/rules";
 import type { GameEvent } from "../../engine/rules/types";
 import type { World } from "../../world/types";
@@ -11,7 +11,7 @@ import { getErrorDisplayMessage } from "../helpers";
 import { useMessages } from "./use-messages";
 import { useTokenUsage } from "./use-token-usage";
 
-export function useGameSession(world: World, setup?: GameSetup) {
+export function useGameSession(world: World, setupOrOptions?: GameSetup | GameEngineOptions) {
 	const { exit } = useApp();
 
 	const [messages, addMessage] = useMessages();
@@ -48,7 +48,7 @@ export function useGameSession(world: World, setup?: GameSetup) {
 	const agentRef = useRef<GameAgent | null>(null);
 
 	if (!engineRef.current) {
-		const engine = new GameEngine(world, setup);
+		const engine = new GameEngine(world, setupOrOptions);
 		engine.addObserver((event) => onEventRef.current(event));
 		engine.addObserver((event) => onQuitRef.current(event));
 		engineRef.current = engine;

@@ -62,7 +62,8 @@ export function buildScopedTools(context: ParserContext, options: BuildScopedToo
 	const actionNames = options.availableActions ?? Object.keys(definitions);
 	const shouldScope = options.scopeTools ?? true;
 
-	const tools: Record<string, ReturnType<typeof tool>> = {};
+	// biome-ignore lint/suspicious/noExplicitAny: tools can take any input schema and return any output
+	const tools: Record<string, ReturnType<typeof tool<any, any>>> = {};
 
 	for (const name of actionNames) {
 		const def = definitions[name];

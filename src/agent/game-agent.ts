@@ -29,7 +29,7 @@ export class GameAgent {
 		const fastIntent = tryDeterministicIntent(input);
 		let intent: RecognizedIntent;
 
-		if (fastIntent) {
+		if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
 			intent = fastIntent;
 		} else {
 			const context = this.engine.getParserContext();

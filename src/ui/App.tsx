@@ -1,5 +1,5 @@
 import { Box } from "ink";
-import type { GameSetup } from "../engine/rules";
+import type { ActionPack, GameSetup } from "../engine/rules";
 import type { World } from "../world/types";
 import { Input, MessageList, Spinner, Text, TokenUsage } from "./components";
 import { IS_DEBUG } from "./helpers";
@@ -8,10 +8,14 @@ import { useGameSession } from "./hooks/use-game-session";
 interface Props {
 	world: World;
 	setup?: GameSetup;
+	actions?: ActionPack | ActionPack[];
 }
 
-export function App({ world, setup }: Props) {
-	const { messages, streamingText, handleSubmit, isLoading, tokenUsage } = useGameSession(world, setup);
+export function App({ world, setup, actions }: Props) {
+	const { messages, streamingText, handleSubmit, isLoading, tokenUsage } = useGameSession(world, {
+		setup,
+		actions,
+	});
 
 	const isThinking = isLoading && !streamingText;
 

@@ -3,8 +3,15 @@ import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { ensureVisited, immutable, isInScope } from "./mutators";
 import { buildParserContext } from "./parser-context";
-import { ActionRegistry, EventBus, executeAction, executeUntrustedAction, type GameSetup } from "./rules";
-import { registerCoreActions } from "./rules/core-actions";
+import {
+	type ActionPack,
+	ActionRegistry,
+	EventBus,
+	executeAction,
+	executeUntrustedAction,
+	type GameSetup,
+} from "./rules";
+import { registerActionPacks, standardAdventureActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
 import { load, type SaveFile, sanitizeSlot, save } from "./save";
 import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
@@ -41,6 +48,7 @@ function allTargetsInScope(state: GameState, params: Record<string, unknown>): b
 export interface GameEngineOptions {
 	setup?: GameSetup;
 	storage?: SaveStorageAdapter;
+	actions?: ActionPack | ActionPack[];
 }
 
 export class GameEngine {
@@ -63,7 +71,8 @@ export class GameEngine {
 		this.bus = new EventBus();
 		this.registry = new ActionRegistry();
 		this.state = buildInitialState(world);
-		registerCoreActions(this.bus, this.registry);
+		const actions = options.actions !== undefined ? options.actions : standardAdventureActions;
+		registerActionPacks(this.bus, this.registry, actions);
 		options.setup?.(this.bus, this.registry);
 	}
 
@@ -72,15 +81,15 @@ export class GameEngine {
 	}
 
 	start(): string {
-		const startResult = executeAction(this.bus, this.world, this.state, "game:start", {});
+		const startResult = this.fireIfRegistered("game:start");
 		this.state = startResult.state;
 
-		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
-		this.state = immutable(lookResult.state, (s) => {
+		const lookFeedback = this.renderLook();
+		this.state = immutable(this.state, (s) => {
 			ensureVisited(s, this.world.start_room);
 		});
 
-		return [...startResult.feedback, ...lookResult.feedback].join("\n");
+		return [...startResult.feedback, lookFeedback].filter(Boolean).join("\n");
 	}
 
 	getParserContext(): ParserContext {
@@ -100,6 +109,15 @@ export class GameEngine {
 	}
 
 	runAction(intent: RecognizedIntent): string {
+		// Conversational response — no game action
+		if (intent.action === "respond") {
+			return intent.message ?? "";
+		}
+
+		if (!this.registry.has(intent.action)) {
+			return intent.message ?? "I don't understand that.";
+		}
+
 		if (intent.action === "undo") {
 			return this.undo();
 		}
@@ -130,16 +148,7 @@ export class GameEngine {
 			}
 		}
 
-		// Conversational response — no game action
-		if (intent.action === "respond") {
-			return intent.message ?? "";
-		}
-
 		const action = intent.action;
-		if (!this.registry.has(action)) {
-			return intent.message ?? "I don't understand that.";
-		}
-
 		const params = toEventParams(intent);
 		if (!allTargetsInScope(this.state, params)) {
 			return "You don't see that here.";
@@ -154,7 +163,7 @@ export class GameEngine {
 		}
 
 		this.pushHistory(prevState);
-		const tickResult = executeAction(this.bus, this.world, this.state, "tick", {});
+		const tickResult = this.fireIfRegistered("tick");
 		this.state = tickResult.state;
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
@@ -167,9 +176,7 @@ export class GameEngine {
 			return "Nothing to undo.";
 		}
 		this.state = prev;
-		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
-		this.state = lookResult.state;
-		return lookResult.feedback.join("\n");
+		return this.renderLook("Previous turn undone.");
 	}
 
 	save(): SaveFile {
@@ -183,13 +190,31 @@ export class GameEngine {
 		}
 		this.pushHistory(this.state);
 		this.state = restored;
-		const lookResult = executeAction(this.bus, this.world, this.state, "look", {});
-		this.state = lookResult.state;
-		return `Game restored.\n${lookResult.feedback.join("\n")}`;
+		const look = this.renderLook();
+		return look ? `Game restored.\n${look}` : "Game restored.";
 	}
 
 	isGameOver(): boolean {
 		return this.state.player.state.quit === true;
+	}
+
+	private fireIfRegistered(
+		action: string,
+		params: Record<string, unknown> = {},
+	): { state: GameState; feedback: string[] } {
+		if (!this.registry.has(action)) {
+			return { state: this.state, feedback: [] };
+		}
+		return executeAction(this.bus, this.world, this.state, action, params);
+	}
+
+	private renderLook(fallback = ""): string {
+		if (!this.registry.has("look")) {
+			return fallback;
+		}
+		const res = executeAction(this.bus, this.world, this.state, "look", {});
+		this.state = res.state;
+		return res.feedback.join("\n");
 	}
 
 	private pushHistory(stateToSave: GameState = this.state): void {

@@ -1,6 +1,6 @@
 import type { ActionRegistry } from "../action-registry";
 import type { EventBus } from "../event-bus";
-import { registerCoreActions as register } from "./helpers";
+import { registerActionPack, registerActionPacks } from "./helpers";
 import { close } from "./items/close";
 import { drop } from "./items/drop";
 import { examine } from "./items/examine";
@@ -28,10 +28,14 @@ import { restoreAction as restore } from "./system/restore";
 import { saveAction as save } from "./system/save";
 import { tick } from "./system/tick";
 import { undo } from "./system/undo";
-import type { ActionDef } from "./types";
 
-export const coreActionDefinitions = {
+export const navigationActions = {
 	go,
+	enter,
+	exit,
+} as const;
+
+export const itemActions = {
 	take,
 	drop,
 	put,
@@ -42,12 +46,16 @@ export const coreActionDefinitions = {
 	examine,
 	use,
 	move,
+	inventory,
+} as const;
+
+export const socialActions = {
 	attack,
 	talk,
-	enter,
-	exit,
+} as const;
+
+export const systemActions = {
 	look,
-	inventory,
 	help,
 	undo,
 	save,
@@ -60,10 +68,21 @@ export const coreActionDefinitions = {
 	die,
 } as const;
 
-export type CoreEventName = keyof typeof coreActionDefinitions;
+export const standardAdventureActions = {
+	...navigationActions,
+	...itemActions,
+	...socialActions,
+	...systemActions,
+} as const;
+
+/** Alias for backwards compatibility with previous coreActionDefinitions export */
+export const coreActionDefinitions = standardAdventureActions;
+
+export type CoreEventName = keyof typeof standardAdventureActions;
 
 export function registerCoreActions(bus: EventBus, registry: ActionRegistry): void {
-	register(bus, registry, coreActionDefinitions as unknown as Record<string, ActionDef<unknown>>);
+	registerActionPack(bus, registry, standardAdventureActions);
 }
 
-export type { ActionDef } from "./types";
+export { registerActionPack, registerActionPacks };
+export type { ActionDef, ActionPack } from "./types";

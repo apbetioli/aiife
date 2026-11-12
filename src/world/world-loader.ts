@@ -1,39 +1,37 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { GameSetup } from "../engine/rules";
+import type { ActionPack, GameSetup } from "../engine/rules";
 import { type World, WorldSchema } from "./types";
 
 const DEFAULT_GAME = "the-great-hall";
 const GAMES_DIR = resolve(import.meta.dirname, "..", "..", "games");
 
-export function normalizeGameExport(mod: unknown): { world: World; setup?: GameSetup } {
+export interface LoadedGame {
+	world: World;
+	setup?: GameSetup;
+	actions?: ActionPack | ActionPack[];
+}
+
+export function normalizeGameExport(mod: unknown): LoadedGame {
 	if (!mod || typeof mod !== "object") {
 		throw new Error("Game module must export an object");
 	}
 
 	const exported = (mod as { default?: unknown }).default ?? mod;
+	const isBundle = exported && typeof exported === "object" && "world" in exported;
+	const bundle = isBundle
+		? (exported as { world: unknown; setup?: GameSetup; actions?: ActionPack | ActionPack[] })
+		: undefined;
+	const named = mod as { setup?: GameSetup; actions?: ActionPack | ActionPack[] };
 
-	// Case 1: Bundled export { world, setup } (e.g. from defineGame)
-	if (exported && typeof exported === "object" && "world" in exported) {
-		const bundle = exported as { world: unknown; setup?: GameSetup };
-		const namedSetup =
-			typeof (mod as { setup?: unknown }).setup === "function" ? (mod as { setup: GameSetup }).setup : undefined;
-		return {
-			world: WorldSchema.parse(bundle.world),
-			setup: bundle.setup ?? namedSetup,
-		};
-	}
-
-	// Case 2: Bare World export + optional named setup
-	const namedSetup =
-		typeof (mod as { setup?: unknown }).setup === "function" ? (mod as { setup: GameSetup }).setup : undefined;
 	return {
-		world: WorldSchema.parse(exported),
-		setup: namedSetup,
+		world: WorldSchema.parse(bundle ? bundle.world : exported),
+		setup: bundle?.setup ?? (typeof named.setup === "function" ? named.setup : undefined),
+		actions: bundle?.actions ?? named.actions,
 	};
 }
 
-async function loadGame(path: string): Promise<{ world: World; setup?: GameSetup } | null> {
+async function loadGame(path: string): Promise<LoadedGame | null> {
 	if (path.endsWith(".json")) {
 		const raw = await readFile(path, "utf-8");
 		return { world: WorldSchema.parse(JSON.parse(raw)) };
@@ -53,11 +51,11 @@ function getGamePathsToTry(gameName: string): string[] {
 	return [resolve(GAMES_DIR, `${gameName}.ts`), resolve(GAMES_DIR, `${gameName}.json`)];
 }
 
-export async function loadWorld(): Promise<{ world: World; setup?: GameSetup }> {
+export async function loadWorld(): Promise<LoadedGame> {
 	const gameName = process.argv.slice(2).find((a) => a !== "--") ?? DEFAULT_GAME;
 	const pathsToTry = getGamePathsToTry(gameName);
 
-	let result: { world: World; setup?: GameSetup } | null = null;
+	let result: LoadedGame | null = null;
 	for (const path of pathsToTry) {
 		try {
 			result = await loadGame(path);
@@ -72,5 +70,5 @@ export async function loadWorld(): Promise<{ world: World; setup?: GameSetup }> 
 		process.exit(1);
 	}
 
-	return { world: result.world, setup: result.setup };
+	return result;
 }

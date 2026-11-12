@@ -15,9 +15,9 @@ async function main() {
 		console.log(`Models:\n${getModelsDebugInfo()}\n`);
 	}
 
-	const { world, setup } = await loadWorld();
+	const { world, setup, actions } = await loadWorld();
 
-	render(React.createElement(App, { world, setup }));
+	render(React.createElement(App, { world, setup, actions }));
 }
 
 main();

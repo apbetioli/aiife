@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type { RecognizedIntent } from "../../agent/types";
 import type { ObjectType, ParserContext, World } from "../../world/types";
 import type { GameState } from "../types";
+import type { ActionRegistry } from "./action-registry";
 import type { CoreEventName } from "./core-actions";
 import type { EventBus } from "./event-bus";
 
@@ -92,10 +93,15 @@ type BaseActionDef = {
 };
 
 /** One action definition: inputSchema infers params type. Execute mutates state; returns optional feedback. */
-export type ActionDef<TParams = Record<string, unknown>> = BaseActionDef & {
+// biome-ignore lint/suspicious/noExplicitAny: action definitions can have any parameter schema
+export type ActionDef<TParams = any> = BaseActionDef & {
 	/** AI SDK standard parameter schema. */
 	inputSchema: z.ZodType<TParams>;
 
 	/** AI SDK standard executor: `(params, context) => result`. */
 	execute?: (params: TParams, context: ActionExecutionContext) => EventListenerResult;
 };
+
+/** A composable pack of action definitions or a setup function. */
+// biome-ignore lint/suspicious/noExplicitAny: action definitions can have any parameter schema
+export type ActionPack = Record<string, ActionDef<any>> | ((bus: EventBus, registry: ActionRegistry) => void);
