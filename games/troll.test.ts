@@ -147,4 +147,70 @@ describe("Troll game rules and integration", () => {
 		});
 		expect(talk).toContain("Me SMASH!");
 	});
+
+	it("an unconscious troll does not deliver a surprise blow on look or re-entry", () => {
+		const engine = new GameEngine(world, setup);
+
+		engine.runAction({
+			action: "take",
+			direction: null,
+			objects: ["metal_sword"],
+			preposition: null,
+			message: null,
+		});
+
+		// Go east to troll room - receives initial surprise attack
+		const goEast = engine.runAction({
+			action: "go",
+			direction: "east",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(goEast).toContain("The troll's mighty blow drops you to your knees.");
+		expect(engine.state.player.state.troll_encountered).toBe(true);
+
+		// Attack 4 times to knock out the troll
+		for (let i = 0; i < 4; i++) {
+			engine.runAction({
+				action: "attack",
+				direction: null,
+				objects: ["troll", "metal_sword"],
+				preposition: null,
+				message: null,
+			});
+		}
+		expect(engine.state.objects.troll?.state.knocked_out).toBe(true);
+
+		// Look while troll is knocked out - should show unconscious description and NO blow
+		const lookResult = engine.runAction({
+			action: "look",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(lookResult).toContain("The troll lies unconscious on the ground, drooling slightly.");
+		expect(lookResult).not.toContain("mighty blow");
+
+		// Go north to treasure room and come back south
+		const goNorth = engine.runAction({
+			action: "go",
+			direction: "north",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(goNorth).toContain("Treasure Room");
+
+		const goSouth = engine.runAction({
+			action: "go",
+			direction: "south",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(goSouth).toContain("The troll lies unconscious on the ground, drooling slightly.");
+		expect(goSouth).not.toContain("mighty blow");
+	});
 });

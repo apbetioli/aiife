@@ -75,7 +75,7 @@ export const put: ActionDef<z.infer<typeof objectsWithPrepositionSchema>> = {
 		}
 
 		// Prevent moving into a container that is nested inside the item itself
-		let curr: string | undefined = targetId;
+		let curr: string | null | undefined = targetId;
 		while (curr && curr !== "inventory" && state.objects[curr]) {
 			if (curr === itemId) {
 				stop();

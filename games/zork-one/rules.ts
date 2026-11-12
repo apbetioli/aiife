@@ -677,7 +677,12 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		(_event, state) => {
 			const room = state.player.current_room;
 			const troll = state.objects.troll;
-			if (room === "troll_room" && !troll?.state.dead && !state.player.state.troll_encountered) {
+			if (
+				room === "troll_room" &&
+				!troll?.state.dead &&
+				!troll?.state.knocked_out &&
+				!state.player.state.troll_encountered
+			) {
 				setPlayerState(state, "troll_encountered", true);
 				setPlayerState(state, "staggered", true);
 				const feedback: string[] = [];

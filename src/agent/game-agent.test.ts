@@ -15,9 +15,13 @@ describe("GameAgent", () => {
 			new MockLanguageModelV3({
 				doGenerate: async () => ({
 					rawCall: { rawPrompt: null, rawSettings: {} },
-					finishReason: "stop",
-					usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+					finishReason: { unified: "stop", raw: "stop" },
+					usage: {
+						inputTokens: { total: 10, noCache: 10, cacheRead: 0, cacheWrite: 0 },
+						outputTokens: { total: 5, text: 5, reasoning: 0 },
+					},
 					content: [{ type: "text", text: "mock response" }],
+					warnings: [],
 				}),
 			});
 

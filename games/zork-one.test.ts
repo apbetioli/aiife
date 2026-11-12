@@ -5,6 +5,7 @@ import { buildParserContext } from "../src/engine/parser-context";
 import { ActionRegistry, EventBus } from "../src/engine/rules";
 import { registerCoreActions } from "../src/engine/rules/core-actions";
 import { executeAction } from "../src/engine/rules/executor";
+import type { GameState } from "../src/engine/types";
 import { WorldSchema } from "../src/world/types";
 import zorkOne from "./zork-one";
 
@@ -456,7 +457,7 @@ describe("Zork One world definition and rules", () => {
 		expect(isInInventory(takeEmerald.state, "large_emerald")).toBe(true);
 
 		// Dig in sandy cave with shovel
-		let sCave = {
+		let sCave: GameState = {
 			...takeEmerald.state,
 			player: { ...takeEmerald.state.player, current_room: "sandy_cave" },
 			objects: {
@@ -517,7 +518,7 @@ describe("Zork One world definition and rules", () => {
 			"ivory_torch",
 		];
 
-		let s = {
+		let s: GameState = {
 			...s0,
 			player: { ...s0.player, current_room: "living_room" },
 			rooms: {

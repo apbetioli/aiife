@@ -912,6 +912,7 @@ export const objects: Record<string, GameObject> = {
 		state: { alive: true, dead: false, knocked_out: false, carriable: false, combat_phase: 0 },
 		descriptions: {
 			default: "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
+			knocked_out: "The troll lies unconscious on the ground, drooling slightly.",
 			dead: "The troll lies dead on the floor.",
 		},
 	},

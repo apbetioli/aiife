@@ -8,7 +8,7 @@ const RoomStateSchema = z.object({
 });
 
 const ObjectStateSchema = z.object({
-	location: z.string(),
+	location: z.string().nullable(),
 	state: StateSchema.default({}),
 });
 

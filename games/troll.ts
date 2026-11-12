@@ -59,8 +59,8 @@ const world: World = {
 			name: "troll",
 			descriptions: {
 				default: "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
-				"knocked_out == true": "The troll lies unconscious on the ground, drooling slightly.",
-				"dead == true": "The carcass of the troll has disappeared.",
+				knocked_out: "The troll lies unconscious on the ground, drooling slightly.",
+				dead: "The carcass of the troll has disappeared.",
 			},
 			type: "actor",
 			location: "troll_cave",
@@ -219,7 +219,12 @@ export default defineGame({
 			(_event, state) => {
 				const room = state.player.current_room;
 				const troll = state.objects.troll;
-				if (room === "troll_cave" && !troll?.state.dead && !state.player.state.troll_encountered) {
+				if (
+					room === "troll_cave" &&
+					!troll?.state.dead &&
+					!troll?.state.knocked_out &&
+					!state.player.state.troll_encountered
+				) {
 					setPlayerState(state, "troll_encountered", true);
 					setPlayerState(state, "staggered", true);
 					const feedback: string[] = [];

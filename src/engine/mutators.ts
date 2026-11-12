@@ -51,7 +51,10 @@ export function findOpenContainerInRoom(state: GameState, objectId: string): str
 			return undefined;
 		}
 
-		const nextLoc: string = curr.location;
+		const nextLoc: string | null = curr.location;
+		if (!nextLoc) {
+			return undefined;
+		}
 		if (nextLoc === state.player.current_room || nextLoc === "inventory") {
 			return immediateContainerId;
 		}
@@ -88,8 +91,8 @@ export function immutable(state: GameState, fn: (state: GameState) => void): Gam
 export function moveObject(
 	state: GameState,
 	objectId: string,
-	toLocation: string,
-	options?: { expectedFrom?: string },
+	toLocation: string | null,
+	options?: { expectedFrom?: string | null },
 ): void {
 	const obj = state.objects[objectId];
 	if (!obj) {
@@ -100,15 +103,17 @@ export function moveObject(
 			`Object "${objectId}" is not at location "${options.expectedFrom}" (currently at "${obj.location}")`,
 		);
 	}
-	if (objectId === toLocation) {
-		throw new Error(`Cannot move object "${objectId}" inside itself`);
-	}
-	let curr: string | undefined = toLocation;
-	while (curr && curr !== "inventory" && state.objects[curr]) {
-		if (curr === objectId) {
-			throw new Error(`Cannot move object "${objectId}" inside one of its contents ("${toLocation}")`);
+	if (toLocation !== null) {
+		if (objectId === toLocation) {
+			throw new Error(`Cannot move object "${objectId}" inside itself`);
 		}
-		curr = state.objects[curr].location;
+		let curr: string | null | undefined = toLocation;
+		while (curr && curr !== "inventory" && state.objects[curr]) {
+			if (curr === objectId) {
+				throw new Error(`Cannot move object "${objectId}" inside one of its contents ("${toLocation}")`);
+			}
+			curr = state.objects[curr].location;
+		}
 	}
 	obj.location = toLocation;
 }
