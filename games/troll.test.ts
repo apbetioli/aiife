@@ -168,7 +168,7 @@ describe("Troll game rules and integration", () => {
 			message: null,
 		});
 		expect(goEast).toContain("The troll's mighty blow drops you to your knees.");
-		expect(engine.state.player.state.troll_encountered).toBe(true);
+		expect(engine.save().state.player.state.troll_encountered).toBe(true);
 
 		// Attack 4 times to knock out the troll
 		for (let i = 0; i < 4; i++) {
@@ -180,7 +180,7 @@ describe("Troll game rules and integration", () => {
 				message: null,
 			});
 		}
-		expect(engine.state.objects.troll?.state.knocked_out).toBe(true);
+		expect(engine.save().state.objects.troll?.state.knocked_out).toBe(true);
 
 		// Look while troll is knocked out - should show unconscious description and NO blow
 		const lookResult = engine.runAction({
