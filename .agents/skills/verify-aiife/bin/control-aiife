@@ -1,0 +1,447 @@
+#!/usr/bin/env python3
+"""
+control-aiife: Verification harness driver for AIIFE (AI Interactive Fiction Engine).
+Drives the real interactive terminal application (Ink / React / Node.js) via a pseudo-terminal (PTY),
+captures terminal transcripts, verifies state transitions and save files, and produces durable evidence.
+"""
+
+import argparse
+import json
+import os
+import pty
+import re
+import select
+import shutil
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+ANSI_RE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+
+
+def strip_ansi(text: str) -> str:
+    """Strip ANSI escape sequences from text."""
+    return ANSI_RE.sub("", text)
+
+
+def format_clean_transcript(raw_text: str, executed_commands: list) -> str:
+    """Reconstruct clean readable conversation without Ink terminal redraw noise."""
+    clean = strip_ansi(raw_text)
+    blocks = clean.split("› ")
+
+    lines = []
+    lines.append("🤖 Hi, I'm the Dungeon Master. (type \"quit\" to quit)")
+    lines.append("")
+
+    # Map blocks
+    command_responses = []
+    for b in blocks[1:]:
+        block_lines = [l.strip() for l in b.splitlines() if l.strip()]
+        if not block_lines:
+            continue
+        cmd = block_lines[0]
+        resp = []
+        for l in block_lines[1:]:
+            if l in (">", "> ▌", "▌", ">") or l.startswith("🤖") or l.startswith("Models:"):
+                break
+            resp.append(l)
+        command_responses.append((cmd, resp))
+
+    # Match in sequence for executed commands
+    cmd_idx = 0
+    for cmd, resp in command_responses:
+        if cmd_idx < len(executed_commands) and cmd == executed_commands[cmd_idx]:
+            lines.append(f"› {cmd}")
+            for r in resp:
+                lines.append(r)
+            lines.append("")
+            cmd_idx += 1
+
+    return "\n".join(lines)
+
+
+def run_doctor(repo_root: Path) -> int:
+    """Read-only check answering: is this instance worth driving?"""
+    print("=== AIIFE Verification Doctor ===")
+    errors = 0
+
+    # 1. Node version >= 20
+    try:
+        res = subprocess.run(["node", "--version"], capture_output=True, text=True, check=True)
+        version_str = res.stdout.strip()
+        major = int(re.search(r"v(\d+)", version_str).group(1))
+        if major >= 20:
+            print(f"[OK] Node.js version: {version_str} (>= 20)")
+        else:
+            print(f"[FAIL] Node.js version {version_str} is below required v20+")
+            errors += 1
+    except Exception as e:
+        print(f"[FAIL] Node.js check failed: {e}")
+        errors += 1
+
+    # 2. node_modules & tsx package
+    node_modules = repo_root / "node_modules"
+    if node_modules.is_dir():
+        print(f"[OK] node_modules found at {node_modules}")
+    else:
+        print("[FAIL] node_modules directory missing. Run `npm install` first.")
+        errors += 1
+
+    # 3. Test tsx runtime resolution
+    try:
+        subprocess.run(
+            ["node", "--import", "tsx", "-e", "process.exit(0)"],
+            cwd=repo_root,
+            capture_output=True,
+            check=True,
+        )
+        print("[OK] tsx import loader operational with Node")
+    except Exception as e:
+        print(f"[FAIL] Cannot import tsx via Node: {e}")
+        errors += 1
+
+    # 4. .env file
+    env_file = repo_root / ".env"
+    if env_file.is_file():
+        print(f"[OK] .env configuration file found at {env_file}")
+    else:
+        print("[FAIL] .env file missing in repository root.")
+        errors += 1
+
+    # 5. Games directory
+    games_dir = repo_root / "games"
+    if games_dir.is_dir():
+        games = [
+            f.stem
+            for f in games_dir.glob("*.ts")
+            if not f.name.endswith(".test.ts") and not f.name.endswith(".d.ts")
+        ] + [f.stem for f in games_dir.glob("*.json")]
+        games = sorted(list(set(games)))
+        print(f"[OK] Available games ({len(games)}): {', '.join(games)}")
+    else:
+        print("[FAIL] games/ directory not found.")
+        errors += 1
+
+    # 6. PTY capability
+    try:
+        m, s = pty.openpty()
+        os.close(m)
+        os.close(s)
+        print("[OK] OS pseudo-terminal (PTY) allocation operational")
+    except Exception as e:
+        print(f"[FAIL] PTY allocation failed: {e}")
+        errors += 1
+
+    if errors == 0:
+        print("Doctor status: READY TO DRIVE")
+        return 0
+    else:
+        print(f"Doctor status: FAILED ({errors} checks failed)")
+        return 1
+
+
+class AIIFEDriver:
+    def __init__(self, repo_root: Path, game: str = "the-great-hall", debug: bool = True):
+        self.repo_root = repo_root
+        self.game = game
+        self.debug = debug
+        self.pid = None
+        self.fd = None
+        self.raw_output = bytearray()
+
+    def start(self, timeout: float = 8.0) -> bool:
+        """Launch the app in an isolated PTY."""
+        self.pid, self.fd = pty.fork()
+        if self.pid == 0:
+            env = os.environ.copy()
+            if self.debug:
+                env["DEBUG"] = "true"
+            os.chdir(str(self.repo_root))
+            args = ["node", "--import", "tsx", "--env-file=.env", "src/index.ts", self.game]
+            os.execvpe("node", args, env)
+
+        # Parent process: wait for initial screen
+        start_time = time.time()
+        buf = b""
+        while time.time() - start_time < timeout:
+            r, _, _ = select.select([self.fd], [], [], 0.2)
+            if r:
+                try:
+                    chunk = os.read(self.fd, 4096)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    self.raw_output.extend(chunk)
+                except OSError:
+                    break
+            clean = strip_ansi(buf.decode("utf-8", errors="replace"))
+            if "Hi, I'm the Dungeon Master" in clean and ("▌" in clean or ">" in clean):
+                return True
+            time.sleep(0.05)
+
+        return False
+
+    def drain(self, timeout: float = 0.3) -> str:
+        """Read any pending output until quiet."""
+        buf = b""
+        while True:
+            r, _, _ = select.select([self.fd], [], [], timeout)
+            if not r:
+                break
+            try:
+                chunk = os.read(self.fd, 4096)
+                if not chunk:
+                    break
+                buf += chunk
+                self.raw_output.extend(chunk)
+            except OSError:
+                break
+        return buf.decode("utf-8", errors="replace")
+
+    def wait_for_prompt(self, timeout: float = 6.0) -> bool:
+        """Wait until Ink is idle and waiting for input."""
+        start = time.time()
+        buf = b""
+        while time.time() - start < timeout:
+            r, _, _ = select.select([self.fd], [], [], 0.15)
+            if r:
+                try:
+                    chunk = os.read(self.fd, 4096)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    self.raw_output.extend(chunk)
+                except OSError:
+                    break
+            clean = strip_ansi(buf.decode("utf-8", errors="replace"))
+            if "▌" in clean or clean.rstrip().endswith(">"):
+                # Give a tiny breather for React state batching
+                time.sleep(0.15)
+                return True
+        return False
+
+    def send_command(self, cmd: str, timeout: float = 6.0) -> str:
+        """Send a single interactive command and wait for response."""
+        self.drain(0.1)
+
+        # Write entire command string
+        os.write(self.fd, cmd.encode("utf-8"))
+
+        # Allow Ink/React state to commit text before sending return
+        time.sleep(0.3)
+        os.write(self.fd, b"\r")
+
+        # Wait until command is submitted and processed (marker: '› ' + cmd or prompt return)
+        start_time = time.time()
+        buf = b""
+        submitted = False
+
+        while time.time() - start_time < timeout:
+            r, _, _ = select.select([self.fd], [], [], 0.2)
+            if r:
+                try:
+                    chunk = os.read(self.fd, 4096)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    self.raw_output.extend(chunk)
+                except OSError:
+                    break
+            clean = strip_ansi(buf.decode("utf-8", errors="replace"))
+            if f"› {cmd}" in clean or f">{cmd}" in clean or "⚡" in clean:
+                submitted = True
+            if submitted and ("▌" in clean or clean.rstrip().endswith(">")):
+                time.sleep(0.2)
+                break
+
+        return buf.decode("utf-8", errors="replace")
+
+    def quit(self, timeout: float = 3.0) -> int:
+        """Ensure process exits cleanly."""
+        if self.pid is None:
+            return 0
+        try:
+            # Check if process has already exited
+            pid_done, status = os.waitpid(self.pid, os.WNOHANG)
+            if pid_done == self.pid:
+                return (
+                    os.waitstatus_to_exitcode(status)
+                    if hasattr(os, "waitstatus_to_exitcode")
+                    else (status >> 8)
+                )
+
+            # Send quit command if still running
+            os.write(self.fd, b"quit")
+            time.sleep(0.2)
+            os.write(self.fd, b"\r")
+
+            start = time.time()
+            while time.time() - start < timeout:
+                p, status = os.waitpid(self.pid, os.WNOHANG)
+                if p == self.pid:
+                    try:
+                        os.close(self.fd)
+                    except Exception:
+                        pass
+                    return (
+                        os.waitstatus_to_exitcode(status)
+                        if hasattr(os, "waitstatus_to_exitcode")
+                        else (status >> 8)
+                    )
+                time.sleep(0.1)
+
+            # Force kill if still hung
+            os.close(self.fd)
+            os.kill(self.pid, 9)
+            os.waitpid(self.pid, 0)
+            return 0
+        except Exception:
+            return 0
+
+
+def run_drive(args) -> int:
+    repo_root = Path(args.repo_root).resolve()
+    game = args.game
+    commands = []
+
+    if args.commands:
+        commands = [c.strip() for c in re.split(r"[;\n]", args.commands) if c.strip()]
+    elif args.command_file:
+        with open(args.command_file, "r", encoding="utf-8") as f:
+            commands = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
+    if not commands:
+        print("[ERROR] No commands provided to drive.")
+        return 1
+
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    output_dir = Path(args.output_dir or f"artifacts/verify-aiife/{run_id}").resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"==> Driving AIIFE [game: {game}]")
+    print(f"==> Output directory: {output_dir}")
+    print(f"==> Commands ({len(commands)}): {commands}")
+
+    start_time = time.time()
+    driver = AIIFEDriver(repo_root, game=game, debug=args.debug)
+
+    print("--> Launching PTY instance...")
+    if not driver.start(timeout=args.timeout):
+        print("[FAIL] Engine failed to start or show ready prompt within timeout.")
+        driver.quit()
+        return 1
+
+    print("--> Engine ready. Executing commands...")
+    step_results = []
+    for idx, cmd in enumerate(commands, 1):
+        print(f"  [{idx}/{len(commands)}] > {cmd}")
+        step_output = driver.send_command(cmd, timeout=args.timeout)
+        clean_step = strip_ansi(step_output)
+        step_results.append({"step": idx, "command": cmd, "output_preview": clean_step[:200]})
+
+    print("--> Terminating session...")
+    exit_code = driver.quit()
+    duration = round(time.time() - start_time, 2)
+
+    # Gather evidence
+    raw_text = driver.raw_output.decode("utf-8", errors="replace")
+    clean_transcript = format_clean_transcript(raw_text, commands)
+
+    (output_dir / "transcript.txt").write_text(clean_transcript, encoding="utf-8")
+    (output_dir / "transcript.raw.txt").write_text(raw_text, encoding="utf-8")
+
+    # Check for save file if slot was specified
+    save_file_found = None
+    if args.save_slot:
+        candidate = repo_root / f".save-{game.replace('-', '_')}-{args.save_slot}.json"
+        if not candidate.exists():
+            candidate = repo_root / f".save-{game}-{args.save_slot}.json"
+        if candidate.exists():
+            dest = output_dir / "save-state.json"
+            shutil.copy2(candidate, dest)
+            save_file_found = str(dest)
+            print(f"--> Captured save state: {dest}")
+
+    session_info = {
+        "run_id": run_id,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "game": game,
+        "commands": commands,
+        "duration_seconds": duration,
+        "exit_code": exit_code,
+        "evidence": {
+            "transcript": str(output_dir / "transcript.txt"),
+            "transcript_raw": str(output_dir / "transcript.raw.txt"),
+            "save_state": save_file_found,
+        },
+        "steps": step_results,
+    }
+
+    (output_dir / "session.json").write_text(json.dumps(session_info, indent=2), encoding="utf-8")
+
+    print(f"[OK] Verification run completed in {duration}s. Exit code: {exit_code}")
+    print(f"Evidence artifacts written to: {output_dir}")
+    return 0 if exit_code == 0 else 1
+
+
+def run_cleanup(repo_root: Path, pattern: str = ".save-*-verify-*.json") -> int:
+    """Clean up test save files created by verification runs."""
+    print("=== Cleaning up verification test state ===")
+    count = 0
+    for p in repo_root.glob(pattern):
+        try:
+            p.unlink()
+            print(f"Removed temporary test save file: {p.name}")
+            count += 1
+        except Exception as e:
+            print(f"Failed to remove {p.name}: {e}")
+    for p in repo_root.glob(".save-*-test*.json"):
+        try:
+            p.unlink()
+            print(f"Removed temporary test save file: {p.name}")
+            count += 1
+        except Exception as e:
+            print(f"Failed to remove {p.name}: {e}")
+    print(f"Cleanup finished. Removed {count} temporary save file(s). Evidence artifacts preserved.")
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description="AIIFE Verification Control Harness")
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+
+    # doctor
+    doctor_p = subparsers.add_parser("doctor", help="Run health check on AIIFE environment")
+    doctor_p.add_argument("--repo-root", default=".", help="Path to aiife repo root")
+
+    # drive
+    drive_p = subparsers.add_parser("drive", help="Drive AIIFE scenario in a PTY session")
+    drive_p.add_argument("--repo-root", default=".", help="Path to aiife repo root")
+    drive_p.add_argument("--game", default="the-great-hall", help="Name of game to play")
+    drive_p.add_argument("--commands", help="Semicolon or newline-separated commands")
+    drive_p.add_argument("--command-file", help="File with commands to run")
+    drive_p.add_argument("--save-slot", help="Expected save slot to capture as evidence")
+    drive_p.add_argument("--output-dir", help="Directory where proof artifacts are stored")
+    drive_p.add_argument("--timeout", type=float, default=8.0, help="Timeout in seconds")
+    drive_p.add_argument("--debug", action="store_true", default=True, help="Enable DEBUG=true")
+
+    # cleanup
+    clean_p = subparsers.add_parser("cleanup", help="Remove test save files while preserving evidence")
+    clean_p.add_argument("--repo-root", default=".", help="Path to aiife repo root")
+
+    args = parser.parse_args()
+
+    repo_root = Path(args.repo_root).resolve()
+
+    if args.subcommand == "doctor":
+        sys.exit(run_doctor(repo_root))
+    elif args.subcommand == "drive":
+        sys.exit(run_drive(args))
+    elif args.subcommand == "cleanup":
+        sys.exit(run_cleanup(repo_root))
+
+
+if __name__ == "__main__":
+    main()

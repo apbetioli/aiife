@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "saved_at": "2026-11-12T18:42:39.049Z",
+  "world_id": "the_great_hall",
+  "state": {
+    "world_id": "the_great_hall",
+    "version": "1.0.0",
+    "turn": 0,
+    "player": {
+      "current_room": "library",
+      "state": {
+        "moves": 2
+      }
+    },
+    "rooms": {
+      "great_hall": {
+        "state": {
+          "visited": true
+        }
+      },
+      "garden": {
+        "state": {
+          "visited": false
+        }
+      },
+      "library": {
+        "state": {
+          "visited": true
+        }
+      },
+      "tower_room": {
+        "state": {
+          "visited": false
+        }
+      },
+      "cellar": {
+        "state": {
+          "visited": false
+        }
+      }
+    },
+    "objects": {
+      "brass_lantern": {
+        "location": "great_hall",
+        "state": {
+          "carriable": true
+        }
+      },
+      "old_book": {
+        "location": "library",
+        "state": {
+          "carriable": true
+        }
+      },
+      "alcove": {
+        "location": "library",
+        "state": {
+          "carriable": false,
+          "revealed": false
+        }
+      },
+      "rusty_key": {
+        "location": "alcove",
+        "state": {
+          "carriable": true
+        }
+      },
+      "wooden_chest": {
+        "location": "tower_room",
+        "state": {
+          "carriable": false,
+          "open": false
+        }
+      },
+      "gold_amulet": {
+        "location": "wooden_chest",
+        "state": {
+          "carriable": true
+        }
+      },
+      "stone_pedestal": {
+        "location": "cellar",
+        "state": {
+          "carriable": false
+        }
+      },
+      "cellar_door": {
+        "location": "great_hall",
+        "state": {
+          "carriable": false,
+          "locked": true,
+          "open": false
+        }
+      },
+      "gardener": {
+        "location": "garden",
+        "state": {
+          "carriable": false
+        }
+      }
+    }
+  }
+}

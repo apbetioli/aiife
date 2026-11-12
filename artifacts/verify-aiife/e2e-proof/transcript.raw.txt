@@ -1,0 +1,332 @@
+Models:
+parser:  anthropic / claude-haiku-4-5-20251001
+narrator: same as parser
+eval:    openai / gpt-5-mini
+
+[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+
+▌
+
+l
+o
+o
+k[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+
+▌
+
+n
+o
+r
+t
+h[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› north
+
+⚡go {"direction":"north"}
+
+⚡exit {"room":"great_hall"}
+
+⚡enter {"room":"library"}
+
+⚡look {}
+
+⚡tick {}
+
+The Library
+Floor-to-ceiling bookshelves crowd this dusty room. Most of the books have crumbled to dust, but a few leather-bound volumes remain. A curious alcove is set into the far wall. The Great Hall is to the south.
+A crumbling leather-bound book. The only legible passage reads: "...and the amulet shall rest upon the pedestal, and the way shall be opened..."
+A shadowy alcove set into the wall. You might look more closely.
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› north
+
+⚡go {"direction":"north"}
+
+⚡exit {"room":"great_hall"}
+
+⚡enter {"room":"library"}
+
+⚡look {}
+
+⚡tick {}
+
+The Library
+Floor-to-ceiling bookshelves crowd this dusty room. Most of the books have crumbled to dust, but a few leather-bound volumes remain. A curious alcove is set into the far wall. The Great Hall is to the south.
+A crumbling leather-bound book. The only legible passage reads: "...and the amulet shall rest upon the pedestal, and the way shall be opened..."
+A shadowy alcove set into the wall. You might look more closely.
+
+
+▌
+[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› north
+
+⚡go {"direction":"north"}
+
+⚡exit {"room":"great_hall"}
+
+⚡enter {"room":"library"}
+
+⚡look {}
+
+⚡tick {}
+
+The Library
+Floor-to-ceiling bookshelves crowd this dusty room. Most of the books have crumbled to dust, but a few leather-bound volumes remain. A curious alcove is set into the far wall. The Great Hall is to the south.
+A crumbling leather-bound book. The only legible passage reads: "...and the amulet shall rest upon the pedestal, and the way shall be opened..."
+A shadowy alcove set into the wall. You might look more closely.
+
+
+▌
+
+s
+a
+v
+e
+
+v
+e
+r
+i
+f
+y
+-
+p
+r
+o
+o
+f[?2026l[?2026h[2J[3J[H🤖 Hi, I'm the Dungeon Master. (type "quit" to quit)
+
+⚡game:start {}
+
+⚡look {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› look
+
+⚡look {}
+
+⚡tick {}
+
+The Great Hall
+You stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten battles. A grand staircase spirals upward, and a heavy iron door is set into the floor. Passages lead north and west.
+A sturdy brass lantern. It casts a warm, steady glow.
+A heavy iron door set into the floor. It is locked.
+
+› north
+
+⚡go {"direction":"north"}
+
+⚡exit {"room":"great_hall"}
+
+⚡enter {"room":"library"}
+
+⚡look {}
+
+⚡tick {}
+
+The Library
+Floor-to-ceiling bookshelves crowd this dusty room. Most of the books have crumbled to dust, but a few leather-bound volumes remain. A curious alcove is set into the far wall. The Great Hall is to the south.
+A crumbling leather-bound book. The only legible passage reads: "...and the amulet shall rest upon the pedestal, and the way shall be opened..."
+A shadowy alcove set into the wall. You might look more closely.
+
+
+▌
+
+s
+a
+v
+e
+
+v
+e
+r
+i
+f
+y
+-
+p
+r
+o
+o
+f
+q
+u
+i
+t

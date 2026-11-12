@@ -1,0 +1,40 @@
+{
+  "run_id": "20261112_184235",
+  "timestamp": "2026-11-12T18:42:42.575911+00:00",
+  "game": "the-great-hall",
+  "commands": [
+    "look",
+    "north",
+    "save verify-proof",
+    "quit"
+  ],
+  "duration_seconds": 6.65,
+  "exit_code": 0,
+  "evidence": {
+    "transcript": "/Users/alex/Code/alex/aiife/artifacts/verify-aiife/e2e-proof/transcript.txt",
+    "transcript_raw": "/Users/alex/Code/alex/aiife/artifacts/verify-aiife/e2e-proof/transcript.raw.txt",
+    "save_state": "/Users/alex/Code/alex/aiife/artifacts/verify-aiife/e2e-proof/save-state.json"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "command": "look",
+      "output_preview": "\ud83e\udd16 Hi, I'm the Dungeon Master. (type \"quit\" to quit)\r\n\r\n\u26a1game:start {}\r\n\r\n\u26a1look {}\r\n\r\nThe Great Hall\r\nYou stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten batt"
+    },
+    {
+      "step": 2,
+      "command": "north",
+      "output_preview": "\ud83e\udd16 Hi, I'm the Dungeon Master. (type \"quit\" to quit)\r\n\r\n\u26a1game:start {}\r\n\r\n\u26a1look {}\r\n\r\nThe Great Hall\r\nYou stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten batt"
+    },
+    {
+      "step": 3,
+      "command": "save verify-proof",
+      "output_preview": "\ud83e\udd16 Hi, I'm the Dungeon Master. (type \"quit\" to quit)\r\n\r\n\u26a1game:start {}\r\n\r\n\u26a1look {}\r\n\r\nThe Great Hall\r\nYou stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten batt"
+    },
+    {
+      "step": 4,
+      "command": "quit",
+      "output_preview": "\ud83e\udd16 Hi, I'm the Dungeon Master. (type \"quit\" to quit)\r\n\r\n\u26a1game:start {}\r\n\r\n\u26a1look {}\r\n\r\nThe Great Hall\r\nYou stand in a vast stone hall. Faded tapestries line the walls, depicting scenes of forgotten batt"
+    }
+  ]
+}
