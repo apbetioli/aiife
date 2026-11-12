@@ -2207,12 +2207,12 @@ export const rooms: Record<string, Room> = {
 		exits: {
 			east: {
 				leads_to: "east_west_passage",
-				condition: "troll.dead == true",
+				condition: "troll.dead == true || troll.knocked_out == true",
 				locked_message: "The troll blocks your way east with a menacing snarl!",
 			},
 			north: {
 				leads_to: "east_west_passage",
-				condition: "troll.dead == true",
+				condition: "troll.dead == true || troll.knocked_out == true",
 				locked_message: "The troll blocks your way north with a menacing snarl!",
 			},
 			south: {

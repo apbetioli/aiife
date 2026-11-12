@@ -909,7 +909,7 @@ export const objects: Record<string, GameObject> = {
 		aliases: ["nasty troll", "nasty-looking troll"],
 		type: "actor",
 		location: "troll_room",
-		state: { alive: true, dead: false, carriable: false, hp: 3 },
+		state: { alive: true, dead: false, knocked_out: false, carriable: false, combat_phase: 0 },
 		descriptions: {
 			default: "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
 			dead: "The troll lies dead on the floor.",

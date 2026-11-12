@@ -15,6 +15,7 @@ import {
 	registerAction,
 	registerDaemon,
 	setObjectState,
+	setPlayerState,
 } from "../../src/sdk";
 
 const emptySchema = z.object({});
@@ -500,26 +501,76 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	});
 
 	// ── Troll Combat ────────────────────────────────────────────────────────────
+	const TROLL_COMBAT_SEQUENCE = [
+		{
+			phase: 0,
+			playerMessage: "You are still recovering from that last blow, so your attack is ineffective.",
+			counterMessage: "The troll's axe barely misses your ear.",
+		},
+		{
+			phase: 1,
+			playerMessage: "Clang! Crash! The troll parries.",
+			counterMessage: "The troll's axe barely misses your ear.",
+		},
+		{
+			phase: 2,
+			playerMessage: "The troll is confused and can't fight back.",
+			counterMessage: "The troll slowly regains his feet.",
+		},
+		{
+			phase: 3,
+			playerMessage: "The troll is knocked out!",
+			knockedOut: true,
+		},
+		{
+			phase: 4,
+			playerMessage: "The unconscious troll cannot defend himself: He dies.",
+			deathMessage:
+				"Almost as soon as the troll breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.",
+			swordMessage: "Your sword is no longer glowing.",
+			dead: true,
+		},
+	];
+
 	bus.on("attack", "troll", (event, state) => {
 		const troll = state.objects.troll;
 		if (troll?.state.dead) {
 			event.stop();
 			return "The troll is already dead.";
 		}
-		const hp = (Number(troll?.state.hp) || 3) - 1;
-		setObjectState(state, "troll", "hp", hp);
 
-		if (hp <= 0) {
+		const phase = Number(troll?.state.combat_phase ?? 0);
+		if (phase >= TROLL_COMBAT_SEQUENCE.length) {
+			event.stop();
+			return "The troll is already dead.";
+		}
+
+		const step = TROLL_COMBAT_SEQUENCE[phase];
+		setObjectState(state, "troll", "combat_phase", phase + 1);
+
+		if (step.knockedOut) {
+			setObjectState(state, "troll", "knocked_out", true);
+		}
+
+		if (step.dead) {
 			setObjectState(state, "troll", "dead", true);
 			setObjectState(state, "troll", "alive", false);
-			event.stop();
-			return "Almost as soon as the troll breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.";
+			setObjectState(state, "troll", "knocked_out", false);
+			moveObject(state, "troll", null);
 		}
 
 		event.stop();
-		if (hp === 2) return "Clang! Crash! The troll parries.";
-		if (hp === 1) return "The troll is confused and can't fight back.";
-		return "The troll is knocked out!";
+		const feedback: string[] = [step.playerMessage];
+		if (step.counterMessage) {
+			feedback.push(step.counterMessage);
+		}
+		if (step.deathMessage) {
+			feedback.push(step.deathMessage);
+		}
+		if (step.swordMessage) {
+			feedback.push(step.swordMessage);
+		}
+		return feedback;
 	});
 
 	// ── Thief Combat ────────────────────────────────────────────────────────────
@@ -620,6 +671,26 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		}
 	});
 
+	// ── Troll Room Surprise Attack & Glow ──────────────────────────────────────
+	bus.on(
+		"look",
+		(_event, state) => {
+			const room = state.player.current_room;
+			const troll = state.objects.troll;
+			if (room === "troll_room" && !troll?.state.dead && !state.player.state.troll_encountered) {
+				setPlayerState(state, "troll_encountered", true);
+				setPlayerState(state, "staggered", true);
+				const feedback: string[] = [];
+				if (isInInventory(state, "elvish_sword")) {
+					feedback.push("Your sword has begun to glow very brightly.");
+				}
+				feedback.push("The troll's mighty blow drops you to your knees.");
+				return feedback;
+			}
+		},
+		{ priority: PRIORITY.POST_MUTATION },
+	);
+
 	// ── Sword Glow Daemon ───────────────────────────────────────────────────────
 	registerDaemon(bus, "sword-glow", {
 		condition: (_world, state) => {
@@ -628,9 +699,6 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		effect: () => {},
 		feedback: (_world, state) => {
 			const room = state.player.current_room;
-			if (room === "troll_room") {
-				return "Your sword has begun to glow very brightly.";
-			}
 			if (room === "cellar" || room === "east_west_passage") {
 				return "Your sword is glowing with a faint blue glow.";
 			}

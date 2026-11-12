@@ -191,27 +191,51 @@ describe("Zork One world definition and rules", () => {
 		s = executeAction(bus, world, s, "move", { objects: ["oriental_rug"] }).state;
 		s = executeAction(bus, world, s, "open", { objects: ["trap_door"] }).state;
 		s = executeAction(bus, world, s, "go", { direction: "down" }).state; // cellar
-		s = executeAction(bus, world, s, "go", { direction: "north" }).state; // troll_room
+		const enterTrollRoom = executeAction(bus, world, s, "go", { direction: "north" }); // troll_room
+		s = enterTrollRoom.state;
 		expect(s.player.current_room).toBe("troll_room");
+		expect(enterTrollRoom.feedback.join(" ")).toContain("The Troll Room");
+		expect(enterTrollRoom.feedback.join(" ")).toContain("Your sword has begun to glow very brightly.");
+		expect(enterTrollRoom.feedback.join(" ")).toContain("The troll's mighty blow drops you to your knees.");
 
 		// Try going east before defeating troll
 		const blocked = executeAction(bus, world, s, "go", { direction: "east" });
 		expect(blocked.stopped).toBe(true);
 		expect(blocked.feedback.join(" ")).toContain("The troll blocks your way");
 
-		// Attack troll with sword
+		// Attack troll with sword - Turn 1 (recovering from previous blow)
 		const a1 = executeAction(bus, world, s, "attack", { objects: ["troll", "elvish_sword"] });
-		expect(a1.feedback.join(" ")).toContain("troll parries");
+		expect(a1.feedback.join(" ")).toContain(
+			"You are still recovering from that last blow, so your attack is ineffective.",
+		);
+		expect(a1.feedback.join(" ")).toContain("The troll's axe barely misses your ear.");
 		s = a1.state;
 
+		// Turn 2 (parries)
 		const a2 = executeAction(bus, world, s, "attack", { objects: ["troll", "elvish_sword"] });
-		expect(a2.feedback.join(" ")).toContain("confused and can't fight back");
+		expect(a2.feedback.join(" ")).toContain("Clang! Crash! The troll parries.");
+		expect(a2.feedback.join(" ")).toContain("The troll's axe barely misses your ear.");
 		s = a2.state;
 
+		// Turn 3 (confused)
 		const a3 = executeAction(bus, world, s, "attack", { objects: ["troll", "elvish_sword"] });
-		expect(a3.feedback.join(" ")).toContain("sinister black fog");
-		expect(a3.state.objects.troll?.state.dead).toBe(true);
+		expect(a3.feedback.join(" ")).toContain("The troll is confused and can't fight back.");
+		expect(a3.feedback.join(" ")).toContain("The troll slowly regains his feet.");
 		s = a3.state;
+
+		// Turn 4 (knocked out)
+		const a4 = executeAction(bus, world, s, "attack", { objects: ["troll", "elvish_sword"] });
+		expect(a4.feedback.join(" ")).toContain("The troll is knocked out!");
+		expect(a4.state.objects.troll?.state.knocked_out).toBe(true);
+		s = a4.state;
+
+		// Turn 5 (dies)
+		const a5 = executeAction(bus, world, s, "attack", { objects: ["troll", "elvish_sword"] });
+		expect(a5.feedback.join(" ")).toContain("The unconscious troll cannot defend himself: He dies.");
+		expect(a5.feedback.join(" ")).toContain("sinister black fog");
+		expect(a5.feedback.join(" ")).toContain("Your sword is no longer glowing.");
+		expect(a5.state.objects.troll?.state.dead).toBe(true);
+		s = a5.state;
 
 		// Now east is open to East-West passage
 		const goEast = executeAction(bus, world, s, "go", { direction: "east" });
