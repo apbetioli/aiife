@@ -1,12 +1,12 @@
-# Architecture Deep Dive
+# System architecture
 
-AIIFE (AI Interactive Fiction Engine) is a layered, deterministic text adventure engine augmented with a hybrid natural language parser and multilingual narrator.
+AIIFE pairs a deterministic text adventure engine with a natural language parser and a streaming translation layer.
 
-Unlike pure generative text games where an LLM invents the world on the fly, AIIFE enforces strict game state, immutable mutations, physical scope rules, and an event-driven rules layer. The LLM acts as an **intent translator** and **multilingual bridge**, not the game arbiter.
+Generative text games allow models to invent world state during play. AIIFE separates state transitions from language generation. The engine validates physical scope, executes state machines, and enforces priority-banded events. The language model maps user input to structured actions and translates engine responses into other languages.
 
 ---
 
-## High-Level System Architecture
+## High-level system architecture
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -30,7 +30,7 @@ Unlike pure generative text games where an LLM invents the world on the fly, AII
 ┌────────────────────────────────────────────────────────────────────────┐
 │                            GameEngine                                  │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ Scope Validation (isInScope / Ambient targets)                   │  │
+│  │ Scope Validation (isInScope, Ambient targets)                    │  │
 │  └────────────────────────────────┬─────────────────────────────────┘  │
 │                                   │ Valid targets                      │
 │                                   ▼                                    │
@@ -42,7 +42,7 @@ Unlike pure generative text games where an LLM invents the world on the fly, AII
 │                                   ▼                                    │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │ World & State: Single Source of Truth, Undo Stack (50 turns)     │  │
-│  │ SaveStorageAdapter (File / Memory)                               │  │
+│  │ SaveStorageAdapter (FileSaveStorage, MemorySaveStorage)          │  │
 │  └────────────────────────────────┬─────────────────────────────────┘  │
 │                                   │ Feedback string[]                  │
 │                                   ▼                                    │
@@ -51,18 +51,18 @@ Unlike pure generative text games where an LLM invents the world on the fly, AII
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   Narrator Layer (streamText)                          │
-│  - English: Pass-through deterministic prose (Zero latency / cost)     │
+│  - English: Pass-through deterministic prose (zero latency and cost)   │
 │  - Non-English: Live translation matching player's language            │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 1. The Five Core Layers
+## The five engine layers
 
-### Layer 1: State & World Model
-- **World Definition (`World`)**: The static, authored blueprint of the game world—rooms, objects, descriptions, initial locations, and exit connections. Authored in TypeScript via `defineGame()` or as pure JSON.
-- **Runtime State (`GameState`)**: The serializable, minimal snapshot of everything mutable at turn $N$:
+### Layer 1: State and world model
+- **World definition (`World`).** The static blueprint of the game world: rooms, objects, descriptions, initial locations, and exit connections. Authors write definitions in TypeScript through `defineGame()` or load them from JSON.
+- **Runtime state (`GameState`).** The minimal serializable snapshot of mutable data at turn $N$:
   ```ts
   interface GameState {
     world_id: string;
@@ -76,76 +76,71 @@ Unlike pure generative text games where an LLM invents the world on the fly, AII
     objects: Record<string, { location: string; state: Record<string, boolean | string | number> }>;
   }
   ```
-- **Single Source of Truth for Position**: In AIIFE, object position is stored exclusively in `state.objects[id].location`. Rooms and player inventory do not keep duplicate object ID arrays. Player inventory is purely a query: `location === "inventory"`.
-- **Immutability via Immer**: All state transitions are performed through `immutable(state, fn)` wrapping Immer's `produce()`. Even during execution, if an event is cancelled midway, state rollback is free and automatic.
+- **Single source of truth for position.** The engine stores object position in `state.objects[id].location`. Rooms and the player inventory do not keep secondary arrays of object IDs. Player inventory is a query: `location === "inventory"`.
+- **Immutability through Immer.** The helper `immutable(state, fn)` wraps Immer's `produce()`. If an event handler calls `event.stop()` midway through a turn, the engine discards the draft without modifying committed state.
 
-### Layer 2: World & Scope Derivation
+### Layer 2: World and scope derivation
 The world layer computes runtime context for actions and the parser:
-- **Scope Resolution (`isInScope`)**: An object is accessible only if it is:
-  1. In the current room (`location === player.current_room`).
-  2. In the player's inventory (`location === "inventory"`).
-  3. Inside an *open* container currently in scope (`findOpenContainerInRoom`).
-- **Dynamic Descriptions**: Descriptions support state flags (`visited`, `dark`, or custom flags like `knocked_out`). `resolveRoomDescription` and `resolveObjectDescription` evaluate matching state flags and fall back to `default`.
-- **Condition Evaluator**: Expressions like `"library_door.open == true"` or `"troll.knocked_out == true"` are parsed and evaluated dynamically against rooms, objects, and player state. Compound conditions with `&&` and `||` are supported.
-- **Parser Context Snapshot (`buildParserContext`)**: Constructed each turn to supply the LLM with room details, available (unblocked) exits, and strictly in-scope objects.
+- **Scope resolution (`isInScope`).** An object is accessible only when it meets one of three conditions:
+  1. It sits in the current room (`location === player.current_room`).
+  2. It sits in the player's inventory (`location === "inventory"`).
+  3. It sits inside an open container in scope (`findOpenContainerInRoom`).
+- **Dynamic descriptions.** Descriptions support state flags such as `visited` and `dark`. Functions `resolveRoomDescription` and `resolveObjectDescription` inspect active state flags and fall back to `default`.
+- **Condition evaluation.** The engine evaluates expression strings such as `"library_door.open == true"` against rooms, objects, and player state. The parser supports comparisons (`==`, `!=`, `<`, `>`, `<=`, `>=`) and logical operators (`&&`, `||`).
+- **Parser context snapshot (`buildParserContext`).** On every turn, this builder produces room details, unblocked exits, and accessible objects for the language model prompt.
 
-### Layer 3: Rules & Event Bus
-The event system coordinates game verbs, guards, and consequences:
-- **`ActionRegistry`**: Central registry for game actions. Each action provides a Zod parameter schema, documentation description, aliases, and hints.
-- **`EventBus`**: Executes listeners across five distinct **Priority Bands**:
-  1. `PRIORITY.GUARD` (50): Precondition checks and validation. Can cancel actions via `event.stop()`.
-  2. `PRIORITY.MUTATION` (100): Core state changes (e.g. moving an object).
-  3. `PRIORITY.POST_MUTATION` (110): Immediate reactions (e.g. spilling contents when an object breaks).
-  4. `PRIORITY.EFFECT` (150): Side effects, descriptive feedback, and sub-actions.
-  5. `PRIORITY.DAEMON` (200): Recurring background turns (timers, lanterns, NPC behaviors).
-- **Scoped Preemption**: Registering a listener on an object or room (`bus.on("take", "sword", ...)`) automatically preempts global listeners registered at that same priority.
+### Layer 3: Rules and event bus
+The event system coordinates actions, validation checks, and side effects:
+- **`ActionRegistry`.** Central registry for player actions. Each action provides a Zod schema for parameters, documentation for the prompt, aliases, and hints.
+- **`EventBus`.** Executes listeners across five priority bands:
+  1. `PRIORITY.GUARD` (50): Precondition checks. Calling `event.stop()` halts execution.
+  2. `PRIORITY.MUTATION` (100): Core state changes, such as moving an item or updating a flag.
+  3. `PRIORITY.POST_MUTATION` (110): Direct reactions, such as spilling liquid from a dropped bottle.
+  4. `PRIORITY.EFFECT` (150): Side effects, descriptive text, and secondary events.
+  5. `PRIORITY.DAEMON` (200): Recurring turn-end updates, such as lantern fuel timers or NPC movement.
+- **Scoped preemption.** A listener registered for a specific target (`bus.on("take", "sword", ...)`) preempts global listeners registered at that same priority band.
 
-### Layer 4: Hybrid Intent Recognition
-Natural language parsing combines high speed with deep flexibility:
-- **Fast-Path Regex Parser**: Standard IF abbreviations and canonical commands (`n`, `s`, `look`, `i`, `take brass lantern`, `drop sword`, `save`, `undo`) are parsed in sub-millisecond time with zero LLM API calls.
-- **Scoped Tool Calling**: Complex phrasing, synonyms, or conversational commands are parsed using `@ai-sdk`'s `generateText` with dynamically scoped tools (`buildScopedTools`). The tools presented to the LLM are filtered based on the player's physical context and room state.
-- **Scope Gatekeeper**: Before any action runs, `allTargetsInScope` verifies that referenced objects are physically accessible. If not, the engine immediately responds with *"You don't see that here."* without mutating state.
+### Layer 4: Hybrid intent recognition
+The engine pairs two parsers to minimize cost and latency:
+- **Fast-path parser.** Matches standard abbreviations and common commands (`n`, `s`, `look`, `i`, `take lantern`, `drop sword`, `save`, `undo`) using regular expressions in `src/agent/fast-path-parser.ts`. These commands run in under 1 ms without network requests.
+- **Scoped tool calling.** For phrasing not handled by the fast path, `GameAgent` invokes `@ai-sdk`'s `generateText` with tools built by `buildScopedTools`. Tools exposed to the model are restricted to the player's room and active inventory.
+- **Scope validation.** Before dispatching an action, `allTargetsInScope` confirms that every target object is physically reachable. If an object is not reachable, the engine returns `"You don't see that here."` and skips mutation.
 
-### Layer 5: Narration & Terminal Presentation
-- **Deterministic First**: If the engine produces explicit feedback (e.g., *"Taken."*, *"The heavy oak door is locked."*, or room descriptions), that text is rendered directly for English input.
-- **Multilingual Bridge**: When player input contains non-English characters or the player converses in another language, the `NARRATION_SYSTEM_PROMPT` translates the deterministic game output into the player's language on the fly via `streamText`.
-- **Ink UI**: Terminal interface built with React and Ink, providing command history (up/down arrows), cursor editing, animated spinners, and live token usage tracking.
-
----
-
-## 2. Turn Execution Lifecycle
-
-Every player interaction follows a deterministic lifecycle:
-
-```
-1. Player enters: "unlock the heavy door with the brass key"
-2. Fast-Path Check:
-   - Not a simple abbreviation -> forwarded to LLM.
-3. LLM Scoped Tool Calling:
-   - System prompt built with buildToolSystemPrompt() + buildScopedTools()
-   - Invokes matching action tool:
-     unlock(objects: ["cellar_door", "brass_key"])
-4. Scope Validation:
-   - Verifies "cellar_door" and "brass_key" are in current scope.
-5. Action Execution (executeUntrustedAction):
-   - Parameters validated against action schema.
-   - EventBus emits "unlock" event.
-   - Priority 50 (GUARD): Checks if key is in inventory and fits the lock.
-   - Priority 100 (MUTATION): Sets cellar_door.locked = false.
-   - Returns feedback: "Unlocked."
-6. Turn Tick:
-   - State pushed to history stack (up to 50 turns for undo).
-   - EventBus emits "tick".
-   - Daemons execute (e.g., lantern fuel decrements).
-7. Narration:
-   - Deterministic feedback passed to UI (or translated if non-English).
-```
+### Layer 5: Narration and terminal presentation
+- **Deterministic output.** When the engine produces exact feedback in English, the interface displays the text directly without calling a language model.
+- **Streaming translation.** When player input contains non-English characters or the player writes in another language, `streamText` translates the deterministic game output into the target language.
+- **Terminal UI.** The Ink and React frontend provides command history, arrow navigation, streaming text, animated spinners, and live token metrics.
 
 ---
 
-## 3. Storage and Persistence
+## Turn execution lifecycle
 
-AIIFE decouples persistence from engine logic through the `SaveStorageAdapter` interface:
+Every player action follows seven steps:
+
+1. The player enters an action: `"unlock the heavy door with the brass key"`.
+2. The fast-path parser checks for a matching regular expression. The input is not a standard abbreviation, so the parser forwards the text to the model.
+3. The model selects a tool from `buildScopedTools()`:
+   `unlock(objects: ["cellar_door", "brass_key"])`.
+4. Scope validation verifies that both `cellar_door` and `brass_key` are in scope.
+5. The engine executes the action:
+   - Validates parameters against the action schema.
+   - Emits the `unlock` event on `EventBus`.
+   - `PRIORITY.GUARD` confirms that the key matches the door lock.
+   - `PRIORITY.MUTATION` sets `cellar_door.locked = false`.
+   - Returns feedback: `"Unlocked."`.
+6. The engine ticks the turn:
+   - Appends current state to the 50-turn undo history.
+   - Emits the `tick` event on `EventBus`.
+   - Runs daemons, such as decrementing lantern fuel.
+7. The narrator layer sends feedback:
+   - Prints deterministic text directly for English input.
+   - Streams translation for non-English input.
+
+---
+
+## Storage and persistence
+
+The engine isolates persistence behind the `SaveStorageAdapter` interface:
 
 ```ts
 export interface SaveStorageAdapter {
@@ -156,22 +151,22 @@ export interface SaveStorageAdapter {
 }
 ```
 
-- **In-Memory**: Used automatically during tests (`MemorySaveStorage`).
-- **File System**: Persists JSON files in the workspace (`FileSaveStorage`).
-- **Slots**: Players can manage multiple save files (`save slot1`, `restore slot1`).
+- **Memory storage (`MemorySaveStorage`).** Stores snapshots in memory. Integration and unit tests use this adapter.
+- **File storage (`FileSaveStorage`).** Persists JSON save files to disk in the project directory.
+- **Named slots.** Players specify target slots with `save slot1` and `restore slot1`.
 
 ---
 
-## 4. Game Authoring SDK
+## Authoring SDK
 
-AIIFE exports a dedicated SDK for creating games without touching engine internals:
+AIIFE exports authoring types and functions from `aiife/sdk`:
 
-```bash
+```ts
 import { defineGame, PRIORITY, registerAction, registerDaemon } from "aiife/sdk";
 ```
 
-The SDK provides:
-- Type definitions (`World`, `Room`, `GameObject`, `GameState`).
-- Core mutators (`moveObject`, `setObjectState`, `ensureVisited`, `isInInventory`).
-- Rule authoring helpers (`getTarget`, `getInstrument`, `runAction`).
-- Game definition wrapper (`defineGame`).
+The package provides:
+- Core interfaces: `World`, `Room`, `GameObject`, and `GameState`.
+- State mutators: `moveObject`, `setObjectState`, `ensureVisited`, and `isInInventory`.
+- Rule authoring utilities: `getTarget`, `getInstrument`, and `runAction`.
+- The game definition helper: `defineGame`.

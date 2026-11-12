@@ -1,50 +1,43 @@
-# Rebuilding Zork I with Modern TypeScript, Priority Events, and LLMs
+# Rebuilding Zork I with modern TypeScript, priority events, and LLMs
 
-*By the AIIFE Engineering Team*
+In 1977, Tim Anderson, Marc Blank, Bruce Daniels, and Dave Lebling created *Zork* at MIT. Over the next decade, Infocom developed it into the definitive benchmark of interactive fiction. *Zork I: The Great Underground Empire* featured over 100 rooms, interconnected puzzles, dynamic inventory limits, a wandering thief, a combat system, and a flexible text parser.
 
----
+When designing AIIFE, we avoided limiting verification to three-room demonstration games. Verifying architectures against small samples obscures problems with state scaling and rule contention.
 
-In 1977, Tim Anderson, Marc Blank, Bruce Daniels, and Dave Lebling created *Zork* at MIT. Over the next decade, Infocom turned it into the definitive benchmark of interactive fiction. *Zork I: The Great Underground Empire* featured over 100 rooms, dozens of interconnected puzzles, dynamic inventory limits, a wandering thief, a combat system, and an iconic parser.
+To test AIIFE against a complex benchmark, we implemented the full scope of *Zork I*: all 110 rooms, all 19 treasures, all puzzle mechanics, daemons, and combat on top of our TypeScript SDK and intent pipeline.
 
-When building AIIFE, we did not want a toy demonstration with a 3-room demo where you pick up a brass key and unlock a door. Toy architectures break down the moment they encounter real game complexity.
-
-To prove that AIIFE was a true, production-grade interactive fiction engine, we gave ourselves a challenge:
-
-**Rebuild the entire full game of Zork I—all 110 rooms, all 19 treasures, all complex puzzles, daemons, and combat—on top of our modern TypeScript SDK and LLM intent pipeline.**
-
-Here is what we learned and how the architecture held up under the weight of an IF legend.
+This article details how the architecture held up under that workload.
 
 ---
 
-## 1. The Scale of Zork I in Numbers
+## The scale of Zork I
 
-Porting *Zork I* to AIIFE meant modeling:
-- **110 Rooms**: From the White House and Forest to the Cellar, Maze, Round Room, Dam #3, Hades, and the Coal Mine.
-- **70+ Game Objects**: The brass lantern, elvish sword, rope, coffin, garlic, bell, book, candles, sceptre, wrench, inflatable boat, and 19 distinct treasures.
-- **19 Complex Puzzle Mechanics**:
-  - Pumping up the inflatable boat to reach the buoy in the reservoir.
-  - Turning coal into a huge diamond using the coal mine machine.
+Porting *Zork I* to AIIFE required modeling:
+- **110 rooms.** Locations ranging from the White House and Forest to the Cellar, Maze, Round Room, Dam #3, Hades, and the Coal Mine.
+- **70+ game objects.** The brass lantern, elvish sword, rope, coffin, garlic, bell, book, candles, sceptre, wrench, inflatable boat, and 19 distinct treasures.
+- **19 puzzle mechanics.**
+  - Inflating the boat to reach the buoy in the reservoir.
+  - Compressing coal into a diamond with the coal mine machine.
   - Exorcising the evil spirits at the Gate of Hades with the bell, book, and candles.
-  - Tying the rope to the railing in the Dome Room to rappel down.
+  - Tying the rope to the railing in the Dome Room to climb down.
   - Draining Reservoir #3 using the wrench on the control bolt.
-  - Quieting the Loud Room with the `echo` command.
-  - Outwitting the Cyclops by mentioning `ulysses` or `odysseus`.
+  - Calming the Loud Room with the `echo` command.
+  - Bypassing the Cyclops by saying `ulysses` or `odysseus`.
   - Storing treasures in the Living Room Trophy Case to earn the maximum 350-point score.
-- **19 Automated Walkthrough Integration Tests**: Every single puzzle chain and multi-room progression verified with end-to-end tests running under Vitest.
+- **19 integration tests.** Automated walkthrough tests in Vitest verify every puzzle sequence end-to-end.
 
 ---
 
-## 2. Modeling Zork's Puzzles with the AIIFE SDK
+## Modeling puzzles with the authoring SDK
 
-Let's look at how classic Infocom puzzle logic translates into clean, modern TypeScript using AIIFE's SDK.
+Classic Infocom puzzle logic maps cleanly into TypeScript using the AIIFE SDK.
 
-### The Altar Teleport and Sceptre Wave
+### Altar teleportation and sceptre waving
 In Zork, praying at the South Temple altar teleports the player to the Forest, and waving the sceptre reveals a pot of gold at the end of the rainbow.
 
 Using `registerAction`:
 
 ```ts
-// Custom 'pray' verb
 registerAction(bus, registry, "pray", {
   schema: z.object({}),
   description: "pray(): Pray at an altar or sacred site.",
@@ -52,13 +45,12 @@ registerAction(bus, registry, "pray", {
     if (state.player.current_room === "altar") {
       movePlayer(state, "forest_1");
       ensureVisited(state, "forest_1");
-      return "A strange feeling overcomes you. The world dissolves into mist... You find yourself standing in a dense forest!";
+      return "A strange feeling overcomes you. The world dissolves into mist... You find yourself standing in a dense forest.";
     }
     return "Your prayers are whispered to the empty air.";
   },
 });
 
-// Custom 'wave' verb
 registerAction(bus, registry, "wave", {
   schema: z.object({ objects: z.array(z.string()).optional() }),
   description: "wave(objects): Wave an item.",
@@ -68,7 +60,7 @@ registerAction(bus, registry, "wave", {
       if (state.player.current_room === "end_of_rainbow") {
         setObjectState(state, "pot_of_gold", "revealed", true);
         moveObject(state, "pot_of_gold", "end_of_rainbow");
-        return "You wave the sceptre. A shimmering rainbow forms across the chasm, and a pot of gold solidifies at your feet!";
+        return "You wave the sceptre. A shimmering rainbow forms across the chasm, and a pot of gold solidifies at your feet.";
       }
       return "A dazzling shower of multicolored sparks glints from the sceptre's tip.";
     }
@@ -78,25 +70,24 @@ registerAction(bus, registry, "wave", {
 ```
 
 ### The Exorcism of Hades
-One of Zork's most memorable set-pieces requires ringing the brass bell (which becomes red-hot and falls to the ground), lighting candles with a match, and reading the black book while holding them.
+The exorcism requires ringing the brass bell (which heats up and drops to the floor), lighting candles with a match, and reading the black book while holding both items.
 
-Using scoped listeners on the `EventBus`:
+Using scoped listeners on `EventBus`:
 
 ```ts
 bus.on("ring", "brass_bell", (event, state) => {
   if (state.player.current_room === "entrance_to_hades") {
     setObjectState(state, "hades_spirits", "panicked", true);
-    // Bell becomes too hot to hold and drops to floor
     moveObjectFromInventoryToRoom(state, "brass_bell", "entrance_to_hades");
-    return "The bell emits a deafening chime! The spirits cower, covering their ears. The bell grows searingly hot, forcing you to drop it!";
+    return "The bell emits a deafening chime. The spirits cower, covering their ears. The bell grows searingly hot, forcing you to drop it.";
   }
 });
 ```
 
-### The Lantern Battery Daemon
-The brass lantern only has 100 turns of battery. In Zork, failing to keep a light source lit in dark rooms causes the player to be eaten by a Grue.
+### The lantern battery daemon
+The brass lantern provides 100 turns of light. Failing to maintain a light source in dark rooms causes the player to be eaten by a Grue.
 
-We modeled this using `registerDaemon`:
+Using `registerDaemon`:
 
 ```ts
 registerDaemon(bus, "lamp-battery", {
@@ -111,7 +102,7 @@ registerDaemon(bus, "lamp-battery", {
   feedback: (_, state) => {
     const turns = state.objects.brass_lantern.state.turns_lit as number;
     if (turns === 80) return "The brass lantern's lamp is beginning to dim.";
-    if (turns >= 100) return "The brass lantern has flickered out! You are plunged into darkness.";
+    if (turns >= 100) return "The brass lantern has flickered out. You are plunged into darkness.";
   },
   priority: PRIORITY.DAEMON,
 });
@@ -119,9 +110,9 @@ registerDaemon(bus, "lamp-battery", {
 
 ---
 
-## 3. Testing 110 Rooms with 100% Determinism
+## Verifying 110 rooms with automated tests
 
-Because AIIFE decouples intent recognition from the rules engine, our entire Zork I test suite runs without calling an LLM:
+Because the engine decouples intent recognition from state mutations, the Zork I test suite runs without language model calls:
 
 ```ts
 describe("Zork One world definition and rules", () => {
@@ -137,15 +128,13 @@ describe("Zork One world definition and rules", () => {
 });
 ```
 
-**All 19 tests pass in under 50 milliseconds.**
+All 19 walkthrough tests run in under 60 milliseconds in Vitest.
 
 ---
 
-## 4. What Zork Taught Us
+## Lessons from Zork I
 
-Building *Zork I* proved that our architecture was ready:
-1. **The Priority Band system scaled flawlessly.** We never needed hacks or monkey-patching to handle Zork's complex puzzle conditions.
-2. **Dynamic context generation kept the LLM accurate.** Even with 110 rooms and 70 objects, the parser context snapshot sent to the LLM only ever contains the current room and its visible objects. The prompt size never blew up.
-3. **The SDK abstraction works.** Game code never touches engine internals. All of Zork's rules were authored cleanly using `defineGame`, `registerAction`, and the SDK mutators.
-
-AIIFE isn't just an experimental AI toy—it is a robust, battle-tested interactive fiction platform capable of running full-scale, iconic games.
+Porting *Zork I* validated three architectural choices:
+1. **Priority bands handle complex conditions cleanly.** Numerical priority bands provided room for guard checks, mutual preemption, and cascading events without requiring monkey-patches.
+2. **Dynamic context generation keeps prompt sizes bounded.** Despite 110 rooms and 70 objects, the prompt snapshot sent to the model contains only the current room, unblocked exits, and visible objects. Prompt tokens scale with room complexity rather than total world size.
+3. **The SDK abstraction isolates game rules.** Game logic does not touch engine internals. All Zork rules run through `defineGame`, `registerAction`, and the SDK mutators.

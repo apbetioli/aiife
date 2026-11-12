@@ -1,81 +1,77 @@
-# Rethinking the Event Bus: Why Before/On/After Failed and Priority Bands Won
+# Rethinking the event bus: why before, on, and after failed
 
-*By the AIIFE Engineering Team*
-
----
-
-If you have ever designed an event system, game loop, or HTTP middleware pipeline, you have probably reached for the classic three-phase pattern:
+When developers design an event system, game loop, or middleware pipeline, they often choose the three-phase pattern:
 
 ```
 before -> on -> after
 ```
 
-It is intuitive, clean, and has decades of precedent in tools like Inform 7 and standard web frameworks. When we began designing AIIFE, our specification proudly laid out:
+The pattern has decades of precedent in text adventures and web frameworks:
 - `before`: Validation and precondition checks.
 - `on`: Core state mutation.
 - `after`: Side effects and secondary notifications.
 
-It looked elegant on paper. But as soon as we started implementing real, intricate adventure game puzzles—culminating in our 110-room recreation of *Zork I*—the three-phase model began to collapse under its own weight.
+As game complexity grew during our 110-room recreation of *Zork I*, the three-phase model broke down.
 
-Here is why `before/on/after` broke down, and how migrating to **named priority bands with scoped preemption** gave us a clean, scalable rules engine.
+This article explains why fixed lifecycle phases failed and how named priority bands with scoped preemption solved the problem.
 
 ---
 
-## 1. The Breakdown of Rigid Phases
+## The breakdown of fixed phases
 
-### Problem 1: Guards Need Priorities Among Themselves
+### 1. Guards require internal ordering
 Consider what happens when a player types `take dragon egg`:
 1. Guard A (Engine default): Is the egg carriable?
-2. Guard B (Game rule): Is the mama dragon awake in the room?
-3. Guard C (Player state): Is the player's hands already full?
+2. Guard B (Game rule): Is the dragon awake in the room?
+3. Guard C (Player state): Are the player's hands already full?
 
-If the dragon is awake, you want the dragon's fiery reaction to trigger first: *"The dragon roars and snaps at your arm!"* You do **not** want the engine's generic encumbrance check to say: *"Your hands are too full to carry that."*
+If the dragon is awake, the dragon's reaction should trigger first: *"The dragon roars and snaps at your arm."* The engine's generic encumbrance check should not say *"Your hands are too full to carry that."*
 
-In a simple `before` phase, all listeners run in registration order or arbitrarily. You quickly find yourself wanting "before-the-before" or wishing you had fine-grained ordering within the guard phase.
+In a single `before` phase, all listeners run in registration order or arbitrarily. Handlers require fine-grained ordering within the guard phase itself.
 
-### Problem 2: The "Immediate Post-Mutation" Dilemma
-Consider breaking a fragile glass bottle containing a key.
-When the player `drops` or `attacks` the bottle:
+### 2. Post-mutation reactions occur before side effects
+Consider breaking a fragile glass bottle that contains a key.
+When the player attacks or drops the bottle:
 1. The bottle breaks and leaves state.
-2. The key inside must spill out into the current room.
-3. A description must be printed.
-4. A sound daemon or nearby NPC might react to the noise.
+2. The key inside spills onto the floor of the room.
+3. The engine prints a description.
+4. A sound daemon or nearby actor reacts to the noise.
 
 Where does the spill logic run?
-- If it runs in `on`, it conflicts with the core verb's own mutation (`drop` sets `location = current_room`).
-- If it runs in `after`, other side effects (like NPC perception or descriptive text generation) may query the room and see the bottle gone but the key not yet placed on the floor!
+- If it runs in `on`, it conflicts with the core action's mutation (`drop` sets `location = current_room`).
+- If it runs in `after`, secondary listeners querying the room see the bottle gone but the key not yet on the floor.
 
-You need a phase that is strictly *post-mutation* but strictly *pre-side-effects*.
+The engine requires an intermediate stage: strictly after mutation, but strictly before side effects.
 
-### Problem 3: Scoped Overrides vs Global Handlers
-In text adventures, individual objects constantly break the standard rules of physics.
-- Normally, typing `open chest` runs the core open logic.
-- But if you `open iron door`, and the door has an electric trap, you want the door's specific rule to run and completely preempt the normal `open` behavior.
+### 3. Scoped overrides conflict with global handlers
+In text adventures, specific objects frequently override standard behavior:
+- Typing `open chest` runs the core open logic.
+- Typing `open iron door` on an electrified door should trigger the trap and cancel the normal opening behavior.
 
-With standard pub/sub, both the global listener and the scoped listener fire unless you introduce messy flags like `event.isHandled = true`.
+With standard publish-subscribe systems, both listeners run unless the author introduces manual flags like `event.isHandled = true`.
 
 ---
 
-## 2. The Solution: Named Priority Bands
+## The solution: named priority bands
 
-Instead of three fixed phases, we introduced a single continuous pipeline governed by **Named Priority Bands**:
+Instead of three fixed phases, AIIFE uses a continuous pipeline governed by numerical priority bands:
 
 ```ts
 export const PRIORITY = {
-  /** Validation & cancellation guards (lower numbers run first) */
+  /** Validation and cancellation guards (lower numbers run first) */
   GUARD: 50,
   /** Core state mutations */
   MUTATION: 100,
-  /** Post-mutation reactions (e.g. container spill) */
+  /** Post-mutation reactions, such as container spills */
   POST_MUTATION: 110,
-  /** Side-effects, sub-events, descriptions */
+  /** Side effects, room descriptions, and sub-actions */
   EFFECT: 150,
-  /** Daemon / tick-driven recurring effects */
+  /** Daemon and turn-end recurring effects */
   DAEMON: 200,
 } as const;
 ```
 
-Every listener on the `EventBus` has a numeric priority (defaulting to `PRIORITY.MUTATION`). Lower numbers run first.
+Every listener on `EventBus` has a numeric priority that defaults to `PRIORITY.MUTATION`. Lower numbers run first.
 
 Any listener at any priority can call `event.stop()`:
 ```ts
@@ -85,16 +81,16 @@ bus.on("take", "heavy_anvil", (event) => {
 }, { priority: PRIORITY.GUARD });
 ```
 
-When `event.stop()` is called:
+When a listener calls `event.stop()`:
 - Event execution stops immediately.
-- Later listeners in the current and subsequent bands are skipped.
-- Any state mutations performed during the aborted turn are cleanly discarded.
+- Later listeners in current and subsequent priority bands do not run.
+- Draft mutations performed during the cancelled turn are discarded.
 
 ---
 
-## 3. Scoped Listener Preemption: Clean Object Overrides
+## Scoped listener preemption
 
-The true breakthrough came with **Scoped Preemption**:
+The engine supports scoped preemption based on object identifiers:
 
 ```ts
 // Global core open handler (registered at PRIORITY.MUTATION = 100)
@@ -103,23 +99,23 @@ bus.on("open", (event, state, world) => { ... }, { priority: PRIORITY.MUTATION }
 // Scoped door trap handler (registered on "shock_door" at PRIORITY.MUTATION = 100)
 bus.on("open", "shock_door", (event, state) => {
   event.stop();
-  return "A high-voltage surge shocks you back!";
+  return "A high-voltage surge shocks you back.";
 }, { priority: PRIORITY.MUTATION });
 ```
 
-When an event is dispatched with target `"shock_door"`:
+When an event targets `"shock_door"`:
 1. At each priority band, the bus looks for listeners registered specifically for that `scopeId`.
-2. **If a matching scoped listener exists in that priority band, all global listeners in that same priority band are skipped.**
+2. If a matching scoped listener exists in that priority band, the bus skips all global listeners in that same priority band.
 
-This guarantees that:
-- Game authors can write specific object behavior without needing to modify core action source code.
-- Core engine mechanics provide reliable fallbacks without having to know about specific game objects.
-- Object overrides behave predictably without race conditions.
+This design gives authors three benefits:
+- Authors write object-specific behavior without modifying engine action source code.
+- Core engine mechanics provide default fallbacks without referencing specific game objects.
+- Object overrides run predictably without race conditions.
 
 ---
 
-## 4. Key Takeaways
+## Takeaways
 
-1. **Discrete lifecycle phases are an illusion.** When software grows in domain complexity, rigid lifecycle buckets quickly subdivide into endless sub-phases (`pre-`, `post-`, `around-`).
-2. **Priority bands give you predictable ordering with room to breathe.** By leaving numerical gaps (`50`, `100`, `110`, `150`, `200`), developers can slip in one-off ordering constraints (`PRIORITY.GUARD - 5`) without breaking other listeners.
-3. **Scoped preemption eliminates boilerplate conditionals.** Scoping listeners to entity IDs keeps game code clean, modular, and declarative.
+1. **Fixed lifecycle phases do not scale.** As domain complexity grows, rigid lifecycle buckets subdivide into awkward sub-phases (`pre-`, `post-`, `around-`).
+2. **Priority bands provide predictable ordering with room for extension.** Leaving numerical gaps (`50`, `100`, `110`, `150`, `200`) allows developers to insert one-off constraints (`PRIORITY.GUARD - 5`) without modifying existing listeners.
+3. **Scoped preemption removes boilerplate conditional logic.** Scoping listeners to entity identifiers keeps code declarative and modular.

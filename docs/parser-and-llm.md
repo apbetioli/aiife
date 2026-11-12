@@ -1,106 +1,89 @@
-# Hybrid Parser, LLM & Intent Recognition
+# Hybrid parsing and intent recognition
 
-AIIFE bridges natural language input and strict, deterministic game execution through a **hybrid parser architecture**.
+AIIFE translates player text into structured game actions through a two-stage parsing pipeline.
 
-Rather than relying purely on an LLM for all text processing or falling back to rigid 1980s regexes, AIIFE blends both: a sub-millisecond fast-path parser for canonical commands, paired with an LLM intent recognizer dynamically grounded in game state.
+Text adventure players expect single-letter navigation (`n`, `s`, `look`) to execute with zero latency. At the same time, players also submit complex natural language phrasing like "use the brass key to unlock the oak chest". 
+
+AIIFE resolves this tension by placing a sub-millisecond regular expression matcher ahead of the language model. When the input matches standard interactive fiction grammar, the engine handles it immediately. When the input contains descriptive phrasing or conversational queries, the engine forwards the turn to the model.
 
 ---
 
-## 1. Why a Hybrid Approach?
+## Parser design trade-offs
 
-| Requirement | Pure Regex / Verb-Noun Parser | Pure LLM Generative Parser | AIIFE Hybrid Model |
+| Requirement | Regular expression parser | Pure generative model | AIIFE hybrid model |
 | :--- | :--- | :--- | :--- |
-| **Common commands (`n`, `i`, `look`)** | Fast (<1ms), free | Slow (500ms–2000ms), high API cost | **Instant (<1ms), zero API cost** |
-| **Natural language variations** | Fails easily on synonyms | High understanding | **High understanding** |
-| **Complex phrasing ("use brass key to unlock chest")** | Requires complex grammar trees | High understanding | **High understanding** |
-| **State integrity & hallucinations** | Deterministic | Can hallucinate items or outcomes | **Strict scope validation & deterministic state** |
+| Common commands (`n`, `i`, `look`) | Fast (under 1 ms), free | Slow (500 ms to 2,000 ms), high token cost | Under 1 ms, zero API cost |
+| Synonym handling | Fails on unmapped phrasing | High accuracy | High accuracy |
+| Multi-word phrasing | Requires complex grammar trees | High accuracy | High accuracy |
+| State consistency | Fully deterministic | Can hallucinate items or outcomes | Validated target scope and deterministic engine state |
 
 ---
 
-## 2. Component Walkthrough
+## Parsing pipeline
 
-### 2.1 Fast-Path Parser (`tryDeterministicIntent`)
-Located in `src/agent/fast-path-parser.ts`, this component evaluates player input before touching an LLM:
+### 1. Fast-path parser
+The function `tryDeterministicIntent` in `src/agent/fast-path-parser.ts` evaluates player text before the engine initiates an API request:
 
-1. **Directional abbreviations**: `n`, `s`, `e`, `w`, `ne`, `nw`, `se`, `sw`, `u`, `d`, `in`, `out` $\rightarrow$ `{ action: "go", direction: "..." }`.
-2. **Standard actions**:
-   - `l`, `look` $\rightarrow$ `{ action: "look" }`
-   - `i`, `inv`, `inventory` $\rightarrow$ `{ action: "inventory" }`
-   - `undo` $\rightarrow$ `{ action: "undo" }`
-   - `save [slot]` $\rightarrow$ `{ action: "save", slot: "..." }`
-   - `restore [slot]` $\rightarrow$ `{ action: "restore", slot: "..." }`
-   - `q`, `quit` $\rightarrow$ `{ action: "quit" }`
-   - `help` $\rightarrow$ `{ action: "help" }`
-3. **Simple verb-noun regexes**:
-   - `take <target>`, `get <target>` $\rightarrow$ `{ action: "take", objects: ["<target>"] }`
-   - `drop <target>` $\rightarrow$ `{ action: "drop", objects: ["<target>"] }`
-   - `x <target>`, `examine <target>` $\rightarrow$ `{ action: "examine", objects: ["<target>"] }`
+1. **Directional abbreviations.** `n`, `s`, `e`, `w`, `ne`, `nw`, `se`, `sw`, `u`, `d`, `in`, and `out` map directly to `{ action: "go", direction: "..." }`.
+2. **Standard single-word actions.**
+   - `l` and `look` map to `{ action: "look" }`.
+   - `i`, `inv`, and `inventory` map to `{ action: "inventory" }`.
+   - `undo` maps to `{ action: "undo" }`.
+   - `save [slot]` maps to `{ action: "save", slot: "..." }`.
+   - `restore [slot]` maps to `{ action: "restore", slot: "..." }`.
+   - `q` and `quit` map to `{ action: "quit" }`.
+   - `help` maps to `{ action: "help" }`.
+3. **Simple verb-noun patterns.**
+   - `take <target>` and `get <target>` map to `{ action: "take", objects: ["<target>"] }`.
+   - `drop <target>` maps to `{ action: "drop", objects: ["<target>"] }`.
+   - `x <target>` and `examine <target>` map to `{ action: "examine", objects: ["<target>"] }`.
 
-If the fast-path matches, the turn executes instantly with zero network latency.
+When a pattern matches, the turn executes without network overhead.
 
 ---
 
-### 2.2 Scoped Tools Builder (`buildScopedTools`)
-When the fast-path does not match, the engine delegates to the LLM using AI SDK tool calling (`buildScopedTools`). Tools are dynamically scoped to the player's physical context:
+### 2. Scoped tool calling
+When the fast-path parser finds no match, `GameAgent` delegates parsing to the model with AI SDK tool calling:
 
-1. **Parser Context Snapshot (`buildParserContext`)**:
+1. **Parser context snapshot (`buildParserContext`).**
    - Current room name and description.
-   - Available (open) exits.
-   - Strictly in-scope objects (room items + inventory items + visible open container contents).
+   - Available unblocked exits.
+   - Strictly in-scope objects (items in the room, items in inventory, and contents of open containers).
    - Known aliases for objects.
-2. **Action Registry Scoping (`evaluateActionScope`)**:
-   - Puzzle verbs and contextual actions are filtered based on their `scope` rules.
-   - Actions outside current room, inventory, or item prerequisites are pruned before calling the LLM.
-   - Each tool exposes its individual `inputSchema` directly to the model.
+2. **Action scoping (`evaluateActionScope`).**
+   - The engine checks whether the player meets prerequisites for contextual actions.
+   - Irrelevant tools are pruned from the schema before dispatching the request.
+   - Each tool exposes its parameter requirements through a Zod schema.
 
-The model selects the matching action tool, binds arguments according to the action's validated schema, or invokes `respond` for conversational queries.
+The model selects the matching tool, populates arguments from the player input, or calls `respond` for conversational questions.
 
 ---
 
-### 2.3 Scope Gatekeeper
-Before an action is dispatched to the event bus, the engine performs a critical validation:
+### 3. Physical scope validation
+Before dispatching an action to `EventBus`, the engine validates target accessibility:
+
 ```ts
 function allTargetsInScope(state: GameState, params: Record<string, unknown>): boolean
 ```
-Even if the LLM extracts `action: "take", objects: ["golden_chalice"]`, the engine checks whether `golden_chalice` is physically present in the room, carried, or inside an open container. If not, execution immediately stops and returns:
-> *"You don't see that here."*
 
-This completely prevents state hallucinations and "action telepathy."
+If the model extracts `action: "take", objects: ["golden_chalice"]`, the engine verifies that `golden_chalice` is in the room, in inventory, or inside an open container. If the item is not reachable, the engine halts execution and returns:
 
----
+> "You don't see that here."
 
-## 3. The Multilingual Narrator Layer
-
-In AIIFE, the narrator model (`NARRATION_SYSTEM_PROMPT`) does **not** invent narrative facts. It follows strict rules:
-
-1. **English Input**: If the player enters input in English and the engine produces explicit feedback (such as descriptions or messages), the engine output is returned directly with zero LLM overhead.
-2. **Multilingual Input**: If the player interacts in Spanish, French, Japanese, or any other language, the narrator model streams a faithful translation of the engine's exact feedback while preserving line breaks and formatting.
-3. **Conversational Fallback**: If the player greets or asks off-topic questions, the `respond` intent delivers a natural conversational reply without modifying game state.
+This check prevents state hallucinations and actions on out-of-scope targets.
 
 ---
 
-## 4. Evaluation Suite with Laminar
+## Streaming translation layer
 
-The intent parser is evaluated against hundreds of natural language examples in `evals/intent-recognition/`.
+The narrator prompt translates text without inventing narrative facts:
 
-### Running Evals
-```bash
-export LMNR_PROJECT_API_KEY=your_key
-npm run eval
-```
+1. **English input.** When the engine produces feedback in English, the UI renders the text directly.
+2. **Multilingual input.** When player input contains non-English text, `streamText` translates the engine's exact output into the player's language while preserving formatting and line breaks.
+3. **Conversational queries.** When the player asks out-of-character questions, the `respond` tool returns conversational text without mutating game state.
 
-### Comparing Models
-You can benchmark accuracy and latency between different models using the `EVAL_MODEL` environment variable:
+---
 
-```bash
-# Benchmark Claude
-EVAL_MODEL=claude-3-5-haiku npm run eval
+## Evaluation
 
-# Benchmark OpenAI
-EVAL_MODEL=gpt-4o-mini npm run eval
-
-# Benchmark Gemini
-EVAL_MODEL=gemini-2.5-flash npm run eval
-```
-
-Results stream directly to the Laminar dashboard, displaying side-by-side accuracy, parameter matching, latency distributions, and token consumption.
+The repository contains an automated evaluation suite that measures intent classification accuracy and latency across models. For instructions on running evals with Laminar, read [Evaluating model performance](../evals/README.md).

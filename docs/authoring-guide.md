@@ -1,12 +1,12 @@
-# Game Authoring Guide
+# Authoring guide
 
-Building an interactive fiction game in AIIFE is simple, type-safe, and modular. You define your game world using TypeScript and register custom puzzle rules and verbs through the AIIFE Authoring SDK.
+This guide shows you how to define game worlds, register actions, handle state transitions, and test puzzles with the AIIFE authoring SDK.
 
 ---
 
-## 1. Quick Example: A Minimal Game
+## Define a minimal game
 
-Create a file in `games/my-first-adventure.ts`:
+Create a game definition in `games/my-first-adventure.ts`:
 
 ```ts
 import { defineGame, type World } from "../src/sdk";
@@ -65,18 +65,17 @@ export default defineGame({
 });
 ```
 
-To run your game:
+To run the game, pass its filename without the extension:
 ```bash
 npm run dev -- my-first-adventure
 ```
 
 ---
 
-## 2. World Schema Breakdown
+## Configure rooms and exits
 
-A game world definition consists of three core components: `rooms`, `objects`, and initial `player` state.
+A room requires an identifier, a display name, a descriptions record, and an exits record:
 
-### Rooms
 ```ts
 rooms: {
   library: {
@@ -102,14 +101,15 @@ rooms: {
   },
 }
 ```
-- **Descriptions**: Must have a `default` entry. State keys (such as `dark`) take precedence if their matching flag is `true` in state. If visited and no other flags match, `visited` is used.
-- **Exits**: Directions can be `north`, `south`, `east`, `west`, `northeast`, `northwest`, `southeast`, `southwest`, `up`, `down`, `in`, `out`.
-- **Exit Conditions**: An expression string evaluated against game state:
-  - `"object_id.state_key == value"`
-  - Supports `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, and `||`.
-  - Example: `condition: "study_door.open == true && player.crawling == false"`.
 
-### Objects
+- **Descriptions.** Each room requires a `default` entry. State keys take precedence when their matching flag evaluates to `true`. If the player has visited the room and no custom flags match, the engine uses the `visited` description.
+- **Exit directions.** Supported directions are `north`, `south`, `east`, `west`, `northeast`, `northwest`, `southeast`, `southwest`, `up`, `down`, `in`, and `out`.
+- **Exit conditions.** Condition strings evaluate against game state properties using comparisons (`==`, `!=`, `<`, `>`, `<=`, `>=`) and logical operators (`&&`, `||`):
+  `condition: "study_door.open == true && player.crawling == false"`
+
+## Configure objects and containers
+
+Objects represent carriable items, scenery, doors, and containers:
 ```ts
 objects: {
   wooden_chest: {
@@ -145,43 +145,35 @@ objects: {
 }
 ```
 
-- **Types**: `"item" | "fixture" | "container" | "door" | "actor" | "weapon" | "key"`.
-- **Initial Location**: Can be a room ID (`"bedroom"`), a container ID (`"wooden_chest"`), or `"inventory"`.
-- **Containers**: When an object has `type: "container"`, the engine automatically manages containment. If the container is `open: false`, objects inside are hidden from player scope. When the player opens the container, its contents are automatically revealed.
-- **Keys & Locks**: Set `requires_instrument: { unlock: "key_id" }`. The core engine handles checking if the player is holding the required key.
+- **Object types.** Supported types are `"item"`, `"fixture"`, `"container"`, `"door"`, `"actor"`, `"weapon"`, and `"key"`.
+- **Initial location.** Set `location` to a room identifier, a container identifier, or `"inventory"`.
+- **Containers.** When an object has `type: "container"`, the engine resolves contents dynamically. If `open` is `false`, objects inside remain hidden from scope. Opening the container places its contents into scope.
+- **Keys and locks.** Specify keys in `requires_instrument: { unlock: "key_id" }`. The built-in `unlock` action checks whether the player holds the required key in inventory.
 
 ---
 
-## 3. Adding Game Logic with `setup(bus, registry)`
+## Intercept standard actions
 
-To create interactive puzzles, pass a `setup` function to `defineGame`:
+To add puzzle rules to existing verbs, provide a `setup` callback to `defineGame`:
 
 ```ts
 export default defineGame({
   world,
   setup(bus, registry) {
-    // Custom puzzle logic here!
+    bus.on("take", "iron_anvil", (event) => {
+      event.stop();
+      return "The anvil is far too heavy to lift with your bare hands.";
+    });
   },
 });
 ```
 
-### Intercepting Existing Verbs
-You can listen to any game verb before or after it runs. Use `bus.on(verb, scopeId, listener)`:
+### Precondition guards
+To prevent an action before state mutates, register a listener at `PRIORITY.GUARD`:
 
-```ts
-// Prevent taking the heavy iron anvil
-bus.on("take", "iron_anvil", (event) => {
-  event.stop(); // Stops core take action and mutator
-  return "The anvil is far too heavy to lift with your bare hands.";
-});
-```
-
-### Using Priority Bands
-The second or third parameter allows configuring priority:
 ```ts
 import { PRIORITY } from "../src/sdk";
 
-// Run validation guard (runs before mutation)
 bus.on("open", "trapdoor", (event, state) => {
   if (state.objects.rug?.state.moved !== true) {
     event.stop();
@@ -190,27 +182,29 @@ bus.on("open", "trapdoor", (event, state) => {
 }, { priority: PRIORITY.GUARD });
 ```
 
-### Revealing Hidden Items
+### Revealing hidden items
+To reveal hidden items during examination, update the item's state in place:
+
 ```ts
 import { setObjectState } from "../src/sdk";
 
 bus.on("examine", "bookshelf", (event, state) => {
   if (state.objects.silver_key?.state.hidden) {
     setObjectState(state, "silver_key", "hidden", false);
-    return "Behind the leather-bound books, you notice a small silver key!";
+    return "Behind the leather-bound books, you notice a small silver key.";
   }
 });
 ```
 
 ---
 
-## 4. Registering Custom Verbs with `registerAction`
+## Register custom actions
 
-If your game has unique verbs (like `pray`, `dig`, `inflate`, or `cast`), register them with a Zod schema and description:
+To introduce new verbs such as `pray`, `dig`, or `rub`, register them with `registerAction`:
 
 ```ts
 import { z } from "zod";
-import { registerAction, getTarget, isInInventory, setObjectState } from "../src/sdk";
+import { registerAction, isInInventory, setObjectState } from "../src/sdk";
 
 export default defineGame({
   world,
@@ -240,26 +234,24 @@ export default defineGame({
           return "The ground here is too hard to dig.";
         }
         setObjectState(state, "buried_chest", "revealed", true);
-        return "You dig into the soft sand and unearth a buried chest!";
+        return "You dig into the soft sand and unearth a buried chest.";
       },
     });
   },
 });
 ```
 
-> [!NOTE]
-> When you register an action, its `description` and schema are automatically provided to the LLM's system prompt so it recognizes player commands like *"dig in the sand"* or *"start praying"*.
+The function `registerAction` adds the verb to `EventBus` and injects its description and parameter schema into the model's tool definitions.
 
 ---
 
-## 5. Background Daemons with `registerDaemon`
+## Register background daemons
 
-Daemons run automatically every turn after actions have completed. They are perfect for lighting mechanics, NPC movement, or hunger timers:
+Daemons run on every turn after player actions complete. Use daemons for timers, torch fuel, and autonomous actor movement:
 
 ```ts
-import { registerDaemon, PRIORITY, isInInventory } from "../src/sdk";
+import { registerDaemon, PRIORITY } from "../src/sdk";
 
-// Diminishing lantern oil
 registerDaemon(bus, "lantern-fuel", {
   condition: (_, state) => state.objects.brass_lantern?.state.lit === true,
   effect: (_, state) => {
@@ -271,7 +263,7 @@ registerDaemon(bus, "lantern-fuel", {
     if (fuel === 10) return "Your lantern is beginning to flicker dimly.";
     if (fuel <= 0) {
       state.objects.brass_lantern.state.lit = false;
-      return "Your lantern has run out of oil and gone out!";
+      return "Your lantern has run out of oil and gone out.";
     }
   },
   priority: PRIORITY.DAEMON,
@@ -280,9 +272,9 @@ registerDaemon(bus, "lantern-fuel", {
 
 ---
 
-## 6. Testing Your Game
+## Test puzzle solutions
 
-AIIFE games are 100% deterministic, meaning you can write comprehensive automated unit tests for puzzle solutions:
+Engine turns execute deterministically without external API calls, which allows you to test puzzle walkthroughs with Vitest:
 
 ```ts
 import { describe, it, expect } from "vitest";
@@ -294,19 +286,34 @@ describe("My First Adventure Walkthrough", () => {
     const engine = new GameEngine(myGame.world, myGame.setup);
     engine.start();
 
-    // Look
-    const lookOut = engine.runAction({ action: "look", direction: null, objects: null, preposition: null, message: null });
+    const lookOut = engine.runAction({
+      action: "look",
+      direction: null,
+      objects: null,
+      preposition: null,
+      message: null,
+    });
     expect(lookOut).toContain("Forest Clearing");
 
-    // Take key
-    const takeOut = engine.runAction({ action: "take", direction: null, objects: ["brass_key"], preposition: null, message: null });
+    const takeOut = engine.runAction({
+      action: "take",
+      direction: null,
+      objects: ["brass_key"],
+      preposition: null,
+      message: null,
+    });
     expect(takeOut).toContain("Taken.");
 
-    // Move north
-    const moveOut = engine.runAction({ action: "go", direction: "north", objects: null, preposition: null, message: null });
+    const moveOut = engine.runAction({
+      action: "go",
+      direction: "north",
+      objects: null,
+      preposition: null,
+      message: null,
+    });
     expect(moveOut).toContain("Abandoned Cottage");
   });
 });
 ```
 
-See [games/troll.test.ts](file:///Users/alex/Code/alex/aiife/games/troll.test.ts) and [games/zork-one.test.ts](file:///Users/alex/Code/alex/aiife/games/zork-one.test.ts) for production test suites.
+For full adventure test suites, read [games/troll.test.ts](file:///Users/alex/Code/alex/aiife/games/troll.test.ts) and [games/zork-one.test.ts](file:///Users/alex/Code/alex/aiife/games/zork-one.test.ts).

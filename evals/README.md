@@ -1,39 +1,50 @@
-# Evals
+# Evaluating model performance
 
-## Comparing models (quality and speed)
+This guide shows you how to benchmark intent recognition accuracy, latency, and token consumption using the Laminar evaluation pipeline.
 
-1. **Run the same eval with different models** using the `EVAL_MODEL` env var. Each run is sent to Laminar with a distinct run name so you can tell them apart.
+---
 
+## Compare model accuracy and latency
+
+To benchmark different language models against the intent evaluation dataset:
+
+1. Set your Laminar project key:
    ```bash
    export LMNR_PROJECT_API_KEY=<your_key>
+   ```
 
-   # Model A
+2. Run the evaluation suite with your primary model:
+   ```bash
    EVAL_MODEL=gpt-4o npm run eval
+   ```
 
-   # Model B (e.g. cheaper/faster)
+3. Run the evaluation suite with a comparison model:
+   ```bash
    EVAL_MODEL=gpt-4o-mini npm run eval
    ```
 
-2. **Compare in Laminar**  
-   Both runs use the same `groupName` (`intent-recognition`), so they appear **side-by-side** in the Laminar dashboard. Use that view to compare:
-   - **Scores** (actionSelection, parameterAccuracy, combined, or selectionScore) to see which model is more accurate.
-   - **Traces** for each datapoint include model invocations and timing, so you can compare **latency** and token usage per run.
+Both runs publish to the same Laminar group (`intent-recognition`). Open the Laminar dashboard to compare:
+- **Accuracy scores.** Inspect `actionSelection` and `parameterAccuracy` to compare recognition rates.
+- **Latency and token usage.** Inspect traces to evaluate execution time and token consumption per turn.
 
-3. **Optional: per-case model**  
-   Dataset entries can override the model via `data.config.model` (and `data.config.temperature`). The env var `EVAL_MODEL` overrides that when set, so it's ideal for "run everything with this model" comparisons.
+To override model parameters on specific test cases, set `data.config.model` and `data.config.temperature` directly in the dataset JSON. The environment variable `EVAL_MODEL` overrides dataset-level model choices when set.
 
-## Comparing approaches (Prompt Baseline vs Scoped Tools)
+---
 
-You can compare the baseline prompt-based intent parser against the native scoped-tools executor:
+## Compare prompt baselines to scoped tools
 
-1. **Run the baseline** (dumps all actions in the system prompt + monolithic schema):
+To compare the monolithic prompt baseline against dynamic scoped tools:
+
+1. Run the prompt baseline evaluation:
    ```bash
    npm run eval:baseline
    ```
+   This command serializes all game actions into a single system prompt.
 
-2. **Run with Scoped Tools** (dynamically registers active tools based on room & objects):
+2. Run the scoped tools evaluation:
    ```bash
    npm run eval:tools
    ```
+   This command registers active tools dynamically based on room state and player inventory.
 
-Both runs share the same group (`intent-recognition`) in Laminar, tagged with `approach: "prompt-baseline"` and `approach: "scoped-tools"`, allowing side-by-side comparison of accuracy, latency, and token consumption.
+Both commands publish to the `intent-recognition` group in Laminar with tags `approach: "prompt-baseline"` and `approach: "scoped-tools"`.
