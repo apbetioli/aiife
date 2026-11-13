@@ -1,0 +1,4965 @@
+[
+	{
+		"turn": 1,
+		"cmd": "open mailbox",
+		"expected": "Opening the small mailbox reveals a leaflet.",
+		"actual": "Opening the small mailbox reveals:\n  leaflet",
+		"current_room": "west_of_house",
+		"inventory": [],
+		"action_detected": "tick {}",
+		"durationMs": 2189
+	},
+	{
+		"turn": 2,
+		"cmd": "read leaflet",
+		"expected": "(Taken)\n\"WELCOME TO ZORK!\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!\"",
+		"actual": "(Taken)\n\"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!\"\n\"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!\"",
+		"current_room": "west_of_house",
+		"inventory": ["leaflet"],
+		"action_detected": "tick {}",
+		"durationMs": 1597
+	},
+	{
+		"turn": 3,
+		"cmd": "drop leaflet",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "west_of_house",
+		"inventory": [],
+		"action_detected": "tick {}",
+		"durationMs": 1600
+	},
+	{
+		"turn": 4,
+		"cmd": "go south",
+		"expected": "South of House\nYou are facing the south side of a white house. There is no door here, and all the windows are boarded.",
+		"actual": "**South of House**\nYou are facing the south side of a white house. There is no door here, and all the windows are boarded.",
+		"current_room": "south_of_house",
+		"inventory": [],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 5,
+		"cmd": "go east",
+		"expected": "Behind House\nYou are behind the white house. A path leads into the forest to the east. In one corner of the house there is a small window which is slightly ajar.",
+		"actual": "**Behind House**\nYou are behind the white house. A path leads into the forest to the east.\nIn one corner of the house there is a small window which is slightly ajar.",
+		"current_room": "behind_house",
+		"inventory": [],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 6,
+		"cmd": "open window",
+		"expected": "With great effort, you open the window far enough to allow entry.",
+		"actual": "With great effort, you open the window far enough to allow entry.",
+		"current_room": "behind_house",
+		"inventory": [],
+		"action_detected": "open {\"objects\":[\"kitchen_window\"]}",
+		"durationMs": 1502
+	},
+	{
+		"turn": 7,
+		"cmd": "enter house",
+		"expected": "Kitchen\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": [],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 8,
+		"cmd": "go west",
+		"expected": "Living Room\nYou are in the living room. There is a doorway to the east, a wooden door with strange gothic lettering to the west, which appears to be nailed shut, a trophy case, and a large oriental rug in the center of the room.\nAbove the trophy case hangs an elvish sword of great antiquity.\nA battery-powered brass lantern is on the trophy case.",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nA battery-powered brass lantern is on the trophy case.\nAbove the trophy case hangs an elvish sword of great antiquity.\nA large oriental rug is in the center of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe dusty cover of a closed trap door is set into the floor.\nA trophy case is mounted to the wall.",
+		"current_room": "living_room",
+		"inventory": [],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 9,
+		"cmd": "take lamp",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 1635
+	},
+	{
+		"turn": 10,
+		"cmd": "move rug",
+		"expected": "With a great effort, the rug is moved to one side of the room, revealing the dusty cover of a closed trap door.",
+		"actual": "With a great effort, the rug is moved to one side of the room, revealing the dusty cover of a closed trap door.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "move {\"objects\":[\"oriental_rug\"]}",
+		"durationMs": 1
+	},
+	{
+		"turn": 11,
+		"cmd": "open trap door",
+		"expected": "The door reluctantly opens to reveal a rickety staircase descending into darkness.",
+		"actual": "The door reluctantly opens to reveal a rickety staircase descending into darkness.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "open {\"objects\":[\"trap_door\"]}",
+		"durationMs": 1520
+	},
+	{
+		"turn": 12,
+		"cmd": "turn on lamp",
+		"expected": "The brass lantern is now on.",
+		"actual": "The brass lantern is now on.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 1754
+	},
+	{
+		"turn": 13,
+		"cmd": "go down",
+		"expected": "The trap door crashes shut, and you hear someone barring it.\nCellar\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.\nThe trap door crashes shut, and you hear someone barring it.",
+		"current_room": "cellar",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 14,
+		"cmd": "go south",
+		"expected": "East of Chasm\nYou are on the east edge of a chasm, the bottom of which cannot be seen. A narrow passage goes north, and the path you are on continues to the east.",
+		"actual": "**East of Chasm**\nYou are on the east edge of a chasm, the bottom of which cannot be seen. A narrow passage goes north, and the path you are on continues to the east.",
+		"current_room": "east_of_chasm",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 15,
+		"cmd": "go east",
+		"expected": "Gallery\nThis is an art gallery. Most of the paintings have been stolen by vandals with exceptional taste. The vandals left through either the north or west exits.\nFortunately, there is still one chance for you to be a vandal, for on the far wall is a painting of unparalleled beauty.",
+		"actual": "**Gallery**\nThis is an art gallery. Most of the paintings have been stolen by vandals with exceptional taste. The vandals left through either the north or west exits.\nFortunately, there is still one chance for you to be a vandal, for on the far wall is a painting of unparalleled beauty.",
+		"current_room": "gallery",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 16,
+		"cmd": "take painting",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "gallery",
+		"inventory": ["brass_lantern", "painting"],
+		"action_detected": "tick {}",
+		"durationMs": 3448
+	},
+	{
+		"turn": 17,
+		"cmd": "go north",
+		"expected": "Studio\nThis appears to have been an artist's studio. The walls and floors are splattered with paints of 69 different colors. Strangely enough, nothing of value is hanging here. At the south end of the room is an open door (also covered with paint). A dark and narrow chimney leads up from a fireplace; although you might be able to get up it, it seems unlikely you could get back down.\nLoosely attached to a wall is a small piece of paper.",
+		"actual": "**Studio**\nThis appears to have been an artist's studio. The walls and floors are splattered with paints of 69 different colors. Strangely enough, nothing of value is hanging here. At the south end of the room is an open door (also covered with paint). A dark and narrow chimney leads up from a fireplace; although you might be able to get up it, it seems unlikely you could get back down.\nA dark and narrow chimney leads up from a fireplace.",
+		"current_room": "studio",
+		"inventory": ["brass_lantern", "painting"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 18,
+		"cmd": "go up chimney",
+		"expected": "Kitchen\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": ["brass_lantern", "painting"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 19,
+		"cmd": "go up",
+		"expected": "Attic\nThis is the attic. The only exit is a stairway leading down.\nA large coil of rope is lying in the corner.\nOn a table is a nasty-looking knife.",
+		"actual": "**Attic**\nThis is the attic. The only exit is a stairway leading down.\nOn a table is a nasty-looking knife.\nA large coil of rope is lying in the corner.",
+		"current_room": "attic",
+		"inventory": ["brass_lantern", "painting"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 20,
+		"cmd": "take knife",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "attic",
+		"inventory": ["brass_lantern", "nasty_knife", "painting"],
+		"action_detected": "tick {}",
+		"durationMs": 2500
+	},
+	{
+		"turn": 21,
+		"cmd": "take rope",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "attic",
+		"inventory": ["brass_lantern", "nasty_knife", "painting", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 2114
+	},
+	{
+		"turn": 22,
+		"cmd": "go down",
+		"expected": "Kitchen\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": ["brass_lantern", "nasty_knife", "painting", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 23,
+		"cmd": "go west",
+		"expected": "Living Room\nAbove the trophy case hangs an elvish sword of great antiquity.",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nAbove the trophy case hangs an elvish sword of great antiquity.\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe dusty cover of a closed trap door is set into the floor.\nA trophy case is mounted to the wall.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "nasty_knife", "painting", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 24,
+		"cmd": "open case",
+		"expected": "Opened.",
+		"actual": "Opening the trophy case reveals:\n  ancient map",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "nasty_knife", "painting", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 2270
+	},
+	{
+		"turn": 25,
+		"cmd": "put painting inside case",
+		"expected": "Done.",
+		"actual": "You put the painting into the trophy case.\nDone.\nPoints: 45",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "nasty_knife", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1546
+	},
+	{
+		"turn": 26,
+		"cmd": "drop knife",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1224
+	},
+	{
+		"turn": 27,
+		"cmd": "take sword",
+		"expected": "Taken.",
+		"actual": "Taken.\n",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1554
+	},
+	{
+		"turn": 28,
+		"cmd": "open trap door",
+		"expected": "The door reluctantly opens to reveal a rickety staircase descending into darkness.",
+		"actual": "The door reluctantly opens to reveal a rickety staircase descending into darkness.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "open {\"objects\":[\"trap_door\"]}",
+		"durationMs": 1454
+	},
+	{
+		"turn": 29,
+		"cmd": "go down",
+		"expected": "The trap door crashes shut, and you hear someone barring it.\nCellar\nYour sword is glowing with a faint blue glow.",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.\nYour sword is glowing with a faint blue glow.",
+		"current_room": "cellar",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 30,
+		"cmd": "go north",
+		"expected": "The Troll Room\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nA nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.\nYour sword has begun to glow very brightly.\nThe troll's mighty blow drops you to your knees.",
+		"actual": "**The Troll Room**\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nThere is a bloody axe here.\nA nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.\nYour sword has begun to glow very brightly.\nThe troll's mighty blow drops you to your knees.\n",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 31,
+		"cmd": "kill troll with sword",
+		"expected": "You are still recovering from that last blow, so your attack is ineffective.\nThe troll's axe barely misses your ear.",
+		"actual": "You are still recovering from that last blow, so your attack is ineffective.\nThe troll's axe barely misses your ear.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "attack {\"objects\":[\"troll\",\"elvish_sword\"]}",
+		"durationMs": 1
+	},
+	{
+		"turn": 32,
+		"cmd": "kill troll with sword",
+		"expected": "Clang! Crash! The troll parries.\nThe troll's axe barely misses your ear.",
+		"actual": "Clang! Crash! The troll parries.\nThe troll's axe barely misses your ear.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "attack {\"objects\":[\"troll\",\"elvish_sword\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 33,
+		"cmd": "kill troll with sword",
+		"expected": "The troll is confused and can't fight back.\nThe troll slowly regains his feet.",
+		"actual": "The troll is confused and can't fight back.\nThe troll slowly regains his feet.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "attack {\"objects\":[\"troll\",\"elvish_sword\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 34,
+		"cmd": "kill troll with sword",
+		"expected": "The troll is knocked out!",
+		"actual": "The troll is knocked out!",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "attack {\"objects\":[\"troll\",\"elvish_sword\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 35,
+		"cmd": "kill troll with sword",
+		"expected": "The unarmed troll cannot defend himself: He dies.\nAlmost as soon as the troll breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.\nYour sword is no longer glowing.",
+		"actual": "The unconscious troll cannot defend himself: He dies.\nAlmost as soon as the troll breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.\nYour sword is no longer glowing.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "elvish_sword", "rope"],
+		"action_detected": "attack {\"objects\":[\"troll\",\"elvish_sword\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 36,
+		"cmd": "drop sword",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1692
+	},
+	{
+		"turn": 37,
+		"cmd": "go east",
+		"expected": "East-West Passage\nThis is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+		"actual": "**East-West Passage**\nThis is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+		"current_room": "east_west_passage",
+		"inventory": ["brass_lantern", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 38,
+		"cmd": "go east",
+		"expected": "Round Room\nThis is a circular stone room with passages in all directions. Several of them have unfortunately been blocked by cave-ins.",
+		"actual": "**Round Room**\nThis is a circular stone room with passages in all directions. Several of them have unfortunately been blocked by cave-ins.",
+		"current_room": "round_room",
+		"inventory": ["brass_lantern", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 39,
+		"cmd": "go southeast",
+		"expected": "Engravings Cave\nYou have entered a low cave with passages leading northwest and east.\nThere are old engravings on the walls here.",
+		"actual": "**Engravings Cave**\nYou have entered a low cave with passages leading northwest and east.",
+		"current_room": "engravings_cave",
+		"inventory": ["brass_lantern", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 40,
+		"cmd": "go east",
+		"expected": "Dome Room\nYou are at the periphery of a large dome, which forms the ceiling of another room below. Protecting you from a precipitous drop is a wooden railing which circles the dome.",
+		"actual": "**Dome Room**\nYou are at the periphery of a large dome, which forms the ceiling of another room below. Protecting you from a precipitous drop is a wooden railing which circles the dome.",
+		"current_room": "dome_room",
+		"inventory": ["brass_lantern", "rope"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 41,
+		"cmd": "tie rope to railing",
+		"expected": "The rope drops over the side and comes within ten feet of the floor.",
+		"actual": "The rope is now securely tied to the railing, and drops into the darkness of the pit below.",
+		"current_room": "dome_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 1554
+	},
+	{
+		"turn": 42,
+		"cmd": "go down",
+		"expected": "Torch Room\nThis is a large room with a prominent doorway leading to a down staircase. Above you is a large dome. Up around the edge of the dome (20 feet up) is a wooden railing. In the center of the room sits a white marble pedestal.\nA piece of rope descends from the railing above, ending some five feet above your head.\nSitting on the pedestal is a flaming torch, made of ivory.",
+		"actual": "**Torch Room**\nThis is a large room with a prominent doorway leading to a down staircase. Above you is a large dome. Up around the edge of the dome (20 feet up) is a wooden railing. In the center of the room sits a white marble pedestal.\nA large ivory torch is resting in a wall sconce. It burns with an eternal, cool flame.",
+		"current_room": "torch_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 43,
+		"cmd": "go south",
+		"expected": "Temple\nThis is the north end of a large temple. On the east wall is an ancient inscription, probably a prayer in a long-forgotten language. Below the prayer is a staircase leading down. The west wall is solid granite. The exit to the north end of the room is through huge marble pillars.\nThere is a brass bell here.",
+		"actual": "**Temple**\nThis is the north end of a large temple. On the east wall is an ancient inscription, probably a prayer in a long-forgotten language. Below the prayer is a staircase leading down. The west wall is solid granite. The exit to the north end of the room is through huge marble pillars.\nOn the altar is a solid brass bell.",
+		"current_room": "temple",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 44,
+		"cmd": "go east",
+		"expected": "Egyptian Room\nThis is a room which looks like an Egyptian tomb. There is an ascending staircase to the west.\nThe solid-gold coffin used for the burial of Ramses II is here.",
+		"actual": "**Egyptian Room**\nThis is a room which looks like an Egyptian tomb. There is an ascending staircase to the west.\nThe solid-gold coffin used for the burial of Ramses II is here.",
+		"current_room": "egyptian_room",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 45,
+		"cmd": "take coffin",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "egyptian_room",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 1569
+	},
+	{
+		"turn": 46,
+		"cmd": "go west",
+		"expected": "Temple\nThere is a brass bell here.",
+		"actual": "**Temple**\nThis is the north end of a large temple. On the east wall is an ancient inscription, probably a prayer in a long-forgotten language. Below the prayer is a staircase leading down. The west wall is solid granite. The exit to the north end of the room is through huge marble pillars.\nOn the altar is a solid brass bell.",
+		"current_room": "temple",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 13
+	},
+	{
+		"turn": 47,
+		"cmd": "go south",
+		"expected": "Altar\nThis is the south end of a large temple. In front of you is what appears to be an altar. In one corner is a small hole in the floor which leads into darkness. You probably could not get back up it.\nOn the two ends of the altar are burning candles.\nOn the altar is a large black book, open to page 569.",
+		"actual": "**Altar**\nThis is the south end of a large temple. In front of you is what appears to be an altar. In one corner is a small hole in the floor which leads into darkness. You probably could not get back up it.\nOn the altar is a large, leather-bound black book entitled 'Ye Phantasms'.\nOn the altar is a pair of white candles.",
+		"current_room": "altar",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 18
+	},
+	{
+		"turn": 48,
+		"cmd": "pray",
+		"expected": "Forest\nThis is a forest, with trees in all directions. To the east, there appears to be sunlight.",
+		"actual": "The room trembles, and everything goes white... When your vision clears, you find yourself outside in the forest.",
+		"current_room": "forest_1",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 49,
+		"cmd": "turn off lamp",
+		"expected": "The brass lantern is now off.",
+		"actual": "The brass lantern is now off.",
+		"current_room": "forest_1",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 1397
+	},
+	{
+		"turn": 50,
+		"cmd": "go south",
+		"expected": "Forest\nThis is a dimly lit forest, with large trees all around.",
+		"actual": "**Forest**\nThis is a dimly lit forest, with large trees all around.",
+		"current_room": "forest_3",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 51,
+		"cmd": "go north",
+		"expected": "Clearing\nYou are in a small clearing in a well marked forest path that extends to the east and west.",
+		"actual": "**Clearing**\nYou are in a small clearing in a well marked forest path that extends to the east and west.",
+		"current_room": "clearing",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 52,
+		"cmd": "go east",
+		"expected": "Canyon View\nYou are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the west and south can be seen an immense forest, stretching for miles around. A path leads northwest. It is possible to climb down into the canyon from here.",
+		"actual": "**Canyon View**\nYou are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the west and south can be seen an immense forest, stretching for miles around. A path leads northwest. It is possible to climb down into the canyon from here.",
+		"current_room": "canyon_view",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 53,
+		"cmd": "go down",
+		"expected": "Rocky Ledge\nYou are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible for you to enter. Below you is the canyon bottom. Above you is more cliff, which appears climbable.",
+		"actual": "**Rocky Ledge**\nYou are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible for you to enter. Below you is the canyon bottom. Above you is more cliff, which appears climbable.",
+		"current_room": "rocky_ledge",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 54,
+		"cmd": "go down",
+		"expected": "Canyon Bottom\nYou are beneath the walls of the river canyon which may be climbable here. The lesser part of the runoff of Aragain Falls flows by below. To the north is a narrow path.",
+		"actual": "**Canyon Bottom**\nYou are beneath the walls of the river canyon which may be climbable here. The lesser part of the runoff of Aragain Falls flows by below. To the north is a narrow path.",
+		"current_room": "canyon_bottom",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 55,
+		"cmd": "go north",
+		"expected": "End of Rainbow\nYou are on a small, rocky beach on the continuation of the Frigid River past the Falls. The beach is narrow due to the presence of the White Cliffs. The river canyon opens here and sunlight shines in from above. A rainbow crosses over the falls to the east and a narrow path continues to the southwest.",
+		"actual": "**End of Rainbow**\nYou are on a small, rocky beach on the continuation of the Frigid River past the Falls. The beach is narrow due to the presence of the White Cliffs. The river canyon opens here and sunlight shines in from above. A rainbow crosses over the falls to the east and a narrow path continues to the southwest.\nAt the end of the rainbow is a pot of gold coins!\nA magnificent rainbow arches across the misty canyon.",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern", "gold_coffin"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 56,
+		"cmd": "drop coffin",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 1881
+	},
+	{
+		"turn": 57,
+		"cmd": "open coffin",
+		"expected": "The gold coffin opens.\nA sceptre, possibly that of ancient Egypt itself, is in the coffin. The sceptre is ornamented with colored enamel, and tapers to a sharp point.",
+		"actual": "Opening the gold coffin reveals:\n  sceptre",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern"],
+		"action_detected": "tick {}",
+		"durationMs": 1570
+	},
+	{
+		"turn": 58,
+		"cmd": "take sceptre",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1481
+	},
+	{
+		"turn": 59,
+		"cmd": "wave sceptre",
+		"expected": "Suddenly, the rainbow appears to become solid and, I venture, walkable (I think the giveaway was the stairs and bannister).\nA shimmering pot of gold appears at the end of the rainbow.",
+		"actual": "Suddenly, the rainbow seems to become solid and, I venture, walkable! A pot of gold appears at the end of the rainbow.",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1856
+	},
+	{
+		"turn": 60,
+		"cmd": "take gold",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 3870
+	},
+	{
+		"turn": 61,
+		"cmd": "take coffin",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "end_of_rainbow",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1786
+	},
+	{
+		"turn": 62,
+		"cmd": "go southwest",
+		"expected": "Canyon Bottom",
+		"actual": "**Canyon Bottom**\nYou are beneath the walls of the river canyon which may be climbable here. The lesser part of the runoff of Aragain Falls flows by below. To the north is a narrow path.",
+		"current_room": "canyon_bottom",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 63,
+		"cmd": "go up",
+		"expected": "Rocky Ledge",
+		"actual": "**Rocky Ledge**\nYou are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible for you to enter. Below you is the canyon bottom. Above you is more cliff, which appears climbable.",
+		"current_room": "rocky_ledge",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 64,
+		"cmd": "go up",
+		"expected": "Canyon View",
+		"actual": "**Canyon View**\nYou are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the west and south can be seen an immense forest, stretching for miles around. A path leads northwest. It is possible to climb down into the canyon from here.",
+		"current_room": "canyon_view",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 65,
+		"cmd": "go northwest",
+		"expected": "Clearing",
+		"actual": "**Clearing**\nYou are in a small clearing in a well marked forest path that extends to the east and west.",
+		"current_room": "clearing",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 66,
+		"cmd": "go west",
+		"expected": "Behind House",
+		"actual": "**Behind House**\nYou are behind the white house. A path leads into the forest to the east.\nIn one corner of the house there is a small window which is open.",
+		"current_room": "behind_house",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 67,
+		"cmd": "enter house",
+		"expected": "Kitchen\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 68,
+		"cmd": "open bag",
+		"expected": "Opening the brown sack reveals a lunch, and a clove of garlic.",
+		"actual": "Opening the elongated brown sack reveals:\n  garlic\n  lunch",
+		"current_room": "kitchen",
+		"inventory": ["brass_lantern", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 2125
+	},
+	{
+		"turn": 69,
+		"cmd": "take garlic",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "kitchen",
+		"inventory": ["brass_lantern", "garlic", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1380
+	},
+	{
+		"turn": 70,
+		"cmd": "go west",
+		"expected": "Living Room\nThere is a nasty knife here.\nYour collection of treasures consists of:\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nOn a table is a nasty-looking knife.\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  painting",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic", "gold_coffin", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 71,
+		"cmd": "put coffin in case",
+		"expected": "Done.",
+		"actual": "You put the gold coffin into the trophy case.\nDone.\nPoints: 89",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic", "pot_of_gold", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1652
+	},
+	{
+		"turn": 72,
+		"cmd": "put gold in case",
+		"expected": "Done.",
+		"actual": "You put the pot of gold into the trophy case.\nDone.\nPoints: 99",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic", "sceptre"],
+		"action_detected": "tick {}",
+		"durationMs": 1656
+	},
+	{
+		"turn": 73,
+		"cmd": "put sceptre in case",
+		"expected": "Done.",
+		"actual": "You put the sceptre into the trophy case.\nDone.\nPoints: 105",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 2952
+	},
+	{
+		"turn": 74,
+		"cmd": "open trap door",
+		"expected": "The door reluctantly opens to reveal a rickety staircase descending into darkness.",
+		"actual": "The trap door is already open.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "",
+		"durationMs": 1360
+	},
+	{
+		"turn": 75,
+		"cmd": "turn on lamp",
+		"expected": "The brass lantern is now on.",
+		"actual": "The brass lantern is now on.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 1320
+	},
+	{
+		"turn": 76,
+		"cmd": "go down",
+		"expected": "Cellar",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"current_room": "cellar",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 77,
+		"cmd": "go north",
+		"expected": "The Troll Room\nThere is a sword here.\nThere is a bloody axe here.",
+		"actual": "**The Troll Room**\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nThere is a bloody axe here.\nAbove the trophy case hangs an elvish sword of great antiquity.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 6
+	},
+	{
+		"turn": 78,
+		"cmd": "go east",
+		"expected": "East-West Passage",
+		"actual": "**East-West Passage**\nThis is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+		"current_room": "east_west_passage",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 79,
+		"cmd": "go north",
+		"expected": "Chasm\nA chasm runs southwest to northeast and the path follows it. You are on the south side of the chasm, where a crack opens into a passage.",
+		"actual": "**Chasm**\nA chasm runs southwest to northeast and the path follows it. You are on the south side of the chasm, where a crack opens into a passage.",
+		"current_room": "chasm",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 80,
+		"cmd": "go northeast",
+		"expected": "Reservoir South\nYou are in a long room on the south shore of a large lake, far too deep and wide for crossing.\nThere is a path along the stream to the east or west, a steep pathway climbing southwest along the edge of a chasm, and a path leading into a canyon to the southeast.",
+		"actual": "**Reservoir South**\nYou are in a long room, to the north of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through the center of the room.",
+		"current_room": "reservoir_south",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 81,
+		"cmd": "go east",
+		"expected": "Dam\nYou are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\nThe sluice gates on the dam are closed. Behind the dam, there can be seen a wide reservoir. Water is pouring over the top of the now abandoned dam.\nThere is a control panel here, on which a large metal bolt is mounted. Directly above the bolt is a small green plastic bubble.",
+		"actual": "**Dam**\nYou are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\nA large metal bolt controls the sluice gate mechanism.\nThe sluice gates are currently closed, holding back the reservoir water.",
+		"current_room": "dam",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 82,
+		"cmd": "go north",
+		"expected": "Dam Lobby\nThis room appears to have been the waiting room for groups touring the dam. There are open doorways here to the north and east marked \"Private\", and there is a path leading south over the top of the dam.\nSome guidebooks entitled \"Flood Control Dam #3\" are on the reception desk.\nThere is a matchbook whose cover says \"Visit Beautiful FCD#3\" here.",
+		"actual": "**Dam Lobby**\nThis room appears to have been the waiting room for groups touring the dam. There are open doorways here to the north and east marked \"Private\", and there is a path leading south over the top of the dam.\nA tour guide book describes the construction of FCD#3.\nA matchbook with 'DAM LOBBY' printed on the cover is here.",
+		"current_room": "dam_lobby",
+		"inventory": ["brass_lantern", "garlic"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 83,
+		"cmd": "take matches",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "dam_lobby",
+		"inventory": ["brass_lantern", "garlic", "matchbook"],
+		"action_detected": "tick {}",
+		"durationMs": 1285
+	},
+	{
+		"turn": 84,
+		"cmd": "go north",
+		"expected": "Maintenance Room\nThis is what appears to have been the maintenance room for Flood Control Dam #3. Apparently, this room has been ransacked recently, for most of the valuable equipment is gone. On the wall in front of you is a group of buttons colored blue, yellow, brown, and red. There are doorways to the west and south.\nThere is a group of tool chests here.\nThere is a wrench here.\nThere is an object which looks like a tube of toothpaste here.\nThere is a screwdriver here.",
+		"actual": "**Maintenance Room**\nThis is what appears to have been the maintenance room for Flood Control Dam #3. Apparently, this room has been ransacked recently, for most of the valuable equipment is gone. On the wall in front of you is a group of buttons colored blue, yellow, brown, and red. There are doorways to the west and south.\nA blue button is on the control panel.\nA brown button is on the control panel.\nA red button is on the control panel.\nThere is a screwdriver here.\nThere is a tube of viscous gunk here.\nThere is a wrench here.\nA yellow button is on the control panel.",
+		"current_room": "maintenance_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 85,
+		"cmd": "take wrench",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "maintenance_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "wrench"],
+		"action_detected": "tick {}",
+		"durationMs": 1739
+	},
+	{
+		"turn": 86,
+		"cmd": "take screwdriver",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "maintenance_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver", "wrench"],
+		"action_detected": "tick {}",
+		"durationMs": 1728
+	},
+	{
+		"turn": 87,
+		"cmd": "push yellow button",
+		"expected": "Click.",
+		"actual": "Click.",
+		"current_room": "maintenance_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver", "wrench"],
+		"action_detected": "use {\"objects\":[\"yellow_button\"]}",
+		"durationMs": 1
+	},
+	{
+		"turn": 88,
+		"cmd": "go south",
+		"expected": "Dam Lobby\nSome guidebooks entitled \"Flood Control Dam #3\" are on the reception desk.",
+		"actual": "**Dam Lobby**\nThis room appears to have been the waiting room for groups touring the dam. There are open doorways here to the north and east marked \"Private\", and there is a path leading south over the top of the dam.\nA tour guide book describes the construction of FCD#3.",
+		"current_room": "dam_lobby",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver", "wrench"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 89,
+		"cmd": "go south",
+		"expected": "Dam\nYou are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\nThe sluice gates on the dam are closed. Behind the dam, there can be seen a wide reservoir. Water is pouring over the top of the now abandoned dam.\nThere is a control panel here, on which a large metal bolt is mounted. Directly above the bolt is a small green plastic bubble which is glowing serenely.",
+		"actual": "**Dam**\nYou are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\nA large metal bolt controls the sluice gate mechanism.\nThe sluice gates are currently closed, holding back the reservoir water.",
+		"current_room": "dam",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver", "wrench"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 90,
+		"cmd": "turn bolt with wrench",
+		"expected": "The sluice gates open and water pours through the dam.",
+		"actual": "The bolt turns with a screech of rusty metal. The sluice gates groan open! Water roars out of the reservoir in a tremendous torrent. The reservoir is quickly drained!",
+		"current_room": "dam",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver", "wrench"],
+		"action_detected": "use {\"objects\":[\"wrench\",\"large_bolt\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 91,
+		"cmd": "drop wrench",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "dam",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1187
+	},
+	{
+		"turn": 92,
+		"cmd": "go south",
+		"expected": "Deep Canyon\nYou are on the south edge of a deep canyon. Passages lead off to the east, northwest and southwest. A stairway leads down. You can hear a loud roaring sound, like that of rushing water, from below.",
+		"actual": "**Deep Canyon**\nYou are on the south edge of a deep canyon. Passages lead off to the east, northwest and southwest. A stairway leads down.",
+		"current_room": "deep_canyon",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 93,
+		"cmd": "go down",
+		"expected": "Loud Room\nThis is a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward. The room is deafeningly loud with an undetermined rushing sound. The sound seems to reverberate from all of the walls, making it difficult even to think.\nOn the ground is a large platinum bar.\nIt is unbearably loud here, with an ear-splitting roar seeming to come from all around you. There is a pounding in your head which won't stop. With a tremendous effort, you scramble out of the room.\nRound Room",
+		"actual": "**Loud Room**\nThis is a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward.\nThe acoustics of the room are deafeningly loud with an undetermined rushing sound.\nOn the ground is a large platinum bar.\nIt is unbearably loud here, with an ear-splitting roar seeming to come from all around you. There is a pounding in your head which won't stop. With a tremendous effort, you scramble out of the room.\nRound Room",
+		"current_room": "round_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 94,
+		"cmd": "go southeast",
+		"expected": "Engravings Cave\nThere are old engravings on the walls here.",
+		"actual": "**Engravings Cave**\nYou have entered a low cave with passages leading northwest and east.",
+		"current_room": "engravings_cave",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 95,
+		"cmd": "go east",
+		"expected": "Dome Room",
+		"actual": "**Dome Room**\nYou are at the periphery of a large dome, which forms the ceiling of another room below. Protecting you from a precipitous drop is a wooden railing which circles the dome.\nA large coil of rope is tied to the railing, hanging down into the darkness.",
+		"current_room": "dome_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 96,
+		"cmd": "go down",
+		"expected": "Torch Room\nSitting on the pedestal is a flaming torch, made of ivory.",
+		"actual": "**Torch Room**\nThis is a large room with a prominent doorway leading to a down staircase. Above you is a large dome. Up around the edge of the dome (20 feet up) is a wooden railing. In the center of the room sits a white marble pedestal.\nA large ivory torch is resting in a wall sconce. It burns with an eternal, cool flame.",
+		"current_room": "torch_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 97,
+		"cmd": "take torch",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "torch_room",
+		"inventory": ["brass_lantern", "garlic", "ivory_torch", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1704
+	},
+	{
+		"turn": 98,
+		"cmd": "turn off lamp",
+		"expected": "The brass lantern is now off.",
+		"actual": "The brass lantern is now off.",
+		"current_room": "torch_room",
+		"inventory": ["brass_lantern", "garlic", "ivory_torch", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1515
+	},
+	{
+		"turn": 99,
+		"cmd": "go south",
+		"expected": "Temple\nThere is a brass bell here.",
+		"actual": "**Temple**\nThis is the north end of a large temple. On the east wall is an ancient inscription, probably a prayer in a long-forgotten language. Below the prayer is a staircase leading down. The west wall is solid granite. The exit to the north end of the room is through huge marble pillars.\nOn the altar is a solid brass bell.",
+		"current_room": "temple",
+		"inventory": ["brass_lantern", "garlic", "ivory_torch", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 100,
+		"cmd": "take bell",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "temple",
+		"inventory": ["brass_bell", "brass_lantern", "garlic", "ivory_torch", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1371
+	},
+	{
+		"turn": 101,
+		"cmd": "go south",
+		"expected": "Altar\nOn the two ends of the altar are burning candles.\nOn the altar is a large black book, open to page 569.",
+		"actual": "**Altar**\nThis is the south end of a large temple. In front of you is what appears to be an altar. In one corner is a small hole in the floor which leads into darkness. You probably could not get back up it.\nOn the altar is a large, leather-bound black book entitled 'Ye Phantasms'.\nOn the altar is a pair of white candles.",
+		"current_room": "altar",
+		"inventory": ["brass_bell", "brass_lantern", "garlic", "ivory_torch", "matchbook", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 102,
+		"cmd": "take candles",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "altar",
+		"inventory": [
+			"brass_bell",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2012
+	},
+	{
+		"turn": 103,
+		"cmd": "take book",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "altar",
+		"inventory": [
+			"black_book",
+			"brass_bell",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1744
+	},
+	{
+		"turn": 104,
+		"cmd": "go down",
+		"expected": "Cave\nThis is a tiny cave with entrances west and north, and a dark, forbidding staircase leading down.",
+		"actual": "**Cave**\nThis is a tiny cave with entrances west and north, and a dark, forbidding staircase leading down.",
+		"current_room": "tiny_cave",
+		"inventory": [
+			"black_book",
+			"brass_bell",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 105,
+		"cmd": "go down",
+		"expected": "Entrance to Hades\nYou are outside a large gateway, on which is inscribed\nAbandon every hope all ye who enter here!\nThe gate is open; through it you can see a desolation, with a pile of mangled bodies in one corner. Thousands of voices, lamenting some hideous fate, can be heard.\nThe way through the gate is barred by evil spirits, who jeer at your attempts to pass.",
+		"actual": "**Entrance to Hades**\nYou are outside a large gateway, on which is inscribed|| Abandon every hope all ye who enter here!|| The gate is open; through it you can see a desolation, with a pile of mangled bodies in one corner. Thousands of voices, lamenting some hideous fate, can be heard.\nA number of evil spirits forbid your passage south into Hades.",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"black_book",
+			"brass_bell",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 106,
+		"cmd": "ring bell",
+		"expected": "The bell suddenly becomes red hot and falls to the ground. The wraiths, as if paralyzed, stop their jeering and slowly turn to face you. On their ashen faces, the expression of a long-forgotten terror takes shape.\nIn your confusion, the candles drop to the ground (and they are out).",
+		"actual": "The bell rings with a piercing, unnatural chime. The spirits cover their ears, wailing in agony! The bell grows searingly hot, and you drop it to the floor.",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"black_book",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2112
+	},
+	{
+		"turn": 107,
+		"cmd": "take candles",
+		"expected": "Taken.",
+		"actual": "You are already carrying the candles.",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"black_book",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "",
+		"durationMs": 1855
+	},
+	{
+		"turn": 108,
+		"cmd": "light match",
+		"expected": "One of the matches starts to burn.",
+		"actual": "One of the matches flares to life and burns with a steady flame.",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"black_book",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1418
+	},
+	{
+		"turn": 109,
+		"cmd": "light candles with match",
+		"expected": "The candles are lit.\nThe flames flicker wildly and appear to dance. The earth beneath your feet trembles, and your legs nearly buckle beneath you. The spirits cower at your unearthly power.\nThe match has gone out.",
+		"actual": "The candles are now lit.",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"black_book",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1763
+	},
+	{
+		"turn": 110,
+		"cmd": "read book",
+		"expected": "Each word of the prayer reverberates through the hall in a deafening confusion. As the last word fades, a voice, loud and commanding, speaks: \"Begone, fiends!\" A heart-stopping scream fills the cavern, and the spirits, sensing a greater power, flee through the walls.",
+		"actual": "As you read the holy rites from the black book, the cavern shakes! The spirits shriek in terror and scatter into the shadows. The gates of Hades swing slowly open!",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"black_book",
+			"brass_lantern",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2065
+	},
+	{
+		"turn": 111,
+		"cmd": "drop book",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "entrance_to_hades",
+		"inventory": ["brass_lantern", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1453
+	},
+	{
+		"turn": 112,
+		"cmd": "go south",
+		"expected": "Land of the Dead\nYou have entered the Land of the Living Dead. Thousands of lost souls can be heard weeping and moaning. In the corner are stacked the remains of dozens of previous adventurers less fortunate than yourself. A passage exits to the north.\nLying in one corner of the room is a beautifully carved crystal skull. It appears to be grinning at you rather nastily.",
+		"actual": "**Land of the Dead**\nYou have entered the Land of the Living Dead. Thousands of lost souls can be heard weeping and moaning. In the corner are stacked the remains of dozens of previous adventurers less fortunate than yourself. A passage exits to the north.\nLying on the ground is a crystal skull of incredible craftsmanship.",
+		"current_room": "land_of_the_dead",
+		"inventory": ["brass_lantern", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 113,
+		"cmd": "take skull",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "land_of_the_dead",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1298
+	},
+	{
+		"turn": 114,
+		"cmd": "go north",
+		"expected": "Entrance to Hades\nThere is a black book here.\nOn the ground is a red hot bell.",
+		"actual": "**Entrance to Hades**\nYou are outside a large gateway, on which is inscribed|| Abandon every hope all ye who enter here!|| The gate is open; through it you can see a desolation, with a pile of mangled bodies in one corner. Thousands of voices, lamenting some hideous fate, can be heard.\nOn the altar is a large, leather-bound black book entitled 'Ye Phantasms'.\nA brass bell is here, glowing with red heat.\nThe spirits have been banished.",
+		"current_room": "entrance_to_hades",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 115,
+		"cmd": "go up",
+		"expected": "Cave\nA gust of wind blows out your candles!",
+		"actual": "**Cave**\nThis is a tiny cave with entrances west and north, and a dark, forbidding staircase leading down.",
+		"current_room": "tiny_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 116,
+		"cmd": "go north",
+		"expected": "Mirror Room\nYou are in a large square room with tall ceilings. On the south wall is an enormous mirror which fills the entire wall. There are exits on the other three sides of the room.",
+		"actual": "**Mirror Room**\nYou are in a large square room with tall ceilings. On the south wall is an enormous mirror which fills the entire wall. There are exits on the other three sides of the room.\nA huge mirror spans the entire wall.",
+		"current_room": "mirror_room_north",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 117,
+		"cmd": "rub mirror",
+		"expected": "There is a rumble from deep within the earth and the room shakes.",
+		"actual": "The mirror wavers like liquid glass, and you feel yourself pulled through space!",
+		"current_room": "mirror_room_south",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1695
+	},
+	{
+		"turn": 118,
+		"cmd": "go north",
+		"expected": "Cold Passage\nThis is a cold and damp corridor where a long east-west passageway turns into a southward path.",
+		"actual": "**Cold Passage**\nThis is a cold and damp corridor where a long east-west passageway turns into a southward path.",
+		"current_room": "cold_passage",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 119,
+		"cmd": "go west",
+		"expected": "Slide Room\nThis is a small chamber, which appears to have been part of a coal mine. On the south wall of the chamber the letters \"Granite Wall\" are etched in the rock. To the east is a long passage, and there is a steep metal slide twisting downward. To the north is a small opening.",
+		"actual": "**Slide Room**\nThis is a small chamber, which appears to have been part of a coal mine. On the south wall of the chamber the letters \"Granite Wall\" are etched in the rock. To the east is a long passage, and there is a steep metal slide twisting downward. To the north is a small opening.",
+		"current_room": "slide_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 120,
+		"cmd": "go north",
+		"expected": "Mine Entrance\nYou are standing at the entrance of what might have been a coal mine. The shaft enters the west wall, and there is another exit on the south end of the room.",
+		"actual": "**Mine Entrance**\nYou are standing at the entrance of what might have been a coal mine. The shaft enters the west wall, and there is another exit on the south end of the room.",
+		"current_room": "mine_entrance",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 121,
+		"cmd": "go west",
+		"expected": "Squeaky Room\nYou are in a small room. Strange squeaky sounds may be heard coming from the passage at the north end. You may also escape to the east.",
+		"actual": "**Squeaky Room**\nYou are in a small room. Strange squeaky sounds may be heard coming from the passage at the north end. You may also escape to the east.",
+		"current_room": "squeaky_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 122,
+		"cmd": "inventory",
+		"expected": "You are carrying:\nA crystal skull\nA pair of candles\nA torch (providing light)\nA screwdriver\nA matchbook\nA clove of garlic\nA brass lantern",
+		"actual": "You are carrying: brass lantern, crystal skull, garlic, ivory torch, matchbook, pair of candles, screwdriver.",
+		"current_room": "squeaky_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 123,
+		"cmd": "go north",
+		"expected": "Bat Room\nYou are in a small room which has doors only to the east and south.\nIn the corner of the room on the ceiling is a large vampire bat who is obviously deranged and holding his nose.\nThere is an exquisite jade figurine here.",
+		"actual": "**Bat Room**\nYou are in a small room which has doors only to the east and south.\nAn exquisitely carved jade figurine is lying on the rock floor.\nA flock of vicious vampire bats hangs from the ceiling, their red eyes glaring hungrily.",
+		"current_room": "bat_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 124,
+		"cmd": "go east",
+		"expected": "Shaft Room\nThis is a large room, in the middle of which is a small shaft descending through the floor into darkness below. To the west and the north are exits from this room. Constructed over the top of the shaft is a metal framework to which a heavy iron chain is attached.\nAt the end of the chain is a basket.",
+		"actual": "**Shaft Room**\nThis is a large room, in the middle of which is a small shaft descending through the floor into darkness below. To the west and the north are exits from this room. Constructed over the top of the shaft is a metal framework to which a heavy iron chain is attached.\nSuspended from the chain is a heavy iron basket.\nA sturdy chain hangs from a winch over the vertical shaft.",
+		"current_room": "shaft_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"ivory_torch",
+			"matchbook",
+			"pair_of_candles",
+			"screwdriver"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 125,
+		"cmd": "put torch in basket",
+		"expected": "Done.",
+		"actual": "You put the ivory torch into the basket.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1784
+	},
+	{
+		"turn": 126,
+		"cmd": "put screwdriver in basket",
+		"expected": "Done.",
+		"actual": "You put the screwdriver into the basket.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 3235
+	},
+	{
+		"turn": 127,
+		"cmd": "turn on lamp",
+		"expected": "The brass lantern is now on.",
+		"actual": "The brass lantern is now on.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1909
+	},
+	{
+		"turn": 128,
+		"cmd": "go north",
+		"expected": "Smelly Room\nThis is a small non-descript room. However, from the direction of a small descending staircase a foul odor can be detected. To the south is a narrow tunnel.",
+		"actual": "**Smelly Room**\nThis is a small nondescript room. However, from the direction of a small descending staircase a foul odor can be detected. To the south is a narrow tunnel.",
+		"current_room": "smelly_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 129,
+		"cmd": "go down",
+		"expected": "Gas Room\nThis is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.\nThere is a sapphire-encrusted bracelet here.",
+		"actual": "**Gas Room**\nThis is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.\nThere is a sapphire-encrusted bracelet here.",
+		"current_room": "gas_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 130,
+		"cmd": "go east",
+		"expected": "Coal Mine\nThis is a non-descript part of a coal mine.",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_1",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 131,
+		"cmd": "go northeast",
+		"expected": "Coal Mine\nThis is a non-descript part of a coal mine.",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_2",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 132,
+		"cmd": "go southeast",
+		"expected": "Coal Mine\nThis is a non-descript part of a coal mine.",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_3",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 133,
+		"cmd": "go southwest",
+		"expected": "Coal Mine\nThis is a non-descript part of a coal mine.",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_4",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 134,
+		"cmd": "go down",
+		"expected": "Ladder Top\nThis is a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.",
+		"actual": "**Ladder Top**\nThis is a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.\nA rickety wooden ladder leads down into the deeper coal mine.",
+		"current_room": "ladder_top",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 135,
+		"cmd": "go down",
+		"expected": "Ladder Bottom\nThis is a rather wide room. On one side is the bottom of a narrow wooden ladder. To the west and the south are passages leaving the room.",
+		"actual": "**Ladder Bottom**\nThis is a rather wide room. On one side is the bottom of a narrow wooden ladder. To the west and the south are passages leaving the room.",
+		"current_room": "ladder_bottom",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 136,
+		"cmd": "go south",
+		"expected": "Dead End\nYou have come to a dead end in the mine.\nThere is a small pile of coal here.",
+		"actual": "**Dead End**\nYou have come to a dead end in the mine.\nThere is a small pile of coal here.",
+		"current_room": "dead_end_5",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 137,
+		"cmd": "take coal",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "dead_end_5",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1295
+	},
+	{
+		"turn": 138,
+		"cmd": "go north",
+		"expected": "Ladder Bottom",
+		"actual": "**Ladder Bottom**\nThis is a rather wide room. On one side is the bottom of a narrow wooden ladder. To the west and the south are passages leaving the room.",
+		"current_room": "ladder_bottom",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 139,
+		"cmd": "go up",
+		"expected": "Ladder Top",
+		"actual": "**Ladder Top**\nThis is a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.\nA rickety wooden ladder leads down into the deeper coal mine.",
+		"current_room": "ladder_top",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 140,
+		"cmd": "go up",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_4",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 141,
+		"cmd": "go north",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_3",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 142,
+		"cmd": "go east",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_2",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 143,
+		"cmd": "go south",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_1",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 144,
+		"cmd": "go north",
+		"expected": "Gas Room\nThere is a sapphire-encrusted bracelet here.",
+		"actual": "**Gas Room**\nThis is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.\nThere is a sapphire-encrusted bracelet here.",
+		"current_room": "gas_room",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 145,
+		"cmd": "go up",
+		"expected": "Smelly Room",
+		"actual": "**Smelly Room**\nThis is a small nondescript room. However, from the direction of a small descending staircase a foul odor can be detected. To the south is a narrow tunnel.",
+		"current_room": "smelly_room",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 146,
+		"cmd": "go south",
+		"expected": "Shaft Room\nAt the end of the chain is a basket.\nThe basket contains:\nA screwdriver\nA torch (providing light)",
+		"actual": "**Shaft Room**\nThis is a large room, in the middle of which is a small shaft descending through the floor into darkness below. To the west and the north are exits from this room. Constructed over the top of the shaft is a metal framework to which a heavy iron chain is attached.\nSuspended from the chain is a heavy iron basket.\nThe basket contains:\n  ivory torch\n  screwdriver\nA sturdy chain hangs from a winch over the vertical shaft.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 147,
+		"cmd": "put coal in basket",
+		"expected": "Done.",
+		"actual": "You put the pile of coal into the basket.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1770
+	},
+	{
+		"turn": 148,
+		"cmd": "lower basket",
+		"expected": "The basket is lowered to the bottom of the shaft.",
+		"actual": "The basket is lowered into the shaft, disappearing into the depths below.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1567
+	},
+	{
+		"turn": 149,
+		"cmd": "go north",
+		"expected": "Smelly Room",
+		"actual": "**Smelly Room**\nThis is a small nondescript room. However, from the direction of a small descending staircase a foul odor can be detected. To the south is a narrow tunnel.",
+		"current_room": "smelly_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 150,
+		"cmd": "go down",
+		"expected": "Gas Room\nThere is a sapphire-encrusted bracelet here.",
+		"actual": "**Gas Room**\nThis is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.\nThere is a sapphire-encrusted bracelet here.",
+		"current_room": "gas_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 151,
+		"cmd": "go east",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_1",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 152,
+		"cmd": "go northeast",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_2",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 153,
+		"cmd": "go southeast",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_3",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 154,
+		"cmd": "go southwest",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_4",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 155,
+		"cmd": "go down",
+		"expected": "Ladder Top",
+		"actual": "**Ladder Top**\nThis is a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.\nA rickety wooden ladder leads down into the deeper coal mine.",
+		"current_room": "ladder_top",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 156,
+		"cmd": "go down",
+		"expected": "Ladder Bottom",
+		"actual": "**Ladder Bottom**\nThis is a rather wide room. On one side is the bottom of a narrow wooden ladder. To the west and the south are passages leaving the room.",
+		"current_room": "ladder_bottom",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 157,
+		"cmd": "go west",
+		"expected": "Timber Room\nThis is a long and narrow passage, which is cluttered with broken timbers. A wide passage comes from the east and turns at the west end of the room into a very narrow passageway. From the west comes a strong draft.\nThere is a broken timber here.",
+		"actual": "**Timber Room**\nThis is a long and narrow passage, which is cluttered with broken timbers. A wide passage comes from the east and turns at the west end of the room into a very narrow passageway. From the west comes a strong draft.\nA pile of heavy wooden timbers is stacked here.",
+		"current_room": "timber_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 158,
+		"cmd": "drop all",
+		"expected": "crystal skull: Dropped.\npair of candles: Dropped.\nmatchbook: Dropped.\nclove of garlic: Dropped.\nbrass lantern: Dropped.",
+		"actual": "Dropped.",
+		"current_room": "timber_room",
+		"inventory": ["crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 3488
+	},
+	{
+		"turn": 159,
+		"cmd": "go west",
+		"expected": "Drafty Room\nThis is a small drafty room in which is the bottom of a long shaft. To the south is a passageway and to the east a very narrow passage. In the shaft can be seen a heavy iron chain.\nAt the end of the chain is a basket.\nThe basket contains:\nA small pile of coal\nA screwdriver\nA torch (providing light)",
+		"actual": "**Drafty Room**\nThis is a small drafty room in which is the bottom of a long shaft. To the south is a passageway and to the east a very narrow passage. In the shaft can be seen a heavy iron chain.\nSuspended from the chain is a heavy iron basket.\nThe basket contains:\n  pile of coal\n  ivory torch\n  screwdriver",
+		"current_room": "drafty_room",
+		"inventory": ["crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 160,
+		"cmd": "take coal",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "drafty_room",
+		"inventory": ["coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1635
+	},
+	{
+		"turn": 161,
+		"cmd": "take screwdriver",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "drafty_room",
+		"inventory": ["coal", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1546
+	},
+	{
+		"turn": 162,
+		"cmd": "take torch",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "drafty_room",
+		"inventory": ["coal", "crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 1578
+	},
+	{
+		"turn": 163,
+		"cmd": "go south",
+		"expected": "Machine Room\nThis is a large, cold room whose sole exit is to the north. In one corner there is a machine which is reminiscent of a clothes dryer. On its face is a switch which is labelled \"START\". The switch does not appear to be manipulable by any human hand (unless the fingers are about 1/16 by 1/4 inch). On the front of the machine is a large lid, which is closed.",
+		"actual": "**Machine Room**\nThis is a large, cold room whose sole exit is to the north. In one corner there is a machine which is reminiscent of a clothes dryer. On its face is a switch which is labelled \"START\". The switch does not appear to be manipulable by any human hand (unless the fingers are about 1/16 by 1/4 inch). On the front of the machine is a large lid, which is\nThe heavy lid of the machine is currently closed.\nA screw-shaped switch is set into the side of the machine.\nA huge, smelly machine with a heavy lid and a slot for a screwdriver dominates the room.",
+		"current_room": "machine_room",
+		"inventory": ["coal", "crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 164,
+		"cmd": "open lid",
+		"expected": "The lid opens.",
+		"actual": "The lid of the machine opens.",
+		"current_room": "machine_room",
+		"inventory": ["coal", "crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "open {\"objects\":[\"machine_lid\"]}",
+		"durationMs": 2125
+	},
+	{
+		"turn": 165,
+		"cmd": "put coal in machine",
+		"expected": "Done.",
+		"actual": "You put the pile of coal into the machine.",
+		"current_room": "machine_room",
+		"inventory": ["crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "tick {}",
+		"durationMs": 2614
+	},
+	{
+		"turn": 166,
+		"cmd": "close lid",
+		"expected": "The lid closes.",
+		"actual": "The lid of the machine closes.",
+		"current_room": "machine_room",
+		"inventory": ["crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "close {\"objects\":[\"machine_lid\"]}",
+		"durationMs": 1659
+	},
+	{
+		"turn": 167,
+		"cmd": "turn switch with screwdriver",
+		"expected": "The machine comes to life (figuratively) with a dazzling display of colored lights and bizarre noises. After a few moments, the excitement abates.",
+		"actual": "The machine trembles violently, grinding and shrieking! Smoke billows from the exhaust vents. With a loud CLANK, the machine falls silent.",
+		"current_room": "machine_room",
+		"inventory": ["crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles", "screwdriver"],
+		"action_detected": "use {\"objects\":[\"screwdriver\",\"machine_switch\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 168,
+		"cmd": "drop screwdriver",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "machine_room",
+		"inventory": ["crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1625
+	},
+	{
+		"turn": 169,
+		"cmd": "open lid",
+		"expected": "The lid opens, revealing a huge diamond.",
+		"actual": "The lid of the machine opens.",
+		"current_room": "machine_room",
+		"inventory": ["crystal_skull", "garlic", "ivory_torch", "matchbook", "pair_of_candles"],
+		"action_detected": "open {\"objects\":[\"machine_lid\"]}",
+		"durationMs": 1330
+	},
+	{
+		"turn": 170,
+		"cmd": "take diamond",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "machine_room",
+		"inventory": ["crystal_skull", "garlic", "huge_diamond", "ivory_torch", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1753
+	},
+	{
+		"turn": 171,
+		"cmd": "go north",
+		"expected": "Drafty Room\nAt the end of the chain is a basket.",
+		"actual": "**Drafty Room**\nThis is a small drafty room in which is the bottom of a long shaft. To the south is a passageway and to the east a very narrow passage. In the shaft can be seen a heavy iron chain.\nSuspended from the chain is a heavy iron basket.",
+		"current_room": "drafty_room",
+		"inventory": ["crystal_skull", "garlic", "huge_diamond", "ivory_torch", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 172,
+		"cmd": "put torch in basket",
+		"expected": "Done.",
+		"actual": "You put the ivory torch into the basket.",
+		"current_room": "drafty_room",
+		"inventory": ["crystal_skull", "garlic", "huge_diamond", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1962
+	},
+	{
+		"turn": 173,
+		"cmd": "put diamond in basket",
+		"expected": "Done.",
+		"actual": "You put the huge diamond into the basket.",
+		"current_room": "drafty_room",
+		"inventory": ["crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2067
+	},
+	{
+		"turn": 174,
+		"cmd": "go east",
+		"expected": "Timber Room\nThere is a brass lantern (battery-powered) here.\nThere is a clove of garlic here.\nThere is a matchbook whose cover says \"Visit Beautiful FCD#3\" here.\nThere is a pair of candles here.\nThere is a crystal skull here.\nThere is a broken timber here.",
+		"actual": "**Timber Room**\nThis is a long and narrow passage, which is cluttered with broken timbers. A wide passage comes from the east and turns at the west end of the room into a very narrow passageway. From the west comes a strong draft.\nA battery-powered brass lantern is here, glowing brightly.\nA pile of heavy wooden timbers is stacked here.",
+		"current_room": "timber_room",
+		"inventory": ["crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 175,
+		"cmd": "take skull",
+		"expected": "Taken.",
+		"actual": "You're already carrying that.",
+		"current_room": "timber_room",
+		"inventory": ["crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "take {\"objects\":[\"crystal_skull\"]}",
+		"durationMs": 1604
+	},
+	{
+		"turn": 176,
+		"cmd": "take lamp",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "timber_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1517
+	},
+	{
+		"turn": 177,
+		"cmd": "take garlic",
+		"expected": "Taken.",
+		"actual": "You're already carrying that.",
+		"current_room": "timber_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "take {\"objects\":[\"garlic\"]}",
+		"durationMs": 1384
+	},
+	{
+		"turn": 178,
+		"cmd": "go east",
+		"expected": "Ladder Bottom",
+		"actual": "**Ladder Bottom**\nThis is a rather wide room. On one side is the bottom of a narrow wooden ladder. To the west and the south are passages leaving the room.",
+		"current_room": "ladder_bottom",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 179,
+		"cmd": "go up",
+		"expected": "Ladder Top",
+		"actual": "**Ladder Top**\nThis is a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.\nA rickety wooden ladder leads down into the deeper coal mine.",
+		"current_room": "ladder_top",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 180,
+		"cmd": "go up",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_4",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 181,
+		"cmd": "go north",
+		"expected": "Coal Mine\nA seedy-looking individual with a large bag just wandered through the room. On the way through, he quietly abstracted some valuables from the room and from your possession, mumbling something about \"Doing unto others before...\"",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_3",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 182,
+		"cmd": "go east",
+		"expected": "Coal Mine",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_2",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 183,
+		"cmd": "go south",
+		"expected": "Coal Mine\nA \"lean and hungry\" gentleman just wandered through, carrying a large bag. Finding nothing of value, he left disgruntled.",
+		"actual": "**Coal Mine**\nThis is a nondescript part of a coal mine.",
+		"current_room": "coal_mine_1",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 184,
+		"cmd": "go north",
+		"expected": "Gas Room\nThere is a sapphire-encrusted bracelet here.",
+		"actual": "**Gas Room**\nThis is a small room which smells strongly of coal gas. There is a short climb up some stairs and a narrow tunnel leading east.\nThere is a sapphire-encrusted bracelet here.",
+		"current_room": "gas_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 185,
+		"cmd": "take bracelet",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "gas_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1650
+	},
+	{
+		"turn": 186,
+		"cmd": "go up",
+		"expected": "Smelly Room",
+		"actual": "**Smelly Room**\nThis is a small nondescript room. However, from the direction of a small descending staircase a foul odor can be detected. To the south is a narrow tunnel.",
+		"current_room": "smelly_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 187,
+		"cmd": "go south",
+		"expected": "Shaft Room\nFrom the chain is suspended a basket.",
+		"actual": "**Shaft Room**\nThis is a large room, in the middle of which is a small shaft descending through the floor into darkness below. To the west and the north are exits from this room. Constructed over the top of the shaft is a metal framework to which a heavy iron chain is attached.\nA sturdy chain hangs from a winch over the vertical shaft.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 188,
+		"cmd": "raise basket",
+		"expected": "The basket is raised to the top of the shaft.",
+		"actual": "What basket do you want to raise?",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "",
+		"durationMs": 1709
+	},
+	{
+		"turn": 189,
+		"cmd": "look in basket",
+		"expected": "The basket contains:\nA huge diamond\nA torch (providing light)",
+		"actual": "There is no basket in the current room.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "",
+		"durationMs": 1462
+	},
+	{
+		"turn": 190,
+		"cmd": "take diamond",
+		"expected": "Taken.",
+		"actual": "There is no diamond in the current location.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "",
+		"durationMs": 2106
+	},
+	{
+		"turn": 191,
+		"cmd": "take torch",
+		"expected": "Taken.",
+		"actual": "There is no torch in the current location.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "",
+		"durationMs": 5255
+	},
+	{
+		"turn": 192,
+		"cmd": "turn off lamp",
+		"expected": "The brass lantern is now off.",
+		"actual": "The brass lantern is now off.",
+		"current_room": "shaft_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1574
+	},
+	{
+		"turn": 193,
+		"cmd": "go west",
+		"expected": "Bat Room\nIn the corner of the room on the ceiling is a large vampire bat who is obviously deranged and holding his nose.\nThere is an exquisite jade figurine here.",
+		"actual": "**Bat Room**\nYou are in a small room which has doors only to the east and south.\nAn exquisitely carved jade figurine is lying on the rock floor.\nA flock of vicious vampire bats hangs from the ceiling, their red eyes glaring hungrily.",
+		"current_room": "bat_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 194,
+		"cmd": "take jade",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "bat_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1555
+	},
+	{
+		"turn": 195,
+		"cmd": "go south",
+		"expected": "Squeaky Room",
+		"actual": "**Squeaky Room**\nYou are in a small room. Strange squeaky sounds may be heard coming from the passage at the north end. You may also escape to the east.",
+		"current_room": "squeaky_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 196,
+		"cmd": "go east",
+		"expected": "Mine Entrance",
+		"actual": "**Mine Entrance**\nYou are standing at the entrance of what might have been a coal mine. The shaft enters the west wall, and there is another exit on the south end of the room.",
+		"current_room": "mine_entrance",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 197,
+		"cmd": "go south",
+		"expected": "Slide Room",
+		"actual": "**Slide Room**\nThis is a small chamber, which appears to have been part of a coal mine. On the south wall of the chamber the letters \"Granite Wall\" are etched in the rock. To the east is a long passage, and there is a steep metal slide twisting downward. To the north is a small opening.",
+		"current_room": "slide_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 198,
+		"cmd": "go down",
+		"expected": "Cellar",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"current_room": "cellar",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 199,
+		"cmd": "go up",
+		"expected": "Living Room\nThere is a nasty knife here.\nYour collection of treasures consists of:\nA sceptre\nA pot of gold\nA gold coffin\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nOn a table is a nasty-looking knife.\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  gold coffin\n  painting\n  pot of gold\n  sceptre",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 200,
+		"cmd": "inventory",
+		"expected": "You are carrying:\nA jade figurine\nA torch (providing light)\nA huge diamond\nA clove of garlic\nA brass lantern",
+		"actual": "You are carrying: brass lantern, crystal skull, garlic, jade figurine, matchbook, pair of candles, sapphire-encrusted bracelet.",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jade_figurine",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 201,
+		"cmd": "put jade in case",
+		"expected": "Done.",
+		"actual": "You put the jade figurine into the trophy case.\nDone.\nPoints: 167",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1991
+	},
+	{
+		"turn": 202,
+		"cmd": "put diamond in case",
+		"expected": "Done.",
+		"actual": "There is no diamond in your inventory. Would you like to put something else in the trophy case?",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "",
+		"durationMs": 1465
+	},
+	{
+		"turn": 203,
+		"cmd": "turn on lamp",
+		"expected": "The brass lantern is now on.",
+		"actual": "The brass lantern is now on.",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1489
+	},
+	{
+		"turn": 204,
+		"cmd": "go down",
+		"expected": "Cellar",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"current_room": "cellar",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 205,
+		"cmd": "go north",
+		"expected": "The Troll Room\nThere is a sword here.\nThere is a bloody axe here.",
+		"actual": "**The Troll Room**\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nThere is a bloody axe here.\nAbove the trophy case hangs an elvish sword of great antiquity.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 206,
+		"cmd": "go east",
+		"expected": "East-West Passage",
+		"actual": "**East-West Passage**\nThis is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+		"current_room": "east_west_passage",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 207,
+		"cmd": "go north",
+		"expected": "Chasm",
+		"actual": "**Chasm**\nA chasm runs southwest to northeast and the path follows it. You are on the south side of the chasm, where a crack opens into a passage.",
+		"current_room": "chasm",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 208,
+		"cmd": "go northeast",
+		"expected": "Reservoir South\nYou are in a long room, to the north of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through the center of the room.\nThere is a path along the stream to the east or west, a steep pathway climbing southwest along the edge of a chasm, and a path leading into a canyon to the southeast.",
+		"actual": "**Reservoir South**\nYou are in a long room, to the north of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through the center of the room.",
+		"current_room": "reservoir_south",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 209,
+		"cmd": "go north",
+		"expected": "Reservoir\nYou are on what used to be a large lake, but which is now a large mud pile. There are \"shores\" to the north and south.\nLying half buried in the mud is an old trunk, bulging with jewels.",
+		"actual": "**Reservoir**\nYou notice that the water level here is rising rapidly. The currents are also becoming stronger. Staying here seems quite perilous!\nThe muddy bed of the drained reservoir.\nLying in the mud is an old trunk filled with jewels.",
+		"current_room": "reservoir",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 210,
+		"cmd": "take trunk",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "reservoir",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1403
+	},
+	{
+		"turn": 211,
+		"cmd": "go north",
+		"expected": "Reservoir North\nYou are in a large cavernous room, the south of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through there.\nThere is a slimy stairway leaving the room to the north.\nThere is a hand-held air pump here.",
+		"actual": "**Reservoir North**\nYou are in a large cavernous room, the south of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through there.\nThere is a manual air pump here.",
+		"current_room": "reservoir_north",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 212,
+		"cmd": "take pump",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "reservoir_north",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1663
+	},
+	{
+		"turn": 213,
+		"cmd": "take pump",
+		"expected": "Taken.",
+		"actual": "You are already carrying the air pump.",
+		"current_room": "reservoir_north",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "",
+		"durationMs": 1589
+	},
+	{
+		"turn": 214,
+		"cmd": "go north",
+		"expected": "Atlantis Room\nThis is an ancient room, long under water. There is an exit to the south and a staircase leading up.\nOn the shore lies Poseidon's own crystal trident.",
+		"actual": "**Atlantis Room**\nThis is an ancient room, long under water. There is an exit to the south and a staircase leading up.\nOn the shore is a crystal trident of exquisite workmanship.",
+		"current_room": "atlantis_room",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 215,
+		"cmd": "take trident",
+		"expected": "Your load is too heavy.",
+		"actual": "Taken.",
+		"current_room": "atlantis_room",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1491
+	},
+	{
+		"turn": 216,
+		"cmd": "inventory",
+		"expected": "You are carrying:\nA hand-held air pump\nA trunk of jewels\nA torch (providing light)\nA clove of garlic\nA brass lantern (providing light)",
+		"actual": "You are carrying: air pump, brass lantern, crystal skull, crystal trident, garlic, matchbook, pair of candles, sapphire-encrusted bracelet, trunk of jewels.",
+		"current_room": "atlantis_room",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 217,
+		"cmd": "drop torch",
+		"expected": "Dropped.",
+		"actual": "You don't have a torch. Would you like to drop something else?",
+		"current_room": "atlantis_room",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "",
+		"durationMs": 1510
+	},
+	{
+		"turn": 218,
+		"cmd": "take trident",
+		"expected": "Taken.",
+		"actual": "You are already carrying the crystal trident.",
+		"current_room": "atlantis_room",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "",
+		"durationMs": 1459
+	},
+	{
+		"turn": 219,
+		"cmd": "go south",
+		"expected": "Reservoir North",
+		"actual": "**Reservoir North**\nYou are in a large cavernous room, the south of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through there.",
+		"current_room": "reservoir_north",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 220,
+		"cmd": "go south",
+		"expected": "Reservoir",
+		"actual": "**Reservoir**\nYou notice that the water level here is rising rapidly. The currents are also becoming stronger. Staying here seems quite perilous!\nThe muddy bed of the drained reservoir.",
+		"current_room": "reservoir",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 221,
+		"cmd": "go south",
+		"expected": "Reservoir South",
+		"actual": "**Reservoir South**\nYou are in a long room, to the north of which was formerly a lake. However, with the water level lowered, there is merely a wide stream running through the center of the room.",
+		"current_room": "reservoir_south",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 222,
+		"cmd": "go east",
+		"expected": "Dam\nThere is a wrench here.",
+		"actual": "**Dam**\nYou are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, and west, and a scramble down.\nA large metal bolt controls the sluice gate mechanism.\nThe sluice gates are wide open, and the reservoir has drained.\nThere is a wrench here.",
+		"current_room": "dam",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 223,
+		"cmd": "go east",
+		"expected": "Dam Base\nYou are at the base of Flood Control Dam #3, which looms above you and to the north. The river Frigid is flowing by here. Along the river are the White Cliffs which seem to form giant walls stretching from north to south along the shores of the river as it winds its way downstream.\nThere is a folded pile of plastic here which has a small valve attached.",
+		"actual": "**Dam Base**\nYou are at the base of Flood Control Dam #3, which looms above you and to the north. The river Frigid is flowing by here. Along the river are the White Cliffs which seem to form giant walls stretching from north to south along the shores of the river as it winds its way downstream.\nA brightly colored inflatable boat is here.\nThere is a folded pile of plastic here with valve and instructions.",
+		"current_room": "dam_base",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 224,
+		"cmd": "inflate plastic with pump",
+		"expected": "The boat inflates and appears seaworthy.\nA tan label is lying inside the boat.",
+		"actual": "The pile of plastic inflates rapidly, taking the shape of a sturdy inflatable boat.",
+		"current_room": "dam_base",
+		"inventory": [
+			"air_pump",
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 225,
+		"cmd": "drop pump",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "dam_base",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2419
+	},
+	{
+		"turn": 226,
+		"cmd": "go inside boat",
+		"expected": "You are now in the magic boat.",
+		"actual": "You can't go that way.",
+		"current_room": "dam_base",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "go {\"direction\":\"in\"}",
+		"durationMs": 1
+	},
+	{
+		"turn": 227,
+		"cmd": "launch",
+		"expected": "(magic boat)\nFrigid River, in the magic boat\nYou are on the Frigid River in the vicinity of the Dam. The river flows quietly here. There is a landing on the west shore.\nThe magic boat contains:\nA tan label",
+		"actual": "The boat slips smoothly into the river and begins to float with the current.",
+		"current_room": "dam_base",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 228,
+		"cmd": "wait",
+		"expected": "Time passes...\nThe flow of the river carries you downstream.\nFrigid River, in the magic boat\nThe river turns a corner here making it impossible to see the Dam. The White Cliffs loom on the east bank and large rocks prevent landing on the west.\nThe magic boat contains:\nA tan label",
+		"actual": "The boat glides swiftly through the churning water of the Frigid River.",
+		"current_room": "river_2",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 229,
+		"cmd": "wait",
+		"expected": "Time passes...",
+		"actual": "The current carries the boat past sheer white cliffs.",
+		"current_room": "river_3",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 230,
+		"cmd": "wait",
+		"expected": "Time passes...\nThe flow of the river carries you downstream.\nFrigid River, in the magic boat\nThe river is running faster here and the sound ahead appears to be that of rushing water. On the east shore is a sandy beach. A small area of beach can also be seen below the cliffs on the west shore.\nThere is a red buoy here (probably a warning).\nThe magic boat contains:\nA tan label",
+		"actual": "The boat drifts into calm water. A large red buoy is bobbing nearby.",
+		"current_room": "river_4",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 231,
+		"cmd": "take buoy",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "river_4",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"red_buoy",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1794
+	},
+	{
+		"turn": 232,
+		"cmd": "go east",
+		"expected": "The magic boat comes to a rest on the shore.\nSandy Beach, in the magic boat\nYou are on a large sandy beach on the east shore of the river, which is flowing quickly by. A path runs beside the river to the south here, and a passage is partially buried in sand to the northeast.\nThere is a shovel here. (outside the magic boat)\nThe magic boat contains:\nA tan label",
+		"actual": "**Sandy Beach**\nYou are on a large sandy beach on the east shore of the river, which is flowing quickly by. A path runs beside the river to the south here, and a passage is partially buried in sand to the northeast.\nThere is a sturdy shovel here.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"red_buoy",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 233,
+		"cmd": "leave boat",
+		"expected": "You are on your own feet again.",
+		"actual": "You can't go that way.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"red_buoy",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "go {\"direction\":\"out\"}",
+		"durationMs": 0
+	},
+	{
+		"turn": 234,
+		"cmd": "take shovel",
+		"expected": "Your load is too heavy.",
+		"actual": "Taken.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"red_buoy",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1648
+	},
+	{
+		"turn": 235,
+		"cmd": "drop garlic",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"red_buoy",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1870
+	},
+	{
+		"turn": 236,
+		"cmd": "take shovel",
+		"expected": "Your load is too heavy.",
+		"actual": "You are already carrying the shovel.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"red_buoy",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "",
+		"durationMs": 1541
+	},
+	{
+		"turn": 237,
+		"cmd": "drop buoy",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1780
+	},
+	{
+		"turn": 238,
+		"cmd": "take shovel",
+		"expected": "Taken.",
+		"actual": "You are already carrying the shovel.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "",
+		"durationMs": 1691
+	},
+	{
+		"turn": 239,
+		"cmd": "go northeast",
+		"expected": "Sandy Cave\nThis is a sand-filled cave whose exit is to the southwest.",
+		"actual": "**Sandy Cave**\nThis is a sand-filled cave whose exit is to the southwest.\nThere is a beautiful jeweled scarab here.\nThe ground is covered with soft, white sand.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 240,
+		"cmd": "dig",
+		"expected": "What do you want to dig in?",
+		"actual": "You dig into the sand, tossing shovelfuls behind you.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1590
+	},
+	{
+		"turn": 241,
+		"cmd": "sand",
+		"expected": "(with the shovel)\nYou seem to be digging a hole here.",
+		"actual": "The ground is covered with soft, white sand.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1667
+	},
+	{
+		"turn": 242,
+		"cmd": "dig sand",
+		"expected": "(with the shovel)\nThe hole is getting deeper, but that's about it.",
+		"actual": "You dig into the sand, tossing shovelfuls behind you.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1962
+	},
+	{
+		"turn": 243,
+		"cmd": "dig sand",
+		"expected": "(with the shovel)\nYou are surrounded by a wall of sand on all sides.",
+		"actual": "Your shovel strikes something hard! You uncover a beautiful jeweled scarab!",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1860
+	},
+	{
+		"turn": 244,
+		"cmd": "dig sand",
+		"expected": "(with the shovel)\nYou can see a scarab here in the sand.",
+		"actual": "You dig into the sand, tossing shovelfuls behind you.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2019
+	},
+	{
+		"turn": 245,
+		"cmd": "take scarab",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"jeweled_scarab",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"shovel",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1741
+	},
+	{
+		"turn": 246,
+		"cmd": "drop shovel",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "sandy_cave",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"jeweled_scarab",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1579
+	},
+	{
+		"turn": 247,
+		"cmd": "go southwest",
+		"expected": "Sandy Beach\nThere is a red buoy here.\nThere is a clove of garlic here.\nThere is a magic boat here.\nThe magic boat contains:\nA tan label",
+		"actual": "**Sandy Beach**\nYou are on a large sandy beach on the east shore of the river, which is flowing quickly by. A path runs beside the river to the south here, and a passage is partially buried in sand to the northeast.\nThere is a clove of garlic here.\nThere is a red buoy floating here.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"jeweled_scarab",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 248,
+		"cmd": "open buoy",
+		"expected": "Opening the red buoy reveals a large emerald.",
+		"actual": "Opening the red buoy reveals:\n  large emerald",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"jeweled_scarab",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1662
+	},
+	{
+		"turn": 249,
+		"cmd": "take emerald",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2286
+	},
+	{
+		"turn": 250,
+		"cmd": "take garlic",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "sandy_beach",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2879
+	},
+	{
+		"turn": 251,
+		"cmd": "go south",
+		"expected": "Shore\nYou are on the east shore of the river. The water here seems somewhat treacherous. A path travels from north to south here, the south end quickly turning around a sharp corner.",
+		"actual": "**Shore**\nYou are on the east shore of the river. The water here seems somewhat treacherous. A path travels from north to south here, the south end quickly turning around a sharp corner.",
+		"current_room": "shore",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 252,
+		"cmd": "go south",
+		"expected": "Aragain Falls\nYou are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end.\nA solid rainbow spans the falls.",
+		"actual": "**Aragain Falls**\nYou are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end.",
+		"current_room": "aragain_falls",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 253,
+		"cmd": "cross rainbow",
+		"expected": "End of Rainbow",
+		"actual": "End of Rainbow\n**End of Rainbow**\nYou are on a small, rocky beach on the continuation of the Frigid River past the Falls. The beach is narrow due to the presence of the White Cliffs. The river canyon opens here and sunlight shines in from above. A rainbow crosses over the falls to the east and a narrow path continues to the southwest.\nA shimmering, solid rainbow bridge arches across the chasm.",
+		"current_room": "end_of_rainbow",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 254,
+		"cmd": "turn off lamp",
+		"expected": "The brass lantern is now off.",
+		"actual": "The brass lantern is now off.",
+		"current_room": "end_of_rainbow",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1755
+	},
+	{
+		"turn": 255,
+		"cmd": "go southwest",
+		"expected": "Canyon Bottom",
+		"actual": "**Canyon Bottom**\nYou are beneath the walls of the river canyon which may be climbable here. The lesser part of the runoff of Aragain Falls flows by below. To the north is a narrow path.",
+		"current_room": "canyon_bottom",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 256,
+		"cmd": "go up",
+		"expected": "Rocky Ledge",
+		"actual": "**Rocky Ledge**\nYou are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible for you to enter. Below you is the canyon bottom. Above you is more cliff, which appears climbable.",
+		"current_room": "rocky_ledge",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 257,
+		"cmd": "go up",
+		"expected": "Canyon View",
+		"actual": "**Canyon View**\nYou are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the west and south can be seen an immense forest, stretching for miles around. A path leads northwest. It is possible to climb down into the canyon from here.",
+		"current_room": "canyon_view",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 258,
+		"cmd": "go northwest",
+		"expected": "Clearing",
+		"actual": "**Clearing**\nYou are in a small clearing in a well marked forest path that extends to the east and west.",
+		"current_room": "clearing",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 259,
+		"cmd": "go west",
+		"expected": "Behind House",
+		"actual": "**Behind House**\nYou are behind the white house. A path leads into the forest to the east.\nIn one corner of the house there is a small window which is open.",
+		"current_room": "behind_house",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 260,
+		"cmd": "enter house",
+		"expected": "Kitchen\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water\nThere is a brown sack here.\nThe brown sack contains:\nA lunch",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nThe elongated brown sack contains:\n  lunch\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 261,
+		"cmd": "go west",
+		"expected": "Living Room\nThere is a nasty knife here.\nYour collection of treasures consists of:\nA huge diamond\nA jade figurine\nA sceptre\nA pot of gold\nA gold coffin\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nOn a table is a nasty-looking knife.\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  gold coffin\n  jade figurine\n  painting\n  pot of gold\n  sceptre",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 262,
+		"cmd": "inventory",
+		"expected": "You are carrying:\nA clove of garlic\nA large emerald\nA beautiful jeweled scarab\nA crystal trident\nA trunk of jewels\nA brass lantern",
+		"actual": "You are carrying: brass lantern, crystal skull, crystal trident, garlic, beautiful jeweled scarab, large emerald, matchbook, pair of candles, sapphire-encrusted bracelet, trunk of jewels.",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"large_emerald",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 263,
+		"cmd": "put emerald in case",
+		"expected": "Done.",
+		"actual": "You put the large emerald into the trophy case.\nDone.\nPoints: 206",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"jeweled_scarab",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1851
+	},
+	{
+		"turn": 264,
+		"cmd": "put scarab in case",
+		"expected": "Done.",
+		"actual": "You put the beautiful jeweled scarab into the trophy case.\nDone.\nPoints: 211",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"crystal_trident",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2305
+	},
+	{
+		"turn": 265,
+		"cmd": "put trident in case",
+		"expected": "Done.",
+		"actual": "You put the crystal trident into the trophy case.\nDone.\nPoints: 222",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"trunk_of_jewels"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2681
+	},
+	{
+		"turn": 266,
+		"cmd": "put jewels in case",
+		"expected": "Done.",
+		"actual": "You put the trunk of jewels into the trophy case.\nDone.\nPoints: 227",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1563
+	},
+	{
+		"turn": 267,
+		"cmd": "go east",
+		"expected": "Kitchen\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water\nThere is a brown sack here.\nThe brown sack contains:\nA lunch",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nThe elongated brown sack contains:\n  lunch\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 3
+	},
+	{
+		"turn": 268,
+		"cmd": "go east",
+		"expected": "Behind House",
+		"actual": "**Behind House**\nYou are behind the white house. A path leads into the forest to the east.\nIn one corner of the house there is a small window which is open.",
+		"current_room": "behind_house",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 269,
+		"cmd": "go north",
+		"expected": "North of House\nYou are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
+		"actual": "**North of House**\nYou are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
+		"current_room": "north_of_house",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 270,
+		"cmd": "go north",
+		"expected": "Forest Path\nThis is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.",
+		"actual": "**Forest Path**\nThis is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.\nThere is a beautiful brass bauble here.\nA cheerful songbird flutters among the branches.",
+		"current_room": "forest_path",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 271,
+		"cmd": "climb tree",
+		"expected": "Up a Tree\nYou are about 10 feet above the ground nestled among some large branches. The nearest branch above you is above your reach.\nBeside you on the branch is a small bird's nest.\nIn the bird's nest is a large egg encrusted with precious jewels, apparently scavenged by a childless songbird. The egg is covered with fine gold inlay, and ornamented in lapis lazuli and mother-of-pearl. Unlike most eggs, this one is hinged and closed with a delicate looking clasp. The egg appears extremely fragile.",
+		"actual": "**Up a Tree**\nYou are about 10 feet above the ground nestled among some large branches. The nearest branch above you is above your reach.\nBeside you on the branch is a small bird's nest.\nThe bird's nest contains:\n  jewel-encrusted egg",
+		"current_room": "up_a_tree",
+		"inventory": ["brass_lantern", "crystal_skull", "garlic", "matchbook", "pair_of_candles", "sapphire_bracelet"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 272,
+		"cmd": "take egg",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "up_a_tree",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1322
+	},
+	{
+		"turn": 273,
+		"cmd": "climb down",
+		"expected": "(down the tree)\nForest Path\nYou hear in the distance the chirping of a song bird.",
+		"actual": "**Forest Path**\nThis is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.\nThere is a beautiful brass bauble here.\nA cheerful songbird flutters among the branches.",
+		"current_room": "forest_path",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 274,
+		"cmd": "go south",
+		"expected": "North of House",
+		"actual": "**North of House**\nYou are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
+		"current_room": "north_of_house",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 275,
+		"cmd": "go east",
+		"expected": "Behind House",
+		"actual": "**Behind House**\nYou are behind the white house. A path leads into the forest to the east.\nIn one corner of the house there is a small window which is open.",
+		"current_room": "behind_house",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 276,
+		"cmd": "enter house",
+		"expected": "Kitchen\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water\nThere is a brown sack here.\nThe brown sack contains:\nA lunch",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nThe elongated brown sack contains:\n  lunch\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 277,
+		"cmd": "go west",
+		"expected": "Living Room\nThere is a nasty knife here.\nYour collection of treasures consists of:\nA trunk of jewels\nA crystal trident\nA beautiful jeweled scarab\nA large emerald\nA huge diamond\nA jade figurine\nA sceptre\nA pot of gold\nA gold coffin\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nOn a table is a nasty-looking knife.\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  crystal trident\n  gold coffin\n  jade figurine\n  beautiful jeweled scarab\n  large emerald\n  painting\n  pot of gold\n  sceptre\n  trunk of jewels",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 278,
+		"cmd": "turn on lamp",
+		"expected": "The brass lantern is now on.",
+		"actual": "The brass lantern is now on.",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1838
+	},
+	{
+		"turn": 279,
+		"cmd": "go down",
+		"expected": "Cellar",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"current_room": "cellar",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 280,
+		"cmd": "go north",
+		"expected": "The Troll Room\nThere is a sword here.\nThere is a bloody axe here.",
+		"actual": "**The Troll Room**\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nThere is a bloody axe here.\nAbove the trophy case hangs an elvish sword of great antiquity.",
+		"current_room": "troll_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 281,
+		"cmd": "go west",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_1",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 282,
+		"cmd": "go south",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_2",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 283,
+		"cmd": "go east",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_3",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 284,
+		"cmd": "go up",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike. A skeleton, probably the remains of a luckless adventurer, lies here.\nBeside the skeleton is a rusty knife.\nThe deceased adventurer's useless lantern is here.\nThere is a skeleton key here.\nAn old leather bag, bulging with coins, is here.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike. A skeleton, probably the remains of a luckless adventurer, lies here.\nA leather bag of gold coins is lying in the dust.\nThere is a skeleton key here.",
+		"current_room": "maze_5",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 285,
+		"cmd": "take coins",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "maze_5",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1357
+	},
+	{
+		"turn": 286,
+		"cmd": "take key",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "maze_5",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1839
+	},
+	{
+		"turn": 287,
+		"cmd": "go southwest",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.\nThe lamp appears a bit dimmer.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_6",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 288,
+		"cmd": "go east",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_7",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 289,
+		"cmd": "go south",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_15",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 290,
+		"cmd": "go southeast",
+		"expected": "Cyclops Room\nThis room has an exit on the northwest, and a staircase leading up.\nA cyclops, who looks prepared to eat horses (much less mere adventurers), blocks the staircase. From his state of health, and the bloodstains on the walls, you gather that he is not very friendly, though he likes people.",
+		"actual": "**Cyclops Room**\nThis room has an exit on the northwest, and a staircase leading up.\nA colossal cyclops stands before the stairs, glaring menacingly at you with his single giant eye.",
+		"current_room": "cyclops_room",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 291,
+		"cmd": "Ulysses",
+		"expected": "The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.\nTreasure Room\nThis is a large room, whose east wall is solid granite. A number of discarded bags, which crumble at your touch, are scattered about on the floor. There is an exit down a staircase.\nThere is a suspicious-looking individual, holding a large bag, leaning against one wall. He is armed with a deadly stiletto.\nThere is a silver chalice, intricately engraved, here.\nThe thief attacks, and you fall back desperately.",
+		"actual": "The cyclops is visibly shaken, and stumbles backward through the broken wall into the dark! The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.\n**Treasure Room**\nThis is a large room, whose east wall is solid granite. A number of discarded bags, which crumble at your touch, are scattered about on the floor. There is an exit down a staircase.\nAn ornate chalice of silver and gold is here.\nA large bar of solid silver is here.\nA vicious-looking stiletto blade is on the floor.\nThe thief, carrying a stiletto and a large bag of stolen treasures, stands here grinning slyly.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"jewel_encrusted_egg",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 292,
+		"cmd": "give egg to thief",
+		"expected": "The thief is taken aback by your unexpected generosity, but accepts the jewel-encrusted egg and stops to admire its beauty.",
+		"actual": "The thief is taken aback by your unexpected generosity, but accepts the jewel-encrusted egg and stops to admire its beauty. The thief skillfully pries open the egg with his delicate tools, revealing a golden clockwork canary inside!",
+		"current_room": "treasure_room",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "put {\"objects\":[\"jewel_encrusted_egg\",\"thief\"],\"preposition\":\"to\"}",
+		"durationMs": 0
+	},
+	{
+		"turn": 293,
+		"cmd": "go down",
+		"expected": "Cyclops Room",
+		"actual": "**Cyclops Room**\nThis room has an exit on the northwest, and a staircase leading up.\nA pile of broken rock marks where the cyclops smashed through the wall and fled.",
+		"current_room": "cyclops_room",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 294,
+		"cmd": "go east",
+		"expected": "Strange Passage\nThis is a long passage. To the west is one entrance. On the east there is an old wooden door, with a large opening in it (about cyclops sized).",
+		"actual": "**Strange Passage**\nThis is a long passage. To the west is one entrance. On the east there is an old wooden door, with a large opening in it (about cyclops sized).",
+		"current_room": "strange_passage",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 295,
+		"cmd": "go east",
+		"expected": "Living Room\nThere is a nasty knife here.\nYour collection of treasures consists of:\nA trunk of jewels\nA crystal trident\nA beautiful jeweled scarab\nA large emerald\nA huge diamond\nA jade figurine\nA sceptre\nA pot of gold\nA gold coffin\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nOn a table is a nasty-looking knife.\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  crystal trident\n  gold coffin\n  jade figurine\n  beautiful jeweled scarab\n  large emerald\n  painting\n  pot of gold\n  sceptre\n  trunk of jewels",
+		"current_room": "living_room",
+		"inventory": [
+			"bag_of_coins",
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 296,
+		"cmd": "put coins in case",
+		"expected": "Done.",
+		"actual": "You put the leather bag of coins into the trophy case.\nDone.\nPoints: 272",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2200
+	},
+	{
+		"turn": 297,
+		"cmd": "take knife",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1730
+	},
+	{
+		"turn": 298,
+		"cmd": "go west",
+		"expected": "Strange Passage",
+		"actual": "**Strange Passage**\nThis is a long passage. To the west is one entrance. On the east there is an old wooden door, with a large opening in it (about cyclops sized).",
+		"current_room": "strange_passage",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 299,
+		"cmd": "go west",
+		"expected": "Cyclops Room",
+		"actual": "**Cyclops Room**\nThis room has an exit on the northwest, and a staircase leading up.\nA pile of broken rock marks where the cyclops smashed through the wall and fled.",
+		"current_room": "cyclops_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 300,
+		"cmd": "go up",
+		"expected": "You hear a scream of anguish as you violate the robber's hideaway. Using passages unknown to you, he rushes to its defense.\nThe thief gestures mysteriously, and the treasures in the room suddenly vanish.\nTreasure Room\nThere is a suspicious-looking individual, holding a large bag, leaning against one wall. He is armed with a deadly stiletto.\nThere is a silver chalice, intricately engraved, here.\nYou dodge as the thief comes in low.",
+		"actual": "**Treasure Room**\nThis is a large room, whose east wall is solid granite. A number of discarded bags, which crumble at your touch, are scattered about on the floor. There is an exit down a staircase.\nAn ornate chalice of silver and gold is here.\nThe jewel-encrusted egg is open, revealing its delicate mechanism.\nThe jewel-encrusted egg contains:\n  golden clockwork canary\nA large bar of solid silver is here.\nA vicious-looking stiletto blade is on the floor.\nThe thief, carrying a stiletto and a large bag of stolen treasures, stands here grinning slyly.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 301,
+		"cmd": "kill thief with knife",
+		"expected": "The thief is disarmed by a subtle feint past his guard.\nThe robber, somewhat surprised at this turn of events, nimbly retrieves his stiletto.",
+		"actual": "You strike at the thief, landing a telling blow!",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "attack {\"objects\":[\"thief\",\"nasty_knife\"]}",
+		"durationMs": 1
+	},
+	{
+		"turn": 302,
+		"cmd": "kill thief with knife",
+		"expected": "You dodge as the thief comes in low.",
+		"actual": "You strike at the thief, landing a telling blow!",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "attack {\"objects\":[\"thief\",\"nasty_knife\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 303,
+		"cmd": "kill thief with knife",
+		"expected": "It's curtains for the thief as your nasty knife removes his head.\nAlmost as soon as the thief breathes his last breath, a cloud of sinister black fog envelops him, and when the fog lifts, the carcass has disappeared.\nAs the thief dies, the power of his magic decreases, and his treasures reappear:\nA stiletto\nA jewel-encrusted egg, with a golden clockwork canary\nA torch\nA crystal skull\nA sapphire-encrusted bracelet\nThe chalice is now safe to take.",
+		"actual": "The thief collapses to the floor, dead. His stolen treasures scatter across the room.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "attack {\"objects\":[\"thief\",\"nasty_knife\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 304,
+		"cmd": "take all",
+		"expected": "stiletto: Taken.\njewel-encrusted egg: Taken.\ntorch: Taken.\ncrystal skull: Taken.\nsapphire-encrusted bracelet: Taken.\nchalice: Your load is too heavy.",
+		"actual": "Taken.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key",
+			"stiletto"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2496
+	},
+	{
+		"turn": 305,
+		"cmd": "drop stiletto",
+		"expected": "Dropped.",
+		"actual": "Dropped.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2091
+	},
+	{
+		"turn": 306,
+		"cmd": "take chalice",
+		"expected": "You're holding too many things already!",
+		"actual": "You're already carrying that.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "take {\"objects\":[\"chalice\"]}",
+		"durationMs": 1925
+	},
+	{
+		"turn": 307,
+		"cmd": "drop torch",
+		"expected": "Dropped.",
+		"actual": "You don't have a torch in your inventory. What would you like to do?",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "",
+		"durationMs": 7877
+	},
+	{
+		"turn": 308,
+		"cmd": "take chalice",
+		"expected": "Taken.",
+		"actual": "You're already carrying that.",
+		"current_room": "treasure_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "take {\"objects\":[\"chalice\"]}",
+		"durationMs": 2749
+	},
+	{
+		"turn": 309,
+		"cmd": "go down",
+		"expected": "Cyclops Room",
+		"actual": "**Cyclops Room**\nThis room has an exit on the northwest, and a staircase leading up.\nA pile of broken rock marks where the cyclops smashed through the wall and fled.",
+		"current_room": "cyclops_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 310,
+		"cmd": "go northwest",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_15",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 311,
+		"cmd": "go south",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_7",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 312,
+		"cmd": "go west",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_6",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 313,
+		"cmd": "go up",
+		"expected": "Maze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_9",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 314,
+		"cmd": "go down",
+		"expected": "You won't be able to get back up to the tunnel you are going through when it gets to the next room.\nMaze\nThis is part of a maze of twisty little passages, all alike.",
+		"actual": "**Maze**\nThis is part of a maze of twisty little passages, all alike.",
+		"current_room": "maze_11",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 315,
+		"cmd": "go northeast",
+		"expected": "Grating Room\nYou are in a small room near the maze. There are twisty passages in the immediate vicinity.\nAbove you is a grating locked with a skull-and-crossbones lock.",
+		"actual": "**Grating Room**\nYou are in a small room near the maze. There are twisty passages in the immediate vicinity.\nA heavy iron grating is set into the ground, securely locked.",
+		"current_room": "grating_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 316,
+		"cmd": "unlock grate",
+		"expected": "(with the skeleton key)\nThe grate is unlocked.",
+		"actual": "Unlocked.",
+		"current_room": "grating_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "unlock {\"objects\":[\"grating\",\"skeleton_key\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 317,
+		"cmd": "open grate",
+		"expected": "The grating opens to reveal trees above you.\nA pile of leaves falls onto your head and to the ground.",
+		"actual": "The grate opens.",
+		"current_room": "grating_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "open {\"objects\":[\"grating\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 318,
+		"cmd": "go up",
+		"expected": "Clearing\nYou are in a clearing, with a forest surrounding you on all sides. A path leads south.\nThere is an open grating, descending into darkness.",
+		"actual": "**Clearing**\nYou are in a clearing, with a forest surrounding you on all sides. A path leads south.\nA heavy iron grating is set into the ground. It is open.",
+		"current_room": "grating_clearing",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 319,
+		"cmd": "go south",
+		"expected": "Forest Path\nYou hear in the distance the chirping of a song bird.",
+		"actual": "**Forest Path**\nThis is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.\nThere is a beautiful brass bauble here.\nA cheerful songbird flutters among the branches.",
+		"current_room": "forest_path",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 320,
+		"cmd": "climb tree",
+		"expected": "Up a Tree\nBeside you on the branch is a small bird's nest.\nYou hear in the distance the chirping of a song bird.",
+		"actual": "**Up a Tree**\nYou are about 10 feet above the ground nestled among some large branches. The nearest branch above you is above your reach.\nBeside you on the branch is a small bird's nest.",
+		"current_room": "up_a_tree",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 321,
+		"cmd": "wind up canary",
+		"expected": "The canary chirps, slightly off-key, an aria from a forgotten opera. From out of the greenery flies a lovely songbird. It perches on a limb just over your head and opens its beak to sing. As it does so a beautiful brass bauble drops from its mouth, bounces off the top of your head, and lands glimmering in the grass. As the canary winds down, the songbird flies away.",
+		"actual": "The canary chirps, slightly off-key, an aria from a little known opera by Donizetti. Something drops from the tree above and lands in the grass below. The canary sings a beautiful, crystal-clear birdsong that echoes through the canopy. High above, an answering call is heard. A large songbird swoops down from the treetops, drops something sparkling at your feet, and flutters away.",
+		"current_room": "up_a_tree",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 322,
+		"cmd": "go down",
+		"expected": "Forest Path\nThere is a beautiful brass bauble here.",
+		"actual": "**Forest Path**\nThis is a path winding through a dimly lit forest. The path heads north-south here. One particularly large tree with some low branches stands at the edge of the path.\nThere is a beautiful brass bauble here.\nA cheerful songbird flutters among the branches.",
+		"current_room": "forest_path",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 323,
+		"cmd": "take bauble",
+		"expected": "You're holding too many things already!",
+		"actual": "Taken.",
+		"current_room": "forest_path",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"nasty_knife",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2334
+	},
+	{
+		"turn": 324,
+		"cmd": "drop knife",
+		"expected": "Dropped.\nYou hear in the distance the chirping of a song bird.",
+		"actual": "Dropped.",
+		"current_room": "forest_path",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1696
+	},
+	{
+		"turn": 325,
+		"cmd": "take bauble",
+		"expected": "Taken.",
+		"actual": "You are already carrying the beautiful brass bauble.",
+		"current_room": "forest_path",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "",
+		"durationMs": 2017
+	},
+	{
+		"turn": 326,
+		"cmd": "go south",
+		"expected": "North of House",
+		"actual": "**North of House**\nYou are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
+		"current_room": "north_of_house",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 327,
+		"cmd": "go east",
+		"expected": "Behind House",
+		"actual": "**Behind House**\nYou are behind the white house. A path leads into the forest to the east.\nIn one corner of the house there is a small window which is open.",
+		"current_room": "behind_house",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 328,
+		"cmd": "enter house",
+		"expected": "Kitchen\nA bottle is sitting on the table.\nThe glass bottle contains:\nA quantity of water\nThere is a brown sack here.\nThe brown sack contains:\nA lunch",
+		"actual": "**Kitchen**\nYou are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.\nOn the table is an elongated brown sack, smelling of hot peppers.\nThe elongated brown sack contains:\n  lunch\nA bottle is sitting on the table.\nThe glass bottle contains:\n  quantity of water",
+		"current_room": "kitchen",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 329,
+		"cmd": "go west",
+		"expected": "Living Room\nYour collection of treasures consists of:\nA leather bag of coins\nA trunk of jewels\nA crystal trident\nA beautiful jeweled scarab\nA large emerald\nA huge diamond\nA jade figurine\nA sceptre\nA pot of gold\nA gold coffin\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  leather bag of coins\n  crystal trident\n  gold coffin\n  jade figurine\n  beautiful jeweled scarab\n  large emerald\n  painting\n  pot of gold\n  sceptre\n  trunk of jewels",
+		"current_room": "living_room",
+		"inventory": [
+			"beautiful_brass_bauble",
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 330,
+		"cmd": "put bauble in case",
+		"expected": "Done.",
+		"actual": "You put the beautiful brass bauble into the trophy case.\nDone.\nPoints: 300",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"chalice",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1891
+	},
+	{
+		"turn": 331,
+		"cmd": "put chalice in case",
+		"expected": "Done.",
+		"actual": "You put the chalice into the trophy case.\nDone.\nPoints: 305",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1890
+	},
+	{
+		"turn": 332,
+		"cmd": "take canary from egg",
+		"expected": "Taken.",
+		"actual": "You're already carrying that.",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"golden_clockwork_canary",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "take {\"objects\":[\"golden_clockwork_canary\"]}",
+		"durationMs": 0
+	},
+	{
+		"turn": 333,
+		"cmd": "put canary in case",
+		"expected": "Done.",
+		"actual": "You put the golden clockwork canary into the trophy case.\nDone.\nPoints: 309",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1724
+	},
+	{
+		"turn": 334,
+		"cmd": "put egg in case",
+		"expected": "Done.",
+		"actual": "There's no egg in your inventory to put in the case.",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"sapphire_bracelet",
+			"skeleton_key"
+		],
+		"action_detected": "",
+		"durationMs": 1727
+	},
+	{
+		"turn": 335,
+		"cmd": "put bracelet in case",
+		"expected": "Done.",
+		"actual": "You put the sapphire-encrusted bracelet into the trophy case.\nDone.\nPoints: 314",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"crystal_skull",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2373
+	},
+	{
+		"turn": 336,
+		"cmd": "put skull in case",
+		"expected": "Done.",
+		"actual": "You put the crystal skull into the trophy case.\nDone.\nPoints: 324",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 1896
+	},
+	{
+		"turn": 337,
+		"cmd": "go down",
+		"expected": "Cellar",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"current_room": "cellar",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 338,
+		"cmd": "go north",
+		"expected": "The Troll Room\nThere is a sword here.\nThere is a bloody axe here.",
+		"actual": "**The Troll Room**\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nThere is a bloody axe here.\nAbove the trophy case hangs an elvish sword of great antiquity.",
+		"current_room": "troll_room",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 339,
+		"cmd": "go east",
+		"expected": "East-West Passage",
+		"actual": "**East-West Passage**\nThis is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+		"current_room": "east_west_passage",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 340,
+		"cmd": "go east",
+		"expected": "Round Room",
+		"actual": "**Round Room**\nThis is a circular stone room with passages in all directions. Several of them have unfortunately been blocked by cave-ins.",
+		"current_room": "round_room",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 341,
+		"cmd": "go east",
+		"expected": "Loud Room\nThis is a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward. The room is deafeningly loud with an undetermined rushing sound. The sound seems to reverberate from all of the walls, making it difficult even to think.\nOn the ground is a large platinum bar.",
+		"actual": "**Loud Room**\nThis is a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward.\nThe acoustics of the room are deafeningly loud with an undetermined rushing sound.\nOn the ground is a large platinum bar.",
+		"current_room": "loud_room",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 0
+	},
+	{
+		"turn": 342,
+		"cmd": "echo",
+		"expected": "The acoustics of the room change subtly.\nLoud Room\nOn the ground is a large platinum bar.",
+		"actual": "The acoustics of the room change subtly.\n**Loud Room**\nThis is a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward.\nThe acoustics of the room are deafeningly loud with an undetermined rushing sound.\nOn the ground is a large platinum bar.",
+		"current_room": "loud_room",
+		"inventory": ["brass_lantern", "garlic", "large_bar_of_silver", "matchbook", "pair_of_candles", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 343,
+		"cmd": "take bar",
+		"expected": "Taken.",
+		"actual": "Taken.",
+		"current_room": "loud_room",
+		"inventory": [
+			"brass_lantern",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"platinum_bar",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1349
+	},
+	{
+		"turn": 344,
+		"cmd": "go west",
+		"expected": "Round Room",
+		"actual": "**Round Room**\nThis is a circular stone room with passages in all directions. Several of them have unfortunately been blocked by cave-ins.",
+		"current_room": "round_room",
+		"inventory": [
+			"brass_lantern",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"platinum_bar",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 345,
+		"cmd": "go west",
+		"expected": "East-West Passage",
+		"actual": "**East-West Passage**\nThis is a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+		"current_room": "east_west_passage",
+		"inventory": [
+			"brass_lantern",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"platinum_bar",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 346,
+		"cmd": "go west",
+		"expected": "The Troll Room\nThere is a sword here.\nThere is a bloody axe here.",
+		"actual": "**The Troll Room**\nThis is a small room with passages to the east and south and a forbidding hole leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.\nThere is a bloody axe here.\nAbove the trophy case hangs an elvish sword of great antiquity.",
+		"current_room": "troll_room",
+		"inventory": [
+			"brass_lantern",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"platinum_bar",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 2
+	},
+	{
+		"turn": 347,
+		"cmd": "go south",
+		"expected": "Cellar",
+		"actual": "**Cellar**\nYou are in a dark and damp cellar with a narrow passageway leading north, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+		"current_room": "cellar",
+		"inventory": [
+			"brass_lantern",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"platinum_bar",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 348,
+		"cmd": "go up",
+		"expected": "Living Room\nYour collection of treasures consists of:\nA crystal skull\nA sapphire-encrusted bracelet\nA jewel-encrusted egg\nA golden clockwork canary\nA chalice\nA beautiful brass bauble\nA leather bag of coins\nA trunk of jewels\nA crystal trident\nA beautiful jeweled scarab\nA large emerald\nA huge diamond\nA jade figurine\nA sceptre\nA pot of gold\nA gold coffin\nA painting",
+		"actual": "**Living Room**\nYou are in the living room. There is a doorway to the east\nA large oriental rug is pushed to one side of the room.\nA wooden door with strange gothic lettering, which appears to be nailed shut.\nThe trap door is open, revealing a rickety staircase descending into darkness.\nA trophy case is mounted to the wall. It is open.\nThe trophy case contains:\n  ancient map\n  leather bag of coins\n  beautiful brass bauble\n  chalice\n  crystal skull\n  crystal trident\n  gold coffin\n  golden clockwork canary\n  jade figurine\n  beautiful jeweled scarab\n  large emerald\n  painting\n  pot of gold\n  sapphire-encrusted bracelet\n  sceptre\n  trunk of jewels",
+		"current_room": "living_room",
+		"inventory": [
+			"brass_lantern",
+			"garlic",
+			"large_bar_of_silver",
+			"matchbook",
+			"pair_of_candles",
+			"platinum_bar",
+			"skeleton_key"
+		],
+		"action_detected": "tick {}",
+		"durationMs": 1
+	},
+	{
+		"turn": 349,
+		"cmd": "put bar in case",
+		"expected": "Done.\nPoints: 349",
+		"actual": "You put the large bar of silver into the trophy case.\nDone.\nPoints: 339",
+		"current_room": "living_room",
+		"inventory": ["brass_lantern", "garlic", "matchbook", "pair_of_candles", "platinum_bar", "skeleton_key"],
+		"action_detected": "tick {}",
+		"durationMs": 2307
+	}
+]
