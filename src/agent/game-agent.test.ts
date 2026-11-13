@@ -224,4 +224,37 @@ describe("GameAgent", () => {
 		expect(doGenerate).toHaveBeenCalled();
 		expect(completed).toBe("You don't have any shields.");
 	});
+
+	it("passes anthropic ephemeral cacheControl providerOptions to LLM calls", async () => {
+		const doGenerate = vi.fn().mockResolvedValue({
+			rawCall: { rawPrompt: null, rawSettings: {} },
+			finishReason: "tool-calls",
+			usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+			content: [
+				{
+					type: "tool-call",
+					toolCallId: "call_look",
+					toolName: "look",
+					input: JSON.stringify({}),
+				},
+			],
+		});
+		const mockModel = new MockLanguageModelV3({ doGenerate });
+		const { agent } = setup(mockModel);
+
+		await agent.run("examine the surrounding chamber", [], {
+			onToken: () => {},
+			onComplete: () => {},
+		});
+
+		expect(doGenerate).toHaveBeenCalled();
+		const callArgs = doGenerate.mock.calls[0]?.[0];
+		expect(callArgs?.providerOptions?.anthropic).toEqual({
+			cacheControl: { type: "ephemeral" },
+		});
+		const systemMessage = callArgs?.prompt?.find((p: { role: string }) => p.role === "system");
+		expect(systemMessage?.providerOptions?.anthropic).toEqual({
+			cacheControl: { type: "ephemeral" },
+		});
+	});
 });

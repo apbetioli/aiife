@@ -8,11 +8,42 @@ import { buildScopedTools, buildToolSystemPrompt } from "./tool-builder";
 import type { AgentCallbacks, RecognizedIntent } from "./types";
 
 const INTENT_HISTORY_LIMIT = 10;
-
 const LLM_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS) || 60_000;
 
-export function getErrorMessage(error: unknown): string {
-	return error instanceof Error ? error.message : String(error);
+export const CACHE_PROVIDER_OPTIONS = {
+	anthropic: { cacheControl: { type: "ephemeral" as const } },
+};
+
+export function cachedSystemPrompt(content: string) {
+	return [
+		{
+			role: "system" as const,
+			content,
+			providerOptions: CACHE_PROVIDER_OPTIONS,
+		},
+	];
+}
+
+function getCommonCallOptions() {
+	return {
+		abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
+		providerOptions: CACHE_PROVIDER_OPTIONS,
+		experimental_telemetry: {
+			isEnabled: true,
+			tracer: getTracer(),
+		},
+	};
+}
+
+function extractIntent(
+	toolCall: { toolName: string; input?: unknown; args?: unknown } | undefined,
+	fallbackText: string,
+): RecognizedIntent {
+	if (!toolCall) {
+		return { action: "respond", message: fallbackText || "I don't understand that." };
+	}
+	const params = (toolCall.input ?? toolCall.args ?? {}) as Record<string, unknown>;
+	return { action: toolCall.toolName, ...params };
 }
 
 export class GameAgent {
@@ -44,27 +75,14 @@ export class GameAgent {
 				usage: toolUsage,
 			} = await generateText({
 				model: this.model,
-				system,
+				system: cachedSystemPrompt(system),
 				tools,
 				toolChoice: "required",
 				messages: [...recentHistory, { role: "user", content: input }],
-				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
-				experimental_telemetry: {
-					isEnabled: true,
-					tracer: getTracer(),
-				},
+				...getCommonCallOptions(),
 			});
 
-			const toolCall = toolCalls?.[0];
-			if (!toolCall) {
-				intent = { action: "respond", message: text || "I don't understand that." };
-			} else {
-				const action = toolCall.toolName;
-				const params = ((toolCall as { input?: unknown }).input ??
-					(toolCall as { args?: unknown }).args ??
-					{}) as Record<string, unknown>;
-				intent = { action, ...params };
-			}
+			intent = extractIntent(toolCalls?.[0], text);
 
 			if (toolUsage) {
 				callbacks.onTokenUsage?.(toolUsage);
@@ -92,13 +110,9 @@ export class GameAgent {
 		try {
 			const stream = streamText({
 				model: this.narratorModel,
-				system: NARRATION_SYSTEM_PROMPT,
+				system: cachedSystemPrompt(NARRATION_SYSTEM_PROMPT),
 				prompt: `Game output:\n${message}\n\nMatch the language of this player input (do not include it in your response): "${playerInput}"`,
-				abortSignal: AbortSignal.timeout(LLM_TIMEOUT_MS),
-				experimental_telemetry: {
-					isEnabled: true,
-					tracer: getTracer(),
-				},
+				...getCommonCallOptions(),
 			});
 
 			let text = "";
