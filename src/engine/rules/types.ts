@@ -28,7 +28,7 @@ export class GameEvent<N extends EventName = EventName> {
 // ─── Listener ────────────────────────────────────────────────────────────────
 
 /** Event passed to listeners; call stop() to cancel propagation (message goes to feedback). */
-export type StoppableEvent<N extends EventName> = GameEvent<N> & {
+export type StoppableEvent<N extends EventName = EventName> = GameEvent<N> & {
 	stop(): void;
 };
 

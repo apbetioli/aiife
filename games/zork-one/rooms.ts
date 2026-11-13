@@ -96,8 +96,7 @@ export const rooms: Record<string, Room> = {
 		id: "behind_house",
 		name: "Behind House",
 		descriptions: {
-			default:
-				"You are behind the white house. A path leads into the forest to the east. In one corner of the house there is a small window which is",
+			default: "You are behind the white house. A path leads into the forest to the east.",
 		},
 		state: { lit: true },
 		exits: {
@@ -965,7 +964,7 @@ export const rooms: Record<string, Room> = {
 		name: "Kitchen",
 		descriptions: {
 			default:
-				"You are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is",
+				"You are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open.",
 		},
 		state: { lit: true },
 		exits: {

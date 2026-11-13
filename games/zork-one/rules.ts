@@ -14,6 +14,8 @@ import {
 	PRIORITY,
 	registerAction,
 	registerDaemon,
+	runAction,
+	type StoppableEvent,
 	setObjectState,
 	setPlayerState,
 } from "../../src/sdk";
@@ -355,8 +357,8 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 				const room = state.player.current_room;
 				if (room === "up_a_tree" || room.startsWith("forest")) {
 					setObjectState(state, "beautiful_brass_bauble", "revealed", true);
-					moveObject(state, "beautiful_brass_bauble", room);
-					return "The canary sings a beautiful, crystal-clear birdsong that echoes through the canopy. High above, an answering call is heard. A large songbird swoops down from the treetops, drops something sparkling at your feet, and flutters away.";
+					moveObject(state, "beautiful_brass_bauble", "forest_path");
+					return "The canary chirps, slightly off-key, an aria from a little known opera by Donizetti. Something drops from the tree above and lands in the grass below. The canary sings a beautiful, crystal-clear birdsong that echoes through the canopy. High above, an answering call is heard. A large songbird swoops down from the treetops, drops something sparkling at your feet, and flutters away.";
 				}
 				return "The canary sings a brief melody, but nothing happens.";
 			}
@@ -370,12 +372,52 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		description: "ulysses(): Say the name Ulysses or Odysseus.",
 		aliases: ["odysseus"],
 		scope: (ctx) => ctx.in_scope_objects.some((o) => o.id === "cyclops") || ctx.room.toLowerCase().includes("cyclops"),
-		execute: (_params, { state }) => {
+		execute: (_params, { state, world }) => {
 			if (state.player.current_room === "cyclops_room" && !state.objects.cyclops?.state.fled) {
 				setObjectState(state, "cyclops", "fled", true);
-				return "The cyclops is visibly shaken, and stumbles backward through the broken wall into the dark!";
+				movePlayer(state, "treasure_room");
+				ensureVisited(state, "treasure_room");
+				const lookFeedback = runAction(bus, world, state, "look", {});
+				return [
+					"The cyclops is visibly shaken, and stumbles backward through the broken wall into the dark! The cyclops, hearing the name of his father's deadly nemesis, flees the room by knocking down the wall on the east of the room.",
+					...lookFeedback,
+				]
+					.filter(Boolean)
+					.join("\n");
 			}
 			return "Nothing happens.";
+		},
+	});
+
+	// ── Cross Action ────────────────────────────────────────────────────────────
+	registerAction(bus, registry, "cross", {
+		inputSchema: objectsSchema,
+		aliases: ["traverse"],
+		description: "cross(objects?): Cross a bridge, rainbow, or passage.",
+		scope: (ctx) =>
+			ctx.in_scope_objects.some((o) => o.id === "rainbow") ||
+			ctx.room.toLowerCase().includes("falls") ||
+			ctx.room.toLowerCase().includes("rainbow"),
+		execute: (_params, { state, world }) => {
+			if (state.player.current_room === "aragain_falls") {
+				if (state.objects.rainbow?.state.solid) {
+					movePlayer(state, "end_of_rainbow");
+					ensureVisited(state, "end_of_rainbow");
+					const lookFeedback = runAction(bus, world, state, "look", {});
+					return ["End of Rainbow", ...lookFeedback].filter(Boolean).join("\n");
+				}
+				return "The rainbow seems too ethereal to walk upon.";
+			}
+			if (state.player.current_room === "end_of_rainbow") {
+				if (state.objects.rainbow?.state.solid) {
+					movePlayer(state, "aragain_falls");
+					ensureVisited(state, "aragain_falls");
+					const lookFeedback = runAction(bus, world, state, "look", {});
+					return ["Aragain Falls", ...lookFeedback].filter(Boolean).join("\n");
+				}
+				return "The rainbow seems too ethereal to walk upon.";
+			}
+			return "You can't cross that.";
 		},
 	});
 
@@ -385,10 +427,11 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		description: "echo(): Shout an echo in an acoustic chamber.",
 		aliases: [],
 		scope: (ctx) => ctx.room.toLowerCase().includes("loud") || ctx.room.toLowerCase().includes("echo"),
-		execute: (_params, { state }) => {
+		execute: (_params, { state, world }) => {
 			if (state.player.current_room === "loud_room") {
 				setObjectState(state, "loud_room_acoustics", "echoed", true);
-				return "The acoustics of the room change subtly.";
+				const lookFeedback = runAction(bus, world, state, "look", {});
+				return ["The acoustics of the room change subtly.", ...lookFeedback].filter(Boolean).join("\n");
 			}
 			return "Echo... echo... echo...";
 		},
@@ -473,17 +516,56 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		{ priority: PRIORITY.GUARD },
 	);
 
-	// ── Enter Cellar Closes Trapdoor ───────────────────────────────────────────
+	// ── Trapdoor Auto-open on Navigation ─────────────────────────────────────────
+	bus.on(
+		"go",
+		(event, state) => {
+			const dir = (event.params as Record<string, unknown>).direction;
+			if (state.player.current_room === "living_room" && dir === "down") {
+				if (state.objects.oriental_rug?.state.moved) {
+					setObjectState(state, "trap_door", "open", true);
+				}
+			}
+			if (state.player.current_room === "cellar" && dir === "up") {
+				setObjectState(state, "trap_door", "open", true);
+			}
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
+	// ── Enter Cellar Closes Trapdoor / Loud Room Expulsion ─────────────────────
 	bus.on(
 		"go",
 		(event, state) => {
 			const dir = (event.params as Record<string, unknown>).direction;
 			if (state.player.current_room === "cellar" && dir === "down") {
-				setObjectState(state, "trap_door", "open", false);
-				return "The trap door crashes shut, and you hear someone barring it.";
+				if (!state.objects.trap_door?.state.barred) {
+					setObjectState(state, "trap_door", "barred", true);
+					setObjectState(state, "trap_door", "open", false);
+					return "The trap door crashes shut, and you hear someone barring it.";
+				}
+			}
+			if (state.player.current_room === "loud_room" && dir === "down") {
+				if (!state.objects.loud_room_acoustics?.state.echoed) {
+					movePlayer(state, "round_room");
+					return "It is unbearably loud here, with an ear-splitting roar seeming to come from all around you. There is a pounding in your head which won't stop. With a tremendous effort, you scramble out of the room.\nRound Room";
+				}
 			}
 		},
 		{ priority: PRIORITY.POST_MUTATION },
+	);
+
+	// ── Read Leaflet Implicit Take ──────────────────────────────────────────────
+	bus.on(
+		"examine",
+		"leaflet",
+		(_event, state) => {
+			if (!isInInventory(state, "leaflet")) {
+				moveObject(state, "leaflet", "inventory");
+				return '(Taken)\n"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!"';
+			}
+		},
+		{ priority: PRIORITY.GUARD },
 	);
 
 	// ── Machine Lid Controls Machine ───────────────────────────────────────────
@@ -595,15 +677,66 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	});
 
 	// ── Give Egg to Thief ───────────────────────────────────────────────────────
-	bus.on("put", (event, state) => {
-		const ids = getObjectIds(event.params as Record<string, unknown>);
-		if (ids[0] === "jewel_encrusted_egg" && (ids[1] === "thief" || state.player.current_room === "treasure_room")) {
-			setObjectState(state, "jewel_encrusted_egg", "open", true);
-			moveObject(state, "golden_clockwork_canary", "jewel_encrusted_egg");
-			event.stop();
-			return "The thief skillfully pries open the egg with his delicate tools, revealing a golden clockwork canary inside!";
+	bus.on(
+		"put",
+		(event, state) => {
+			const ids = getObjectIds(event.params as Record<string, unknown>);
+			if (ids[0] === "jewel_encrusted_egg" && (ids[1] === "thief" || state.player.current_room === "treasure_room")) {
+				setObjectState(state, "jewel_encrusted_egg", "open", true);
+				moveObject(state, "golden_clockwork_canary", "jewel_encrusted_egg");
+				moveObject(state, "jewel_encrusted_egg", "treasure_room");
+				event.stop();
+				return "The thief is taken aback by your unexpected generosity, but accepts the jewel-encrusted egg and stops to admire its beauty. The thief skillfully pries open the egg with his delicate tools, revealing a golden clockwork canary inside!";
+			}
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
+	// ── Grating Unlock & Open ───────────────────────────────────────────────────
+	bus.on("enter", (event, state) => {
+		const room = (event.params as Record<string, unknown>).room;
+		if (room === "grating_room" || room === "grating_clearing") {
+			moveObject(state, "grating", room as string);
 		}
 	});
+
+	bus.on(
+		"unlock",
+		(event, state) => {
+			const target = getTarget(event.params as Record<string, unknown>);
+			if (target === "grating" || target === "grate") {
+				if (state.player.current_room === "grating_room" || state.player.current_room === "grating_clearing") {
+					if (isInInventory(state, "skeleton_key")) {
+						setObjectState(state, "grating", "locked", false);
+						event.stop();
+						return "Unlocked.";
+					}
+					event.stop();
+					return "You don't have anything to unlock it with.";
+				}
+			}
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
+	bus.on(
+		"open",
+		(event, state) => {
+			const target = getTarget(event.params as Record<string, unknown>);
+			if (target === "grating" || target === "grate") {
+				if (state.player.current_room === "grating_room" || state.player.current_room === "grating_clearing") {
+					if (state.objects.grating?.state.locked) {
+						event.stop();
+						return "The grating is locked.";
+					}
+					setObjectState(state, "grating", "open", true);
+					event.stop();
+					return "The grate opens.";
+				}
+			}
+		},
+		{ priority: PRIORITY.GUARD },
+	);
 
 	// ── Read Actions ────────────────────────────────────────────────────────────
 	bus.on("examine", "black_book", (_event, state) => {
@@ -614,40 +747,40 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	});
 
 	// ── Push Yellow Button ──────────────────────────────────────────────────────
-	bus.on("move", "yellow_button", (event, state) => {
+	const onYellowButton = (event: StoppableEvent, state: GameState) => {
 		setObjectState(state, "control_panel", "powered", true);
 		event.stop();
-		return "Click. The lights on the control panel blink to life.";
-	});
+		return "Click.";
+	};
+	bus.on("use", "yellow_button", onYellowButton);
+	bus.on("move", "yellow_button", onYellowButton);
 
 	// ── Turn Bolt with Wrench & Switch with Screwdriver ─────────────────────────
-	bus.on(
-		"use",
-		(event, state) => {
-			const ids = getObjectIds(event.params as Record<string, unknown>);
-			if (ids.includes("wrench") || ids.includes("large_bolt")) {
-				if (state.player.current_room === "dam") {
-					setObjectState(state, "reservoir", "drained", true);
-					setObjectState(state, "sluice_gates", "open", true);
+	const onTurnBoltAndSwitch = (event: StoppableEvent, state: GameState) => {
+		const ids = getObjectIds(event.params as Record<string, unknown>);
+		if (ids.includes("wrench") || ids.includes("large_bolt")) {
+			if (state.player.current_room === "dam") {
+				setObjectState(state, "reservoir", "drained", true);
+				setObjectState(state, "sluice_gates", "open", true);
+				event.stop();
+				return "The bolt turns with a screech of rusty metal. The sluice gates groan open! Water roars out of the reservoir in a tremendous torrent. The reservoir is quickly drained!";
+			}
+		}
+		if (ids.includes("screwdriver") || ids.includes("machine_switch")) {
+			if (state.player.current_room === "machine_room") {
+				if (state.objects.coal?.location === "smelly_machine") {
+					moveObject(state, "coal", "machine_room");
+					setObjectState(state, "coal", "burned", true);
+					moveObject(state, "huge_diamond", "smelly_machine");
+					setObjectState(state, "huge_diamond", "revealed", true);
 					event.stop();
-					return "The bolt turns with a screech of rusty metal. The sluice gates groan open! Water roars out of the reservoir in a tremendous torrent. The reservoir is quickly drained!";
+					return "The machine trembles violently, grinding and shrieking! Smoke billows from the exhaust vents. With a loud CLANK, the machine falls silent.";
 				}
 			}
-			if (ids.includes("screwdriver") || ids.includes("machine_switch")) {
-				if (state.player.current_room === "machine_room") {
-					if (state.objects.coal?.location === "smelly_machine") {
-						moveObject(state, "coal", "machine_room");
-						setObjectState(state, "coal", "burned", true);
-						moveObject(state, "huge_diamond", "smelly_machine");
-						setObjectState(state, "huge_diamond", "revealed", true);
-						event.stop();
-						return "The machine trembles violently, grinding and shrieking! Smoke billows from the exhaust vents. With a loud CLANK, the machine falls silent.";
-					}
-				}
-			}
-		},
-		{ priority: PRIORITY.GUARD },
-	);
+		}
+	};
+	bus.on("use", onTurnBoltAndSwitch, { priority: PRIORITY.GUARD });
+	bus.on("move", onTurnBoltAndSwitch, { priority: PRIORITY.GUARD });
 
 	// ── Put in Trophy Case Scoring ──────────────────────────────────────────────
 	bus.on("put", (event, state) => {
