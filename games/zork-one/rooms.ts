@@ -403,6 +403,11 @@ export const rooms: Record<string, Room> = {
 			up: {
 				leads_to: "dam",
 			},
+			east: {
+				leads_to: "river_1",
+				condition: "player.vehicle == 'inflatable_boat'",
+				locked_message: "You cannot enter the Frigid River without a vehicle.",
+			},
 		},
 	},
 	dam_lobby: {

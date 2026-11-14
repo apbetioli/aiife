@@ -93,7 +93,7 @@ export class ActionRegistry {
 		return entry.inputSchema.safeParse(params);
 	}
 
-	/** Returns name → description for entries with non-empty description (excludes internal events like tick, enter, exit). */
+	/** Returns name → description for entries with non-empty description (excludes internal events like tick, game:start, game:end). */
 	getDescriptions(): Record<string, string> {
 		return Object.fromEntries(
 			[...this.actions].filter(([, entry]) => entry.description).map(([name, entry]) => [name, entry.description]),

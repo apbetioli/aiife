@@ -17,6 +17,16 @@ export const objectsWithDirectionSchema = z.object({
 
 export const roomSchema = z.object({ room: z.string() });
 
+export const enterSchema = z.object({
+	objects: z.array(z.string()).optional(),
+	room: z.string().optional(),
+});
+
+export const exitSchema = z.object({
+	objects: z.array(z.string()).optional(),
+	room: z.string().optional(),
+});
+
 export const messageSchema = z.object({ message: z.string() });
 
 export const emptySchema = z.object({});

@@ -377,11 +377,13 @@ export const objects: Record<string, GameObject> = {
 		id: "inflatable_boat",
 		name: "inflatable boat",
 		aliases: ["boat", "raft"],
-		type: "container",
+		type: "vehicle",
 		location: "dam_base",
-		state: { carriable: true, punctured: false, launched: false },
+		state: { carriable: true, punctured: false, launched: false, vehicle: true, open: true },
 		descriptions: {
 			default: "A brightly colored inflatable boat is here.",
+			enter: "You are now in the inflatable boat.",
+			exit: "You get out of the inflatable boat.",
 		},
 	},
 	ivory_torch: {

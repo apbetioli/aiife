@@ -8,7 +8,7 @@ import {
 	type ScopedObject,
 	type World,
 } from "../world/types";
-import { findOpenContainerInRoom, getInventory } from "./mutators";
+import { findOpenContainerInRoom, getInventory, getPlayerVehicle } from "./mutators";
 import type { GameState, ObjectState, RoomState } from "./types";
 
 // ─── Condition Evaluator ──────────────────────────────────────────────────────
@@ -38,10 +38,16 @@ export function evaluateCondition(condition: string, state: GameState): boolean 
 
 	const [, target, stateKey, operator, rawValue] = match;
 
-	let actual: boolean | string | number | undefined;
+	let actual: boolean | string | number | null | undefined;
 
 	if (target === "player") {
-		actual = stateKey === "current_room" ? state.player.current_room : state.player.state[stateKey];
+		if (stateKey === "current_room") {
+			actual = state.player.current_room;
+		} else if (stateKey === "vehicle") {
+			actual = getPlayerVehicle(state) ?? null;
+		} else {
+			actual = state.player.state[stateKey];
+		}
 	} else if (target === "game" || target === "state") {
 		actual = stateKey === "turn" ? state.turn : undefined;
 	} else if (state.rooms[target]?.state[stateKey] !== undefined) {
@@ -59,9 +65,10 @@ export function evaluateCondition(condition: string, state: GameState): boolean 
 	}
 
 	// Parse the expected value to the same type as actual
-	let expected: boolean | string | number = rawValue.trim();
+	let expected: boolean | string | number | null = rawValue.trim();
 	if (expected === "true") expected = true;
 	else if (expected === "false") expected = false;
+	else if (expected === "null" || expected === "none" || expected === "undefined") expected = null;
 	else if (!Number.isNaN(Number(expected)) && expected !== "") expected = Number(expected);
 	else expected = (expected as string).replace(/^['"]|['"]$/g, "");
 

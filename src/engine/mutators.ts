@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import type { World } from "../world/types";
+import type { GameObject, World } from "../world/types";
 import type { GameState, ObjectState } from "./types";
 
 /**
@@ -205,8 +205,43 @@ export function setPlayerState(state: GameState, key: string, value: boolean | s
 	state.player.state = { ...state.player.state, [key]: value };
 }
 
+export function getPlayerVehicle(state: GameState): string | null {
+	const direct = (state.player as { vehicle?: string | null }).vehicle;
+	if (typeof direct === "string" && direct.length > 0) return direct;
+	const stateVehicle = state.player.state?.vehicle;
+	if (typeof stateVehicle === "string" && stateVehicle.length > 0) return stateVehicle;
+	return null;
+}
+
+export function isInVehicle(state: GameState): boolean {
+	return getPlayerVehicle(state) !== null;
+}
+
+export function setPlayerVehicle(state: GameState, vehicleId: string | null): void {
+	(state.player as { vehicle?: string | null }).vehicle = vehicleId;
+	if (vehicleId) {
+		state.player.state = { ...state.player.state, vehicle: vehicleId };
+	} else {
+		const nextState = { ...state.player.state };
+		delete nextState.vehicle;
+		state.player.state = nextState;
+	}
+}
+
+export function isVehicle(worldObj?: GameObject, objState?: ObjectState): boolean {
+	if (!worldObj && !objState) return false;
+	if (worldObj?.type === "vehicle") return true;
+	if (worldObj?.state?.vehicle === true || worldObj?.state?.is_vehicle === true) return true;
+	if (objState?.state?.vehicle === true || objState?.state?.is_vehicle === true) return true;
+	return false;
+}
+
 export function movePlayer(state: GameState, roomId: string): void {
 	state.player.current_room = roomId;
+	const vehicleId = getPlayerVehicle(state);
+	if (vehicleId && state.objects[vehicleId]) {
+		state.objects[vehicleId].location = roomId;
+	}
 }
 
 export function setPlayerCapacity(state: GameState, capacity: number): void {

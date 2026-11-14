@@ -73,15 +73,24 @@ export function validateExitConditions(world: World): string[] {
 		for (const [dir, exit] of Object.entries(room.exits)) {
 			if (!exit.condition) continue;
 
-			const match = exit.condition.match(conditionPattern);
-			if (!match) {
-				errors.push(`Room "${roomId}" exit "${dir}" has unparseable condition: "${exit.condition}"`);
-				continue;
-			}
+			// Split by || and && to validate each part
+			const parts = exit.condition.split(/\|\||&&/).map((p) => p.trim());
+			for (const part of parts) {
+				const match = part.match(conditionPattern);
+				if (!match) {
+					errors.push(`Room "${roomId}" exit "${dir}" has unparseable condition: "${exit.condition}"`);
+					continue;
+				}
 
-			const referencedObjectId = match[1];
-			if (!world.objects[referencedObjectId]) {
-				errors.push(`Room "${roomId}" exit "${dir}" condition references unknown object "${referencedObjectId}"`);
+				const referencedTarget = match[1];
+				const isSpecialTarget =
+					referencedTarget === "player" || referencedTarget === "game" || referencedTarget === "state";
+				const isRoom = Boolean(world.rooms[referencedTarget]);
+				const isObject = Boolean(world.objects[referencedTarget]);
+
+				if (!isSpecialTarget && !isRoom && !isObject) {
+					errors.push(`Room "${roomId}" exit "${dir}" condition references unknown object "${referencedTarget}"`);
+				}
 			}
 
 			if (!world.rooms[exit.leads_to]) {
@@ -140,11 +149,19 @@ export function buildInitialState(world: World): GameState {
 	}
 
 	// ── 4. Build player state ──────────────────────────────────────────────
+	const initialVehicle =
+		(world.player as { vehicle?: string | null }).vehicle ??
+		((world.player.state as Record<string, unknown>)?.vehicle as string | undefined) ??
+		null;
 	const player: GameState["player"] = {
 		current_room: world.player.current_room,
 		capacity: world.player.capacity ?? world.capacity ?? 7,
+		vehicle: initialVehicle,
 		state: { ...world.player.state },
 	};
+	if (initialVehicle) {
+		player.state.vehicle = initialVehicle;
+	}
 
 	// ── 5. Assemble and validate final state ──────────────────────────────
 	const gameState: GameState = {

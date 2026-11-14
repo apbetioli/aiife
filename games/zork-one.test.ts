@@ -474,6 +474,87 @@ describe("Zork One world definition and rules", () => {
 		expect(isInInventory(takeScarab.state, "jeweled_scarab")).toBe(true);
 	});
 
+	it("inflatable boat supports enter, navigation, condition blocking, and exit in Zork", () => {
+		const { bus, state: s0 } = setup();
+		let s: GameState = {
+			...s0,
+			player: { ...s0.player, current_room: "dam_base" },
+			objects: {
+				...s0.objects,
+				air_pump: { ...s0.objects.air_pump, location: "inventory" },
+			},
+		};
+
+		// 1. Trying to go east without a boat is blocked by the vehicle condition
+		const blockedGo = executeAction(bus, world, s, "go", { direction: "east" });
+		expect(blockedGo.stopped).toBe(true);
+		expect(blockedGo.feedback.join(" ")).toContain("You cannot enter the Frigid River without a vehicle.");
+		expect(blockedGo.state.player.current_room).toBe("dam_base");
+
+		// 2. Inflate the boat
+		const infRes = executeAction(bus, world, s, "inflate", { objects: ["pile_of_plastic", "air_pump"] });
+		s = infRes.state;
+
+		// 3. Board the boat using enter/board
+		const boardRes = executeAction(bus, world, s, "enter", { objects: ["inflatable_boat"] });
+		expect(boardRes.stopped).toBe(false);
+		expect(boardRes.feedback.join(" ")).toContain("You are now in the inflatable boat.");
+		expect(boardRes.state.player.vehicle).toBe("inflatable_boat");
+		expect(boardRes.state.player.state.vehicle).toBe("inflatable_boat");
+		s = boardRes.state;
+
+		// 4. Taking the boat while inside it is forbidden
+		const takeRes = executeAction(bus, world, s, "take", { objects: ["inflatable_boat"] });
+		expect(takeRes.stopped).toBe(true);
+		expect(takeRes.feedback.join(" ")).toContain("You can't take that while you're inside it.");
+
+		// 5. Navigate east into river_1 with the boat
+		const goEast = executeAction(bus, world, s, "go", { direction: "east" });
+		expect(goEast.stopped).toBe(false);
+		expect(goEast.state.player.current_room).toBe("river_1");
+		expect(goEast.state.objects.inflatable_boat?.location).toBe("river_1");
+		expect(goEast.state.player.vehicle).toBe("inflatable_boat");
+		s = goEast.state;
+
+		// 6. Navigate downstream to river_2, river_3, river_4
+		s = executeAction(bus, world, s, "go", { direction: "down" }).state;
+		expect(s.player.current_room).toBe("river_2");
+		expect(s.objects.inflatable_boat?.location).toBe("river_2");
+
+		s = executeAction(bus, world, s, "go", { direction: "down" }).state;
+		expect(s.player.current_room).toBe("river_3");
+		expect(s.objects.inflatable_boat?.location).toBe("river_3");
+
+		s = executeAction(bus, world, s, "go", { direction: "down" }).state;
+		expect(s.player.current_room).toBe("river_4");
+		expect(s.objects.inflatable_boat?.location).toBe("river_4");
+
+		// 7. Land at sandy beach
+		s = executeAction(bus, world, s, "go", { direction: "east" }).state;
+		expect(s.player.current_room).toBe("sandy_beach");
+		expect(s.objects.inflatable_boat?.location).toBe("sandy_beach");
+
+		// 8. Disembark / exit the boat
+		const exitRes = executeAction(bus, world, s, "exit", { objects: ["boat"] });
+		expect(exitRes.stopped).toBe(false);
+		expect(exitRes.feedback.join(" ")).toContain("You get out of the inflatable boat.");
+		expect(exitRes.state.player.vehicle).toBeNull();
+		s = exitRes.state;
+
+		// 9. Now on foot, can explore sandy cave
+		s = executeAction(bus, world, s, "go", { direction: "northeast" }).state;
+		expect(s.player.current_room).toBe("sandy_cave");
+		// Boat remains on the beach!
+		expect(s.objects.inflatable_boat?.location).toBe("sandy_beach");
+
+		// 10. Return to sandy beach and re-board the boat
+		s = executeAction(bus, world, s, "go", { direction: "southwest" }).state;
+		expect(s.player.current_room).toBe("sandy_beach");
+		const reboardRes = executeAction(bus, world, s, "enter", { objects: ["boat"] });
+		expect(reboardRes.stopped).toBe(false);
+		expect(reboardRes.state.player.vehicle).toBe("inflatable_boat");
+	});
+
 	it("frightens cyclops with Ulysses and quiets loud room with echo", () => {
 		const { bus, state: s0 } = setup();
 
