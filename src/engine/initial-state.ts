@@ -142,6 +142,7 @@ export function buildInitialState(world: World): GameState {
 	// ── 4. Build player state ──────────────────────────────────────────────
 	const player: GameState["player"] = {
 		current_room: world.player.current_room,
+		capacity: world.player.capacity ?? world.capacity ?? 7,
 		state: { ...world.player.state },
 	};
 

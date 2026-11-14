@@ -24,6 +24,7 @@ const GameObjectSchema = z.object({
 	aliases: z.array(z.string()).default([]),
 	type: ObjectTypeSchema,
 	location: z.string(), // room id, container object id, or "inventory"
+	weight: z.number().optional().default(1),
 	state: StateSchema.default({}),
 	descriptions: z.record(z.string(), z.string()).refine((d) => "default" in d, {
 		message: "descriptions must include a 'default' entry",
@@ -72,6 +73,7 @@ const RoomSchema = z.object({
 
 const PlayerSchema = z.object({
 	current_room: z.string(), // room id
+	capacity: z.number().optional().default(7),
 	state: StateSchema.default({}),
 });
 
@@ -83,6 +85,7 @@ const WorldSchema = z.object({
 	version: z.string().default("1.0.0"),
 	start_room: z.string(),
 	welcome: z.string().optional(),
+	capacity: z.number().optional(),
 	rooms: z.record(z.string(), RoomSchema),
 	objects: z.record(z.string(), GameObjectSchema),
 	player: PlayerSchema,
@@ -120,11 +123,19 @@ const ParserContextSchema = z.object({
 
 export type State = z.infer<typeof StateSchema>;
 export type ObjectType = z.infer<typeof ObjectTypeSchema>;
-export type GameObject = z.infer<typeof GameObjectSchema>;
+export type GameObject = Omit<z.infer<typeof GameObjectSchema>, "weight"> & {
+	weight?: number;
+};
 export type Exit = z.infer<typeof ExitSchema>;
 export type Room = z.infer<typeof RoomSchema>;
-export type Player = z.infer<typeof PlayerSchema>;
-export type World = z.infer<typeof WorldSchema>;
+export type Player = Omit<z.infer<typeof PlayerSchema>, "capacity"> & {
+	capacity?: number;
+};
+export type World = Omit<z.infer<typeof WorldSchema>, "objects" | "player" | "capacity"> & {
+	objects: Record<string, GameObject>;
+	player: Player;
+	capacity?: number;
+};
 export type ParserContext = z.infer<typeof ParserContextSchema>;
 export type BlockedExit = z.infer<typeof BlockedExitSchema>;
 export type ScopedObject = z.infer<typeof ScopedObjectSchema>;

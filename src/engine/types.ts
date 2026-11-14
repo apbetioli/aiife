@@ -14,6 +14,7 @@ const ObjectStateSchema = z.object({
 
 const PlayerStateSchema = z.object({
 	current_room: z.string(),
+	capacity: z.number().optional().default(7),
 	state: StateSchema.default({}),
 });
 

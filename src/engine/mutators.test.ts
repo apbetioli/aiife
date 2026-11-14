@@ -4,14 +4,21 @@ import { buildInitialState } from "./initial-state";
 import {
 	ensureVisited,
 	findOpenContainerInRoom,
+	getCarriedObjects,
+	getCarriedWeight,
 	getInventory,
+	getInventoryWeight,
+	getObjectWeight,
+	getPlayerCapacity,
 	immutable,
+	isCarried,
 	isInInventory,
 	isInRoom,
 	isInScope,
 	moveObject,
 	movePlayer,
 	setObjectState,
+	setPlayerCapacity,
 	setPlayerState,
 	setRoomState,
 } from "./mutators";
@@ -282,6 +289,60 @@ describe("mutators", () => {
 			state.objects.pouch.state.open = false;
 			expect(findOpenContainerInRoom(state, "gem")).toBeUndefined();
 			expect(isInScope(state, "gem")).toBe(false);
+		});
+	});
+
+	// ─── Weight & Capacity Helpers ───────────────────────────────────────────
+
+	describe("weight & capacity helpers", () => {
+		it("isCarried returns true for direct inventory items and nested carried items", () => {
+			const state = freshState();
+			expect(isCarried(state, "sword")).toBe(true);
+			expect(isCarried(state, "lamp")).toBe(false);
+
+			// Put pouch in inventory, gem in pouch
+			state.objects.pouch = { location: "inventory", state: { open: true } };
+			state.objects.gem.location = "pouch";
+			expect(isCarried(state, "pouch")).toBe(true);
+			expect(isCarried(state, "gem")).toBe(true);
+		});
+
+		it("isCarried handles cyclical object references gracefully without infinite loops", () => {
+			const state = freshState();
+			state.objects.gem.location = "gem"; // self-reference
+			expect(isCarried(state, "gem")).toBe(false);
+		});
+
+		it("getCarriedObjects returns all carried IDs", () => {
+			const state = freshState();
+			state.objects.pouch = { location: "inventory", state: { open: true } };
+			state.objects.gem.location = "pouch";
+
+			const carried = getCarriedObjects(state);
+			expect(carried).toContain("sword");
+			expect(carried).toContain("pouch");
+			expect(carried).toContain("gem");
+			expect(carried).not.toContain("lamp");
+		});
+
+		it("getObjectWeight and getCarriedWeight compute weights correctly", () => {
+			const world = makeTestWorld();
+			const state = freshState();
+
+			expect(getObjectWeight(world, "sword", state)).toBe(1);
+			expect(getCarriedWeight(state, world)).toBe(1); // sword (1)
+			expect(getInventoryWeight(state, world)).toBe(1);
+
+			state.objects.lamp.location = "inventory";
+			expect(getCarriedWeight(state, world)).toBe(2);
+		});
+
+		it("getPlayerCapacity and setPlayerCapacity read and update player capacity", () => {
+			const state = freshState();
+			expect(getPlayerCapacity(state)).toBe(7);
+
+			const updated = immutable(state, (s) => setPlayerCapacity(s, 14));
+			expect(getPlayerCapacity(updated)).toBe(14);
 		});
 	});
 });

@@ -1,5 +1,14 @@
 import type { z } from "zod";
-import { findOpenContainerInRoom, isInInventory, isInRoom, moveObject } from "../../../mutators";
+import {
+	findOpenContainerInRoom,
+	getCarriedWeight,
+	getObjectWeight,
+	getPlayerCapacity,
+	isCarried,
+	isInInventory,
+	isInRoom,
+	moveObject,
+} from "../../../mutators";
 import { getObjectIds } from "../helpers";
 import { objectsSchema } from "../schemas";
 import type { ActionDef } from "../types";
@@ -20,6 +29,8 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 			stop();
 			return "Take what?";
 		}
+		const capacity = getPlayerCapacity(state, world);
+
 		if (ids.length === 1) {
 			const id = ids[0];
 			if (isInInventory(state, id)) {
@@ -34,6 +45,12 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 			if (!isInRoom(state, id) && !findOpenContainerInRoom(state, id)) {
 				stop();
 				return "You can't take that.";
+			}
+			const currentWeight = getCarriedWeight(state, world);
+			const itemWeight = isCarried(state, id) ? 0 : getObjectWeight(world, id, state);
+			if (currentWeight + itemWeight > capacity) {
+				stop();
+				return obj?.descriptions.too_heavy ?? "Your load is too heavy.";
 			}
 			moveObject(state, id, "inventory");
 			return "Taken.";
@@ -52,6 +69,12 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 				continue;
 			}
 			if (isInRoom(state, id) || findOpenContainerInRoom(state, id)) {
+				const currentWeight = getCarriedWeight(state, world);
+				const itemWeight = isCarried(state, id) ? 0 : getObjectWeight(world, id, state);
+				if (currentWeight + itemWeight > capacity) {
+					feedback.push(`${name}: ${obj?.descriptions.too_heavy ?? "Your load is too heavy."}`);
+					continue;
+				}
 				moveObject(state, id, "inventory");
 				feedback.push(`${name}: Taken.`);
 				takenCount++;
