@@ -30,6 +30,8 @@ import { tick } from "./system/tick";
 import { undo } from "./system/undo";
 import { wait } from "./system/wait";
 import { again } from "./system/again";
+import { restart } from "./system/restart";
+import { diagnose } from "./system/diagnose";
 
 export const navigationActions = {
 	go,
@@ -70,6 +72,8 @@ export const systemActions = {
 	die,
 	wait,
 	again,
+	restart,
+	diagnose,
 } as const;
 
 export const standardAdventureActions = {

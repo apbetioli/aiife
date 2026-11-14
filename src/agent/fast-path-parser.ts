@@ -123,6 +123,28 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Restart
+	if (trimmed === "restart" || trimmed === "restart game") {
+		return {
+			action: "restart",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Diagnose
+	if (trimmed === "diagnose" || trimmed === "health" || trimmed === "status") {
+		return {
+			action: "diagnose",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	// Undo
 	if (trimmed === "undo") {
 		return {

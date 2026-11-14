@@ -134,6 +134,10 @@ export class GameEngine {
 			return this.undo();
 		}
 
+		if (intent.action === "restart") {
+			return this.restart();
+		}
+
 		if (intent.action === "save") {
 			const slot = sanitizeSlot(intent.slot ?? undefined);
 			try {
@@ -190,6 +194,14 @@ export class GameEngine {
 		}
 		this.state = prev;
 		return this.renderLook("Previous turn undone.");
+	}
+
+	restart(): string {
+		this.history = [];
+		this.lastIntent = null;
+		this.state = buildInitialState(this.world);
+		const startFeedback = this.start();
+		return startFeedback ? `Restarting game.\n${startFeedback}` : "Restarting game.";
 	}
 
 	save(): SaveFile {

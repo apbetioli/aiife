@@ -85,6 +85,9 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		aliases: ["points"],
 		scope: "always",
 		execute: (_params, { state }) => {
+			if (state.player.state.dead) {
+				return "How can you think of your score in your condition?";
+			}
 			const score = calculateScore(state);
 			return `Your score is ${score} of a possible 350 points, in ${state.turn || 0} moves.`;
 		},

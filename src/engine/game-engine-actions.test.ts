@@ -19,6 +19,8 @@ describe("GameEngine Action Configuration and Composable Packs", () => {
 		expect(registry.has("undo")).toBe(true);
 		expect(registry.has("wait")).toBe(true);
 		expect(registry.has("again")).toBe(true);
+		expect(registry.has("restart")).toBe(true);
+		expect(registry.has("diagnose")).toBe(true);
 		expect(registry.has("save")).toBe(true);
 		expect(registry.has("restore")).toBe(true);
 	});
@@ -133,5 +135,23 @@ describe("GameEngine Action Configuration and Composable Packs", () => {
 		// Repeating again replays wait
 		const repeatOutput = engine.runAction({ action: "again" });
 		expect(repeatOutput).toBe("Time passes...");
+	});
+
+	it("diagnoses health status and restarts engine state", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		// Healthy initially
+		expect(engine.runAction({ action: "diagnose" })).toBe("You are in perfect health.");
+
+		// Take lamp and verify state change
+		engine.runAction({ action: "take", objects: ["lamp"] });
+		expect(engine.getActionRegistry().has("restart")).toBe(true);
+
+		// Restart resets state
+		const restartOutput = engine.restart();
+		expect(restartOutput).toContain("Restarting game.");
+		expect(restartOutput).toContain("Room A");
 	});
 });
