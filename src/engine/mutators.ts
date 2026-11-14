@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import type { World } from "../world/types";
 import type { GameState, ObjectState } from "./types";
 
 /**
@@ -27,6 +28,71 @@ export function isInInventory(state: GameState, objectId: string): boolean {
 /** Returns all object IDs currently in the player's inventory based on object locations. */
 export function getInventory(state: GameState): string[] {
 	return Object.keys(state.objects).filter((id) => state.objects[id]?.location === "inventory");
+}
+
+/**
+ * Returns true if the object is carried by the player, either directly in
+ * "inventory" or inside a carried container.
+ */
+export function isCarried(state: GameState, objectId: string): boolean {
+	const visited = new Set<string>([objectId]);
+	let curr: string | null | undefined = state.objects[objectId]?.location;
+	while (curr) {
+		if (curr === "inventory") return true;
+		if (visited.has(curr) || !state.objects[curr]) return false;
+		visited.add(curr);
+		curr = state.objects[curr].location;
+	}
+	return false;
+}
+
+/** Returns all object IDs carried by the player directly or inside carried containers. */
+export function getCarriedObjects(state: GameState): string[] {
+	return Object.keys(state.objects).filter((id) => isCarried(state, id));
+}
+
+/**
+ * Returns the weight of an object, checking dynamic object state first,
+ * then world definition, falling back to 1.
+ */
+export function getObjectWeight(world: World, objectId: string, state?: GameState): number {
+	const stateWeight = state?.objects[objectId]?.state?.weight;
+	if (typeof stateWeight === "number") {
+		return stateWeight;
+	}
+	const obj = world.objects[objectId];
+	if (obj && typeof obj.weight === "number") {
+		return obj.weight;
+	}
+	return 1;
+}
+
+/** Returns the total weight of all objects carried by the player. */
+export function getCarriedWeight(state: GameState, world: World): number {
+	return getCarriedObjects(state).reduce((sum, id) => sum + getObjectWeight(world, id, state), 0);
+}
+
+/** Alias for getCarriedWeight */
+export const getInventoryWeight = getCarriedWeight;
+
+/**
+ * Returns the player's carry capacity limit, checking player state,
+ * player definition, world definition, falling back to 7.
+ */
+export function getPlayerCapacity(state: GameState, world?: World): number {
+	if (typeof state.player.capacity === "number") {
+		return state.player.capacity;
+	}
+	if (typeof state.player.state?.capacity === "number") {
+		return state.player.state.capacity;
+	}
+	if (world?.player?.capacity !== undefined) {
+		return world.player.capacity;
+	}
+	if (world?.capacity !== undefined) {
+		return world.capacity;
+	}
+	return 7;
 }
 
 /**
@@ -141,6 +207,10 @@ export function setPlayerState(state: GameState, key: string, value: boolean | s
 
 export function movePlayer(state: GameState, roomId: string): void {
 	state.player.current_room = roomId;
+}
+
+export function setPlayerCapacity(state: GameState, capacity: number): void {
+	state.player.capacity = capacity;
 }
 
 export function ensureVisited(state: GameState, roomId: string): void {
