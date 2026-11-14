@@ -71,6 +71,7 @@ export class GameAgent {
 			try {
 				const fastIntent = tryDeterministicIntent(cmd);
 				let intent: RecognizedIntent | null = null;
+				let currentToolCalls: Record<string, unknown>[] | undefined;
 
 				if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
 					intent = fastIntent;
@@ -94,6 +95,7 @@ export class GameAgent {
 						...getCommonCallOptions(),
 					});
 
+					currentToolCalls = toolCalls as unknown as Record<string, unknown>[];
 					intent = extractIntent(toolCalls?.[0], text);
 
 					if (toolUsage) {
@@ -101,7 +103,7 @@ export class GameAgent {
 					}
 				}
 
-				const result = this.engine.runAction(intent);
+				const result = this.engine.runAction(intent, { rawInput: cmd });
 
 				if (i > 0 && outputs.length > 0) {
 					callbacks.onToken("\n");
@@ -109,6 +111,11 @@ export class GameAgent {
 
 				const outputText = await this.narrate(result, cmd, callbacks);
 				outputs.push(outputText);
+
+				this.engine.updateLastCommand({
+					output: outputText,
+					...(currentToolCalls && currentToolCalls.length > 0 ? { tool_calls: currentToolCalls } : {}),
+				});
 
 				workingHistory.push({ role: "user", content: cmd });
 				workingHistory.push({ role: "assistant", content: outputText });
