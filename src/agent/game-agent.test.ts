@@ -1,3 +1,4 @@
+import type { ModelMessage } from "ai";
 import { MockLanguageModelV3 } from "ai/test";
 import { describe, expect, it, vi } from "vitest";
 import { makeTestWorld } from "../engine/__fixtures__/test-world";
@@ -474,6 +475,467 @@ describe("GameAgent", () => {
 			expect(reconstructed).toEqual(engine.getState());
 			expect(reconstructed.objects.lamp.location).toBe("inventory");
 			expect(reconstructed.player.current_room).toBe("room_b");
+		});
+	});
+
+	describe("Conversational slot-filling memory (Ticket #65)", () => {
+		function setupTrollWorld() {
+			const baseWorld = makeTestWorld();
+			const world = makeTestWorld({
+				objects: {
+					...baseWorld.objects,
+					troll: {
+						id: "troll",
+						name: "troll",
+						aliases: ["nasty troll"],
+						type: "actor",
+						location: "room_a",
+						state: { alive: true },
+						descriptions: { default: "A nasty troll blocks your path." },
+					},
+					rusty_knife: {
+						id: "rusty_knife",
+						name: "rusty knife",
+						aliases: ["knife"],
+						type: "weapon",
+						location: "inventory",
+						state: { carriable: true },
+						descriptions: { default: "A rusty knife." },
+					},
+					pearl_knife: {
+						id: "pearl_knife",
+						name: "pearl-handled knife",
+						aliases: ["knife"],
+						type: "weapon",
+						location: "inventory",
+						state: { carriable: true },
+						descriptions: { default: "A pearl-handled knife." },
+					},
+				},
+			});
+
+			const engine = new GameEngine(world, (bus) => {
+				// Add custom attack rule for troll
+				bus.on("attack", "troll", (event) => {
+					const weapon = (event.params.objects as string[])?.[1];
+					event.stop();
+					if (weapon === "rusty_knife") {
+						return "You slash the troll with the rusty knife! The troll snarls in pain.";
+					}
+					if (weapon === "pearl_knife") {
+						return "You stab the troll with the pearl-handled knife!";
+					}
+					return "You attack the troll barehanded.";
+				});
+			});
+			engine.start();
+
+			const mockModel = new MockLanguageModelV3({
+				doGenerate: async () => ({
+					rawCall: { rawPrompt: null, rawSettings: {} },
+					finishReason: { unified: "stop", raw: "stop" },
+					usage: {
+						inputTokens: { total: 10, noCache: 10, cacheRead: 0, cacheWrite: 0 },
+						outputTokens: { total: 5, text: 5, reasoning: 0 },
+					},
+					content: [{ type: "text", text: "fallback" }],
+					warnings: [],
+				}),
+			});
+
+			const agent = new GameAgent(mockModel, engine, mockModel);
+			return { agent, engine, mockModel };
+		}
+
+		it("executes a 3-turn drill-down: 'Attack' -> 'With knife' -> 'Rusty knife'", async () => {
+			const { agent } = setupTrollWorld();
+			let history: ModelMessage[] = [];
+
+			// Turn 1: "Attack"
+			let completed1 = "";
+			history = await agent.run("Attack", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed1 = c;
+				},
+			});
+
+			expect(completed1).toBe("Attack troll with what?");
+			expect(agent.getPendingFrame()).toMatchObject({
+				action: "attack",
+				objects: ["troll"],
+				waitingFor: "instrument",
+			});
+
+			// Turn 2: "With knife" (ambiguous: rusty_knife vs pearl_knife)
+			let completed2 = "";
+			history = await agent.run("With knife", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+
+			expect(completed2).toBe("Which knife?");
+			expect(agent.getPendingFrame()).toMatchObject({
+				action: "attack",
+				objects: ["troll"],
+				waitingFor: "disambiguation",
+				candidates: ["rusty_knife", "pearl_knife"],
+			});
+
+			// Turn 3: "Rusty knife" (resolves ambiguity and executes attack)
+			let completed3 = "";
+			history = await agent.run("Rusty knife", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed3 = c;
+				},
+			});
+
+			expect(completed3).toContain("You slash the troll with the rusty knife!");
+			expect(agent.getPendingFrame()).toBeNull();
+		});
+
+		it("resolves multi-turn drill-down using noun fragments without prepositions (e.g. 'the rusty one')", async () => {
+			const { agent } = setupTrollWorld();
+			let history: ModelMessage[] = [];
+
+			// Turn 1
+			let completed1 = "";
+			history = await agent.run("attack troll", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed1 = c;
+				},
+			});
+			expect(completed1).toBe("Attack troll with what?");
+
+			// Turn 2: "knife"
+			let completed2 = "";
+			history = await agent.run("knife", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+			expect(completed2).toBe("Which knife?");
+
+			// Turn 3: "the rusty one"
+			let completed3 = "";
+			history = await agent.run("the rusty one", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed3 = c;
+				},
+			});
+			expect(completed3).toContain("You slash the troll with the rusty knife!");
+			expect(agent.getPendingFrame()).toBeNull();
+		});
+
+		it("disambiguates objects for 'take' command when multiple matching items exist", async () => {
+			const baseWorld = makeTestWorld();
+			const world = makeTestWorld({
+				objects: {
+					...baseWorld.objects,
+					silver_key: {
+						id: "silver_key",
+						name: "silver key",
+						aliases: ["key"],
+						type: "key",
+						location: "room_a",
+						state: { carriable: true },
+						descriptions: { default: "A silver key." },
+					},
+					rusty_key: {
+						id: "rusty_key",
+						name: "rusty key",
+						aliases: ["key"],
+						type: "key",
+						location: "room_a",
+						state: { carriable: true },
+						descriptions: { default: "A rusty key." },
+					},
+				},
+			});
+
+			const engine = new GameEngine(world);
+			engine.start();
+			const mockModel = new MockLanguageModelV3({
+				doGenerate: async () => ({
+					rawCall: { rawPrompt: null, rawSettings: {} },
+					finishReason: { unified: "stop", raw: "stop" },
+					usage: {
+						inputTokens: { total: 10, noCache: 10, cacheRead: 0, cacheWrite: 0 },
+						outputTokens: { total: 5, text: 5, reasoning: 0 },
+					},
+					content: [{ type: "text", text: "fallback" }],
+					warnings: [],
+				}),
+			});
+			const agent = new GameAgent(mockModel, engine, mockModel);
+			let history: ModelMessage[] = [];
+
+			// Turn 1: "take key" -> Ambiguous between silver_key and rusty_key
+			let completed1 = "";
+			history = await agent.run("take key", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed1 = c;
+				},
+			});
+			expect(completed1).toBe("Which key?");
+			expect(agent.getPendingFrame()?.waitingFor).toBe("disambiguation");
+
+			// Turn 2: "silver key" -> Resolves and executes take
+			let completed2 = "";
+			history = await agent.run("silver key", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+			expect(completed2).toBe("Taken.");
+			expect(agent.getPendingFrame()).toBeNull();
+			expect(engine.getState().objects.silver_key.location).toBe("inventory");
+			expect(engine.getState().objects.rusty_key.location).toBe("room_a");
+		});
+
+		it("cancels pending slot memory when player inputs an explicit cancellation command", async () => {
+			const { agent } = setupTrollWorld();
+			let history: ModelMessage[] = [];
+
+			// Turn 1: "Attack"
+			history = await agent.run("Attack", history, {
+				onToken: () => {},
+				onComplete: () => {},
+			});
+			expect(agent.getPendingFrame()).not.toBeNull();
+
+			// Turn 2: "nevermind"
+			let completed2 = "";
+			history = await agent.run("nevermind", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+
+			expect(completed2).toBe("Cancelled.");
+			expect(agent.getPendingFrame()).toBeNull();
+		});
+
+		it("cancels pending slot memory and executes when player issues a brand new command", async () => {
+			const { agent } = setupTrollWorld();
+			let history: ModelMessage[] = [];
+
+			// Turn 1: "Attack"
+			history = await agent.run("Attack", history, {
+				onToken: () => {},
+				onComplete: () => {},
+			});
+			expect(agent.getPendingFrame()).not.toBeNull();
+
+			// Turn 2: "look" -> New command cancels pending attack frame and shows room description
+			let completed2 = "";
+			history = await agent.run("look", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+
+			expect(completed2).toContain("Room A");
+			expect(agent.getPendingFrame()).toBeNull();
+		});
+
+		it("cancels pending slot memory when player issues a new verb command", async () => {
+			const { engine } = setupTrollWorld();
+			const doGenerate = vi.fn().mockResolvedValue({
+				rawCall: { rawPrompt: null, rawSettings: {} },
+				finishReason: "tool-calls",
+				usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+				content: [
+					{
+						type: "tool-call",
+						toolCallId: "call_take",
+						toolName: "take",
+						input: JSON.stringify({ objects: ["lamp"] }),
+					},
+				],
+			});
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const agent = new GameAgent(mockModel, engine, mockModel);
+			let history: ModelMessage[] = [];
+
+			// Turn 1: "Attack"
+			history = await agent.run("Attack", history, {
+				onToken: () => {},
+				onComplete: () => {},
+			});
+			expect(agent.getPendingFrame()).not.toBeNull();
+
+			// Turn 2: "take brass lamp" -> New take command replaces pending attack frame
+			let completed2 = "";
+			history = await agent.run("take brass lamp", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+
+			expect(completed2).toBe("Taken.");
+			expect(agent.getPendingFrame()).toBeNull();
+			expect(engine.getState().objects.lamp.location).toBe("inventory");
+		});
+
+		it("passes active pending frame context to LLM during multi-turn LLM resolution", async () => {
+			const baseWorld = makeTestWorld();
+			const engine = new GameEngine(baseWorld);
+			engine.start();
+
+			const doGenerate = vi
+				.fn()
+				// Turn 1: LLM responds with clarification
+				.mockResolvedValueOnce({
+					rawCall: { rawPrompt: null, rawSettings: {} },
+					finishReason: "tool-calls",
+					usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+					content: [
+						{
+							type: "tool-call",
+							toolCallId: "call_clarify",
+							toolName: "respond",
+							input: JSON.stringify({ message: "What do you want to take?" }),
+						},
+					],
+				})
+				// Turn 2: LLM receives pending frame and calls take tool
+				.mockResolvedValueOnce({
+					rawCall: { rawPrompt: null, rawSettings: {} },
+					finishReason: "tool-calls",
+					usage: { inputTokens: 60, outputTokens: 15, totalTokens: 75 },
+					content: [
+						{
+							type: "tool-call",
+							toolCallId: "call_take_lamp",
+							toolName: "take",
+							input: JSON.stringify({ objects: ["lamp"] }),
+						},
+					],
+				});
+
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const agent = new GameAgent(mockModel, engine, mockModel);
+			let history: ModelMessage[] = [];
+
+			// Turn 1: User says "grab"
+			let completed1 = "";
+			history = await agent.run("grab", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed1 = c;
+				},
+			});
+			expect(completed1).toBe("What do you want to take?");
+			expect(agent.getPendingFrame()).toMatchObject({
+				action: "take",
+				waitingFor: "target",
+			});
+
+			// Turn 2: User says "the brass lamp"
+			let completed2 = "";
+			history = await agent.run("the brass lamp", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+
+			expect(completed2).toBe("Taken.");
+			expect(agent.getPendingFrame()).toBeNull();
+			expect(engine.getState().objects.lamp.location).toBe("inventory");
+		});
+
+		it("handles multi-turn unlock dialogue: 'unlock' -> 'What do you want to unlock?' -> 'door' -> 'What do you want to unlock the wooden door with?' -> 'with rusty key'", async () => {
+			const baseWorld = makeTestWorld();
+			const world = makeTestWorld({
+				objects: {
+					...baseWorld.objects,
+					door: {
+						id: "door",
+						name: "wooden door",
+						aliases: [],
+						type: "door",
+						location: "room_a",
+						state: { locked: true, open: false, carriable: false },
+						descriptions: { default: "A wooden door." },
+						requires_instrument: { unlock: "rusty_key" },
+					},
+					rusty_key: {
+						id: "rusty_key",
+						name: "rusty key",
+						aliases: ["key"],
+						type: "key",
+						location: "inventory",
+						state: { carriable: true },
+						descriptions: { default: "A rusty key." },
+					},
+				},
+			});
+
+			const engine = new GameEngine(world);
+			engine.start();
+
+			const mockModel = new MockLanguageModelV3({
+				doGenerate: async () => ({
+					rawCall: { rawPrompt: null, rawSettings: {} },
+					finishReason: { unified: "stop", raw: "stop" },
+					usage: {
+						inputTokens: { total: 10, noCache: 10, cacheRead: 0, cacheWrite: 0 },
+						outputTokens: { total: 5, text: 5, reasoning: 0 },
+					},
+					content: [{ type: "text", text: "fallback" }],
+					warnings: [],
+				}),
+			});
+
+			const agent = new GameAgent(mockModel, engine, mockModel);
+			let history: ModelMessage[] = [];
+
+			// Turn 1: "unlock"
+			let completed1 = "";
+			history = await agent.run("unlock", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed1 = c;
+				},
+			});
+			expect(completed1).toBe("What do you want to unlock?");
+			expect(agent.getPendingFrame()?.waitingFor).toBe("target");
+
+			// Turn 2: "door" -> asks for key
+			let completed2 = "";
+			history = await agent.run("door", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed2 = c;
+				},
+			});
+			expect(completed2).toBe("What do you want to unlock the wooden door with?");
+			expect(agent.getPendingFrame()?.waitingFor).toBe("instrument");
+
+			// Turn 3: "with rusty key" -> unlocks door!
+			let completed3 = "";
+			history = await agent.run("with rusty key", history, {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed3 = c;
+				},
+			});
+			expect(completed3).toBe("Done.");
+			expect(agent.getPendingFrame()).toBeNull();
+			expect(engine.getState().objects.door.state.locked).toBe(false);
 		});
 	});
 });
