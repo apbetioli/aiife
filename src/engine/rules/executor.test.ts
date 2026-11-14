@@ -633,4 +633,44 @@ describe("executeAction", () => {
 		expect(getInventory(result.state)).toEqual([]);
 		expect(result.feedback.join(" ")).toContain("You died!");
 	});
+
+	// ── break, burn, throw, give, blow ─────────────────────────────────────
+
+	it("break, burn, throw, give, and blow item actions execute properly", () => {
+		const { world, bus, state } = setup();
+
+		// break
+		const breakNoTarget = executeAction(bus, world, state, "break", { objects: [] });
+		expect(breakNoTarget.feedback.join(" ")).toContain("Break what?");
+		const breakTarget = executeAction(bus, world, state, "break", { objects: ["lamp"] });
+		expect(breakTarget.feedback.join(" ")).toContain("You can't break that.");
+
+		// burn
+		const burnNoTarget = executeAction(bus, world, state, "burn", { objects: [] });
+		expect(burnNoTarget.feedback.join(" ")).toContain("Burn what?");
+		const burnTarget = executeAction(bus, world, state, "burn", { objects: ["lamp"] });
+		expect(burnTarget.feedback.join(" ")).toContain("You can't burn that.");
+
+		// blow
+		const blowNoTarget = executeAction(bus, world, state, "blow", { objects: [] });
+		expect(blowNoTarget.feedback.join(" ")).toContain("Blow what?");
+		const blowTarget = executeAction(bus, world, state, "blow", { objects: ["lamp"] });
+		expect(blowTarget.feedback.join(" ")).toContain("You can't usefully blow that.");
+
+		// throw
+		const throwNotCarried = executeAction(bus, world, state, "throw", { objects: ["lamp"] });
+		expect(throwNotCarried.feedback.join(" ")).toContain("You don't have that.");
+		// sword is in inventory
+		const throwCarried = executeAction(bus, world, state, "throw", { objects: ["sword"] });
+		expect(throwCarried.feedback.join(" ")).toContain("Thrown.");
+		expect(throwCarried.state.objects.sword.location).toBe("room_a");
+
+		// give
+		const giveNotCarried = executeAction(bus, world, state, "give", { objects: ["lamp", "chest"] });
+		expect(giveNotCarried.feedback.join(" ")).toContain("You don't have that.");
+		const giveNoRecipient = executeAction(bus, world, state, "give", { objects: ["sword"] });
+		expect(giveNoRecipient.feedback.join(" ")).toContain("Give it to whom?");
+		const giveCarried = executeAction(bus, world, state, "give", { objects: ["sword", "chest"] });
+		expect(giveCarried.feedback.join(" ")).toContain("They don't seem interested.");
+	});
 });

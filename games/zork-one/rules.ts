@@ -680,20 +680,18 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 	});
 
 	// ── Give Egg to Thief ───────────────────────────────────────────────────────
-	bus.on(
-		"put",
-		(event, state) => {
-			const ids = getObjectIds(event.params as Record<string, unknown>);
-			if (ids[0] === "jewel_encrusted_egg" && (ids[1] === "thief" || state.player.current_room === "treasure_room")) {
-				setObjectState(state, "jewel_encrusted_egg", "open", true);
-				moveObject(state, "golden_clockwork_canary", "jewel_encrusted_egg");
-				moveObject(state, "jewel_encrusted_egg", "treasure_room");
-				event.stop();
-				return "The thief is taken aback by your unexpected generosity, but accepts the jewel-encrusted egg and stops to admire its beauty. The thief skillfully pries open the egg with his delicate tools, revealing a golden clockwork canary inside!";
-			}
-		},
-		{ priority: PRIORITY.GUARD },
-	);
+	const onGiveEggToThief = (event: StoppableEvent, state: GameState) => {
+		const ids = getObjectIds(event.params as Record<string, unknown>);
+		if (ids[0] === "jewel_encrusted_egg" && (ids[1] === "thief" || state.player.current_room === "treasure_room")) {
+			setObjectState(state, "jewel_encrusted_egg", "open", true);
+			moveObject(state, "golden_clockwork_canary", "jewel_encrusted_egg");
+			moveObject(state, "jewel_encrusted_egg", "treasure_room");
+			event.stop();
+			return "The thief is taken aback by your unexpected generosity, but accepts the jewel-encrusted egg and stops to admire its beauty. The thief skillfully pries open the egg with his delicate tools, revealing a golden clockwork canary inside!";
+		}
+	};
+	bus.on("put", onGiveEggToThief, { priority: PRIORITY.GUARD });
+	bus.on("give", onGiveEggToThief, { priority: PRIORITY.GUARD });
 
 	// ── Grating Unlock & Open ───────────────────────────────────────────────────
 	bus.on("enter", (event, state) => {

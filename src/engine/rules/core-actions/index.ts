@@ -12,6 +12,11 @@ import { put } from "./items/put";
 import { take } from "./items/take";
 import { unlock } from "./items/unlock";
 import { use } from "./items/use";
+import { breakAction as breakVerb } from "./items/break";
+import { burn } from "./items/burn";
+import { throwAction as throwVerb } from "./items/throw";
+import { give } from "./items/give";
+import { blow } from "./items/blow";
 import { enter } from "./navigation/enter";
 import { exit } from "./navigation/exit";
 import { go } from "./navigation/go";
@@ -51,6 +56,11 @@ export const itemActions = {
 	use,
 	move,
 	inventory,
+	break: breakVerb,
+	burn,
+	throw: throwVerb,
+	give,
+	blow,
 } as const;
 
 export const socialActions = {
