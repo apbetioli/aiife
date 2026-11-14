@@ -970,7 +970,7 @@ export const rooms: Record<string, Room> = {
 		exits: {
 			down: {
 				leads_to: "kitchen",
-				condition: "chimney.open == true",
+				condition: "kitchen_chimney.open == true",
 				locked_message: "Only Santa Claus climbs down chimneys.",
 			},
 			east: {

@@ -327,6 +327,30 @@ export const objects: Record<string, GameObject> = {
 			open: "A heavy iron grating is set into the ground. It is open.",
 		},
 	},
+	grue: {
+		id: "grue",
+		name: "grue",
+		aliases: ["the grue"],
+		type: "actor",
+		location: "cellar",
+		state: { carriable: false, scenery: true },
+		descriptions: {
+			default:
+				"The grue is a sinister, lurking presence in the dark places of the earth.  Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light.  No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.",
+			cant_take: "An interesting idea...",
+		},
+	},
+	pile_of_leaves: {
+		id: "pile_of_leaves",
+		name: "pile of leaves",
+		aliases: ["leaves", "pile"],
+		type: "item",
+		location: "grating_clearing",
+		state: { carriable: true },
+		descriptions: {
+			default: "On the ground is a pile of leaves.",
+		},
+	},
 	guide_book: {
 		id: "guide_book",
 		name: "tour guide book",
@@ -414,6 +438,18 @@ export const objects: Record<string, GameObject> = {
 		state: { scenery: true, carriable: false },
 		descriptions: {
 			default: "A sturdy wooden kitchen table.",
+		},
+	},
+	kitchen_chimney: {
+		id: "kitchen_chimney",
+		name: "chimney",
+		aliases: ["dark chimney", "fireplace"],
+		type: "fixture",
+		location: "kitchen",
+		state: { open: false, carriable: false, scenery: true },
+		descriptions: {
+			default: "A dark chimney leads down.",
+			cant_take: "Only Santa Claus climbs down chimneys.",
 		},
 	},
 	kitchen_window: {

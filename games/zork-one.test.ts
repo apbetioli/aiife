@@ -638,4 +638,45 @@ describe("Zork One world definition and rules", () => {
 		const scoreRes = executeAction(bus, world, s, "score", {});
 		expect(scoreRes.feedback.join(" ")).toContain("45 of a possible 350 points");
 	});
+
+	it("handles grue examination and take attempts", () => {
+		const { bus, state } = setup();
+		const examineGrue = executeAction(bus, world, state, "examine", { objects: ["grue"] });
+		expect(examineGrue.feedback.join(" ")).toContain("sinister, lurking presence");
+
+		const takeGrue = executeAction(bus, world, state, "take", { objects: ["grue"] });
+		expect(takeGrue.feedback.join(" ")).toContain("An interesting idea...");
+	});
+
+	it("handles blow leaves exposing the grating in the clearing", () => {
+		const { bus, state } = setup();
+		state.player.current_room = "grating_clearing";
+
+		const blowLeaves = executeAction(bus, world, state, "blow", { objects: ["pile_of_leaves"] });
+		expect(blowLeaves.feedback).toContain("(first taking the pile of leaves)");
+		expect(blowLeaves.feedback).toContain("A grating appears on the ground.");
+		expect(blowLeaves.feedback).toContain("You can't usefully blow that.");
+		expect(isInInventory(blowLeaves.state, "pile_of_leaves")).toBe(true);
+		expect(blowLeaves.state.objects.grating?.state.revealed).toBe(true);
+	});
+
+	it("handles dead player score and diagnose responses", () => {
+		const { bus, state } = setup();
+		state.player.state.dead = true;
+
+		const scoreRes = executeAction(bus, world, state, "score", {});
+		expect(scoreRes.feedback.join(" ")).toContain("How can you think of your score in your condition?");
+
+		const diagnoseRes = executeAction(bus, world, state, "diagnose", {});
+		expect(diagnoseRes.feedback.join(" ")).toContain("You are dead.");
+	});
+
+	it("blocks down from kitchen with Santa Claus message", () => {
+		const { bus, state } = setup();
+		state.player.current_room = "kitchen";
+
+		const goDown = executeAction(bus, world, state, "go", { direction: "down" });
+		expect(goDown.stopped).toBe(true);
+		expect(goDown.feedback.join(" ")).toContain("Only Santa Claus climbs down chimneys.");
+	});
 });

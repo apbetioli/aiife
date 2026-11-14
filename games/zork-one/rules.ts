@@ -739,6 +739,71 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 		{ priority: PRIORITY.GUARD },
 	);
 
+	// ── Grue Interactions ───────────────────────────────────────────────────────
+	bus.on(
+		"examine",
+		"grue",
+		(event) => {
+			event.stop();
+			return "The grue is a sinister, lurking presence in the dark places of the earth.  Its favorite diet is adventurers, but its insatiable appetite is tempered by its fear of light.  No grue has ever been seen by the light of day, and few have survived its fearsome jaws to tell the tale.";
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
+	bus.on(
+		"take",
+		"grue",
+		(event) => {
+			event.stop();
+			return "An interesting idea...";
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
+	// ── Pile of Leaves & Grating ────────────────────────────────────────────────
+	bus.on(
+		"take",
+		"pile_of_leaves",
+		(_event, state) => {
+			if (!state.objects.grating?.state.revealed) {
+				setObjectState(state, "grating", "revealed", true);
+				return "A grating appears on the ground.";
+			}
+		},
+		{ priority: PRIORITY.POST_MUTATION },
+	);
+
+	bus.on(
+		"move",
+		"pile_of_leaves",
+		(event, state) => {
+			event.stop();
+			setObjectState(state, "grating", "revealed", true);
+			return "In moving the leaves, a grating is exposed on the ground.";
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
+	bus.on(
+		"blow",
+		"pile_of_leaves",
+		(event, state) => {
+			event.stop();
+			const feedback: string[] = [];
+			if (!isInInventory(state, "pile_of_leaves")) {
+				feedback.push("(first taking the pile of leaves)");
+				moveObject(state, "pile_of_leaves", "inventory");
+				if (!state.objects.grating?.state.revealed) {
+					setObjectState(state, "grating", "revealed", true);
+					feedback.push("A grating appears on the ground.");
+				}
+			}
+			feedback.push("You can't usefully blow that.");
+			return feedback;
+		},
+		{ priority: PRIORITY.GUARD },
+	);
+
 	// ── Read Actions ────────────────────────────────────────────────────────────
 	bus.on("examine", "black_book", (_event, state) => {
 		if (state.player.current_room === "entrance_to_hades" && state.objects.pair_of_candles?.state.lit) {
