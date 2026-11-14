@@ -261,12 +261,13 @@ export const objects: Record<string, GameObject> = {
 	front_door: {
 		id: "front_door",
 		name: "front door",
-		aliases: ["door", "boarded door", "boards", "board"],
+		aliases: ["door", "boarded door", "boards", "board", "wooden door"],
 		type: "fixture",
 		location: "west_of_house",
 		state: { scenery: true, open: false, carriable: false },
 		descriptions: {
 			default: "The front door of the white house. It is firmly boarded shut and cannot be opened.",
+			cant_take: "Not a prayer.",
 		},
 	},
 	garlic: {
@@ -425,6 +426,7 @@ export const objects: Record<string, GameObject> = {
 		descriptions: {
 			default: "In one corner of the house there is a small window which is slightly ajar.",
 			open: "In one corner of the house there is a small window which is open.",
+			cant_take: "A valiant attempt.",
 		},
 	},
 	ladder: {
@@ -583,6 +585,7 @@ export const objects: Record<string, GameObject> = {
 			default: "A large oriental rug is in the center of the room.",
 			moved: "A large oriental rug is pushed to one side of the room.",
 			under: "Underneath the rug is a closed trap door.",
+			cant_take: "The rug is extremely heavy and cannot be carried.",
 		},
 	},
 	painting: {
@@ -927,6 +930,8 @@ export const objects: Record<string, GameObject> = {
 		descriptions: {
 			default: "A trophy case is mounted to the wall.",
 			open: "A trophy case is mounted to the wall. It is open.",
+			cant_take:
+				"The trophy case is securely fastened to the wall (perhaps to foil any attempt by robbers to remove it).",
 		},
 	},
 	trunk_of_jewels: {

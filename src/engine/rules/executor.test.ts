@@ -71,6 +71,41 @@ describe("executeAction", () => {
 		expect(result.feedback).toContain("You're already carrying that.");
 	});
 
+	it("take when dead returns ghost feedback even with empty objects", () => {
+		const { world, bus, state } = setup();
+		state.player.state.dead = true;
+		const result = executeAction(bus, world, state, "take", {
+			objects: [],
+		});
+
+		expect(result.stopped).toBe(true);
+		expect(result.feedback).toContain("Your hand passes through its object.");
+	});
+
+	it("take multiple with uncarriable item outputs per-item lines", () => {
+		const base = makeTestWorld();
+		const { world, bus, state } = setup({
+			objects: {
+				...base.objects,
+				table: {
+					...base.objects.table,
+					location: "room_a",
+					descriptions: {
+						...base.objects.table.descriptions,
+						cant_take: "The table is bolted to the floor.",
+					},
+				},
+			},
+		});
+
+		const result = executeAction(bus, world, state, "take", {
+			objects: ["lamp", "table"],
+		});
+
+		expect(result.feedback).toContain("brass lamp: Taken.");
+		expect(result.feedback).toContain("oak table: The table is bolted to the floor.");
+	});
+
 	// ── drop ──────────────────────────────────────────────────────────────
 
 	it("drop moves object from inventory to room", () => {

@@ -34,6 +34,8 @@ Rules:
 - If the player's phrase is a substring of an entity's name, ID, or alias (e.g. "mail" or "box" → "small mailbox"), use that entity. Only do this when exactly one entity in scope matches.
 - If no exact or substring match, consider common synonyms and semantic equivalents (e.g. "lamp" for a lantern, "box" for a chest or mailbox). If exactly one entity is a plausible match, use it. If multiple could match, call respond.
 - If the player's phrase refers to a plural noun (e.g. "swords", "keys"), lists multiple items (e.g. "sword and lantern"), or says ALL, include all matching entity IDs in the objects array.
+- For commands with "all except <items>" or "all but <items>" (e.g. "take all except sword", "drop all but lamp"), include all matching in-scope entity IDs EXCEPT the excluded items.
+- For commands like "take all" or "get all", include all visible objects in the room. For "drop all", include all carried objects in inventory. For "open all", include all matching closed containers and doors.
 - If the player's phrase is a singular reference that is ambiguous or matches multiple entities, call respond to ask for clarification.
 - If the input is conversational, questions, unfulfillable, or not a recognized command, call respond.
 - When calling respond, never expose internal IDs in the message — use display names instead.

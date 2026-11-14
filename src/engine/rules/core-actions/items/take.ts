@@ -10,35 +10,58 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 	description:
 		'take(objects): Pick up objects from the current room. For "take all", list every visible carriable object id. For "take X and Y", list [X, Y]. For single "take X", list [X].',
 	scope: (ctx) => ctx.in_scope_objects.some((o) => o.source === "room" && o.state?.carriable !== false),
-	execute: (params, { state, stop }) => {
+	execute: (params, { state, world, stop }) => {
+		if (state.player.state.dead) {
+			stop();
+			return "Your hand passes through its object.";
+		}
 		const ids = getObjectIds(params);
 		if (ids.length === 0) {
 			stop();
 			return "Take what?";
 		}
-		if (state.player.state.dead) {
-			stop();
-			return "Your hand passes through its object.";
+		if (ids.length === 1) {
+			const id = ids[0];
+			if (isInInventory(state, id)) {
+				stop();
+				return "You're already carrying that.";
+			}
+			const obj = world.objects[id];
+			if (state.objects[id]?.state.carriable === false) {
+				stop();
+				return obj?.descriptions.cant_take ?? "You can't take that.";
+			}
+			if (!isInRoom(state, id) && !findOpenContainerInRoom(state, id)) {
+				stop();
+				return "You can't take that.";
+			}
+			moveObject(state, id, "inventory");
+			return "Taken.";
 		}
-		const canTake = (id: string) => state.objects[id]?.state.carriable !== false && !isInInventory(state, id);
-		const fromRoom = ids.filter((id) => isInRoom(state, id) && canTake(id));
-		const fromContainer: { id: string; containerId: string }[] = [];
+		const feedback: string[] = [];
+		let takenCount = 0;
 		for (const id of ids) {
-			if (fromRoom.includes(id)) continue;
-			if (!canTake(id)) continue;
-			const cid = findOpenContainerInRoom(state, id);
-			if (cid) fromContainer.push({ id, containerId: cid });
+			const obj = world.objects[id];
+			const name = obj?.name ?? id;
+			if (isInInventory(state, id)) {
+				feedback.push(`${name}: You're already carrying that.`);
+				continue;
+			}
+			if (state.objects[id]?.state.carriable === false) {
+				feedback.push(`${name}: ${obj?.descriptions.cant_take ?? "You can't take that."}`);
+				continue;
+			}
+			if (isInRoom(state, id) || findOpenContainerInRoom(state, id)) {
+				moveObject(state, id, "inventory");
+				feedback.push(`${name}: Taken.`);
+				takenCount++;
+				continue;
+			}
+			feedback.push(`${name}: You don't see that here.`);
 		}
-		if (fromRoom.length === 0 && fromContainer.length === 0) {
+		if (takenCount === 0) {
 			stop();
-			return ids.some((id) => isInInventory(state, id)) ? "You're already carrying that." : "You can't take that.";
 		}
-		for (const id of fromRoom) {
-			moveObject(state, id, "inventory");
-		}
-		for (const { id } of fromContainer) {
-			moveObject(state, id, "inventory");
-		}
-		return "Taken.";
+		return feedback;
 	},
 };
