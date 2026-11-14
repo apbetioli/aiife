@@ -444,6 +444,18 @@ export function tryVerbFrameIntent(rawInput: string, context: ParserContext): Sl
 
 			if (actors.length === 1) {
 				const target = actors[0];
+				const weapons = context.in_scope_objects.filter(
+					(o) =>
+						o.source === "inventory" &&
+						(o.type === "weapon" ||
+							["sword", "knife", "dagger", "axe", "gun", "blade", "club"].some(
+								(w) => o.id.toLowerCase().includes(w) || o.name.toLowerCase().includes(w),
+							)),
+				);
+				if (weapons.length === 1) {
+					// Unambiguous weapon available - allow verb frame assumptions to execute
+					return null;
+				}
 				const prompt = `Attack ${target.name} with what?`;
 				return {
 					type: "clarify",
@@ -481,6 +493,18 @@ export function tryVerbFrameIntent(rawInput: string, context: ParserContext): Sl
 		const targetMatches = matchObjects(targetFragment, actors);
 		if (targetMatches.length === 1) {
 			const target = targetMatches[0];
+			const weapons = context.in_scope_objects.filter(
+				(o) =>
+					o.source === "inventory" &&
+					(o.type === "weapon" ||
+						["sword", "knife", "dagger", "axe", "gun", "blade", "club"].some(
+							(w) => o.id.toLowerCase().includes(w) || o.name.toLowerCase().includes(w),
+						)),
+			);
+			if (weapons.length === 1) {
+				// Unambiguous weapon available - allow verb frame assumptions to execute
+				return null;
+			}
 			const prompt = `Attack ${target.name} with what?`;
 			return {
 				type: "clarify",
@@ -550,6 +574,16 @@ export function tryVerbFrameIntent(rawInput: string, context: ParserContext): Sl
 
 	// "unlock"
 	if (trimmed === "unlock") {
+		const lockables = context.in_scope_objects.filter(
+			(o) => (o.type === "door" || o.type === "container") && o.state.locked === true,
+		);
+		const keys = context.in_scope_objects.filter(
+			(o) => o.source === "inventory" && (o.type === "key" || o.id.includes("key") || o.name.includes("key")),
+		);
+		if (lockables.length === 1 && keys.length === 1) {
+			// Unambiguous lockable and key - allow verb frame assumptions to execute
+			return null;
+		}
 		const prompt = "What do you want to unlock?";
 		return {
 			type: "clarify",
@@ -571,6 +605,13 @@ export function tryVerbFrameIntent(rawInput: string, context: ParserContext): Sl
 			const lockables = context.in_scope_objects.filter((o) => o.type === "container" || o.type === "door");
 			const matches = matchObjects(targetText, lockables);
 			if (matches.length === 1) {
+				const keys = context.in_scope_objects.filter(
+					(o) => o.source === "inventory" && (o.type === "key" || o.id.includes("key") || o.name.includes("key")),
+				);
+				if (keys.length === 1) {
+					// Unambiguous key - allow verb frame assumptions to execute
+					return null;
+				}
 				const prompt = `What do you want to unlock the ${matches[0].name} with?`;
 				return {
 					type: "clarify",

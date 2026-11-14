@@ -120,18 +120,18 @@ export class GameAgent {
 
 				// 2. If no directOutput and no resolved intent, resolve cmd normally
 				if (!directOutput && !intent) {
-					const fastIntent = tryDeterministicIntent(cmd);
-
-					if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
-						intent = fastIntent;
+					// Check if command is an incomplete verb command needing slot clarification
+					const verbRes = tryVerbFrameIntent(cmd, context);
+					if (verbRes?.type === "clarify") {
+						this.pendingFrame = verbRes.pendingFrame;
+						directOutput = verbRes.message;
+					} else if (verbRes?.type === "resolved") {
+						intent = verbRes.intent;
 					} else {
-						// Check if command is an incomplete verb command needing slot clarification
-						const verbRes = tryVerbFrameIntent(cmd, context);
-						if (verbRes?.type === "clarify") {
-							this.pendingFrame = verbRes.pendingFrame;
-							directOutput = verbRes.message;
-						} else if (verbRes?.type === "resolved") {
-							intent = verbRes.intent;
+						const fastIntent = tryDeterministicIntent(cmd);
+
+						if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
+							intent = fastIntent;
 						} else {
 							// LLM tool resolution
 							const tools = buildScopedTools(context, {

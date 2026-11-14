@@ -881,6 +881,15 @@ describe("GameAgent", () => {
 						state: { carriable: true },
 						descriptions: { default: "A rusty key." },
 					},
+					silver_key: {
+						id: "silver_key",
+						name: "silver key",
+						aliases: ["key"],
+						type: "key",
+						location: "inventory",
+						state: { carriable: true },
+						descriptions: { default: "A silver key." },
+					},
 				},
 			});
 
