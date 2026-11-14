@@ -165,6 +165,7 @@ export function buildInitialState(world: World): GameState {
 
 	// ── 5. Assemble and validate final state ──────────────────────────────
 	const initialDescriptionMode = (world.player.state?.description_mode as DescriptionMode | undefined) ?? "brief";
+	const initialTutorialMode = Boolean(world.player.state?.tutorial_mode ?? false);
 
 	const gameState: GameState = {
 		world_id: world.id,
@@ -174,6 +175,7 @@ export function buildInitialState(world: World): GameState {
 		rooms,
 		objects,
 		description_mode: initialDescriptionMode,
+		tutorial_mode: initialTutorialMode,
 	};
 
 	const stateResult = GameStateSchema.safeParse(gameState);

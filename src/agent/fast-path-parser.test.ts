@@ -147,6 +147,42 @@ describe("tryDeterministicIntent", () => {
 			message: null,
 		});
 		expect(tryDeterministicIntent("verbose.")?.action).toBe("verbose");
+		expect(tryDeterministicIntent("tutorial")).toEqual({
+			action: "tutorial",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("tutorial.")?.action).toBe("tutorial");
+		expect(tryDeterministicIntent("easy")).toEqual({
+			action: "tutorial",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("easy.")?.action).toBe("tutorial");
+		expect(tryDeterministicIntent("tutorial mode")?.action).toBe("tutorial");
+		expect(tryDeterministicIntent("easy mode")?.action).toBe("tutorial");
+		expect(tryDeterministicIntent("tutorial on")).toEqual({
+			action: "tutorial",
+			enabled: true,
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("tutorial off")).toEqual({
+			action: "tutorial",
+			enabled: false,
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("easy on")?.enabled).toBe(true);
+		expect(tryDeterministicIntent("easy off")?.enabled).toBe(false);
 	});
 
 	it("returns null for entity commands, delegating all entity resolution to the LLM agent", () => {

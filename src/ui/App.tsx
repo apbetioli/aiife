@@ -12,10 +12,11 @@ interface Props {
 }
 
 export function App({ world, setup, actions }: Props) {
-	const { messages, streamingText, handleSubmit, isLoading, tokenUsage } = useGameSession(world, {
-		setup,
-		actions,
-	});
+	const { messages, streamingText, handleSubmit, isLoading, tokenUsage, isTutorialMode, tutorialContext } =
+		useGameSession(world, {
+			setup,
+			actions,
+		});
 
 	const isThinking = isLoading && !streamingText;
 
@@ -30,7 +31,7 @@ export function App({ world, setup, actions }: Props) {
 
 	return (
 		<Box flexDirection="column" gap={1}>
-			<MessageList messages={messages} header={header} />
+			<MessageList messages={messages} header={header} tutorial={isTutorialMode} tutorialContext={tutorialContext} />
 
 			{streamingText && (
 				<Box>
