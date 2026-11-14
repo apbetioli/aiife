@@ -15,6 +15,7 @@ import { registerActionPacks, standardAdventureActions } from "./rules/core-acti
 import type { Observer } from "./rules/types";
 import { load, type SaveFile, sanitizeSlot, save } from "./save";
 import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
+import { getScore, syncScore } from "./score";
 import type { GameState } from "./types";
 
 const DEFAULT_FEEDBACK = "Done.";
@@ -88,9 +89,14 @@ export class GameEngine {
 		const lookFeedback = this.renderLook();
 		this.state = immutable(this.state, (s) => {
 			ensureVisited(s, this.world.start_room);
+			syncScore(this.world, s);
 		});
 
 		return [...startResult.feedback, lookFeedback].filter(Boolean).join("\n");
+	}
+
+	getScore(): { score: number; maxScore: number } {
+		return getScore(this.world, this.state);
 	}
 
 	getParserContext(): ParserContext {

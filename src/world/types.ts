@@ -24,6 +24,10 @@ const GameObjectSchema = z.object({
 	aliases: z.array(z.string()).default([]),
 	type: ObjectTypeSchema,
 	location: z.string(), // room id, container object id, or "inventory"
+	value: z.number().optional(),
+	deposit_value: z.number().optional(),
+	take_value: z.number().optional(),
+	is_trophy: z.boolean().optional(),
 	state: StateSchema.default({}),
 	descriptions: z.record(z.string(), z.string()).refine((d) => "default" in d, {
 		message: "descriptions must include a 'default' entry",
@@ -61,6 +65,8 @@ const ExitsSchema = z.record(DirectionSchema, ExitSchema);
 const RoomSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	value: z.number().optional(),
+	is_trophy: z.boolean().optional(),
 	descriptions: z.record(z.string(), z.string()).refine((d) => "default" in d, {
 		message: "descriptions must include a 'default' entry",
 	}),
@@ -83,6 +89,7 @@ const WorldSchema = z.object({
 	version: z.string().default("1.0.0"),
 	start_room: z.string(),
 	welcome: z.string().optional(),
+	max_score: z.number().optional(),
 	rooms: z.record(z.string(), RoomSchema),
 	objects: z.record(z.string(), GameObjectSchema),
 	player: PlayerSchema,
