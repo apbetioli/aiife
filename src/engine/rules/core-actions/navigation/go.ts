@@ -11,7 +11,7 @@ const description =
 export const go: ActionDef<z.infer<typeof directionSchema>> = {
 	inputSchema: directionSchema,
 	description,
-	aliases: ["walk", "run", "climb", "head", "exit"],
+	aliases: ["walk", "run", "climb", "head"],
 	hint: "A bare direction word or abbreviation (n, s, e, w, ne, nw, se, sw, u, d) is also go.",
 	scope: (ctx) => ctx.available_exits.length > 0,
 	execute: ({ direction }, { state, world, bus, stop }) => {

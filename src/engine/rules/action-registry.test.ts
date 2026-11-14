@@ -120,11 +120,11 @@ describe("ActionRegistry", () => {
 		expect(descriptions).not.toHaveProperty("tick");
 		expect(descriptions).not.toHaveProperty("game:start");
 		expect(descriptions).not.toHaveProperty("game:end");
-		expect(descriptions).not.toHaveProperty("enter");
-		expect(descriptions).not.toHaveProperty("exit");
 
 		// Bus actions have descriptions
 		expect(descriptions).toHaveProperty("go");
+		expect(descriptions).toHaveProperty("enter");
+		expect(descriptions).toHaveProperty("exit");
 		expect(descriptions).toHaveProperty("take");
 		expect(descriptions).toHaveProperty("examine");
 

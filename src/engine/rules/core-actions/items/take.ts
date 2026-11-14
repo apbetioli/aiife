@@ -4,6 +4,7 @@ import {
 	getCarriedWeight,
 	getObjectWeight,
 	getPlayerCapacity,
+	getPlayerVehicle,
 	isCarried,
 	isInInventory,
 	isInRoom,
@@ -31,8 +32,14 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 		}
 		const capacity = getPlayerCapacity(state, world);
 
+		const currentVehicle = getPlayerVehicle(state);
+
 		if (ids.length === 1) {
 			const id = ids[0];
+			if (currentVehicle && id === currentVehicle) {
+				stop();
+				return "You can't take that while you're inside it.";
+			}
 			if (isInInventory(state, id)) {
 				stop();
 				return "You're already carrying that.";
@@ -60,6 +67,10 @@ export const take: ActionDef<z.infer<typeof objectsSchema>> = {
 		for (const id of ids) {
 			const obj = world.objects[id];
 			const name = obj?.name ?? id;
+			if (currentVehicle && id === currentVehicle) {
+				feedback.push(`${name}: You can't take that while you're inside it.`);
+				continue;
+			}
 			if (isInInventory(state, id)) {
 				feedback.push(`${name}: You're already carrying that.`);
 				continue;

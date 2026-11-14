@@ -305,16 +305,19 @@ export function setupZorkRules(bus: EventBus, registry: ActionRegistry): void {
 			if (state.objects.inflatable_boat?.state.launched) {
 				if (room === "dam_base" || room === "river_1") {
 					movePlayer(state, "river_2");
+					moveObject(state, "inflatable_boat", "river_2");
 					ensureVisited(state, "river_2");
 					return "The boat glides swiftly through the churning water of the Frigid River.";
 				}
 				if (room === "river_2") {
 					movePlayer(state, "river_3");
+					moveObject(state, "inflatable_boat", "river_3");
 					ensureVisited(state, "river_3");
 					return "The current carries the boat past sheer white cliffs.";
 				}
 				if (room === "river_3") {
 					movePlayer(state, "river_4");
+					moveObject(state, "inflatable_boat", "river_4");
 					ensureVisited(state, "river_4");
 					return "The boat drifts into calm water. A large red buoy is bobbing nearby.";
 				}

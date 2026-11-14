@@ -11,7 +11,7 @@ const StateSchema = z.record(z.string(), z.union([z.boolean(), z.string(), z.num
 
 // ─── Object ───────────────────────────────────────────────────────────────────
 
-const ObjectTypeSchema = z.enum(["item", "fixture", "container", "door", "actor", "weapon", "key"]);
+const ObjectTypeSchema = z.enum(["item", "fixture", "container", "door", "actor", "weapon", "key", "vehicle"]);
 
 const RequiresInstrumentSchema = z.record(
 	z.string(), // verb e.g. "unlock"
@@ -80,6 +80,7 @@ const RoomSchema = z.object({
 const PlayerSchema = z.object({
 	current_room: z.string(), // room id
 	capacity: z.number().optional().default(7),
+	vehicle: z.string().nullable().optional(),
 	state: StateSchema.default({}),
 });
 

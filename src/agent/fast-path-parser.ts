@@ -114,11 +114,69 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 	}
 
 	// Quit
-	if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
+	if (trimmed === "q" || trimmed === "quit") {
 		return {
 			action: "quit",
 			direction: null,
 			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Exit / Disembark / Leave (vehicle)
+	if (
+		trimmed === "exit" ||
+		trimmed === "disembark" ||
+		trimmed === "leave" ||
+		trimmed === "get out" ||
+		trimmed === "climb out"
+	) {
+		return {
+			action: "exit",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const exitVehicleMatch = trimmed.match(/^(?:exit|leave|disembark|get out of|climb out of)\s+(.+)$/);
+	if (exitVehicleMatch) {
+		const entity = exitVehicleMatch[1].replace(/^(?:the|a|an)\s+/, "");
+		return {
+			action: "exit",
+			direction: null,
+			objects: [entity],
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Enter / Board (vehicle)
+	if (
+		trimmed === "enter" ||
+		trimmed === "board" ||
+		trimmed === "embark" ||
+		trimmed === "get in" ||
+		trimmed === "climb in"
+	) {
+		return {
+			action: "enter",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const enterVehicleMatch = trimmed.match(/^(?:enter|board|embark|get in|get into|climb into|climb in)\s+(.+)$/);
+	if (enterVehicleMatch) {
+		const entity = enterVehicleMatch[1].replace(/^(?:the|a|an)\s+/, "");
+		return {
+			action: "enter",
+			direction: null,
+			objects: [entity],
 			preposition: null,
 			message: null,
 		};
