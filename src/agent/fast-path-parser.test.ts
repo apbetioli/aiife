@@ -43,6 +43,10 @@ describe("tryDeterministicIntent", () => {
 		expect(tryDeterministicIntent("inv")?.action).toBe("inventory");
 		expect(tryDeterministicIntent("h")?.action).toBe("help");
 		expect(tryDeterministicIntent("q")?.action).toBe("quit");
+		expect(tryDeterministicIntent("z")?.action).toBe("wait");
+		expect(tryDeterministicIntent("wait")?.action).toBe("wait");
+		expect(tryDeterministicIntent("g")?.action).toBe("again");
+		expect(tryDeterministicIntent("again")?.action).toBe("again");
 		expect(tryDeterministicIntent("undo")?.action).toBe("undo");
 		expect(tryDeterministicIntent("save")?.action).toBe("save");
 		expect(tryDeterministicIntent("save slot1")).toEqual({

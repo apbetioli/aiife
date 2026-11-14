@@ -28,6 +28,8 @@ import { restoreAction as restore } from "./system/restore";
 import { saveAction as save } from "./system/save";
 import { tick } from "./system/tick";
 import { undo } from "./system/undo";
+import { wait } from "./system/wait";
+import { again } from "./system/again";
 
 export const navigationActions = {
 	go,
@@ -66,6 +68,8 @@ export const systemActions = {
 	"game:start": gameStart,
 	"game:end": gameEnd,
 	die,
+	wait,
+	again,
 } as const;
 
 export const standardAdventureActions = {

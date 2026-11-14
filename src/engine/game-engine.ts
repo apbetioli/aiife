@@ -57,6 +57,7 @@ export class GameEngine {
 	private registry: ActionRegistry;
 	private history: GameState[] = [];
 	private storage: SaveStorageAdapter;
+	private lastIntent: RecognizedIntent | null = null;
 
 	constructor(
 		private world: World,
@@ -122,6 +123,13 @@ export class GameEngine {
 			return intent.message ?? "I don't understand that.";
 		}
 
+		if (intent.action === "again") {
+			if (!this.lastIntent) {
+				return "There is no previous command to repeat.";
+			}
+			return this.runAction(this.lastIntent);
+		}
+
 		if (intent.action === "undo") {
 			return this.undo();
 		}
@@ -152,6 +160,7 @@ export class GameEngine {
 			}
 		}
 
+		this.lastIntent = intent;
 		const action = intent.action;
 		const params = toEventParams(intent);
 		if (!allTargetsInScope(this.state, params)) {

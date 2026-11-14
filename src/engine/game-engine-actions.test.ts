@@ -17,6 +17,8 @@ describe("GameEngine Action Configuration and Composable Packs", () => {
 		expect(registry.has("look")).toBe(true);
 		expect(registry.has("inventory")).toBe(true);
 		expect(registry.has("undo")).toBe(true);
+		expect(registry.has("wait")).toBe(true);
+		expect(registry.has("again")).toBe(true);
 		expect(registry.has("save")).toBe(true);
 		expect(registry.has("restore")).toBe(true);
 	});
@@ -114,5 +116,22 @@ describe("GameEngine Action Configuration and Composable Packs", () => {
 
 		const feedback = engine.start();
 		expect(feedback).toBe("Welcome to the terminal simulator.");
+	});
+
+	it("replays previous command with again", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		// No previous command initially
+		expect(engine.runAction({ action: "again" })).toBe("There is no previous command to repeat.");
+
+		// Run wait command
+		const waitOutput = engine.runAction({ action: "wait" });
+		expect(waitOutput).toBe("Time passes...");
+
+		// Repeating again replays wait
+		const repeatOutput = engine.runAction({ action: "again" });
+		expect(repeatOutput).toBe("Time passes...");
 	});
 });

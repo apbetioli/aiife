@@ -101,6 +101,28 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Wait
+	if (trimmed === "z" || trimmed === "wait") {
+		return {
+			action: "wait",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Again
+	if (trimmed === "g" || trimmed === "again") {
+		return {
+			action: "again",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	// Undo
 	if (trimmed === "undo") {
 		return {
