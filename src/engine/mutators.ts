@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import type { World } from "../world/types";
-import type { GameState, ObjectState } from "./types";
+import type { DescriptionMode, GameState, ObjectState } from "./types";
 
 /**
  * State helpers and mutators.
@@ -217,4 +217,19 @@ export function ensureVisited(state: GameState, roomId: string): void {
 	const room = state.rooms[roomId];
 	if (room.state.visited) return;
 	room.state = { ...room.state, visited: true };
+}
+
+export function getDescriptionMode(state: GameState): DescriptionMode {
+	if (state.description_mode && state.description_mode !== "brief") {
+		return state.description_mode;
+	}
+	if (state.player?.state?.description_mode) {
+		return state.player.state.description_mode as DescriptionMode;
+	}
+	return state.description_mode ?? "brief";
+}
+
+export function setDescriptionMode(state: GameState, mode: DescriptionMode): void {
+	state.description_mode = mode;
+	state.player.state = { ...state.player.state, description_mode: mode };
 }

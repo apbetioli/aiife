@@ -122,6 +122,31 @@ describe("tryDeterministicIntent", () => {
 			preposition: null,
 			message: null,
 		});
+		expect(tryDeterministicIntent("brief")).toEqual({
+			action: "brief",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("brief.")?.action).toBe("brief");
+		expect(tryDeterministicIntent("superbrief")).toEqual({
+			action: "superbrief",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("super brief")?.action).toBe("superbrief");
+		expect(tryDeterministicIntent("super-brief.")?.action).toBe("superbrief");
+		expect(tryDeterministicIntent("verbose")).toEqual({
+			action: "verbose",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("verbose.")?.action).toBe("verbose");
 	});
 
 	it("returns null for entity commands, delegating all entity resolution to the LLM agent", () => {

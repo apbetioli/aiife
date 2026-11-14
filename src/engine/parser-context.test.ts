@@ -172,6 +172,86 @@ describe("resolveRoomDescription", () => {
 		};
 		expect(resolveRoomDescription(room, roomState)).toBe("Default description.");
 	});
+
+	describe("description_mode: brief", () => {
+		it("returns default description on first visit", () => {
+			const roomState: RoomState = { state: { visited: false } };
+			expect(resolveRoomDescription(room, roomState, "brief")).toBe("Default description.");
+		});
+
+		it("returns visited description on subsequent visit if defined", () => {
+			const roomState: RoomState = { state: { visited: true } };
+			expect(resolveRoomDescription(room, roomState, "brief")).toBe("Visited description.");
+		});
+
+		it("returns short description on subsequent visit if visited is undefined", () => {
+			const shortRoom: Room = {
+				id: "room_short",
+				name: "Short Room",
+				descriptions: {
+					default: "Long default description.",
+					short: "Short description.",
+				},
+				state: {},
+				exits: {},
+			};
+			const roomState: RoomState = { state: { visited: true } };
+			expect(resolveRoomDescription(shortRoom, roomState, "brief")).toBe("Short description.");
+		});
+
+		it("returns empty string on subsequent visit if neither visited nor short is defined", () => {
+			const defaultOnlyRoom: Room = {
+				id: "room_default_only",
+				name: "Default Only Room",
+				descriptions: {
+					default: "Only default description.",
+				},
+				state: {},
+				exits: {},
+			};
+			const roomState: RoomState = { state: { visited: true } };
+			expect(resolveRoomDescription(defaultOnlyRoom, roomState, "brief")).toBe("");
+		});
+
+		it("prioritises state-driven description (e.g. dark) even when visited", () => {
+			const roomState: RoomState = { state: { visited: true, dark: true } };
+			expect(resolveRoomDescription(room, roomState, "brief")).toBe("Dark description.");
+		});
+	});
+
+	describe("description_mode: superbrief", () => {
+		it("returns empty string on first visit", () => {
+			const roomState: RoomState = { state: { visited: false } };
+			expect(resolveRoomDescription(room, roomState, "superbrief")).toBe("");
+		});
+
+		it("returns empty string on subsequent visits", () => {
+			const roomState: RoomState = { state: { visited: true } };
+			expect(resolveRoomDescription(room, roomState, "superbrief")).toBe("");
+		});
+
+		it("returns empty string even if custom state flags or visited descriptions exist", () => {
+			const roomState: RoomState = { state: { visited: true, dark: true } };
+			expect(resolveRoomDescription(room, roomState, "superbrief")).toBe("");
+		});
+	});
+
+	describe("description_mode: verbose", () => {
+		it("returns full default description on first visit", () => {
+			const roomState: RoomState = { state: { visited: false } };
+			expect(resolveRoomDescription(room, roomState, "verbose")).toBe("Default description.");
+		});
+
+		it("always returns full default description on subsequent visits regardless of visited state", () => {
+			const roomState: RoomState = { state: { visited: true } };
+			expect(resolveRoomDescription(room, roomState, "verbose")).toBe("Default description.");
+		});
+
+		it("prioritises active state flags over default description", () => {
+			const roomState: RoomState = { state: { visited: true, dark: true } };
+			expect(resolveRoomDescription(room, roomState, "verbose")).toBe("Dark description.");
+		});
+	});
 });
 
 // ─── resolveObjectDescription ────────────────────────────────────────────────
@@ -322,6 +402,34 @@ describe("buildParserContext", () => {
 
 		const ctx = buildParserContext(world, state);
 		expect(ctx.description).toBe("Room A again.");
+	});
+
+	it("respects description_mode: superbrief in buildParserContext", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.description_mode = "superbrief";
+
+		const ctx = buildParserContext(world, state);
+		expect(ctx.description).toBe("");
+	});
+
+	it("respects description_mode: verbose in buildParserContext for visited rooms", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.rooms.room_a.state.visited = true;
+		state.description_mode = "verbose";
+
+		const ctx = buildParserContext(world, state);
+		expect(ctx.description).toBe("You are in room A.");
+	});
+
+	it("respects description_mode when tracked on player state", () => {
+		const world = makeTestWorld();
+		const state = buildInitialState(world);
+		state.player.state.description_mode = "superbrief";
+
+		const ctx = buildParserContext(world, state);
+		expect(ctx.description).toBe("");
 	});
 });
 
