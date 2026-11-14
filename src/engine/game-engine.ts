@@ -13,9 +13,18 @@ import {
 } from "./rules";
 import { registerActionPacks, standardAdventureActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
-import { load, type SaveFile, sanitizeSlot, save } from "./save";
-import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
+import {
+	loadSaveFile,
+	type ReplayResult,
+	recreateStateFromHistory,
+	replayHistory,
+	type SaveFile,
+	sanitizeSlot,
+	save,
+	type TurnHistoryEntry,
+} from "./save";
 import { getScore, syncScore } from "./score";
+import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
 import type { GameState } from "./types";
 
 const DEFAULT_FEEDBACK = "Done.";
@@ -57,6 +66,8 @@ export class GameEngine {
 	private bus: EventBus;
 	private registry: ActionRegistry;
 	private history: GameState[] = [];
+	private commandHistory: TurnHistoryEntry[] = [];
+	private options: GameEngineOptions;
 	private storage: SaveStorageAdapter;
 	private lastIntent: RecognizedIntent | null = null;
 	private lastActionStopped = false;
@@ -68,6 +79,7 @@ export class GameEngine {
 	) {
 		const options: GameEngineOptions =
 			typeof setupOrOptions === "function" ? { setup: setupOrOptions } : (setupOrOptions ?? {});
+		this.options = options;
 
 		this.storage = storage ?? options.storage ?? (process.env.VITEST ? new MemorySaveStorage() : new FileSaveStorage());
 
@@ -120,30 +132,72 @@ export class GameEngine {
 		return allTargetsInScope(this.state, toEventParams(intent));
 	}
 
-	runAction(intent: RecognizedIntent): string {
+	getState(): GameState {
+		return this.state;
+	}
+
+	getCommandHistory(): TurnHistoryEntry[] {
+		return structuredClone(this.commandHistory);
+	}
+
+	setCommandHistory(history: TurnHistoryEntry[]): void {
+		this.commandHistory = structuredClone(history);
+	}
+
+	clearCommandHistory(): void {
+		this.commandHistory = [];
+	}
+
+	recordCommand(entry: TurnHistoryEntry): void {
+		this.commandHistory.push(structuredClone(entry));
+	}
+
+	updateLastCommand(patch: Partial<TurnHistoryEntry>): void {
+		if (this.commandHistory.length === 0) return;
+		const last = this.commandHistory[this.commandHistory.length - 1];
+		Object.assign(last, patch);
+	}
+
+	recreateFromHistory(historyOrSave?: TurnHistoryEntry[] | SaveFile): GameState {
+		return recreateStateFromHistory(this.world, historyOrSave ?? this.commandHistory, this.options);
+	}
+
+	replayHistory(historyOrSave?: TurnHistoryEntry[] | SaveFile): ReplayResult {
+		return replayHistory(this.world, historyOrSave ?? this.commandHistory, this.options);
+	}
+
+	runAction(intent: RecognizedIntent, options?: { rawInput?: string; skipHistory?: boolean }): string {
 		this.lastActionStopped = false;
 
 		// Conversational response — no game action
 		if (intent.action === "respond") {
 			this.lastActionStopped = true;
-			return intent.message ?? "";
+			const feedback = intent.message ?? "";
+			this.recordCommandIfNeeded(intent, feedback, options);
+			return feedback;
 		}
 
 		if (!this.registry.has(intent.action)) {
 			this.lastActionStopped = true;
-			return intent.message ?? "I don't understand that.";
+			const feedback = intent.message ?? "I don't understand that.";
+			this.recordCommandIfNeeded(intent, feedback, options);
+			return feedback;
 		}
 
 		if (intent.action === "again") {
 			if (!this.lastIntent) {
 				this.lastActionStopped = true;
-				return "There is no previous command to repeat.";
+				const feedback = "There is no previous command to repeat.";
+				this.recordCommandIfNeeded(intent, feedback, options);
+				return feedback;
 			}
-			return this.runAction(this.lastIntent);
+			return this.runAction(this.lastIntent, options);
 		}
 
 		if (intent.action === "undo") {
-			return this.undo();
+			const feedback = this.undo();
+			this.recordCommandIfNeeded(intent, feedback, options);
+			return feedback;
 		}
 
 		if (intent.action === "restart") {
@@ -154,10 +208,14 @@ export class GameEngine {
 			const slot = sanitizeSlot(intent.slot ?? undefined);
 			try {
 				this.storage.save(this.world.id, slot, this.save());
-				return `Game saved to slot "${slot}".`;
+				const feedback = `Game saved to slot "${slot}".`;
+				this.recordCommandIfNeeded(intent, feedback, options);
+				return feedback;
 			} catch (e) {
 				this.lastActionStopped = true;
-				return `Failed to save game: ${e instanceof Error ? e.message : String(e)}`;
+				const feedback = `Failed to save game: ${e instanceof Error ? e.message : String(e)}`;
+				this.recordCommandIfNeeded(intent, feedback, options);
+				return feedback;
 			}
 		}
 
@@ -166,17 +224,25 @@ export class GameEngine {
 			try {
 				if (!this.storage.exists(this.world.id, slot)) {
 					this.lastActionStopped = true;
-					return `No save file found for slot "${slot}".`;
+					const feedback = `No save file found for slot "${slot}".`;
+					this.recordCommandIfNeeded(intent, feedback, options);
+					return feedback;
 				}
 				const data = this.storage.load(this.world.id, slot);
 				if (!data) {
 					this.lastActionStopped = true;
-					return `No save file found for slot "${slot}".`;
+					const feedback = `No save file found for slot "${slot}".`;
+					this.recordCommandIfNeeded(intent, feedback, options);
+					return feedback;
 				}
-				return this.restore(data);
+				const feedback = this.restore(data);
+				this.recordCommandIfNeeded(intent, feedback, options);
+				return feedback;
 			} catch (e) {
 				this.lastActionStopped = true;
-				return `Failed to restore game: ${e instanceof Error ? e.message : String(e)}`;
+				const feedback = `Failed to restore game: ${e instanceof Error ? e.message : String(e)}`;
+				this.recordCommandIfNeeded(intent, feedback, options);
+				return feedback;
 			}
 		}
 
@@ -185,7 +251,9 @@ export class GameEngine {
 		const params = toEventParams(intent);
 		if (!allTargetsInScope(this.state, params)) {
 			this.lastActionStopped = true;
-			return "You don't see that here.";
+			const feedback = "You don't see that here.";
+			this.recordCommandIfNeeded(intent, feedback, options);
+			return feedback;
 		}
 
 		const prevState = this.state;
@@ -194,7 +262,9 @@ export class GameEngine {
 
 		if (result.stopped) {
 			this.lastActionStopped = true;
-			return result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
+			const feedback = result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
+			this.recordCommandIfNeeded(intent, feedback, options);
+			return feedback;
 		}
 
 		this.pushHistory(prevState);
@@ -202,7 +272,27 @@ export class GameEngine {
 		this.state = tickResult.state;
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
-		return allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
+		const feedback = allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
+		this.recordCommandIfNeeded(intent, feedback, options);
+		return feedback;
+	}
+
+	private recordCommandIfNeeded(
+		intent: RecognizedIntent,
+		feedback: string,
+		options?: { rawInput?: string; skipHistory?: boolean },
+	): void {
+		if (options?.skipHistory) return;
+
+		const entry: TurnHistoryEntry = {
+			turn: this.state.turn ?? 0,
+			input: options?.rawInput ?? intent.action,
+			output: feedback,
+			intent: structuredClone(intent),
+			state: structuredClone(this.state),
+			timestamp: new Date().toISOString(),
+		};
+		this.commandHistory.push(entry);
 	}
 
 	undo(): string {
@@ -217,6 +307,7 @@ export class GameEngine {
 
 	restart(): string {
 		this.history = [];
+		this.commandHistory = [];
 		this.lastIntent = null;
 		this.state = buildInitialState(this.world);
 		const startFeedback = this.start();
@@ -224,16 +315,17 @@ export class GameEngine {
 	}
 
 	save(): SaveFile {
-		return save(this.state);
+		return save(this.state, this.commandHistory);
 	}
 
 	restore(file: unknown): string {
-		const restored = load(file);
-		if (restored.world_id !== this.world.id) {
-			return `Save is for "${restored.world_id}", but current game is "${this.world.id}".`;
+		const saveFile = loadSaveFile(file);
+		if (saveFile.world_id !== this.world.id) {
+			return `Save is for "${saveFile.world_id}", but current game is "${this.world.id}".`;
 		}
 		this.pushHistory(this.state);
-		this.state = restored;
+		this.state = saveFile.state;
+		this.commandHistory = saveFile.history ?? [];
 		const look = this.renderLook();
 		return look ? `Game restored.\n${look}` : "Game restored.";
 	}
@@ -250,12 +342,17 @@ export class GameEngine {
 		return this.state.player.state.quit === true || this.state.player.state.dead === true;
 	}
 
-	runActions(intents: RecognizedIntent[]): { feedback: string; outputs: string[]; halted: boolean } {
+	runActions(
+		intents: RecognizedIntent[],
+		options?: { rawInputs?: string[]; skipHistory?: boolean },
+	): { feedback: string; outputs: string[]; halted: boolean } {
 		const outputs: string[] = [];
 		let halted = false;
 
-		for (const intent of intents) {
-			const feedback = this.runAction(intent);
+		for (let i = 0; i < intents.length; i++) {
+			const intent = intents[i];
+			const rawInput = options?.rawInputs?.[i];
+			const feedback = this.runAction(intent, { rawInput, skipHistory: options?.skipHistory });
 			outputs.push(feedback);
 
 			if (this.wasLastActionStopped() || this.isGameOver()) {

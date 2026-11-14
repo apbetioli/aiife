@@ -2,6 +2,7 @@ import { MockLanguageModelV3 } from "ai/test";
 import { describe, expect, it, vi } from "vitest";
 import { makeTestWorld } from "../engine/__fixtures__/test-world";
 import { GameEngine } from "../engine/game-engine";
+import { recreateStateFromHistory } from "../engine/save";
 import { GameAgent } from "./game-agent";
 
 describe("GameAgent", () => {
@@ -426,6 +427,53 @@ describe("GameAgent", () => {
 
 			expect(doGenerate).not.toHaveBeenCalled();
 			expect(completed).toContain("Room A");
+		});
+
+		it("persists command history across multi-command runs and reconstructs game state", async () => {
+			const doGenerate = vi.fn().mockResolvedValue({
+				rawCall: { rawPrompt: null, rawSettings: {} },
+				finishReason: "tool-calls",
+				usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+				content: [
+					{
+						type: "tool-call",
+						toolCallId: "call_history_take",
+						toolName: "take",
+						input: JSON.stringify({ objects: ["lamp"] }),
+					},
+				],
+			});
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const world = makeTestWorld();
+			const engine = new GameEngine(world);
+			engine.start();
+			const agent = new GameAgent(mockModel, engine, mockModel);
+
+			await agent.run("take the brass lantern. south", [], {
+				onToken: () => {},
+				onComplete: () => {},
+			});
+
+			const history = engine.getCommandHistory();
+			expect(history).toHaveLength(2);
+
+			expect(history[0].input).toBe("take the brass lantern");
+			expect(history[0].output).toBe("Taken.");
+			expect(history[0].tool_calls).toHaveLength(1);
+			expect(history[0].state?.objects.lamp.location).toBe("inventory");
+
+			expect(history[1].input).toBe("south");
+			expect(history[1].output).toContain("Room B");
+			expect(history[1].state?.player.current_room).toBe("room_b");
+
+			const saveFile = engine.save();
+			expect(saveFile.history).toHaveLength(2);
+
+			// Recreate game state from history
+			const reconstructed = recreateStateFromHistory(world, history);
+			expect(reconstructed).toEqual(engine.getState());
+			expect(reconstructed.objects.lamp.location).toBe("inventory");
+			expect(reconstructed.player.current_room).toBe("room_b");
 		});
 	});
 });
