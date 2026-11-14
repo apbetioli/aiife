@@ -3,6 +3,7 @@ import { type ActionEntry, type ActionRegistry, evaluateActionScope } from "../e
 import { coreActionDefinitions } from "../engine/rules/core-actions";
 import type { ActionDef } from "../engine/rules/types";
 import type { ParserContext, ScopedObject } from "../world/types";
+import type { PendingFrame } from "./conversational-memory";
 
 function formatScopedObject(o: ScopedObject): string {
 	const stateParts = Object.entries(o.state ?? {})
@@ -22,8 +23,22 @@ function formatObjectsInScope(objects: ScopedObject[], source: "room" | "invento
 	return filtered.length > 0 ? filtered.map(formatScopedObject).join(", ") : "none";
 }
 
-export function buildToolSystemPrompt(context: ParserContext): string {
+export function buildToolSystemPrompt(context: ParserContext, pendingFrame?: PendingFrame | null): string {
 	const exits = context.available_exits.length > 0 ? context.available_exits.join(", ") : "none";
+
+	const pendingPrompt = pendingFrame
+		? `\nActive pending action awaiting clarification:
+- Action: ${pendingFrame.action}
+- Partially filled objects: ${JSON.stringify(pendingFrame.objects || [])}
+${pendingFrame.waitingFor ? `- Waiting for: ${pendingFrame.waitingFor}` : ""}
+${pendingFrame.clarificationPrompt ? `- Clarification asked: "${pendingFrame.clarificationPrompt}"` : ""}
+${pendingFrame.candidates && pendingFrame.candidates.length > 0 ? `- Ambiguous candidates: ${pendingFrame.candidates.join(", ")}` : ""}
+
+Instructions for pending action:
+- If the player's reply provides the missing slot or resolves the ambiguity, call "${pendingFrame.action}" with the complete parameters.
+- If the player's reply is still ambiguous or incomplete, call respond to ask for the next clarification.
+- If the player cancels or issues an unrelated new command, do not force the pending action.`
+		: "";
 
 	return `You are an intent parser for a text adventure game. Given the conversation history and player's input, call the single appropriate action tool.
 
@@ -39,7 +54,7 @@ Rules:
 - If the player's phrase is a singular reference that is ambiguous or matches multiple entities, call respond to ask for clarification.
 - If the input is conversational, questions, unfulfillable, or not a recognized command, call respond.
 - When calling respond, never expose internal IDs in the message — use display names instead.
-- If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.
+- If the last assistant message was a clarification (e.g. "What do you want to take?"), treat the player's reply as the answer and return that action with the parameter filled.${pendingPrompt}
 
 Current state:
   - Room: ${context.room} — ${context.description}
