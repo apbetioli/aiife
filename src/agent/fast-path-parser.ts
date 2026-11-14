@@ -102,6 +102,17 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Score
+	if (trimmed === "score" || trimmed === "points" || trimmed === "sc") {
+		return {
+			action: "score",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	// Quit
 	if (trimmed === "q" || trimmed === "quit" || trimmed === "exit") {
 		return {

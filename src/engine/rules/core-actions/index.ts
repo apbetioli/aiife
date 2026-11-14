@@ -37,6 +37,10 @@ import { wait } from "./system/wait";
 import { again } from "./system/again";
 import { restart } from "./system/restart";
 import { diagnose } from "./system/diagnose";
+import { score } from "./system/score";
+import { PRIORITY } from "../priorities";
+import { getObjectIds } from "../param-helpers";
+import { isInInventory, setObjectState } from "../../mutators";
 
 export const navigationActions = {
 	go,
@@ -84,6 +88,7 @@ export const systemActions = {
 	again,
 	restart,
 	diagnose,
+	score,
 } as const;
 
 export const standardAdventureActions = {
@@ -100,6 +105,18 @@ export type CoreEventName = keyof typeof standardAdventureActions;
 
 export function registerCoreActions(bus: EventBus, registry: ActionRegistry): void {
 	registerActionPack(bus, registry, standardAdventureActions);
+	bus.on(
+		"take",
+		(event, state) => {
+			const ids = getObjectIds(event.params as Record<string, unknown>);
+			for (const id of ids) {
+				if (isInInventory(state, id)) {
+					setObjectState(state, id, "takenOnce", true);
+				}
+			}
+		},
+		{ priority: PRIORITY.POST_MUTATION },
+	);
 }
 
 export { registerActionPack, registerActionPacks };
