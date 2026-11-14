@@ -1,0 +1,60 @@
+---
+title: "AIIFE GameEngine Lifecycle ﬂ°°38¶ß History Invariants"
+---
+stateDiagram-v2
+  direction LR
+  state "Legend" as legend {
+    lg0: Breaks StoppedActionPurity
+    lg1: Breaks GameOverTerminal or UndoNeverAdvancesTurn in some cases
+    lg2: Path to the GameOverTerminal or StoppedActionPurity or UndoNeverAdvancesTurn bug
+  }
+  class lg0 breaks
+  class lg1 mayBreak
+  class lg2 bugPath
+  state "At the same time" as all {
+    state "Location" as r0 {
+      s0: room_a (m=0)
+      s1: room_a (m=1)
+      s2: room_b (m=1)
+      [*] --> s0
+      s0 --> s1: player quits [when Session is Active and History is Depth 0]
+      s0 --> s2: player moves room [when Session is Active and History is Depth 0]
+      s2 --> s0: player restores slot
+      s0 --> s2: player runs undo [when Session is Active and History is Depth 2]
+    }
+    --
+    state "Session" as r1 {
+      s3: Active
+      s4: Tainted
+      s5: Quit
+      [*] --> s3
+      s3 --> s4: action stops (leaks dirty state) [when Location is room_a (m=0) and History is Depth 0]
+      s3 --> s5: player quits [when Location is room_a (m=0) and History is Depth 0]
+    }
+    --
+    state "History" as r2 {
+      s6: Depth 0
+      s7: Depth 1
+      s8: Depth 2
+      [*] --> s6
+      s6 --> s7: player quits or player moves room [when Session is Active]
+      s7 --> s8: player restores slot [when Location is room_b (m=1) and Session is Active]
+      s8 --> s7: player runs undo
+    }
+  }
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  classDef mayBreak fill:#fff3e6,stroke:#e8730c,stroke-width:2.5px,color:#b85a06
+  class s0 bugPath
+  class s1 mayBreak
+  class s1 bugPath
+  class s2 mayBreak
+  class s2 bugPath
+  class s3 bugPath
+  class s4 breaks
+  class s4 bugPath
+  class s5 mayBreak
+  class s5 bugPath
+  class s6 bugPath
+  class s7 mayBreak
+  class s7 bugPath
+  class s8 bugPath
