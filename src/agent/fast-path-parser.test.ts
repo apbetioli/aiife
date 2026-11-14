@@ -1,7 +1,61 @@
 import { describe, expect, it } from "vitest";
-import { tryDeterministicIntent } from "./fast-path-parser";
+import { splitCommands, tryDeterministicIntent } from "./fast-path-parser";
+
+describe("splitCommands", () => {
+	it("splits period-chained commands without spaces (Infocom style)", () => {
+		expect(splitCommands("DOWN.SOUTH.TAKE DART GUN.WEST.UP")).toEqual(["DOWN", "SOUTH", "TAKE DART GUN", "WEST", "UP"]);
+	});
+
+	it("splits period-chained commands with spaces", () => {
+		expect(splitCommands("DOWN. SOUTH. TAKE DART GUN. WEST. UP")).toEqual([
+			"DOWN",
+			"SOUTH",
+			"TAKE DART GUN",
+			"WEST",
+			"UP",
+		]);
+	});
+
+	it("splits semicolon-delimited commands", () => {
+		expect(splitCommands("look; wait; inventory")).toEqual(["look", "wait", "inventory"]);
+	});
+
+	it("splits newline-delimited commands (LF and CRLF)", () => {
+		expect(splitCommands("go north\ngo south\r\nlook")).toEqual(["go north", "go south", "look"]);
+	});
+
+	it("handles mixed period, semicolon, and newline delimiters", () => {
+		expect(splitCommands("look. inventory; wait\nquit")).toEqual(["look", "inventory", "wait", "quit"]);
+	});
+
+	it("handles trailing periods and multiple consecutive delimiters gracefully", () => {
+		expect(splitCommands("look.")).toEqual(["look"]);
+		expect(splitCommands("DOWN...SOUTH;;TAKE DART GUN\n\nWEST.UP.")).toEqual([
+			"DOWN",
+			"SOUTH",
+			"TAKE DART GUN",
+			"WEST",
+			"UP",
+		]);
+	});
+
+	it("returns empty array for empty or whitespace-only inputs", () => {
+		expect(splitCommands("")).toEqual([]);
+		expect(splitCommands("   ")).toEqual([]);
+		expect(splitCommands("...;;;\n\n")).toEqual([]);
+	});
+});
 
 describe("tryDeterministicIntent", () => {
+	it("parses single-letter directions with or without trailing period", () => {
+		expect(tryDeterministicIntent("n.")).toEqual({
+			action: "go",
+			direction: "north",
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+	});
 	it("parses single-letter directions", () => {
 		expect(tryDeterministicIntent("n")).toEqual({
 			action: "go",

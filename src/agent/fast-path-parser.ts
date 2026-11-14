@@ -26,12 +26,24 @@ const DIRECTION_MAP: Record<string, string> = {
 };
 
 /**
+ * Splits raw user input into individual commands delimited by periods, semicolons, or newlines.
+ * E.g. "DOWN.SOUTH.TAKE DART GUN.WEST.UP" -> ["DOWN", "SOUTH", "TAKE DART GUN", "WEST", "UP"]
+ */
+export function splitCommands(rawInput: string): string[] {
+	if (!rawInput) return [];
+	return rawInput
+		.split(/[;\n\r.]+/)
+		.map((cmd) => cmd.trim())
+		.filter((cmd) => cmd.length > 0);
+}
+
+/**
  * Fast-path parser for unambiguous zero-entity standard interactive fiction commands.
  * Returns RecognizedIntent if matched deterministically with zero latency and zero LLM tokens.
  * All commands referencing world objects/entities delegate to the LLM intent recognizer.
  */
 export function tryDeterministicIntent(rawInput: string): RecognizedIntent | null {
-	const trimmed = rawInput.trim().toLowerCase();
+	const trimmed = rawInput.trim().toLowerCase().replace(/\.+$/, "");
 	if (!trimmed) return null;
 
 	// Single-word directions
@@ -149,6 +161,17 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 	if (trimmed === "undo") {
 		return {
 			action: "undo",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Die
+	if (trimmed === "die" || trimmed === "suicide") {
+		return {
+			action: "die",
 			direction: null,
 			objects: null,
 			preposition: null,

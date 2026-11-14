@@ -58,6 +58,7 @@ export class GameEngine {
 	private history: GameState[] = [];
 	private storage: SaveStorageAdapter;
 	private lastIntent: RecognizedIntent | null = null;
+	private lastActionStopped = false;
 
 	constructor(
 		private world: World,
@@ -114,17 +115,22 @@ export class GameEngine {
 	}
 
 	runAction(intent: RecognizedIntent): string {
+		this.lastActionStopped = false;
+
 		// Conversational response — no game action
 		if (intent.action === "respond") {
+			this.lastActionStopped = true;
 			return intent.message ?? "";
 		}
 
 		if (!this.registry.has(intent.action)) {
+			this.lastActionStopped = true;
 			return intent.message ?? "I don't understand that.";
 		}
 
 		if (intent.action === "again") {
 			if (!this.lastIntent) {
+				this.lastActionStopped = true;
 				return "There is no previous command to repeat.";
 			}
 			return this.runAction(this.lastIntent);
@@ -144,6 +150,7 @@ export class GameEngine {
 				this.storage.save(this.world.id, slot, this.save());
 				return `Game saved to slot "${slot}".`;
 			} catch (e) {
+				this.lastActionStopped = true;
 				return `Failed to save game: ${e instanceof Error ? e.message : String(e)}`;
 			}
 		}
@@ -152,14 +159,17 @@ export class GameEngine {
 			const slot = sanitizeSlot(intent.slot ?? undefined);
 			try {
 				if (!this.storage.exists(this.world.id, slot)) {
+					this.lastActionStopped = true;
 					return `No save file found for slot "${slot}".`;
 				}
 				const data = this.storage.load(this.world.id, slot);
 				if (!data) {
+					this.lastActionStopped = true;
 					return `No save file found for slot "${slot}".`;
 				}
 				return this.restore(data);
 			} catch (e) {
+				this.lastActionStopped = true;
 				return `Failed to restore game: ${e instanceof Error ? e.message : String(e)}`;
 			}
 		}
@@ -168,6 +178,7 @@ export class GameEngine {
 		const action = intent.action;
 		const params = toEventParams(intent);
 		if (!allTargetsInScope(this.state, params)) {
+			this.lastActionStopped = true;
 			return "You don't see that here.";
 		}
 
@@ -176,6 +187,7 @@ export class GameEngine {
 		this.state = result.state;
 
 		if (result.stopped) {
+			this.lastActionStopped = true;
 			return result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
 		}
 
@@ -190,6 +202,7 @@ export class GameEngine {
 	undo(): string {
 		const prev = this.history.pop();
 		if (!prev) {
+			this.lastActionStopped = true;
 			return "Nothing to undo.";
 		}
 		this.state = prev;
@@ -219,8 +232,37 @@ export class GameEngine {
 		return look ? `Game restored.\n${look}` : "Game restored.";
 	}
 
+	isPlayerDead(): boolean {
+		return Boolean(this.state.player.state.dead);
+	}
+
+	wasLastActionStopped(): boolean {
+		return this.lastActionStopped || this.isPlayerDead();
+	}
+
 	isGameOver(): boolean {
-		return this.state.player.state.quit === true;
+		return this.state.player.state.quit === true || this.state.player.state.dead === true;
+	}
+
+	runActions(intents: RecognizedIntent[]): { feedback: string; outputs: string[]; halted: boolean } {
+		const outputs: string[] = [];
+		let halted = false;
+
+		for (const intent of intents) {
+			const feedback = this.runAction(intent);
+			outputs.push(feedback);
+
+			if (this.wasLastActionStopped() || this.isGameOver()) {
+				halted = true;
+				break;
+			}
+		}
+
+		return {
+			feedback: outputs.join("\n"),
+			outputs,
+			halted,
+		};
 	}
 
 	private fireIfRegistered(

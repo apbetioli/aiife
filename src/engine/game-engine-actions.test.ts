@@ -154,4 +154,58 @@ describe("GameEngine Action Configuration and Composable Packs", () => {
 		expect(restartOutput).toContain("Restarting game.");
 		expect(restartOutput).toContain("Room A");
 	});
+
+	it("runActions executes sequential actions and aggregates feedback", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		const result = engine.runActions([
+			{ action: "look" },
+			{ action: "take", objects: ["lamp"] },
+			{ action: "inventory" },
+		]);
+
+		expect(result.halted).toBe(false);
+		expect(result.outputs).toHaveLength(3);
+		expect(result.feedback).toContain("Room A");
+		expect(result.feedback).toContain("Taken.");
+		expect(result.feedback).toContain("lamp");
+		expect(engine.save().state.objects.lamp.location).toBe("inventory");
+	});
+
+	it("runActions halts immediately when an action fails or is stopped", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		// Room A has no west exit (only south)
+		const result = engine.runActions([
+			{ action: "go", direction: "west" },
+			{ action: "take", objects: ["lamp"] },
+		]);
+
+		expect(result.halted).toBe(true);
+		expect(result.outputs).toHaveLength(1);
+		expect(result.outputs[0]).toContain("You can't go that way.");
+		expect(engine.wasLastActionStopped()).toBe(true);
+		// lamp was NOT taken because execution halted
+		expect(engine.save().state.objects.lamp.location).toBe("room_a");
+	});
+
+	it("runActions halts when player dies", () => {
+		const world = makeTestWorld();
+		const engine = new GameEngine(world);
+		engine.start();
+
+		const result = engine.runActions([{ action: "look" }, { action: "die" }, { action: "go", direction: "south" }]);
+
+		expect(result.halted).toBe(true);
+		expect(result.outputs).toHaveLength(2);
+		expect(result.outputs[1]).toContain("You died!");
+		expect(engine.isPlayerDead()).toBe(true);
+		expect(engine.isGameOver()).toBe(true);
+		// player did not move south
+		expect(engine.save().state.player.current_room).toBe("room_a");
+	});
 });

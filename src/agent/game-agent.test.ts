@@ -257,4 +257,175 @@ describe("GameAgent", () => {
 			cacheControl: { type: "ephemeral" },
 		});
 	});
+
+	describe("Multi-command chaining (Ticket #48)", () => {
+		it("executes multiple fast-path commands chained with periods without LLM", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent } = setup(mockModel);
+
+			let completed = "";
+			const tokens: string[] = [];
+
+			await agent.run("look. wait", [], {
+				onToken: (t) => tokens.push(t),
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(completed).toContain("Room A");
+			expect(completed).toContain("Time passes...");
+			expect(tokens.join("")).toBe(completed);
+		});
+
+		it("executes multiple commands separated by semicolons and newlines", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent } = setup(mockModel);
+
+			let completedSemi = "";
+			await agent.run("look; wait; inventory", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completedSemi = c;
+				},
+			});
+			expect(completedSemi).toContain("Room A");
+			expect(completedSemi).toContain("Time passes...");
+			expect(completedSemi).toContain("iron sword");
+
+			let completedNewline = "";
+			await agent.run("wait\ninventory", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completedNewline = c;
+				},
+			});
+			expect(completedNewline).toContain("Time passes...");
+			expect(completedNewline).toContain("iron sword");
+		});
+
+		it("executes period-chained commands without spaces (e.g. DOWN.SOUTH.WEST.UP)", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent, engine } = setup(mockModel);
+
+			// In test world: room_a has south -> room_b; room_b has south -> room_a
+			let completed = "";
+			await agent.run("SOUTH.SOUTH", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(completed).toContain("Room B");
+			expect(completed).toContain("Room A");
+			expect(engine.save().state.player.current_room).toBe("room_a");
+		});
+
+		it("executes mixed deterministic and LLM-driven commands in sequence, updating context turn-by-turn", async () => {
+			// Step 1: LLM takes lamp, Step 2: fast-path south
+			const doGenerate = vi.fn().mockResolvedValue({
+				rawCall: { rawPrompt: null, rawSettings: {} },
+				finishReason: "tool-calls",
+				usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+				content: [
+					{
+						type: "tool-call",
+						toolCallId: "call_take_lamp",
+						toolName: "take",
+						input: JSON.stringify({ objects: ["lamp"] }),
+					},
+				],
+			});
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent, engine } = setup(mockModel);
+
+			let completed = "";
+			await agent.run("take the brass lamp. south", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).toHaveBeenCalledTimes(1);
+			expect(completed).toContain("Taken.");
+			expect(completed).toContain("Room B");
+			expect(engine.save().state.objects.lamp.location).toBe("inventory");
+			expect(engine.save().state.player.current_room).toBe("room_b");
+		});
+
+		it("halts execution immediately when an error or blocked action occurs", async () => {
+			const doGenerate = vi.fn().mockResolvedValue({
+				rawCall: { rawPrompt: null, rawSettings: {} },
+				finishReason: "tool-calls",
+				usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+				content: [
+					{
+						type: "tool-call",
+						toolCallId: "call_take",
+						toolName: "take",
+						input: JSON.stringify({ objects: ["lamp"] }),
+					},
+				],
+			});
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent, engine } = setup(mockModel);
+
+			// In room_a, there is no west exit. Command 1 fails -> Command 2 (take lamp) must NOT run
+			let completed = "";
+			await agent.run("west. take the brass lamp", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(completed).toBe("You can't go that way.");
+			// LLM should not even be called for command 2
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(engine.save().state.objects.lamp.location).toBe("room_a");
+		});
+
+		it("halts execution immediately when player dies", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent, engine } = setup(mockModel);
+
+			let completed = "";
+			await agent.run("look. die. wait", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(completed).toContain("Room A");
+			expect(completed).toContain("You died!");
+			expect(completed).not.toContain("Time passes...");
+			expect(engine.isPlayerDead()).toBe(true);
+		});
+
+		it("handles single command with trailing period correctly", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+			const { agent } = setup(mockModel);
+
+			let completed = "";
+			await agent.run("look.", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(completed).toContain("Room A");
+		});
+	});
 });
