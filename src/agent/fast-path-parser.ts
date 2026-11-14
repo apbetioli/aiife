@@ -182,6 +182,146 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Attack / Kill / Fight / Hit / Strike
+	if (trimmed === "attack" || trimmed === "kill" || trimmed === "fight" || trimmed === "hit" || trimmed === "strike") {
+		return {
+			action: "attack",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const attackMatch = trimmed.match(/^(?:attack|kill|fight|hit|strike)\s+([^.]+?)(?:\s+(?:with|using)\s+([^.]+?))?$/);
+	if (attackMatch) {
+		const target = attackMatch[1].replace(/^(?:the|a|an)\s+/, "").trim();
+		const instrument = attackMatch[2]?.replace(/^(?:the|a|an)\s+/, "").trim();
+		return {
+			action: "attack",
+			direction: null,
+			objects: instrument ? [target, instrument] : [target],
+			preposition: instrument ? "with" : null,
+			message: null,
+		};
+	}
+
+	// Unlock
+	if (trimmed === "unlock") {
+		return {
+			action: "unlock",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const unlockMatch = trimmed.match(/^unlock\s+([^.]+?)(?:\s+(?:with|using)\s+([^.]+?))?$/);
+	if (unlockMatch) {
+		const target = unlockMatch[1].replace(/^(?:the|a|an)\s+/, "").trim();
+		const instrument = unlockMatch[2]?.replace(/^(?:the|a|an)\s+/, "").trim();
+		return {
+			action: "unlock",
+			direction: null,
+			objects: instrument ? [target, instrument] : [target],
+			preposition: instrument ? "with" : null,
+			message: null,
+		};
+	}
+
+	// Lock
+	if (trimmed === "lock") {
+		return {
+			action: "lock",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const lockMatch = trimmed.match(/^lock\s+([^.]+?)(?:\s+(?:with|using)\s+([^.]+?))?$/);
+	if (lockMatch) {
+		const target = lockMatch[1].replace(/^(?:the|a|an)\s+/, "").trim();
+		const instrument = lockMatch[2]?.replace(/^(?:the|a|an)\s+/, "").trim();
+		return {
+			action: "lock",
+			direction: null,
+			objects: instrument ? [target, instrument] : [target],
+			preposition: instrument ? "with" : null,
+			message: null,
+		};
+	}
+
+	// Light / Turn On
+	if (trimmed === "light" || trimmed === "turn on" || trimmed === "switch on" || trimmed === "activate") {
+		return {
+			action: "turn_on",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const turnOnMatch = trimmed.match(/^(?:turn\s+on|switch\s+on|light|activate)\s+([^.]+?)$/);
+	if (turnOnMatch) {
+		const entity = turnOnMatch[1].replace(/^(?:the|a|an)\s+/, "").trim();
+		return {
+			action: "turn_on",
+			direction: null,
+			objects: [entity],
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Extinguish / Turn Off
+	if (trimmed === "turn off" || trimmed === "switch off" || trimmed === "extinguish" || trimmed === "deactivate") {
+		return {
+			action: "turn_off",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	const turnOffMatch = trimmed.match(/^(?:turn\s+off|switch\s+off|extinguish|deactivate)\s+([^.]+?)$/);
+	if (turnOffMatch) {
+		const entity = turnOffMatch[1].replace(/^(?:the|a|an)\s+/, "").trim();
+		return {
+			action: "turn_off",
+			direction: null,
+			objects: [entity],
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Open (zero-arg)
+	if (trimmed === "open") {
+		return {
+			action: "open",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Close (zero-arg)
+	if (trimmed === "close" || trimmed === "shut") {
+		return {
+			action: "close",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	// Wait
 	if (trimmed === "z" || trimmed === "wait") {
 		return {

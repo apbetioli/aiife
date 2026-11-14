@@ -18,6 +18,8 @@ import { open } from "./items/open";
 import { put } from "./items/put";
 import { take } from "./items/take";
 import { throwAction as throwVerb } from "./items/throw";
+import { turnOff } from "./items/turn-off";
+import { turnOn } from "./items/turn-on";
 import { unlock } from "./items/unlock";
 import { use } from "./items/use";
 import { enter } from "./navigation/enter";
@@ -69,6 +71,8 @@ export const itemActions = {
 	throw: throwVerb,
 	give,
 	blow,
+	turn_on: turnOn,
+	turn_off: turnOff,
 } as const;
 
 export const socialActions = {

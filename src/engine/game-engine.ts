@@ -1,4 +1,5 @@
 import type { RecognizedIntent } from "../agent/types";
+import { resolveVerbFrameAssumptions } from "../agent/verb-frames";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { ensureVisited, getDescriptionMode, immutable, isInScope, isTutorialMode, setTutorialMode } from "./mutators";
@@ -212,6 +213,10 @@ export class GameEngine {
 			return feedback;
 		}
 
+		// Resolve verb frame assumptions if parameters are missing
+		const { intent: resolvedIntent, announcement } = resolveVerbFrameAssumptions(intent, this.world, this.state);
+		intent = resolvedIntent;
+
 		if (!this.registry.has(intent.action)) {
 			this.lastActionStopped = true;
 			const feedback = intent.message ?? "I don't understand that.";
@@ -298,7 +303,8 @@ export class GameEngine {
 		if (result.stopped) {
 			this.lastActionStopped = true;
 			const feedback = result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
-			const finalFeedback = this.isTutorialMode() ? this.highlightTutorialText(feedback) : feedback;
+			const fullFeedback = announcement ? `${announcement}\n${feedback}` : feedback;
+			const finalFeedback = this.isTutorialMode() ? this.highlightTutorialText(fullFeedback) : fullFeedback;
 			this.recordCommandIfNeeded(intent, finalFeedback, options);
 			return finalFeedback;
 		}
@@ -309,7 +315,8 @@ export class GameEngine {
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
 		const feedback = allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
-		const finalFeedback = this.isTutorialMode() ? this.highlightTutorialText(feedback) : feedback;
+		const fullFeedback = announcement ? `${announcement}\n${feedback}` : feedback;
+		const finalFeedback = this.isTutorialMode() ? this.highlightTutorialText(fullFeedback) : fullFeedback;
 		this.recordCommandIfNeeded(intent, finalFeedback, options);
 		return finalFeedback;
 	}
