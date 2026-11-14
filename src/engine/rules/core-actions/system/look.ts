@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { getDescriptionMode } from "../../../mutators";
 import { resolveObjectDescription, resolveRoomDescription } from "../../../parser-context";
 import { emptySchema } from "../schemas";
 import type { ActionDef } from "../types";
@@ -13,8 +14,12 @@ export const look: ActionDef<z.infer<typeof emptySchema>> = {
 		const roomId = state.player.current_room;
 		const room = world.rooms[roomId];
 		const roomState = state.rooms[roomId];
-		const description = resolveRoomDescription(room, roomState);
-		const lines: string[] = [`**${room.name}**`, description];
+		const mode = getDescriptionMode(state);
+		const description = resolveRoomDescription(room, roomState, mode);
+		const lines: string[] = [`**${room.name}**`];
+		if (description) {
+			lines.push(description);
+		}
 		const roomObjIds = Object.keys(world.objects).filter((id) => {
 			if (state.objects[id]?.location !== roomId) return false;
 			const objState = state.objects[id];

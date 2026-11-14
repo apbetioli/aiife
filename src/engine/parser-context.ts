@@ -8,8 +8,8 @@ import {
 	type ScopedObject,
 	type World,
 } from "../world/types";
-import { findOpenContainerInRoom, getInventory } from "./mutators";
-import type { GameState, ObjectState, RoomState } from "./types";
+import { findOpenContainerInRoom, getDescriptionMode, getInventory } from "./mutators";
+import type { DescriptionMode, GameState, ObjectState, RoomState } from "./types";
 
 // ─── Condition Evaluator ──────────────────────────────────────────────────────
 
@@ -86,13 +86,20 @@ export function evaluateCondition(condition: string, state: GameState): boolean 
 // ─── Description Resolver ─────────────────────────────────────────────────────
 
 /**
- * Resolves which description variant to use based on current room state.
- * Falls back to "visited" if the room has been seen, then "default".
+ * Resolves which description variant to use based on current room state and description mode.
+ * - "superbrief": Always returns empty string (suppresses the room description paragraph).
+ * - "verbose": Always returns the full description (or active state flag like dark), ignoring visited state.
+ * - "brief" (default): Returns full description on first visit; on subsequent visits, returns
+ *   short or visited description if defined, or empty string.
  *
  * To add state-driven descriptions, add keys matching state flag names
  * to the room's descriptions map, e.g. { "dark": "You can't see much." }
  */
-export function resolveRoomDescription(room: Room, roomState: RoomState): string {
+export function resolveRoomDescription(room: Room, roomState: RoomState, mode: DescriptionMode = "brief"): string {
+	if (mode === "superbrief") {
+		return "";
+	}
+
 	const state = roomState.state;
 
 	// State-driven flags (e.g. dark) take priority over generic "visited"
@@ -103,9 +110,14 @@ export function resolveRoomDescription(room: Room, roomState: RoomState): string
 		}
 	}
 
-	// Fall back to visited variant if seen before
-	if (state.visited && room.descriptions.visited) {
-		return room.descriptions.visited;
+	if (mode === "verbose") {
+		return room.descriptions.default;
+	}
+
+	// Brief mode (default):
+	// Fall back to visited or short variant if seen before, otherwise empty string
+	if (state.visited) {
+		return room.descriptions.visited ?? room.descriptions.short ?? "";
 	}
 
 	return room.descriptions.default;
@@ -236,7 +248,8 @@ export function buildParserContext(world: World, state: GameState): ParserContex
 	}
 
 	// ── Resolve room description ───────────────────────────────────────────
-	const description = resolveRoomDescription(room, roomState);
+	const mode = getDescriptionMode(state);
+	const description = resolveRoomDescription(room, roomState, mode);
 
 	// ── Assemble and validate ──────────────────────────────────────────────
 	const context: ParserContext = {

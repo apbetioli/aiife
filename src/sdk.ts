@@ -4,6 +4,7 @@ export { splitCommands, tryDeterministicIntent } from "./agent/fast-path-parser"
 export {
 	ensureVisited,
 	findOpenContainerInRoom,
+	getDescriptionMode,
 	getInventory,
 	getObjectsInContainer,
 	getObjectsInRoom,
@@ -13,6 +14,7 @@ export {
 	isInScope,
 	moveObject,
 	movePlayer,
+	setDescriptionMode,
 	setObjectState,
 	setPlayerState,
 	setRoomState,
@@ -43,7 +45,6 @@ export {
 export { getInstrument, getObjectIds, getTarget, runAction } from "./engine/rules/core-actions/helpers";
 export { registerDaemon } from "./engine/rules/factories";
 export { PRIORITY } from "./engine/rules/priorities";
-export type { GameState, ObjectState, PlayerState, RoomState } from "./engine/types";
 export {
 	addScore,
 	calculateMaxScore,
@@ -54,5 +55,13 @@ export {
 	isTrophyLocation,
 	syncScore,
 } from "./engine/score";
+export {
+	type DescriptionMode,
+	DescriptionModeSchema,
+	type GameState,
+	type ObjectState,
+	type PlayerState,
+	type RoomState,
+} from "./engine/types";
 export { defineGame, type GameDefinition } from "./world/define-game";
 export type { Direction, Exit, GameObject, ObjectType, Room, State, World } from "./world/types";

@@ -179,6 +179,39 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Brief
+	if (trimmed === "brief") {
+		return {
+			action: "brief",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Superbrief
+	if (trimmed === "superbrief" || trimmed === "super brief" || trimmed === "super-brief") {
+		return {
+			action: "superbrief",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	// Verbose
+	if (trimmed === "verbose") {
+		return {
+			action: "verbose",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	// Die
 	if (trimmed === "die" || trimmed === "suicide") {
 		return {

@@ -1,5 +1,5 @@
 import { type World, WorldSchema } from "../world/types";
-import { type GameState, GameStateSchema } from "./types";
+import { type DescriptionMode, type GameState, GameStateSchema } from "./types";
 
 // ─── Validation Helpers ───────────────────────────────────────────────────────
 
@@ -147,6 +147,8 @@ export function buildInitialState(world: World): GameState {
 	};
 
 	// ── 5. Assemble and validate final state ──────────────────────────────
+	const initialDescriptionMode = (world.player.state?.description_mode as DescriptionMode | undefined) ?? "brief";
+
 	const gameState: GameState = {
 		world_id: world.id,
 		version: world.version,
@@ -154,6 +156,7 @@ export function buildInitialState(world: World): GameState {
 		player,
 		rooms,
 		objects,
+		description_mode: initialDescriptionMode,
 	};
 
 	const stateResult = GameStateSchema.safeParse(gameState);

@@ -1,7 +1,7 @@
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
-import { ensureVisited, immutable, isInScope } from "./mutators";
+import { ensureVisited, getDescriptionMode, immutable, isInScope } from "./mutators";
 import { buildParserContext } from "./parser-context";
 import {
 	type ActionPack,
@@ -14,9 +14,9 @@ import {
 import { registerActionPacks, standardAdventureActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
 import { load, type SaveFile, sanitizeSlot, save } from "./save";
-import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
 import { getScore, syncScore } from "./score";
-import type { GameState } from "./types";
+import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
+import type { DescriptionMode, GameState } from "./types";
 
 const DEFAULT_FEEDBACK = "Done.";
 const INTENT_PARAM_KEYS_TO_SKIP = new Set(["action", "message"]);
@@ -98,6 +98,10 @@ export class GameEngine {
 
 	getScore(): { score: number; maxScore: number } {
 		return getScore(this.world, this.state);
+	}
+
+	getDescriptionMode(): DescriptionMode {
+		return getDescriptionMode(this.state);
 	}
 
 	getParserContext(): ParserContext {

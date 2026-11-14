@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { StateSchema } from "../world/types";
 
+// ─── Description Mode Schema ──────────────────────────────────────────────────
+
+export const DescriptionModeSchema = z.enum(["brief", "superbrief", "verbose"]);
+export type DescriptionMode = z.infer<typeof DescriptionModeSchema>;
+
 // ─── Game State Schema ────────────────────────────────────────────────────────
 
 const RoomStateSchema = z.object({
@@ -25,6 +30,7 @@ export const GameStateSchema = z.object({
 	player: PlayerStateSchema,
 	rooms: z.record(z.string(), RoomStateSchema),
 	objects: z.record(z.string(), ObjectStateSchema),
+	description_mode: DescriptionModeSchema.optional().default("brief"),
 });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
