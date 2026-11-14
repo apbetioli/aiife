@@ -59,7 +59,17 @@ export class ActionRegistry {
 	}
 
 	has(name: string): boolean {
-		return this.actions.has(name);
+		return this.actions.has(name) || Boolean(this.findCanonicalName(name));
+	}
+
+	findCanonicalName(name: string): string | undefined {
+		if (this.actions.has(name)) return name;
+		for (const [canonical, entry] of this.actions) {
+			if (entry.aliases?.includes(name)) {
+				return canonical;
+			}
+		}
+		return undefined;
 	}
 
 	names(): string[] {

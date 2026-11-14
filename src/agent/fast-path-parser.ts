@@ -270,6 +270,56 @@ export function tryDeterministicIntent(rawInput: string): RecognizedIntent | nul
 		};
 	}
 
+	// Tutorial / Easy mode
+	if (
+		trimmed === "tutorial" ||
+		trimmed === "easy" ||
+		trimmed === "tutorial mode" ||
+		trimmed === "easy mode" ||
+		trimmed === "tutorial-mode" ||
+		trimmed === "easy-mode"
+	) {
+		return {
+			action: "tutorial",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	if (
+		trimmed === "tutorial on" ||
+		trimmed === "easy on" ||
+		trimmed === "tutorial-mode on" ||
+		trimmed === "easy-mode on"
+	) {
+		return {
+			action: "tutorial",
+			enabled: true,
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
+	if (
+		trimmed === "tutorial off" ||
+		trimmed === "easy off" ||
+		trimmed === "tutorial-mode off" ||
+		trimmed === "easy-mode off"
+	) {
+		return {
+			action: "tutorial",
+			enabled: false,
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		};
+	}
+
 	// Die
 	if (trimmed === "die" || trimmed === "suicide") {
 		return {

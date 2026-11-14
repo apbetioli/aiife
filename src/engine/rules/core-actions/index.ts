@@ -41,6 +41,7 @@ import { saveAction as save } from "./system/save";
 import { score } from "./system/score";
 import { superbrief } from "./system/superbrief";
 import { tick } from "./system/tick";
+import { tutorial } from "./system/tutorial";
 import { undo } from "./system/undo";
 import { verbose } from "./system/verbose";
 import { wait } from "./system/wait";
@@ -95,6 +96,7 @@ export const systemActions = {
 	brief,
 	superbrief,
 	verbose,
+	tutorial,
 } as const;
 
 export const standardAdventureActions = {

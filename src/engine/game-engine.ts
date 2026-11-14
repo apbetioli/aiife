@@ -1,7 +1,7 @@
 import type { RecognizedIntent } from "../agent/types";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
-import { ensureVisited, getDescriptionMode, immutable, isInScope } from "./mutators";
+import { ensureVisited, getDescriptionMode, immutable, isInScope, isTutorialMode, setTutorialMode } from "./mutators";
 import { buildParserContext } from "./parser-context";
 import {
 	type ActionPack,
@@ -14,7 +14,6 @@ import {
 import { registerActionPacks, standardAdventureActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
 import {
-	load,
 	loadSaveFile,
 	type ReplayResult,
 	recreateStateFromHistory,
@@ -26,6 +25,7 @@ import {
 } from "./save";
 import { getScore, syncScore } from "./score";
 import { FileSaveStorage, MemorySaveStorage, type SaveStorageAdapter } from "./storage";
+import { type HighlightFormat, highlightTutorialText, type TutorialHighlightContext } from "./tutorial-highlight";
 import type { DescriptionMode, GameState } from "./types";
 
 const DEFAULT_FEEDBACK = "Done.";
@@ -60,6 +60,9 @@ export interface GameEngineOptions {
 	setup?: GameSetup;
 	storage?: SaveStorageAdapter;
 	actions?: ActionPack | ActionPack[];
+	tutorial?: boolean;
+	tutorial_mode?: boolean;
+	highlightFormat?: HighlightFormat;
 }
 
 export class GameEngine {
@@ -87,6 +90,9 @@ export class GameEngine {
 		this.bus = new EventBus();
 		this.registry = new ActionRegistry();
 		this.state = buildInitialState(world);
+		if (options.tutorial || options.tutorial_mode) {
+			setTutorialMode(this.state, true);
+		}
 		const actions = options.actions !== undefined ? options.actions : standardAdventureActions;
 		registerActionPacks(this.bus, this.registry, actions);
 		options.setup?.(this.bus, this.registry);
@@ -106,7 +112,8 @@ export class GameEngine {
 			syncScore(this.world, s);
 		});
 
-		return [...startResult.feedback, lookFeedback].filter(Boolean).join("\n");
+		const fullOutput = [...startResult.feedback, lookFeedback].filter(Boolean).join("\n");
+		return this.isTutorialMode() ? this.highlightTutorialText(fullOutput) : fullOutput;
 	}
 
 	getScore(): { score: number; maxScore: number } {
@@ -115,6 +122,29 @@ export class GameEngine {
 
 	getDescriptionMode(): DescriptionMode {
 		return getDescriptionMode(this.state);
+	}
+
+	isTutorialMode(): boolean {
+		return isTutorialMode(this.state);
+	}
+
+	setTutorialMode(enabled: boolean): void {
+		setTutorialMode(this.state, enabled);
+	}
+
+	getTutorialContext(): TutorialHighlightContext {
+		const ctx = this.getParserContext();
+		return {
+			objects: ctx.in_scope_objects,
+			exits: ctx.available_exits,
+			verbs: this.getActiveActions(),
+		};
+	}
+
+	highlightTutorialText(text: string): string {
+		return highlightTutorialText(text, this.getTutorialContext(), {
+			format: this.options.highlightFormat ?? "tags",
+		});
 	}
 
 	getParserContext(): ParserContext {
@@ -252,7 +282,7 @@ export class GameEngine {
 		}
 
 		this.lastIntent = intent;
-		const action = intent.action;
+		const action = this.registry.findCanonicalName(intent.action) ?? intent.action;
 		const params = toEventParams(intent);
 		if (!allTargetsInScope(this.state, params)) {
 			this.lastActionStopped = true;
@@ -268,8 +298,9 @@ export class GameEngine {
 		if (result.stopped) {
 			this.lastActionStopped = true;
 			const feedback = result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
-			this.recordCommandIfNeeded(intent, feedback, options);
-			return feedback;
+			const finalFeedback = this.isTutorialMode() ? this.highlightTutorialText(feedback) : feedback;
+			this.recordCommandIfNeeded(intent, finalFeedback, options);
+			return finalFeedback;
 		}
 
 		this.pushHistory(prevState);
@@ -278,8 +309,9 @@ export class GameEngine {
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
 		const feedback = allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
-		this.recordCommandIfNeeded(intent, feedback, options);
-		return feedback;
+		const finalFeedback = this.isTutorialMode() ? this.highlightTutorialText(feedback) : feedback;
+		this.recordCommandIfNeeded(intent, finalFeedback, options);
+		return finalFeedback;
 	}
 
 	private recordCommandIfNeeded(
@@ -307,7 +339,8 @@ export class GameEngine {
 			return "Nothing to undo.";
 		}
 		this.state = prev;
-		return this.renderLook("Previous turn undone.");
+		const look = this.renderLook("Previous turn undone.");
+		return this.isTutorialMode() ? this.highlightTutorialText(look) : look;
 	}
 
 	restart(): string {
@@ -332,7 +365,8 @@ export class GameEngine {
 		this.state = saveFile.state;
 		this.commandHistory = saveFile.history ?? [];
 		const look = this.renderLook();
-		return look ? `Game restored.\n${look}` : "Game restored.";
+		const result = look ? `Game restored.\n${look}` : "Game restored.";
+		return this.isTutorialMode() ? this.highlightTutorialText(result) : result;
 	}
 
 	isPlayerDead(): boolean {

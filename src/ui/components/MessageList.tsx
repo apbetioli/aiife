@@ -1,5 +1,6 @@
 import { Box, Static } from "ink";
 import type { ReactNode } from "react";
+import type { TutorialHighlightContext } from "../../engine/tutorial-highlight";
 import { IS_DEBUG } from "../helpers";
 import { Text } from "./Text";
 
@@ -9,14 +10,19 @@ export interface Message {
 	content: string;
 }
 
-interface MessageListProps {
+export interface MessageListProps {
 	messages: Message[];
 	header?: ReactNode;
+	tutorial?: boolean;
+	tutorialContext?: TutorialHighlightContext;
 }
 
 type StaticItem = { id: string; type: "header" } | { id: string; type: "message"; message: Message };
 
-function renderMessageContent(message: Message): ReactNode {
+function renderMessageContent(
+	message: Message,
+	options?: { tutorial?: boolean; tutorialContext?: TutorialHighlightContext },
+): ReactNode {
 	switch (message.role) {
 		case "user":
 			return (
@@ -25,7 +31,11 @@ function renderMessageContent(message: Message): ReactNode {
 				</Text>
 			);
 		case "assistant":
-			return <Text>{message.content}</Text>;
+			return (
+				<Text tutorial={options?.tutorial} tutorialContext={options?.tutorialContext}>
+					{message.content}
+				</Text>
+			);
 		case "tool":
 			return (
 				<Text color="green" dimColor>
@@ -35,7 +45,7 @@ function renderMessageContent(message: Message): ReactNode {
 	}
 }
 
-export function MessageList({ messages, header }: MessageListProps) {
+export function MessageList({ messages, header, tutorial, tutorialContext }: MessageListProps) {
 	const visibleMessages = messages.filter((message) => message.role !== "tool" || IS_DEBUG);
 
 	const items: StaticItem[] = [
@@ -51,7 +61,7 @@ export function MessageList({ messages, header }: MessageListProps) {
 		<Static items={items}>
 			{(item) => (
 				<Box key={item.id} marginBottom={1}>
-					{item.type === "header" ? header : renderMessageContent(item.message)}
+					{item.type === "header" ? header : renderMessageContent(item.message, { tutorial, tutorialContext })}
 				</Box>
 			)}
 		</Static>

@@ -14,6 +14,7 @@ export {
 	isInRoom,
 	isInScope,
 	isInVehicle,
+	isTutorialMode,
 	isVehicle,
 	moveObject,
 	movePlayer,
@@ -22,6 +23,7 @@ export {
 	setPlayerState,
 	setPlayerVehicle,
 	setRoomState,
+	setTutorialMode,
 } from "./engine/mutators";
 export {
 	type ActionDef,
@@ -59,6 +61,14 @@ export {
 	isTrophyLocation,
 	syncScore,
 } from "./engine/score";
+export {
+	DEFAULT_KEY_VERBS,
+	type HighlightFormat,
+	type HighlightOptions,
+	highlightTutorialText,
+	stripHighlight,
+	type TutorialHighlightContext,
+} from "./engine/tutorial-highlight";
 export {
 	type DescriptionMode,
 	DescriptionModeSchema,

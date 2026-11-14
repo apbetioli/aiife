@@ -268,3 +268,18 @@ export function setDescriptionMode(state: GameState, mode: DescriptionMode): voi
 	state.description_mode = mode;
 	state.player.state = { ...state.player.state, description_mode: mode };
 }
+
+export function isTutorialMode(state: GameState): boolean {
+	if (typeof state.tutorial_mode === "boolean") {
+		return state.tutorial_mode;
+	}
+	if (typeof state.player?.state?.tutorial_mode === "boolean") {
+		return Boolean(state.player.state.tutorial_mode);
+	}
+	return false;
+}
+
+export function setTutorialMode(state: GameState, enabled: boolean): void {
+	state.tutorial_mode = enabled;
+	state.player.state = { ...state.player.state, tutorial_mode: enabled };
+}

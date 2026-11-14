@@ -32,6 +32,7 @@ export const GameStateSchema = z.object({
 	rooms: z.record(z.string(), RoomStateSchema),
 	objects: z.record(z.string(), ObjectStateSchema),
 	description_mode: DescriptionModeSchema.optional().default("brief"),
+	tutorial_mode: z.boolean().optional().default(false),
 });
 
 // ─── Types ────────────────────────────────────────────────────────────────────

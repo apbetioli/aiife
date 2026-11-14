@@ -91,5 +91,7 @@ export function useGameSession(world: World, setupOrOptions?: GameSetup | GameEn
 		handleSubmit,
 		isLoading,
 		tokenUsage,
+		isTutorialMode: engineRef.current?.isTutorialMode() ?? false,
+		tutorialContext: engineRef.current?.getTutorialContext(),
 	};
 }
