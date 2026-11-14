@@ -582,6 +582,7 @@ export const objects: Record<string, GameObject> = {
 		descriptions: {
 			default: "A large oriental rug is in the center of the room.",
 			moved: "A large oriental rug is pushed to one side of the room.",
+			under: "Underneath the rug is a closed trap door.",
 		},
 	},
 	painting: {

@@ -521,6 +521,22 @@ describe("executeAction", () => {
 		expect(result.state.objects.chest?.state.examined).toBe(true);
 	});
 
+	it("examine with under/behind returns default negative message when no specific description is set", () => {
+		const { world, bus, state } = setup();
+
+		const resultUnder = executeAction(bus, world, state, "examine", {
+			objects: ["chest"],
+			preposition: "under",
+		});
+		expect(resultUnder.feedback).toContain("There is nothing under the wooden chest.");
+
+		const resultBehind = executeAction(bus, world, state, "examine", {
+			objects: ["lamp"],
+			preposition: "behind",
+		});
+		expect(resultBehind.feedback).toContain("There is nothing behind the brass lamp.");
+	});
+
 	it("examine with target only returns default object description as feedback", () => {
 		const { world, bus, state } = setup();
 		const result = executeAction(bus, world, state, "examine", {

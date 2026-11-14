@@ -139,6 +139,12 @@ export function resolveObjectDescriptionWithPreposition(
 	if (key && obj.descriptions[key]) {
 		return obj.descriptions[key];
 	}
+	if (key === "under" || key === "underneath") {
+		return `There is nothing under the ${obj.name}.`;
+	}
+	if (key === "behind") {
+		return `There is nothing behind the ${obj.name}.`;
+	}
 	return resolveObjectDescription(obj, objState);
 }
 
