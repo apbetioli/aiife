@@ -1,5 +1,6 @@
 // ─── AIIFE Game Authoring SDK ─────────────────────────────────────────────────
 
+export { splitCommands, tryDeterministicIntent } from "./agent/fast-path-parser";
 export {
 	ensureVisited,
 	findOpenContainerInRoom,

@@ -1,7 +1,7 @@
 import { getTracer } from "@lmnr-ai/lmnr";
 import { generateText, type LanguageModel, type ModelMessage, streamText } from "ai";
 import type { GameEngine } from "../engine/game-engine";
-import { tryDeterministicIntent } from "./fast-path-parser";
+import { splitCommands, tryDeterministicIntent } from "./fast-path-parser";
 import { filterCompatibleMessages } from "./system/filter-messages";
 import { NARRATION_SYSTEM_PROMPT } from "./system/narration-prompt";
 import { buildScopedTools, buildToolSystemPrompt } from "./tool-builder";
@@ -55,46 +55,81 @@ export class GameAgent {
 
 	async run(input: string, conversationHistory: ModelMessage[], callbacks: AgentCallbacks): Promise<ModelMessage[]> {
 		const recentHistory = filterCompatibleMessages(conversationHistory).slice(-INTENT_HISTORY_LIMIT);
+		const commands = splitCommands(input);
 
-		// Fast-path standard unambiguous commands to bypass LLM intent extraction
-		const fastIntent = tryDeterministicIntent(input);
-		let intent: RecognizedIntent | null = null;
+		if (commands.length === 0) {
+			callbacks.onComplete("");
+			return recentHistory;
+		}
 
-		if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
-			intent = fastIntent;
-		} else {
-			const context = this.engine.getParserContext();
-			const tools = buildScopedTools(context, {
-				registry: this.engine.getActionRegistry(),
-			});
-			const system = buildToolSystemPrompt(context);
+		const outputs: string[] = [];
+		const workingHistory: ModelMessage[] = [...recentHistory];
 
-			const {
-				toolCalls,
-				text,
-				usage: toolUsage,
-			} = await generateText({
-				model: this.model,
-				system: cachedSystemPrompt(system),
-				tools,
-				toolChoice: "required",
-				messages: [...recentHistory, { role: "user", content: input }],
-				...getCommonCallOptions(),
-			});
+		for (let i = 0; i < commands.length; i++) {
+			const cmd = commands[i];
 
-			intent = extractIntent(toolCalls?.[0], text);
+			try {
+				const fastIntent = tryDeterministicIntent(cmd);
+				let intent: RecognizedIntent | null = null;
 
-			if (toolUsage) {
-				callbacks.onTokenUsage?.(toolUsage);
+				if (fastIntent && this.engine.getActionRegistry().has(fastIntent.action)) {
+					intent = fastIntent;
+				} else {
+					const context = this.engine.getParserContext();
+					const tools = buildScopedTools(context, {
+						registry: this.engine.getActionRegistry(),
+					});
+					const system = buildToolSystemPrompt(context);
+
+					const {
+						toolCalls,
+						text,
+						usage: toolUsage,
+					} = await generateText({
+						model: this.model,
+						system: cachedSystemPrompt(system),
+						tools,
+						toolChoice: "required",
+						messages: [...workingHistory, { role: "user", content: cmd }],
+						...getCommonCallOptions(),
+					});
+
+					intent = extractIntent(toolCalls?.[0], text);
+
+					if (toolUsage) {
+						callbacks.onTokenUsage?.(toolUsage);
+					}
+				}
+
+				const result = this.engine.runAction(intent);
+
+				if (i > 0 && outputs.length > 0) {
+					callbacks.onToken("\n");
+				}
+
+				const outputText = await this.narrate(result, cmd, callbacks);
+				outputs.push(outputText);
+
+				workingHistory.push({ role: "user", content: cmd });
+				workingHistory.push({ role: "assistant", content: outputText });
+
+				if (this.engine.wasLastActionStopped() || this.engine.isGameOver() || intent.action === "respond") {
+					break;
+				}
+			} catch (err) {
+				const errMsg = err instanceof Error ? err.message : String(err);
+				if (i > 0 && outputs.length > 0) {
+					callbacks.onToken("\n");
+				}
+				outputs.push(`Error: ${errMsg}`);
+				break;
 			}
 		}
 
-		const result = this.engine.runAction(intent);
-		const outputText = await this.narrate(result, input, callbacks);
+		const combinedOutput = outputs.join("\n");
+		callbacks.onComplete(combinedOutput);
 
-		callbacks.onComplete(outputText);
-
-		return [...recentHistory, { role: "user", content: input }, { role: "assistant", content: outputText }];
+		return [...recentHistory, { role: "user", content: input }, { role: "assistant", content: combinedOutput }];
 	}
 
 	private async narrate(message: string, playerInput: string, callbacks: AgentCallbacks): Promise<string> {
