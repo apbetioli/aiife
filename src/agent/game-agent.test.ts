@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { makeTestWorld } from "../engine/__fixtures__/test-world";
 import { GameEngine } from "../engine/game-engine";
 import { recreateStateFromHistory } from "../engine/save";
+import type { GameObject } from "../world/types";
 import { GameAgent } from "./game-agent";
 
 describe("GameAgent", () => {
@@ -474,6 +475,203 @@ describe("GameAgent", () => {
 			expect(reconstructed).toEqual(engine.getState());
 			expect(reconstructed.objects.lamp.location).toBe("inventory");
 			expect(reconstructed.player.current_room).toBe("room_b");
+		});
+	});
+
+	describe("verb frame assumptions integration", () => {
+		function makeWorldWith(customObjects: Record<string, GameObject>) {
+			const base = makeTestWorld();
+			return {
+				...base,
+				objects: {
+					...base.objects,
+					...customObjects,
+				},
+			};
+		}
+
+		it("fast-path executes attack command with assumed enemy and weapon defaults", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+
+			const world = makeWorldWith({
+				troll: {
+					id: "troll",
+					name: "nasty troll",
+					aliases: ["troll"],
+					type: "actor",
+					location: "room_a",
+					descriptions: { default: "A nasty troll blocks your path." },
+					state: { alive: true, dead: false, carriable: false },
+				},
+				sword: {
+					id: "sword",
+					name: "iron sword",
+					aliases: ["sword"],
+					type: "weapon",
+					location: "inventory",
+					descriptions: { default: "A sharp iron sword." },
+					state: { carriable: true },
+				},
+			});
+
+			const engine = new GameEngine(world);
+			engine.start();
+			const agent = new GameAgent(mockModel, engine, mockModel);
+
+			let completed = "";
+			await agent.run("attack", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			// Fast-path parser executes attack without calling the LLM
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(completed).toContain("(the nasty troll with the iron sword)");
+			expect(completed).toContain("Attacking the nasty troll has no effect.");
+		});
+
+		it("fast-path executes unlock command assuming locked door and matching key", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+
+			const base = makeTestWorld();
+			const world = {
+				...base,
+				objects: {
+					...base.objects,
+					// Unlock the default wooden door so cellar_door is the only locked door
+					door: {
+						...base.objects.door,
+						state: { ...base.objects.door.state, locked: false },
+					},
+					cellar_door: {
+						id: "cellar_door",
+						name: "heavy iron door",
+						aliases: ["door"],
+						type: "door",
+						location: "room_a",
+						descriptions: { default: "A heavy locked door." },
+						state: { locked: true, open: false, carriable: false },
+						requires_instrument: { unlock: "rusty_key" },
+					},
+					rusty_key: {
+						id: "rusty_key",
+						name: "rusty iron key",
+						aliases: ["key"],
+						type: "key",
+						location: "inventory",
+						descriptions: { default: "A rusty key." },
+						state: { carriable: true },
+					},
+				},
+			};
+
+			const engine = new GameEngine(world);
+			engine.start();
+			const agent = new GameAgent(mockModel, engine, mockModel);
+
+			let completed = "";
+			await agent.run("unlock", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(completed).toContain("(the heavy iron door with the rusty iron key)");
+			expect(engine.getState().objects.cellar_door.state.locked).toBe(false);
+		});
+
+		it("fast-path executes turn on / light assuming unambiguous lantern in inventory", async () => {
+			const doGenerate = vi.fn();
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+
+			const world = makeWorldWith({
+				brass_lantern: {
+					id: "brass_lantern",
+					name: "brass lantern",
+					aliases: ["lantern"],
+					type: "item",
+					location: "inventory",
+					descriptions: { default: "A shiny brass lantern." },
+					state: { lit: false, carriable: true },
+				},
+			});
+
+			const engine = new GameEngine(world);
+			engine.start();
+			const agent = new GameAgent(mockModel, engine, mockModel);
+
+			let completed = "";
+			await agent.run("light", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).not.toHaveBeenCalled();
+			expect(completed).toContain("(the brass lantern)");
+			expect(completed).toContain("The brass lantern is now on.");
+			expect(engine.getState().objects.brass_lantern.state.lit).toBe(true);
+		});
+
+		it("populates weapon assumption when LLM tool call has missing weapon parameter", async () => {
+			const doGenerate = vi.fn().mockResolvedValue({
+				rawCall: { rawPrompt: null, rawSettings: {} },
+				finishReason: "tool-calls",
+				usage: { inputTokens: 50, outputTokens: 15, totalTokens: 65 },
+				content: [
+					{
+						type: "tool-call",
+						toolCallId: "call_attack_1",
+						toolName: "attack",
+						input: JSON.stringify({ objects: ["troll"] }),
+					},
+				],
+			});
+			const mockModel = new MockLanguageModelV3({ doGenerate });
+
+			const world = makeWorldWith({
+				troll: {
+					id: "troll",
+					name: "nasty troll",
+					aliases: ["troll"],
+					type: "actor",
+					location: "room_a",
+					descriptions: { default: "A troll." },
+					state: { alive: true, dead: false, carriable: false },
+				},
+				sword: {
+					id: "sword",
+					name: "iron sword",
+					aliases: ["sword"],
+					type: "weapon",
+					location: "inventory",
+					descriptions: { default: "A sword." },
+					state: { carriable: true },
+				},
+			});
+
+			const engine = new GameEngine(world);
+			engine.start();
+			const agent = new GameAgent(mockModel, engine, mockModel);
+
+			let completed = "";
+			await agent.run("furious assault against the troll!", [], {
+				onToken: () => {},
+				onComplete: (c) => {
+					completed = c;
+				},
+			});
+
+			expect(doGenerate).toHaveBeenCalled();
+			expect(completed).toContain("(with the iron sword)");
+			expect(completed).toContain("Attacking the nasty troll has no effect.");
 		});
 	});
 });

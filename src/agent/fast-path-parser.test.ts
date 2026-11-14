@@ -149,6 +149,90 @@ describe("tryDeterministicIntent", () => {
 		expect(tryDeterministicIntent("verbose.")?.action).toBe("verbose");
 	});
 
+	it("parses verb frame command candidates (attack, unlock, lock, light, turn on/off, open, close)", () => {
+		// Zero-arg commands awaiting verb frame assumptions
+		expect(tryDeterministicIntent("attack")).toEqual({
+			action: "attack",
+			direction: null,
+			objects: null,
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("kill")?.action).toBe("attack");
+		expect(tryDeterministicIntent("fight")?.action).toBe("attack");
+		expect(tryDeterministicIntent("hit")?.action).toBe("attack");
+		expect(tryDeterministicIntent("strike")?.action).toBe("attack");
+
+		// Single and two-arg attack
+		expect(tryDeterministicIntent("attack troll")).toEqual({
+			action: "attack",
+			direction: null,
+			objects: ["troll"],
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("kill the troll with the elvish sword")).toEqual({
+			action: "attack",
+			direction: null,
+			objects: ["troll", "elvish sword"],
+			preposition: "with",
+			message: null,
+		});
+
+		// Unlock & Lock
+		expect(tryDeterministicIntent("unlock")?.action).toBe("unlock");
+		expect(tryDeterministicIntent("unlock the cellar door")).toEqual({
+			action: "unlock",
+			direction: null,
+			objects: ["cellar door"],
+			preposition: null,
+			message: null,
+		});
+		expect(tryDeterministicIntent("unlock door with rusty key")).toEqual({
+			action: "unlock",
+			direction: null,
+			objects: ["door", "rusty key"],
+			preposition: "with",
+			message: null,
+		});
+		expect(tryDeterministicIntent("lock")?.action).toBe("lock");
+		expect(tryDeterministicIntent("lock chest with key")).toEqual({
+			action: "lock",
+			direction: null,
+			objects: ["chest", "key"],
+			preposition: "with",
+			message: null,
+		});
+
+		// Light / Turn On
+		expect(tryDeterministicIntent("light")?.action).toBe("turn_on");
+		expect(tryDeterministicIntent("turn on")?.action).toBe("turn_on");
+		expect(tryDeterministicIntent("switch on")?.action).toBe("turn_on");
+		expect(tryDeterministicIntent("turn on the brass lantern")).toEqual({
+			action: "turn_on",
+			direction: null,
+			objects: ["brass lantern"],
+			preposition: null,
+			message: null,
+		});
+
+		// Turn Off / Extinguish
+		expect(tryDeterministicIntent("turn off")?.action).toBe("turn_off");
+		expect(tryDeterministicIntent("extinguish")?.action).toBe("turn_off");
+		expect(tryDeterministicIntent("extinguish lamp")).toEqual({
+			action: "turn_off",
+			direction: null,
+			objects: ["lamp"],
+			preposition: null,
+			message: null,
+		});
+
+		// Open / Close
+		expect(tryDeterministicIntent("open")?.action).toBe("open");
+		expect(tryDeterministicIntent("close")?.action).toBe("close");
+		expect(tryDeterministicIntent("shut")?.action).toBe("close");
+	});
+
 	it("returns null for entity commands, delegating all entity resolution to the LLM agent", () => {
 		expect(tryDeterministicIntent("take sword")).toBeNull();
 		expect(tryDeterministicIntent("take the brass key from table")).toBeNull();

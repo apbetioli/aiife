@@ -1,4 +1,5 @@
 import type { RecognizedIntent } from "../agent/types";
+import { resolveVerbFrameAssumptions } from "../agent/verb-frames";
 import type { ParserContext, World } from "../world/types";
 import { buildInitialState } from "./initial-state";
 import { ensureVisited, getDescriptionMode, immutable, isInScope } from "./mutators";
@@ -14,7 +15,6 @@ import {
 import { registerActionPacks, standardAdventureActions } from "./rules/core-actions";
 import type { Observer } from "./rules/types";
 import {
-	load,
 	loadSaveFile,
 	type ReplayResult,
 	recreateStateFromHistory,
@@ -182,6 +182,10 @@ export class GameEngine {
 			return feedback;
 		}
 
+		// Resolve verb frame assumptions if parameters are missing
+		const { intent: resolvedIntent, announcement } = resolveVerbFrameAssumptions(intent, this.world, this.state);
+		intent = resolvedIntent;
+
 		if (!this.registry.has(intent.action)) {
 			this.lastActionStopped = true;
 			const feedback = intent.message ?? "I don't understand that.";
@@ -268,8 +272,9 @@ export class GameEngine {
 		if (result.stopped) {
 			this.lastActionStopped = true;
 			const feedback = result.feedback.length > 0 ? result.feedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
-			this.recordCommandIfNeeded(intent, feedback, options);
-			return feedback;
+			const fullFeedback = announcement ? `${announcement}\n${feedback}` : feedback;
+			this.recordCommandIfNeeded(intent, fullFeedback, options);
+			return fullFeedback;
 		}
 
 		this.pushHistory(prevState);
@@ -278,8 +283,9 @@ export class GameEngine {
 
 		const allFeedback = [...result.feedback, ...tickResult.feedback];
 		const feedback = allFeedback.length > 0 ? allFeedback.join("\n") : (intent.message ?? DEFAULT_FEEDBACK);
-		this.recordCommandIfNeeded(intent, feedback, options);
-		return feedback;
+		const fullFeedback = announcement ? `${announcement}\n${feedback}` : feedback;
+		this.recordCommandIfNeeded(intent, fullFeedback, options);
+		return fullFeedback;
 	}
 
 	private recordCommandIfNeeded(
